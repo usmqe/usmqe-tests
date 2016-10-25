@@ -1,0 +1,10 @@
+*.py[oc]
+.*.swp
+*~
+*.egg-info
+.eggs
+.env
+build
+dist
+.tox
+*.html
