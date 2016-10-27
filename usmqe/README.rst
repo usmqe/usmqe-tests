@@ -13,3 +13,6 @@ Main modules available here are:
 * ``usmqe.ceph``: helper module for checking ceph functionality
 * ``usmqe.common``: common functionality (not specific to any interface or
   storage type)
+
+Besides that, there is ``unit_tests`` directory, which contains unit tests of
+some components of this ``usmqe`` module.
