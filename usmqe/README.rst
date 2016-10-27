@@ -9,4 +9,7 @@ Main modules available here are:
 
 * ``usmqe.web``: usmqe module concerned with selenium based web testing
 * ``usmqe.api``: support for usmqe REST API testing
-* ``usmqe.common``: common functionality (not specific to any interface)
+* ``usmqe.gluster``: helper module for checking gluster functionality
+* ``usmqe.ceph``: helper module for checking ceph functionality
+* ``usmqe.common``: common functionality (not specific to any interface or
+  storage type)
