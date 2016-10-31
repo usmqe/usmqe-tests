@@ -16,10 +16,22 @@ Main top level directories:
 
 In the root dir of the repository, there are also:
 
-* various pytest files (eg. ``conftest.py``, ``pytest.ini``) with core
-  configuration of the pytest framework (for running tests cases from
-  ``usmqe_tests`` directory)
-* ``tox.ini`` and ``setup.py`` (for testing the usmqe-tests code itself)
+* main pytest ``conftest.py`` file with core configuration of the pytest
+  framework (for running tests cases from ``usmqe_tests`` directory)
+* ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
+  details on unit tests of ``usmqe`` module below)
+
+
+Unit Tests of usmqe module
+--------------------------
+
+Note that the purpose of ``tox.ini`` file in the root directory of this
+repository is to run unit tests of ``usmqe`` module. It has nothing to do with
+running of usm qe integration tests.
+
+The code and pytest configuration of the unit tests are stored in
+``usmqe/unit_tests`` directory. For more details see the readme file there.
+
 
 License
 -------
