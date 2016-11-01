@@ -82,20 +82,22 @@ class RemoteConnection(object):
         self.node = node
         self.user = user
         self.keyfile = KEYFILE
-        self.establish_connection(self.node, user=self.user, keyfile=self.keyfile)
+        self.establish_connection(
+            self.node, user=self.user, keyfile=self.keyfile)
 
     def establish_connection(self, node, user='root', keyfile=None):
         """
         Establishes connection from localhost to node via plumbum.SshMachine.
         """
         try:
-            self.ssh = plumbum.SshMachine(node, user, \
-                keyfile=os.path.expanduser(keyfile), \
-                ssh_opts=('-o StrictHostKeyChecking=no',), \
+            self.ssh = plumbum.SshMachine(
+                node, user, keyfile=os.path.expanduser(keyfile),
+                ssh_opts=('-o StrictHostKeyChecking=no',),
                 scp_opts=('-o StrictHostKeyChecking=no',))
             self.session = self.ssh.session()
         except Exception as ex:
-            raise RemoteException("Unable to establish connection with: %s, reason: %s" % (node, ex))
+            msg = "Unable to establish connection with: %s, reason: %s"
+            raise RemoteException(msg % (node, ex))
 
     def run(self, cmd, verbose=True):
         """
@@ -130,7 +132,8 @@ class RemoteConnection(object):
             self.ssh.close()
 
         except IOError as ex:
-            raise RemoteException("Problem occurred in closing remote connections: %s" % ex)
+            msg = "Problem occurred in closing remote connections: %s"
+            raise RemoteException(msg % ex)
 
 
 class RemoteException(Exception):
