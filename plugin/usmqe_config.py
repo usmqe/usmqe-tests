@@ -18,14 +18,19 @@ def pytest_addoption(parser):
     Add ini options to be accepted by pytest.
     """
     parser.addini('USM_CONFIG', 'USM configuration')
-    parser.addini('USM_HOST_CONFIG', 'USM host configuration', default='sample.hosts')
+    parser.addini(
+        'USM_HOST_CONFIG', 'USM host configuration', default='sample.hosts')
     parser.addini('USM_USERNAME', 'USM username for login', default='admin')
     parser.addini('USM_PASSWORD', 'USM password for login')
     parser.addini('USM_URL', 'USM url')
     parser.addini('USM_APIURL', 'USM url for api')
-    parser.addini('USM_LOG_LEVEL', 'USM log test level', default='logging.DEBUG')
-    parser.addini('USM_KEYFILE', 'USM key file for passwordless ssh', default='~/.ssh/id_rsa')
-    parser.addini('USM_CA_CERT', 'USM use CA certificate', type='bool', default=False)
+    parser.addini(
+        'USM_LOG_LEVEL', 'USM log test level', default='logging.DEBUG')
+    parser.addini(
+        'USM_KEYFILE', 'USM key file for passwordless ssh',
+        default='~/.ssh/id_rsa')
+    parser.addini(
+        'USM_CA_CERT', 'USM use CA certificate', type='bool', default=False)
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -33,10 +38,11 @@ def load_inventory():
     """
     Load inventory file to module inventory.py.
 
-    To use content from inventory file just *import inventory* and then use proper
-    function from ``usmqe.inventory``.
-    Name of inventory file is stored in ``USM_HOST_CONFIG`` option in ``pytest.ini``.
-    Its value can be overriden by ``pytest -o USM_HOST_CONFIG=path``.
+    To use content from inventory file just *import inventory* and then use
+    proper function from ``usmqe.inventory``.
+    Name of inventory file is stored in ``USM_HOST_CONFIG`` option in
+    ``pytest.ini``.  Its value can be overriden by ``pytest -o
+    USM_HOST_CONFIG=path``.
     """
     # update machine config (reading ansible inventory)
     hosts = ConfigParser(allow_no_value=True)
@@ -68,7 +74,8 @@ def load_config():
                     if section == 'usm':
                         name = "USM_{0}".format(key.upper())
                     else:
-                        name = "USM_{0}_{1}".format(section.upper(), key.upper())
+                        name = "USM_{0}_{1}".format(
+                            section.upper(), key.upper())
 
                     override_value = pytest.config._get_override_ini_value(name)
                     if override_value is None:
