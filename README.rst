@@ -21,6 +21,22 @@ In the root dir of the repository, there are also:
 * ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
   details on unit tests of ``usmqe`` module below)
 
+Setup
+-----
+
+USM QE integrations tests are expected to be executed on a virtual or bare
+metal machines so that for each storage role (eg. gluster client, ceph monitor,
+tendrl console, ...) there is a dedicated machine (eg. storage client role
+should not be deployed on the same machine as ceph monitor) and if the role
+requires multiple machines, a minimal amount of machines needs to be available
+based on the role needs (eg. having a trusted storage pool on just 2 machines
+is not very useful for proper integration testing because it would prevent us
+from testing some important use cases).
+
+For this reason, all post installation and test setup configuration steps
+are automated via ansible playbooks and stored in a separate `usmqe-setup`_
+repository. You need to deploy test machines using playbooks from there.
+
 
 Unit Tests of usmqe module
 --------------------------
@@ -42,3 +58,4 @@ usmqe-tests is free and open source software.
 
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`Tendrl project`: https://github.com/Tendrl/
+.. _`usmqe-setup`: https://github.com/Tendrl/usmqe-setup
