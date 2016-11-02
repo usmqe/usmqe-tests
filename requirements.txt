@@ -1,3 +1,4 @@
 pytest
 plumbum
 requests
+mrglog
