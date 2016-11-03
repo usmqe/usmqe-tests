@@ -1,17 +1,6 @@
-# setup.py file for tox to be able to run unit tests
+# Dummy setup.py file for tox to be happy enough to run unit tests.
+# It's actually not used for installation or anything else.
 
+from setuptools import setup
 
-from setuptools import setup, find_packages
-
-
-setup(
-    name='usmqe-tests',
-    license='GNU GPL v3.0',
-    packages=find_packages(exclude=['doc', 'usmqe_tests', 'conf']),
-    install_requires=[
-        # 'pytest',
-        'plumbum',
-        'requests',
-        # 'mrglog',
-        ],
-    )
+setup(name='usmqe-tests')
