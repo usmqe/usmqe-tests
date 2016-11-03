@@ -118,6 +118,8 @@ def pytest_runtest_makereport(item, call):
     :param call:
     :return:
     """
+    if CHECKLOGGER is None:
+        set_logger()
     outcome = yield
     report = outcome.get_result()
     failed_assumptions = CHECKLOGGER.act_test['fail']
@@ -172,7 +174,10 @@ def pytest_runtest_makereport(item, call):
         del pytest._assumption_locals[:]
 
 
-get_logger = mrglog.get_logger
+def get_logger(*args, **kwargs):
+    if 'verbose_lvl' not in kwargs:
+        kwargs['verbose_lvl'] = 1
+    return mrglog.get_logger(*args, **kwargs)
 
 
 def set_logger(logger=None):
