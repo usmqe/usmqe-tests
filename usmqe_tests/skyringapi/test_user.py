@@ -24,20 +24,17 @@ Teardown
 """
 
 
-"""@pylatest api/user.login_valid
-API-users: valid login
-**********************
-
-.. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
-
-Description
-===========
-"""
-
-
 # @pytest.mark.xfail(reason='proste proto')
 def test_login_valid():
-    """@usmid api/user.login_valid
+    """@pylatest api/user.login_valid
+    API-users: valid login
+    **********************
+
+    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
+
+    Description
+    ===========
+
     Positive login test.
     """
     test = skyringapi_user.ApiUser()
@@ -61,18 +58,19 @@ def test_login_valid():
     test.logout()
 
 
-"""@pylatest api/user.login_invalid
-API-users: invalid login
-************************
-
-.. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
-"""
-
-
 def test_login_invalid():
-    """@usmid api/user.login_invalid
+    """@pylatest api/user.login_invalid
+    API-users: invalid login
+    ************************
+
+    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
+
+    Description
+    ===========
+
     Negative login test.
     """
+
     """@pylatest api/user.login_invalid
     .. test_step:: 1
 
@@ -103,16 +101,16 @@ def test_login_invalid():
                })
 
 
-"""@pylatest api/user.logout
-API-users: logout
-*****************
-
-.. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
-"""
-
-
 def test_logout():
-    """@usmid api/user.logout
+    """@pylatest api/user.logout
+    API-users: logout
+    *****************
+
+    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
+
+    Description
+    ===========
+
     Logout test.
     """
     test = skyringapi_user.ApiUser()
@@ -163,16 +161,16 @@ def test_logout():
         "status": 401})
 
 
-"""@pylatest api/user.get
-API-users: get user
-*******************
-
-.. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
-"""
-
-
 def test_user_get():
-    """@usmid api/user.get
+    """@pylatest api/user.get
+    API-users: get user
+    *******************
+
+    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
+
+    Description
+    ===========
+
     Get user admin.
     """
     test = skyringapi_user.ApiUser()
@@ -199,16 +197,16 @@ def test_user_get():
     test.logout()
 
 
-"""@pylatest api/user.get_nonexistent
-API-users: get nonexistent user
-*******************************
-
-.. test_metadata:: author dahorak@redhat.com
-"""
-
-
 def test_user_get_not_found():
-    """@usmid api/user.get_nonexistent
+    """@pylatest api/user.get_nonexistent
+    API-users: get nonexistent user
+    *******************************
+
+    .. test_metadata:: author dahorak@redhat.com
+
+    Description
+    ===========
+
     Get users.
     """
     test = skyringapi_user.ApiUser()
@@ -248,16 +246,16 @@ def test_user_get_not_found():
     test.logout()
 
 
-"""@pylatest api/user.add_delete
-API-users: add and delete
-*************************
-
-.. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
-"""
-
-
 def test_user_add_del(self):
-    """@usmid api/user.add_delete
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com
+
+    Description
+    ===========
+
     Add and remove *test* user.
     """
     test = skyringapi_user.ApiUser()
