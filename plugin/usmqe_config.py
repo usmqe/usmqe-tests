@@ -77,7 +77,8 @@ def load_config():
                         name = "USM_{0}_{1}".format(
                             section.upper(), key.upper())
 
-                    override_value = pytest.config._get_override_ini_value(name)
+                    override_value = pytest.config._get_override_ini_value(
+                        name)
                     if override_value is None:
                         pytest.config._inicache[name] = value
                     else:

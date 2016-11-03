@@ -115,11 +115,14 @@ class RemoteConnection(object):
         retcode = proc.returncode
 
         if verbose or retcode != 0:
-            LOGGER.debug("\"%s\" on %s: RETCODE is %d", cmd, self.node, retcode)
+            LOGGER.debug(
+                "\"%s\" on %s: RETCODE is %d", cmd, self.node, retcode)
             if stdout != "" and verbose:
-                LOGGER.debug("\"%s\" on %s: STDOUT is %s", cmd, self.node, stdout)
+                LOGGER.debug(
+                    "\"%s\" on %s: STDOUT is %s", cmd, self.node, stdout)
             if stderr != "" and verbose:
-                LOGGER.debug("\"%s\" on %s: STDERR is %s", cmd, self.node, stderr)
+                LOGGER.debug(
+                    "\"%s\" on %s: STDERR is %s", cmd, self.node, stderr)
         return (retcode, stdout, stderr)
 
     def finish(self):

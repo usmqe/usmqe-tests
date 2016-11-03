@@ -21,8 +21,8 @@ class Api(object):
         "status": 200,
     }
 
-    user_info = {"username":"%s", "email":"%s@localhost",
-                 "role":"admin", "groups":[]}
+    user_info = {"username": "%s", "email": "%s@localhost",
+                 "role": "admin", "groups": []}
 
     ldap_config = {
         "ldapserver": None, "port": None, "base": None,
@@ -30,7 +30,6 @@ class Api(object):
         "firstname": None, "lastname": None,
         "displayname": None, "email": None,
     }
-
 
     def __init__(self, copy_from=None):
         self.cookies = {}
@@ -48,16 +47,17 @@ class Api(object):
         """
         LOGGER.debug("request.url:  %s" % resp.request.url)
         LOGGER.debug("request.method:  %s" % resp.request.method)
-        LOGGER.debug("request.body:  %s" %resp.request.body)
+        LOGGER.debug("request.body:  %s" % resp.request.body)
         LOGGER.debug("request.headers:  %s" % resp.request.headers)
         LOGGER.debug("response.cookies: %s" % resp.cookies)
         LOGGER.debug("response.content: %s" % resp.content)
         LOGGER.debug("response.headers: %s" % resp.headers)
         try:
-            LOGGER.debug("response.json:    %s" % resp.json(encoding='unicode'))
+            LOGGER.debug(
+                "response.json:    %s" % resp.json(encoding='unicode'))
         except ValueError:
             LOGGER.debug("response.json:    ")
-        LOGGER.debug("response.ok:      %s"% resp.ok)
+        LOGGER.debug("response.ok:      %s" % resp.ok)
         LOGGER.debug("response.reason:  %s" % resp.reason)
         LOGGER.debug("response.status:  %s" % resp.status_code)
         LOGGER.debug("response.text:    %s" % resp.text)
@@ -76,7 +76,9 @@ class Api(object):
             asserts.update(asserts_in)
         if "cookies" in asserts and asserts["cookies"] is None:
             pytest.check(not(resp.cookies), "Cookies should be empty.")
-        pytest.check(resp.ok == asserts["ok"], "There should be ok == %s." % str(asserts["ok"]))
+        pytest.check(
+            resp.ok == asserts["ok"],
+            "There should be ok == %s." % str(asserts["ok"]))
         pytest.check(resp.status_code == asserts["status"],
                      "Status code should equal to %s" % asserts["status"])
         pytest.check(resp.reason == asserts["reason"],
@@ -96,7 +98,9 @@ class Api(object):
         LOGGER.debug("check_dict - schema: %s", schema)
         expected_keys = sorted(schema.keys())
         keys = sorted(data.keys())
-        pytest.check(keys == expected_keys, "Data should contains keys: %s" % expected_keys)
+        pytest.check(
+            keys == expected_keys,
+            "Data should contains keys: %s" % expected_keys)
         for key in keys:
             pytest.check(key in expected_keys,
                          "Unknown key '%s' with value '%s' (type: '%s')." %
@@ -104,10 +108,12 @@ class Api(object):
             if key in expected_keys:
                 pytest.check(isinstance(data[key], schema[key]))
                 if isinstance(data[key], schema[key]):
-                    LOGGER.passed("Value '%s' (type: %s) for key '%s' should be '%s'." % \
+                    LOGGER.passed(
+                        "Value '%s' (type: %s) for key '%s' should be '%s'." %
                         (data[key], type(data[key]), key, schema[key]))
                 else:
-                    LOGGER.failed("Value '%s' (type: %s) for key '%s' should be '%s'." % \
+                    LOGGER.failed(
+                        "Value '%s' (type: %s) for key '%s' should be '%s'." %
                         (data[key], type(data[key]), key, schema[key]))
 
 
@@ -134,7 +140,7 @@ class ApiCommon(Api):
             })
         if asserts_in:
             asserts.update(asserts_in)
-        data = json.dumps({'username':username, 'password':password})
+        data = json.dumps({'username': username, 'password': password})
         req = requests.post(pytest.config.getini("USM_APIURL") + "auth/login",
                             data, verify=self.verify)
         Api.print_req_info(req)
@@ -171,9 +177,11 @@ class ApiCommon(Api):
                             cookies=self.cookies, verify=self.verify)
         Api.print_req_info(req)
         Api.check_response(req, asserts)
-        pytest.check(req.cookies.keys() == [], "There should be empty logout cookie.")
+        pytest.check(
+            req.cookies.keys() == [], "There should be empty logout cookie.")
         pytest.check(req.json(encoding='unicode') == asserts["json"],
                      "There should be logout message.")
         return req.json(encoding='unicode')
 
-# TODOs corresponds to apps/skyring/routes.go # 062ff7cf03596a708784d26a131c84f8a2d55781
+# TODOs corresponds
+# to apps/skyring/routes.go # 062ff7cf03596a708784d26a131c84f8a2d55781

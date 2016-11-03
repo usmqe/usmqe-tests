@@ -31,8 +31,10 @@ class CephCommand(object):
         Prepare ceph command.
         """
         format_str = "--format {}".format(self._format) if self._format else ""
-        timeout_str = "--connect-timeout {}".format(self._timeout) if self._timeout else ""
-        return "{} {} {} {}".format(self._base_command, timeout_str, format_str, command)
+        timeout_str = "--connect-timeout {}".format(self._timeout) \
+                      if self._timeout else ""
+        return "{} {} {} {}".format(
+            self._base_command, timeout_str, format_str, command)
 
     def run(self, host, command):
         """
@@ -42,8 +44,10 @@ class CephCommand(object):
         rcode, stdout, stderr = SSH[host].run(cmd)
 
         if rcode != 0:
-            raise CephCommandErrorException('Ceph command "%s" failed (rcode=%s)' % (cmd, rcode), \
-                cmd=cmd, rcode=rcode, stdout=stdout.decode(), stderr=stderr.decode())
+            raise CephCommandErrorException(
+                'Ceph command "{}" failed (rcode={})'.format(cmd, rcode),
+                cmd=cmd, rcode=rcode, stdout=stdout.decode(),
+                stderr=stderr.decode())
         output = stdout.decode()
         return output
 
@@ -66,11 +70,15 @@ class CephClusterCommand(CephCommand):
         Prepare ceph command.
         """
         format_str = "--format {}".format(self._format) if self._format else ""
-        cluster_str = "--cluster {}".format(self._cluster) if self._cluster else ""
+        cluster_str = "--cluster {}".format(self._cluster) \
+                      if self._cluster else ""
         conf_str = "--conf {}".format(self._conf) if self._conf else ""
-        timeout_str = "--connect-timeout {}".format(self._timeout) if self._timeout else ""
+        timeout_str = "--connect-timeout {}".format(self._timeout) \
+                      if self._timeout else ""
 
-        cmd = "{} {} {} {} {} {}".format(self._base_command, timeout_str, format_str, cluster_str, conf_str, command)
+        cmd = "{} {} {} {} {} {}".format(
+            self._base_command, timeout_str, format_str, cluster_str,
+            conf_str, command)
         return cmd
 
 
@@ -92,11 +100,13 @@ class RadosCommand(CephCommand):
         """
         Prepare rados command.
         """
-        cluster_str = "--cluster {}".format(self._cluster) if self._cluster else ""
+        cluster_str = "--cluster {}".format(self._cluster) \
+                      if self._cluster else ""
         conf_str = "--conf {}".format(self._conf) if self._conf else ""
         format_str = "--format {}".format(self._format) if self._format else ""
 
-        cmd = "{} {} {} {} {}".format(self._base_command, format_str, cluster_str, conf_str, command)
+        cmd = "{} {} {} {} {}".format(
+            self._base_command, format_str, cluster_str, conf_str, command)
         return cmd
 
 
@@ -119,12 +129,15 @@ class RBDCommand(CephCommand):
         """
         Prepare rbd command.
         """
-        cluster_str = "--cluster {}".format(self._cluster) if self._cluster else ""
+        cluster_str = "--cluster {}".format(self._cluster) \
+                      if self._cluster else ""
         conf_str = "--conf {}".format(self._conf) if self._conf else ""
         format_str = "--format {}".format(self._format) if self._format else ""
         pool_str = "--pool {}".format(self._pool) if self._pool else ""
 
-        cmd = "{} {} {} {} {} {}".format(self._base_command, format_str, cluster_str, conf_str, pool_str, command)
+        cmd = "{} {} {} {} {} {}".format(
+            self._base_command, format_str, cluster_str,
+            conf_str, pool_str, command)
         return cmd
 
 
@@ -133,7 +146,8 @@ class CephCommandErrorException(Exception):
     Ceph command error exception.
     """
 
-    def __init__(self, message, cmd=None, rcode=None, stdout=None, stderr=None):
+    def __init__(self, message, cmd=None, rcode=None, stdout=None,
+                 stderr=None):
         """
         Initialize base exception and save rcode, stdout and stderr.
         """

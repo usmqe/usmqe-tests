@@ -44,10 +44,11 @@ class ApiUser(skyringapi.ApiCommon):
         if req.ok:
             for item in req.json(encoding='unicode'):
                 user = item["username"]
-                pytest.check(all(key in item and json_v[user][key] == item[key]
-                                 for key in json_v[user].keys()),
-                             "User {0} should contain: {1}\n\tUser {0} contains: {2}".
-                             format(user, json_v[user], item))
+                pytest.check(
+                    all(key in item and json_v[user][key] == item[key]
+                        for key in json_v[user].keys()),
+                    "User {0} should contain: {1}\n\tUser {0} contains: {2}".
+                    format(user, json_v[user], item))
             return req.json(encoding='unicode')
 
     def users_replace(self, users, asserts_in=None):
@@ -74,7 +75,7 @@ class ApiUser(skyringapi.ApiCommon):
                            data, cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
-#TODO check json comparision
+# TODO check json comparision
         return req.json(encoding='unicode')
 
     def users_add(self, user_in, asserts_in=None):
@@ -108,13 +109,15 @@ class ApiUser(skyringapi.ApiCommon):
             req = requests.post(pytest.config.getini("USM_APIURL") + "users",
                                 data, cookies=self.cookies, verify=self.verify)
             ApiUser.print_req_info(req)
-            if req.status_code == 500 and req.text == '{"Error":"no email given"}':
+            if req.status_code == 500 and \
+               req.text == '{"Error":"no email given"}':
                 issue = "https://bugzilla.redhat.com/show_bug.cgi?id=1311920"
                 ApiUser.check_response(req, asserts, issue=issue)
             else:
                 ApiUser.check_response(req, asserts)
         else:
-            pytest.check(0, "No valid input data for creating user.", hard=True)
+            pytest.check(
+                0, "No valid input data for creating user.", hard=True)
         return issue
 
     def user(self, user_in, asserts_in=None):
@@ -131,19 +134,21 @@ class ApiUser(skyringapi.ApiCommon):
         asserts = ApiUser.default_asserts.copy()
         if asserts_in:
             asserts.update(asserts_in)
-        req = requests.get(pytest.config.getini("USM_APIURL") + "users/%s" % user_in,
-                           cookies=self.cookies, verify=self.verify)
+        req = requests.get(
+            pytest.config.getini("USM_APIURL") + "users/%s" % user_in,
+            cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
-        if not "json" in asserts:
+        if "json" not in asserts:
             asserts["json"] = ApiUser.user_info.copy()
             asserts["json"]["email"] %= user_in
             asserts["json"]["username"] %= user_in
         real_vals = req.json(encoding='unicode')
-        pytest.check(all(key in real_vals and asserts["json"][key] == real_vals[key]
-                         for key in asserts["json"].keys()),
-                     "Json of added user should contain: {0}\n\tIt contains: {1}".
-                     format(asserts["json"], real_vals))
+        pytest.check(
+            all(key in real_vals and asserts["json"][key] == real_vals[key]
+                for key in asserts["json"].keys()),
+            "Json of added user should contain: {0}\n\tIt contains: {1}".
+            format(asserts["json"], real_vals))
         return req.json(encoding='unicode')
 
     def user_add(self, user_in, asserts_in=None):
@@ -168,8 +173,9 @@ class ApiUser(skyringapi.ApiCommon):
             data["password"] = user_in
         elif isinstance(user_in, dict):
             data = user_in
-        req = requests.put(pytest.config.getini("USM_APIURL") + "users/%s" % data["username"],
-                           json.dumps(data), cookies=self.cookies, verify=self.verify)
+        req = requests.put(
+            pytest.config.getini("USM_APIURL") + "users/%s" % data["username"],
+            json.dumps(data), cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
         return req.json(encoding='unicode') if req.text else None
@@ -188,7 +194,8 @@ class ApiUser(skyringapi.ApiCommon):
         asserts = ApiUser.default_asserts.copy()
         if asserts_in:
             asserts.update(asserts_in)
-        req = requests.delete(pytest.config.getini("USM_APIURL") + "users/%s" % user_in,
-                              cookies=self.cookies, verify=self.verify)
+        req = requests.delete(
+            pytest.config.getini("USM_APIURL") + "users/%s" % user_in,
+            cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)

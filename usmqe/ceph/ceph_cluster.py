@@ -29,7 +29,8 @@ import re
 
 import pytest
 
-from usmceph.commands import CephClusterCommand, RadosCommand, CephCommandErrorException
+from usmceph.commands import CephClusterCommand, RadosCommand,\
+                             CephCommandErrorException
 import usmqe.inventory
 
 
@@ -46,7 +47,8 @@ class CephCommon(object):
         Initialize CephCommon object.
 
         Args:
-            cluster: cluster name or dict with ``name`` key or :py:class:`CephCommon`/:py:class:`CephCluster` object
+            cluster: cluster name or dict with ``name`` key or
+                     :py:class:`CephCommon`/:py:class:`CephCluster` object
         """
         if isinstance(cluster, CephCommon):
             self._name = cluster.name
@@ -64,7 +66,8 @@ class CephCommon(object):
         """
         return self._name
 
-    def run_on_mon(self, command, mons=None, executor=None, parse_output=json.loads):
+    def run_on_mon(self, command, mons=None, executor=None,
+                   parse_output=json.loads):
         """
         Run command on ceph monitor
         """
@@ -83,12 +86,15 @@ class CephCommon(object):
             break
         else:
             if last_error:
-                raise CephCommandErrorException("Problem with ceph command '%s'.\n" \
-                    "Last command rcode: %s, stdout: %s, stderr: %s" % \
-                    (last_error.cmd, last_error.rcode, last_error.stdout, last_error.stderr))
+                raise CephCommandErrorException(
+                    "Problem with ceph command '%s'.\n"
+                    "Last command rcode: %s, stdout: %s, stderr: %s" %
+                    (last_error.cmd, last_error.rcode,
+                     last_error.stdout, last_error.stderr))
             else:
-                raise CephCommandErrorException("Problem with ceph command '%s'.\n" \
-                    "Possible problem is no ceph-mon (ceph_mon list: %s)" % \
+                raise CephCommandErrorException(
+                    "Problem with ceph command '%s'.\n"
+                    "Possible problem is no ceph-mon (ceph_mon list: %s)" %
                     (command, usmqe.inventory.role2hosts("ceph_mon")))
 
         if parse_output:
@@ -106,7 +112,8 @@ class CephCluster(CephCommon):
         Initialize CephCluster object.
 
         Args:
-            cluster: cluster name or dict with ``name`` key or :py:class:`CephCommon`/:py:class:`CephCluster` object
+            cluster: cluster name or dict with ``name`` key or
+                     :py:class:`CephCommon`/:py:class:`CephCluster` object
         """
         super(CephCluster, self).__init__(cluster)
         self._osd = None
@@ -134,7 +141,8 @@ class CephCluster(CephCommon):
     @property
     def rados(self):
         """
-        Property rados returns initialized :py:class:`CephClusterStorage` object.
+        Property rados returns initialized
+        :py:class:`CephClusterStorage` object.
         """
         if not self._rados:
             self._rados = CephClusterStorage(self)
@@ -144,7 +152,8 @@ class CephCluster(CephCommon):
 #    """
 #    Run ceph command: foo
 #
-#    Returns: dictionary parsed json from `ceph --format json --cluster CLUSTERNAME foo` command.
+#    Returns: dictionary parsed json from
+#             `ceph --format json --cluster CLUSTERNAME foo` command.
 #
 #    Example output (only root elements):
 #
@@ -152,12 +161,14 @@ class CephCluster(CephCommon):
 #    return self.run_on_mon('foo')
 
     # pylint - allow short method name
-    def df(self): # pylint: disable=C0103
+    def df(self):  # pylint: disable=C0103
         """
         Run ceph command: ``df``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME df`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME df``
+                        command
 
         Example output (only root elements)::
 
@@ -171,7 +182,9 @@ class CephCluster(CephCommon):
         Run ceph command: ``fsid``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME fsid`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME fsid``
+                        command
 
         Example output (only root elements)::
 
@@ -186,7 +199,9 @@ class CephCluster(CephCommon):
         Run ceph command: ``health``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME health`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME health``
+                        command
 
         Example output (only root elements)::
 
@@ -203,7 +218,9 @@ class CephCluster(CephCommon):
         Run ceph command: ``mon_status``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME mon_status`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME mon_status``
+                        command
 
         Example output (only root elements)::
 
@@ -224,7 +241,9 @@ class CephCluster(CephCommon):
         Run ceph command: ``quorum_status``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME quorum_status`` command
+            dictionary: parsed json from
+                ``ceph --format json --cluster CLUSTERNAME quorum_status``
+                command
 
         Example output (only root elements)::
 
@@ -241,7 +260,9 @@ class CephCluster(CephCommon):
         Run ceph command: ``report``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME report`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME report``
+                        command
 
         Example output (only root elements)::
 
@@ -278,7 +299,9 @@ class CephCluster(CephCommon):
         Run ceph command: ``status``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME status`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME status``
+                        command
 
         Example output (only root elements)::
 
@@ -300,8 +323,9 @@ class CephClusterMon(CephCommon):
     class representing ceph mon
     """
 
-    re_ceph_mon_stat_outpt = re.compile(r'.* (?P<count>[0-9]*) mons at {(?P<mons>[^}]*)}, ' \
-        r'election epoch (?P<epoch>[0-9]*), ' \
+    re_ceph_mon_stat_outpt = re.compile(
+        r'.* (?P<count>[0-9]*) mons at {(?P<mons>[^}]*)}, '
+        r'election epoch (?P<epoch>[0-9]*), '
         r'quorum (?P<quorum_num>[0-9,]*) (?P<quorum>[a-z,]*)')
 
     def stat(self):
@@ -309,7 +333,9 @@ class CephClusterMon(CephCommon):
         Run ceph command: ``mon stat``
 
         Returns:
-            dictionary: parsed output from ``ceph --format json --cluster CLUSTERNAME mon stat`` command
+            dictionary: parsed output from
+                        ``ceph --format json --cluster CLUSTERNAME mon stat``
+                        command
 
         Example output::
 
@@ -336,11 +362,11 @@ class CephClusterMon(CephCommon):
             result = CephClusterMon.re_ceph_mon_stat_outpt.match(cmd_output)
             result = result.groupdict()
 
-            output = { \
-                'mons': {}, \
-                'count': result['count'], \
-                'epoch': result['epoch'], \
-                'quorum_num': result['quorum_num'].split(','), \
+            output = {
+                'mons': {},
+                'count': result['count'],
+                'epoch': result['epoch'],
+                'quorum_num': result['quorum_num'].split(','),
                 'quorum': result['quorum'].split(',')}
             for mon in result['mons'].split(','):
                 name, addr = mon.split('=')
@@ -354,7 +380,9 @@ class CephClusterMon(CephCommon):
         Run ceph command: ``mon dump``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME mon dump`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME mon dump``
+                        command
 
         Example output::
 
@@ -377,12 +405,14 @@ class CephClusterOsd(CephCommon):
     class representing ceph osd
     """
     # pylint - allow short method name
-    def df(self): # pylint: disable=C0103
+    def df(self):  # pylint: disable=C0103
         """
         Run ceph command: ``osd df``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME osd df`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME osd df``
+                        command
 
         Example output (only root elements)::
 
@@ -417,7 +447,9 @@ class CephClusterOsd(CephCommon):
         Run ceph command: ``osd dump``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME osd dump`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME osd dump``
+                        command
 
         Example output (only root elements)::
 
@@ -445,7 +477,9 @@ class CephClusterOsd(CephCommon):
         Run ceph command: ``osd find <osd_id>``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME osd find <osd_id>`` command
+            dictionary: parsed json from
+                ``ceph --format json --cluster CLUSTERNAME osd find <osd_id>``
+                command
 
         Example output (only root elements)::
 
@@ -454,16 +488,19 @@ class CephClusterOsd(CephCommon):
               'osd': 1,}
         """
         # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        #return self.run_on_mon('osd find {}'.format(osd_id))
-        return self.run_on_mon('osd find {} && echo || (echo; false)'.format(osd_id))
+        # return self.run_on_mon('osd find {}'.format(osd_id))
+        return self.run_on_mon('osd find {} && echo || (echo; false)'.
+                               format(osd_id))
 
     # pylint - allow short method name
-    def ls(self, epoch=None): # pylint: disable=C0103
+    def ls(self, epoch=None):  # pylint: disable=C0103
         """
         Run ceph command: ``osd ls``
 
         Returns:
-            list: parsed json from ``ceph --format json --cluster CLUSTERNAME osd ls [epoch]`` command
+            list: parsed json from
+                  ``ceph --format json --cluster CLUSTERNAME osd ls [epoch]``
+                  command
 
         Example output::
 
@@ -477,7 +514,9 @@ class CephClusterOsd(CephCommon):
         Run ceph command: ``osd lspools``
 
         Returns:
-            list: parsed json from ``ceph --format json --cluster CLUSTERNAME osd lspools`` command
+            list: parsed json from
+                  ``ceph --format json --cluster CLUSTERNAME osd lspools``
+                  command
 
         Example output (only root elements)::
 
@@ -493,7 +532,10 @@ class CephClusterOsd(CephCommon):
         Run ceph command: ``osd metadata <osd_id>``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME osd metadata <osd_id>`` command
+            dictionary: parsed json from
+                ``ceph --format json --cluster CLUSTERNAME osd
+                  metadata <osd_id>``
+                command
 
         Example output (only root elements)::
 
@@ -518,15 +560,18 @@ class CephClusterOsd(CephCommon):
               'osd_objectstore': 'filestore',}
         """
         # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        #return self.run_on_mon('osd metadata {}'.format(osd_id))
-        return self.run_on_mon('osd metadata {} && echo || (echo; false)'.format(osd_id))
+        # return self.run_on_mon('osd metadata {}'.format(osd_id))
+        return self.run_on_mon(
+            'osd metadata {} && echo || (echo; false)'.format(osd_id))
 
     def perf(self):
         """
         Run ceph command: ``osd perf``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME osd perf`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME osd perf``
+                        command
 
         Example output (only root elements)::
 
@@ -543,7 +588,9 @@ class CephClusterOsd(CephCommon):
         Run ceph command: ``osd stat``
 
         Returns:
-            dictionary: parsed output from ``ceph --format json --cluster CLUSTERNAME osd stat`` command
+            dictionary: parsed output from
+                        ``ceph --format json --cluster CLUSTERNAME osd stat``
+                        command
 
         Example output::
 
@@ -564,7 +611,9 @@ class CephClusterOsd(CephCommon):
         Run ceph command: ``osd tree``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME osd tree`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME osd tree``
+                        command
 
         Example output (only root elements)::
 
@@ -621,7 +670,8 @@ class CephClusterStorage(CephCommon):
         Run ceph command: ``lspools``
 
         Returns:
-            list: parsed json from ``ceph --format json --cluster CLUSTERNAME lspools`` command
+            list: parsed json from
+                  ``ceph --format json --cluster CLUSTERNAME lspools`` command
 
         Example output::
 
@@ -630,12 +680,13 @@ class CephClusterStorage(CephCommon):
         return self.run_on_mon('lspools', parse_output=lambda x: x.split())
 
     # pylint - allow short method name
-    def df(self, pool=None): # pylint: disable=C0103
+    def df(self, pool=None):  # pylint: disable=C0103
         """
         Run ceph command: ``df``
 
         Returns:
-            dictionary: parsed json from ``ceph --format json --cluster CLUSTERNAME df`` command
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME df`` command
 
         Example output (only root elements)::
 
@@ -647,5 +698,6 @@ class CephClusterStorage(CephCommon):
         """
         pool_str = "--pool {}".format(pool) if pool else ""
         # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        #return self.run_on_mon('df')
-        return self.run_on_mon('df {} && echo || (echo; false)'.format(pool_str))
+        # return self.run_on_mon('df')
+        return self.run_on_mon('df {} && echo || (echo; false)'.
+                               format(pool_str))
