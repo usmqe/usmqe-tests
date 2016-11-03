@@ -7,7 +7,7 @@ import json
 import requests
 import pytest
 
-from api.skyringapi import skyringapi
+from usmqe.api.skyringapi import skyringapi
 
 LOGGER = pytest.get_logger("skyringapi.user", module=True)
 

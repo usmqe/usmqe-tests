@@ -29,8 +29,8 @@ import re
 
 import pytest
 
-from usmceph.commands import CephClusterCommand, RadosCommand,\
-                             CephCommandErrorException
+from usmqe.ceph.commands import CephClusterCommand, RadosCommand,\
+                                CephCommandErrorException
 import usmqe.inventory
 
 
