@@ -6,7 +6,6 @@
 import pytest
 
 import json
-import sys
 
 from usmqe.api.skyringapi import user as skyringapi_user
 
@@ -40,7 +39,7 @@ class TestApiUsers():
     Description
     ===========
     """
-    #@pytest.mark.xfail(reason='proste proto')
+    # @pytest.mark.xfail(reason='proste proto')
     def test_login_valid(self):
         """@usmid api/user.login_valid
         Positive login test.
@@ -154,11 +153,11 @@ class TestApiUsers():
 
             "Error code **401** with data ``{"Error": "Unauthorized"}`` is returned.
         """
-        test.users(asserts_in={ \
+        test.users(asserts_in={
             "cookies": None,
-            "json": json.loads('{"Error": "Unauthorized"}'), \
-            "ok": False, \
-            "reason": 'Unauthorized', \
+            "json": json.loads('{"Error": "Unauthorized"}'),
+            "ok": False,
+            "reason": 'Unauthorized',
             "status": 401})
 
     """@pylatest api/user.get
@@ -225,8 +224,9 @@ class TestApiUsers():
 
             It should return error about unknown user.
         """
-        users = ('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', \
-            '11111111-2222-3333-4444-555555555555', \
+        users = (
+            'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+            '11111111-2222-3333-4444-555555555555',
             'abcdef01-2345-6789-abcd-ef1234567890')
 
         for user in users:
@@ -278,7 +278,7 @@ class TestApiUsers():
 
             Return code should be (FIXME: 201, 202)**???** (current 200).
         """
-        #add test user
+        # add test user
         test.users_add('test2')
         """@pylatest api/user.add_delete
         .. test_step:: 3
