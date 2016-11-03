@@ -8,4 +8,10 @@ setup(
     name='usmqe-tests',
     license='GNU GPL v3.0',
     packages=find_packages(exclude=['doc', 'usmqe_tests', 'conf']),
+    install_requires=[
+        # 'pytest',
+        'plumbum',
+        'requests',
+        # 'mrglog',
+        ],
     )

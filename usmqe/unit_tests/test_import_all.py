@@ -20,7 +20,7 @@ def list_submodules(module_path, module_prefix):
 
 
 # parametrize makes this case run for every submodule in webstr module
-@pytest.mark.parametrize("module", list_submodules("usmqe", "usmqe."))
+@pytest.mark.parametrize("module", list_submodules("../usmqe", "usmqe."))
 def test_import(module):
     """
     Just try to import given module.
