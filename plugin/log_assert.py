@@ -168,3 +168,14 @@ def pytest_runtest_makereport(item, call):
         del pytest._assumption_locals[:]
     if hasattr(pytest, "_assumption_locals"):
         del pytest._assumption_locals[:]
+
+
+get_logger = mrglog.get_logger
+
+
+def set_logger(logger=None):
+    global CHECKLOGGER
+    if logger is not None:
+        CHECKLOGGER = logger
+    else:
+        CHECKLOGGER = get_logger("usm_assume", module=True)
