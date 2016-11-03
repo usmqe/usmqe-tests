@@ -21,6 +21,20 @@ In the root dir of the repository, there are also:
 * ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
   details on unit tests of ``usmqe`` module below)
 
+
+Code style
+----------
+
+All python code in this repository must be `python 3`_ compatible. Moreover
+no python 2 compatibility layers or extensions should be added into the
+code, with the exceptions of pytest plugins (code in ``plugin`` directory).
+
+We follow `PEP 8`_ with a single exception regarding the maximum line
+length: we use 80 character as a soft limit so that one could break this
+rule if readability is affected, assuming the line length doesn't go over
+100 characters (the hard limit).
+
+
 Setup
 -----
 
@@ -59,3 +73,5 @@ usmqe-tests is free and open source software.
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`Tendrl project`: https://github.com/Tendrl/
 .. _`usmqe-setup`: https://github.com/Tendrl/usmqe-setup
+.. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
+.. _`python 3`: https://docs.python.org/3/whatsnew/3.0.html
