@@ -24,15 +24,9 @@
 # THE SOFTWARE.
 
 
-from collections import OrderedDict
-from datetime import datetime
-import copy
 import inspect
-import logging
 import os
 import os.path
-import socket
-import sys
 
 import pytest
 import mrglog
@@ -45,8 +39,8 @@ except ImportError:
 CHECKLOGGER = None
 
 
-
 """ pytest conditional assert """
+
 
 def pytest_namespace():
     """
@@ -71,12 +65,14 @@ def pytest_namespace():
         if CHECKLOGGER is None:
             set_logger()
         # get filename, line, and context
-        (frame, filename, line, funcname, contextlist) = inspect.stack()[1][0:5]
+        (frame, filename, line, funcname, contextlist) = \
+            inspect.stack()[1][0:5]
         filename = os.path.relpath(filename)
         context = contextlist[0].lstrip() if not msg else msg
         if not expr:
             # format entry
-            entry = "{filename}:{line}: AssumptionFailure\n\t{context}".format(**locals())
+            entry = "{filename}:{line}: "\
+                    "AssumptionFailure\n\t{context}".format(**locals())
             # add entry
             if pytest.config.option.showlocals:
                 # Debatable whether we should display locals for
@@ -97,7 +93,8 @@ def pytest_namespace():
                 pytest.fail(entry)
         else:
             # format entry
-            entry = "{filename}:{line}: AssumptionPassed\n\t{context}".format(**locals())
+            entry = "{filename}:{line}: "\
+                    "AssumptionPassed\n\t{context}".format(**locals())
             # track passed ones too
             # add entry
             CHECKLOGGER.passed(entry)
@@ -114,8 +111,8 @@ def pytest_runtest_makereport(item, call):
     Check if the test failed, if it didn't fail, and there are
     failed assumptions, fail the test & output the assumptions as the longrepr.
 
-    If the test already failed, then just add in failed assumptions to a new section
-    in the longrepr.
+    If the test already failed, then just add in failed assumptions
+    to a new section in the longrepr.
 
     :param item:
     :param call:
@@ -129,8 +126,8 @@ def pytest_runtest_makereport(item, call):
     assumption_locals = getattr(pytest, "_assumption_locals", [])
     evalxfail = getattr(item, '_evalxfail', None)
     if call.when == "call" and (failed_assumptions or waived_assumptions):
-        if (evalxfail and evalxfail.wasvalid() and evalxfail.istrue())\
-            or waived_assumptions:
+        if (evalxfail and evalxfail.wasvalid() and evalxfail.istrue()) or\
+           waived_assumptions:
             report.outcome = "skipped"
             if evalxfail and evalxfail.wasvalid() and evalxfail.istrue():
                 report.wasxfail = evalxfail.getexplanation()
@@ -140,18 +137,23 @@ def pytest_runtest_makereport(item, call):
             summary = 'Failed Assumptions: {0}, '\
                 'Passed Assumption: {1}, '\
                 'Waived Assumption: {2}'.format(
-                len(failed_assumptions),
-                len(passed_assumptions),
-                len(waived_assumptions))
+                    len(failed_assumptions),
+                    len(passed_assumptions),
+                    len(waived_assumptions))
             if report.longrepr:
                 # Do we want to have the locals displayed here as well?
-                # I'd say no, because the longrepr would already be displaying locals.
-                report.sections.append((summary, "\n".join(failed_assumptions)))
+                # I'd say no, because the longrepr
+                # would already be displaying locals.
+                report.sections.append((
+                    summary, "\n".join(failed_assumptions)))
             else:
                 if assumption_locals:
-                    assume_data = zip(failed_assumptions + waived_assumptions, assumption_locals)
-                    longrepr = ["{0}\n{1}\n\n".format(assumption, "\n".join(flocals))
-                                for assumption, flocals in assume_data]
+                    assume_data = zip(
+                        failed_assumptions + waived_assumptions,
+                        assumption_locals)
+                    longrepr = [
+                        "{0}\n{1}\n\n".format(assumption, "\n".join(flocals))
+                        for assumption, flocals in assume_data]
                 else:
                     longrepr = ["\n\n".join(failed_assumptions)]
                 longrepr.append("-" * 60)
