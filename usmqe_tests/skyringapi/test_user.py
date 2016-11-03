@@ -1,5 +1,3 @@
-# vim: set colorcolumn=120:
-
 """ REST API test suite - user
 
 """
