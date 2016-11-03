@@ -7,6 +7,5 @@ Note that `pytest good practices`_ should be followed, which means that:
 
 * this directory tree should not contain any ``__init__.py`` files
 * python files with tests should start with ``test_`` prefix
-* directories with tests should start with ``test_`` prefix as well
  
 .. _`pytest good practices`: http://docs.pytest.org/en/latest/goodpractices.html
