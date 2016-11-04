@@ -1,0 +1,4 @@
+pytest
+plumbum
+requests
+mrglog

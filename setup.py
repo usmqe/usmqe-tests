@@ -1,16 +1,6 @@
-# setup.py file for tox to be able to run unit tests
-
+# Dummy setup.py file for tox to be happy enough to run unit tests.
+# It's actually not used for installation or anything else.
 
 from setuptools import setup
 
-
-setup(
-    name='usmqe-tests',
-    license='GNU GPL v3.0',
-    packages=['usmqe'],
-    classifiers=[
-        'Topic :: Software Development :: Quality Assurance',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        ],
-    )
+setup(name='usmqe-tests')
