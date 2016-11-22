@@ -79,7 +79,8 @@ future (in the qe_server playbook), if we check that it doesn't break anything
 
 The last step is to go into `~/usmqe-tests` directory and configure the pytest
 there (see `conf` directory for examples). Then to run the integration tests,
-one runs `py.test` there.
+one runs `py.test` there. TODO: link to other files (both topics deserves a
+separate document with description and full example).
 
 
 .. _`virt-builder`: http://libguestfs.org/virt-builder.1.html
