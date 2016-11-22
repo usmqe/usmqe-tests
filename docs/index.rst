@@ -6,11 +6,14 @@
 Welcome to usmqe-tests's documentation!
 =======================================
 
+USM QE tests are concerned with automated testing of `tendrl.org`_ project.
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   qe_server_setup.rst
 
 
 Indices and tables
@@ -20,3 +23,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+.. _`tendrl.org`: http://tendrl.org/
