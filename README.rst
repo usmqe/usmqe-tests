@@ -9,6 +9,7 @@ Overview of the repository structure
 
 Main top level directories:
 
+* ``docs``: documentation of usmqe integration tests and it's setup
 * ``conf``: configuration files, only examples are commited in the repository
 * ``plugin``: custom pytest plugins
 * ``usmqe``: main usmqe python module
@@ -51,6 +52,9 @@ For this reason, all post installation and test setup configuration steps
 are automated via ansible playbooks and stored in a separate `usmqe-setup`_
 repository. You need to deploy test machines using playbooks from there.
 
+For more details, see setup documents in ``docs`` directory (eg. `Setup of QE
+Server role`_).
+
 
 Unit Tests of usmqe module
 --------------------------
@@ -75,3 +79,4 @@ usmqe-tests is free and open source software.
 .. _`usmqe-setup`: https://github.com/Tendrl/usmqe-setup
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`python 3`: https://docs.python.org/3/whatsnew/3.0.html
+.. _`Setup of QE Server role`: https://github.com/Tendrl/usmqe-tests/blob/master/docs/qe_server_setup.rst
