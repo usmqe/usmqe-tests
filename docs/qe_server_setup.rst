@@ -59,23 +59,36 @@ Then you can run the `qe_server` playbook::
 When the ansible playbook run finishes, you can login to the usmqe account
 on the qe server for the first time::
 
-    # su - usmqe
-    $ ls
+    $ ssh root@10.34.126.6
+    [root@qeserver ~]# su - usmqe
+    [usmqe@qeserver ~]$ ls
     usmqe-setup  usmqe-tests
 
-To run integration tests, you would need to enable rh-python35 software
-collection and you need to remember to that every time::
+Note that ``rh-python35`` software collection is enabled by default in
+``~/.bashrc`` file of usmqe user account and that all requirements (eg. pytest,
+mrglog, ...) are already available::
 
-    $ scl enable rh-python35 bash   
-    $ python --version
+    [usmqe@qeserver ~]$ python --version
     Python 3.5.1
-    $ py.test --version
+    [usmqe@qeserver ~]$ py.test --version
     This is pytest version 3.0.4, imported from /home/usmqe/.local/lib/python3.5/site-packages/pytest.py
-    $ which mrglog_demo.py 
+    [usmqe@qeserver ~]$ which mrglog_demo.py
     ~/.local/bin/mrglog_demo.py
 
-TODO: we may enable the collection in the bashrc of the usmqe user in the
-future (in the qe_server playbook), if we check that it doesn't break anything
+Also note that even though the default python for usmqe user is ``python3.5``
+from the software collection, one can still run other system utilities which
+are running on system default python2::
+
+    [usmqe@qeserver ~]$ ansible --version
+    ansible 2.1.2.0
+      config file = /etc/ansible/ansible.cfg
+      configured module search path = Default w/o overrides
+
+This is the case because all python tools packaged in Fedora/Red Hat/CentOS
+uses explicit shebang::
+
+    [usmqe@qeserver ~]$ head -1 /usr/bin/ansible
+    #!/usr/bin/python2
 
 The last step is to go into `~/usmqe-tests` directory and configure the pytest
 there (see `conf` directory for examples). Then to run the integration tests,
