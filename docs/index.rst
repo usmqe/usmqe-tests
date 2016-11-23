@@ -50,11 +50,9 @@ Contents
 
    usmqe_team.rst
    directory_structure_overview.rst
-   related_projects.rst
    qe_server_setup.rst
    test_configuration.rst
    test_execution.rst
-
 
 
 License

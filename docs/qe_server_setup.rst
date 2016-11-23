@@ -1,3 +1,5 @@
+.. _qe-server-label:
+
 ====================
  Setup of QE Server
 ====================
