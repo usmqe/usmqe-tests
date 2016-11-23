@@ -48,6 +48,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   usmqe_team.rst
    directory_structure_overview.rst
    related_projects.rst
    qe_server_setup.rst
