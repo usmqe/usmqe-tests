@@ -1,15 +1,19 @@
-=========================
- USMQE Integration Tests
-=========================
+==========================
+ USM QE Integration Tests
+==========================
 
-This repository contains integration test code of `Tendrl project`_.
+USM QE tests are concerned with automated integration testing of `Tendrl
+project`_.
+
+This README file provides just an basic overview, for more details, check the
+Sphinx based documentation in the ``docs`` directory.
 
 Overview of the repository structure
 ------------------------------------
 
 Main top level directories:
 
-* ``docs``: documentation of usmqe integration tests and it's setup
+* ``docs``: documentation (sphinx) of usmqe integration tests and it's setup
 * ``conf``: configuration files, only examples are commited in the repository
 * ``plugin``: custom pytest plugins
 * ``usmqe``: main usmqe python module
@@ -75,7 +79,7 @@ usmqe-tests is free and open source software.
 
 
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
-.. _`Tendrl project`: https://github.com/Tendrl/
+.. _`Tendrl project`: http://tendrl.org/
 .. _`usmqe-setup`: https://github.com/Tendrl/usmqe-setup
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`python 3`: https://docs.python.org/3/whatsnew/3.0.html
