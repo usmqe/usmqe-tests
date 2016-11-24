@@ -1,19 +1,21 @@
-=========================
- Setup of QE Server role
-=========================
+.. _qe-server-label:
 
-QE Server is a machine where usmqe-tests (along with all it's dependencies) are
-installed and where the integration tests are executed from.
+====================
+ Setup of QE Server
+====================
+
+QE Server is machine where ``usmqe-tests`` (along with all it's dependencies)
+are installed and where the integration tests are executed from.
 
 Requirements
 ============
 
-QE Server role requires a RHEL/CentOS 7 machine.
+QE Server must be a RHEL/CentOS 7 machine.
 
 QE Server Playbook
 ==================
 
-To unify and automate the deployment of qe server machines, usmqe team
+To unify and automate the deployment of QE Server machines, usmqe team
 maintains `qe_server.yml`_ playbook in the `usmqe-setup repository`_. You
 should use this playbook so that the same qe enviroment is used across all
 qe machines.
@@ -22,29 +24,37 @@ qe machines.
 Quick Example of QE Server deployment
 =====================================
 
-You need a CentOS 7 machine for the qe server. We are going to quickly create 
+You need a CentOS 7 machine for the QE Server. We are going to quickly create 
 one via `virt-builder`_ tool.
 
 First we build a vm image (uploading ssh authorized keys like this would make
 the machine accessible for everyone who has keys on the machine you are running
-this command)::
+this command):
+
+.. code-block:: console
 
     $ virt-builder centos-7.2 -o qe-server.qcow2 --size 15G --format qcow2 --mkdir /root/.ssh  --chmod 0700:/root/.ssh  --upload /root/.ssh/authorized_keys:/root/.ssh/authorized_keys --selinux-relabel --update
 
 Then we import the new image into libvirt, booting the new virtual machine for
-the first time::
+the first time:
+
+.. code-block:: console
 
     # virt-install --import --name mbukatov-qe-server --ram 2048 --os-variant rhel7 --disk path=/var/lib/libvirt/images/qe-server.qcow2,format=qcow2 --network default --noautoconsole
 
 When the new machine is ready, specify an ip address or fqdn of the new qe
-server in the inventory file::
+server in the inventory file:
+
+.. code-block:: console
 
     $ cat qe.hosts
     [qe_server]
     10.34.126.60
 
 And make sure you have ssh configured properly (this includes ssh keys and
-local ssh client configuration) so that ansible can work with the machine::
+local ssh client configuration) so that ansible can work with the machine:
+
+.. code-block:: console
 
 	$ ansible -i qe.hosts -m ping all
 	10.34.126.60 | SUCCESS => {
@@ -52,12 +62,16 @@ local ssh client configuration) so that ansible can work with the machine::
 		"ping": "pong"
 	}
 
-Then you can run the `qe_server` playbook::
+Then you can run the `qe_server` playbook:
+
+.. code-block:: console
 
     $ ansible-playbook -i qe.hosts qe_server.yml
 
 When the ansible playbook run finishes, you can login to the usmqe account
-on the qe server for the first time::
+on the QE Server for the first time:
+
+.. code-block:: console
 
     $ ssh root@10.34.126.6
     [root@qeserver ~]# su - usmqe
@@ -66,7 +80,9 @@ on the qe server for the first time::
 
 Note that ``rh-python35`` software collection is enabled by default in
 ``~/.bashrc`` file of usmqe user account and that all requirements (eg. pytest,
-mrglog, ...) are already available::
+mrglog, ...) are already available:
+
+.. code-block:: console
 
     [usmqe@qeserver ~]$ python --version
     Python 3.5.1
@@ -77,7 +93,9 @@ mrglog, ...) are already available::
 
 Also note that even though the default python for usmqe user is ``python3.5``
 from the software collection, one can still run other system utilities which
-are running on system default python2::
+are running on system default python2:
+
+.. code-block:: console
 
     [usmqe@qeserver ~]$ ansible --version
     ansible 2.1.2.0
@@ -85,7 +103,9 @@ are running on system default python2::
       configured module search path = Default w/o overrides
 
 This is the case because all python tools packaged in Fedora/Red Hat/CentOS
-uses explicit shebang::
+uses explicit shebang:
+
+.. code-block:: console
 
     [usmqe@qeserver ~]$ head -1 /usr/bin/ansible
     #!/usr/bin/python2
