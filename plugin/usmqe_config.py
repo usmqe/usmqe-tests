@@ -83,7 +83,3 @@ def load_config():
                         pytest.config._inicache[name] = value
                     else:
                         pytest.config._inicache[name] = override_value
-
-        if not pytest.config.getini("USM_APIURL"):
-            pytest.config._inicache["USM_APIURL"] = \
-                "{}/api/v1/".format(pytest.config.getini("USM_URL"))
