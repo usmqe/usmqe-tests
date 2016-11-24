@@ -64,7 +64,7 @@ def load_config():
         conf = ConfigParser()
         conf.read(pytest.config.getini("USM_CONFIG"))
 
-        for section in ('raut', 'usm', 'ldap'):
+        for section in ('webstr', 'usm', 'ldap'):
             if section in conf.sections():
                 for key, value in conf.items(section):
                     if section == 'usm':
