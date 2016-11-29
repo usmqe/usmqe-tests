@@ -20,13 +20,6 @@ def pytest_addoption(parser):
     # defaults are specified in root pytest.ini file
     parser.addini('USM_CONFIG', 'USM configuration')
     parser.addini('USM_HOST_CONFIG', 'USM host configuration')
-    parser.addini('USM_USERNAME', 'USM username for login')
-    parser.addini('USM_PASSWORD', 'USM password for login')
-    parser.addini('USM_WEB_URL', 'USM url for web')
-    parser.addini('USM_API_URL', 'USM url for api')
-    parser.addini('USM_LOG_LEVEL', 'USM log test level')
-    parser.addini('USM_KEYFILE', 'USM key file for passwordless ssh')
-    parser.addini('USM_CA_CERT', 'USM use CA certificate', type='bool')
 
 
 @pytest.fixture(autouse=True, scope="session")
