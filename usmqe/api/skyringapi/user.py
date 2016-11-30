@@ -31,7 +31,7 @@ class ApiUser(skyringapi.ApiCommon):
             })
         if asserts_in:
             asserts.update(asserts_in)
-        req = requests.get(pytest.config.getini("USM_APIURL") + "users/",
+        req = requests.get(pytest.config.getini("usm_api_url") + "users/",
                            cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
@@ -71,7 +71,7 @@ class ApiUser(skyringapi.ApiCommon):
             data[-1]["email"] %= usr
             data[-1]["password"] = usr
         data = json.dumps(data)
-        req = requests.put(pytest.config.getini("USM_APIURL") + "users",
+        req = requests.put(pytest.config.getini("usm_api_url") + "users",
                            data, cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
@@ -106,7 +106,7 @@ class ApiUser(skyringapi.ApiCommon):
         issue = None
         if data:
             data = json.dumps(data)
-            req = requests.post(pytest.config.getini("USM_APIURL") + "users",
+            req = requests.post(pytest.config.getini("usm_api_url") + "users",
                                 data, cookies=self.cookies, verify=self.verify)
             ApiUser.print_req_info(req)
             if req.status_code == 500 and \
@@ -135,7 +135,7 @@ class ApiUser(skyringapi.ApiCommon):
         if asserts_in:
             asserts.update(asserts_in)
         req = requests.get(
-            pytest.config.getini("USM_APIURL") + "users/%s" % user_in,
+            pytest.config.getini("usm_api_url") + "users/%s" % user_in,
             cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
@@ -174,7 +174,7 @@ class ApiUser(skyringapi.ApiCommon):
         elif isinstance(user_in, dict):
             data = user_in
         req = requests.put(
-            pytest.config.getini("USM_APIURL") + "users/%s" % data["username"],
+            pytest.config.getini("usm_api_url") + "users/%s" % data["username"],
             json.dumps(data), cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
@@ -195,7 +195,7 @@ class ApiUser(skyringapi.ApiCommon):
         if asserts_in:
             asserts.update(asserts_in)
         req = requests.delete(
-            pytest.config.getini("USM_APIURL") + "users/%s" % user_in,
+            pytest.config.getini("usm_api_url") + "users/%s" % user_in,
             cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)
