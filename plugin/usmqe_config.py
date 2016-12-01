@@ -51,7 +51,7 @@ def load_config():
 
     All configuration entries can be overriden by::
 
-        $ py.test -o usm_username=admin2
+        $ py.test -o=usm_username=admin2
     """
     if pytest.config.getini("usm_config"):
         conf = ConfigParser()

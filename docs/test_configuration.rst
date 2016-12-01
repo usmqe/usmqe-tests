@@ -34,12 +34,12 @@ scheme:
   is configured in ``usm_host_config`` option in main ``pytest.ini`` file.
 
 * Moreover ad hoc reconfiguration of any USM QE option is possible via pytest
-  command line option. See an example how to use different *host inventory
-  file* for a particular test run:
+  command line option ``--override-ini``. See an example how to use different
+  *host inventory file* for a particular test run:
 
   .. code-block:: console
 
-      $ py.test -o usm_host_config=conf/mbukatov01.hosts usmqe_tests/foo/bar
+      $ py.test -o=usm_host_config=conf/mbukatov01.hosts usmqe_tests/foo/bar
 
   This is usefull for test runs started by hand during test development or
   debugging.
