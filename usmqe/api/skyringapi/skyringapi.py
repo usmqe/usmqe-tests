@@ -33,7 +33,7 @@ class Api(object):
 
     def __init__(self, copy_from=None):
         self.cookies = {}
-        self.verify = pytest.config.getini("USM_CA_CERT")
+        self.verify = pytest.config.getini("usm_ca_cert")
         if copy_from:
             self.cookies = copy_from.cookies
             self.verify = copy_from.verify
@@ -141,7 +141,7 @@ class ApiCommon(Api):
         if asserts_in:
             asserts.update(asserts_in)
         data = json.dumps({'username': username, 'password': password})
-        req = requests.post(pytest.config.getini("USM_APIURL") + "auth/login",
+        req = requests.post(pytest.config.getini("usm_api_url") + "auth/login",
                             data, verify=self.verify)
         Api.print_req_info(req)
         Api.check_response(req, asserts)
@@ -173,7 +173,7 @@ class ApiCommon(Api):
             })
         if asserts_in:
             asserts.update(asserts_in)
-        req = requests.post(pytest.config.getini("USM_APIURL") + "auth/logout",
+        req = requests.post(pytest.config.getini("usm_api_url") + "auth/logout",
                             cookies=self.cookies, verify=self.verify)
         Api.print_req_info(req)
         Api.check_response(req, asserts)
