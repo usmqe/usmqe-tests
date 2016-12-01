@@ -5,8 +5,9 @@
 USM QE tests are concerned with automated integration testing of `Tendrl
 project`_.
 
-This README file provides just an basic overview, for more details, check the
-Sphinx based documentation in the ``docs`` directory.
+This README file provides just a basic overview. For more details check the
+`usm qe documentation`_ (sphinx sources are stored in the ``docs`` directory of
+this project).
 
 Overview of the repository structure
 ------------------------------------
@@ -80,6 +81,7 @@ usmqe-tests is free and open source software.
 
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`Tendrl project`: http://tendrl.org/
+.. _`usm qe documentation`: https://usmqe-tests.readthedocs.io/en/latest/
 .. _`usmqe-setup`: https://github.com/Tendrl/usmqe-setup
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`python 3`: https://docs.python.org/3/whatsnew/3.0.html
