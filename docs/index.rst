@@ -15,6 +15,19 @@ integration tests, as well as instruction for development of automated test
 cases.
 
 
+Contents
+========
+
+.. toctree::
+   :maxdepth: 2
+
+   usmqe_team.rst
+   directory_structure_overview.rst
+   qe_server_setup.rst
+   test_configuration.rst
+   test_execution.rst
+
+
 Quick Introduction
 ==================
 
@@ -40,19 +53,6 @@ There are 2 kind of test cases:
 
 * `api tests` for `Tendrl REST API`_ (via `requests`_)
 * `web ui tests` for *Tendrl Web Interface* (via `selenium`_)
-
-
-Contents
-========
-
-.. toctree::
-   :maxdepth: 2
-
-   usmqe_team.rst
-   directory_structure_overview.rst
-   qe_server_setup.rst
-   test_configuration.rst
-   test_execution.rst
 
 
 License
