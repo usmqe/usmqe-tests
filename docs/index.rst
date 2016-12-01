@@ -22,7 +22,7 @@ Contents
    :maxdepth: 2
 
    usmqe_team.rst
-   directory_structure_overview.rst
+   repository_overview.rst
    qe_server_setup.rst
    test_configuration.rst
    test_execution.rst

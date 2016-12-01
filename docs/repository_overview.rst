@@ -1,8 +1,8 @@
-=====================================
- Overview of the directory structure
-=====================================
+=================================
+ Overview of USM QE repositories
+=================================
 
-This document contains a brief overview of repository structure of all USM QE
+This document contains a brief overview of structure and purpose of all USM QE
 repositories.
 
 usmqe-tests
@@ -32,3 +32,10 @@ usmqe-setup
 Upstream: https://github.com/Tendrl/usmqe-setup
 
 This repository contains ansible setup automation.
+
+usmqe-centos-ci
+===============
+
+Upstream: https://github.com/mkudlej/usmqe-centos-ci
+
+Machine deployment for Tendrl project in CentOS CI.
