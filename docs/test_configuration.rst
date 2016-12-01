@@ -1,6 +1,6 @@
-===================
- Test Configuraion
-===================
+====================
+ Test Configuration
+====================
 
 Configuration of *USM QE integration tests* project piggibacks/reuses pytest
 ini-options parser, so that all USM QE configuration options could be specified
