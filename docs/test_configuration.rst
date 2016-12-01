@@ -13,7 +13,7 @@ Configuration Scheme
 Since there are `multiple ways to configure pytest`_, we defined the following
 scheme:
 
-* Main *pytest config file* `pytest.ini`_ is commited in the root directory
+* Main *pytest config file* `pytest.ini`_ is committed in the root directory
   of ``usmqe-tests`` repository. This file contains pytest configuration
   and *default values* for most important USM QE configuration options. Under
   normal circumstances (configuring ``usmqe-tests`` before test run) one would
@@ -24,13 +24,13 @@ scheme:
 * *USM QE config file* is expected to contain actual configuration. See an
   example in `conf/example_usm.ini`_, while the actual path of this file is
   configured in ``usm_config`` option in main ``pytest.ini`` file. Any option
-  specified there overrieds the default from main ``pytest.ini``. This is the
+  specified there overrides the default from main ``pytest.ini``. This is the
   file one is supposed to create and change as needed. You need to provide
   all important config values in this file to be able to run the tests.
 
 * Ansible *host inventory file* (see an example in ``conf/example.hosts``),
   which is used both by ansible and by USM QE inventory module to organize
-  machines into groups by it's role in test cluster. Actuall path of this file
+  machines into groups by it's role in test cluster. Actual path of this file
   is configured in ``usm_host_config`` option in main ``pytest.ini`` file.
 
 * Moreover ad hoc reconfiguration of any USM QE option is possible via pytest
@@ -83,7 +83,7 @@ Configuration before test run
 
 We assume that:
 
-* *QE Server mahcine* has been configured as described in
+* *QE Server machine* has been configured as described in
   :ref:`qe-server-label`
 
 * You have *host inventory file* for the test cluster, which has been already
