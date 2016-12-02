@@ -11,6 +11,7 @@ import usmqe
 
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
+from usmqe.api.etcdapi import etcdapi
 
 @pytest.fixture
 def cluster_id():
@@ -108,10 +109,15 @@ def test_cluster_import():
         "Tendrl_context.sds_version": "3.8.3"
         }
 
-#    response = api.call(pattern="/GlusterImportCluster", method="POST", json=post_data)
-#
-#    expected_response = 202
-#    pytest.check( response.status_code == expected_response)
+    response = api.call(pattern="/GlusterImportCluster", method="POST", json=post_data)
+
+    expected_response = 202
+    pytest.check( response.status_code == expected_response)
+
+    etcd_api = etcdapi.ApiCommon()
+    status = etcd_api.wait_for_job(response.json()["job_id"])
+    LOGGER.debug("status: %s" % status)
+    pytest.check( status == "finished")
 
     response = api.call(pattern="GetClusterList", method="GET")
 
@@ -170,6 +176,10 @@ def test_create_volume(cluster_id):
     LOGGER.debug("response: %s" % response.status_code)
     pytest.check( response.status_code == expected_response)
 
+    etcd_api = etcdapi.ApiCommon()
+    status = etcd_api.wait_for_job(response.json()["job_id"])
+    LOGGER.debug("status: %s" % status)
+    pytest.check( status == "finished")
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
     	******************************
@@ -193,10 +203,10 @@ def test_create_volume(cluster_id):
     		"""
     test_gluster = gluster.GlusterCommon()
     xml = test_gluster.run_on_node(command="volume info")
-    vol_name = xml.findtext(".//name")
+    vol_name = xml.findtext("./cliOutput/volInfo/volumes/volume/name")
     LOGGER.debug("res: %s" % vol_name)
 
-    VOLUME_ID = xml.findtext(".//id")
+    VOLUME_ID = xml.findtext("./cliOutput/volInfo/volumes/volume/id")
     expected_vol_name = "Vol_test"
     pytest.check( vol_name == expected_vol_name)
 
@@ -235,6 +245,10 @@ def test_delete_volume(cluster_id, volume_id):
     LOGGER.debug("response: %s" % response.status_code)
     pytest.check( response.status_code == expected_response)
 
+    etcd_api = etcdapi.ApiCommon()
+    status = etcd_api.wait_for_job(response.json()["job_id"])
+    LOGGER.debug("status: %s" % status)
+    pytest.check( status == "finished")
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
     	******************************
