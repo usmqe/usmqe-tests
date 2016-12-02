@@ -53,7 +53,39 @@ class GlusterCommon(object):
         self.cmd = GlusterCommand()
         self.cluster = cluster
 
-    def run_on_node(self, command, nodes=None, executor=None,
+    def run_on_node(self, command, node=None, executor=None,
+                   parse_output=xml.etree.ElementTree.fromstring):
+        """
+        Run command on gluster node
+        """
+        last_error = None
+        output = None
+        if node is None:
+            node = usmqe.inventory.role2hosts("gluster")[0]
+        if not node:
+            raise GlusterCommandErrorException(
+                "Problem with gluster command '%s'.\n"
+                "Possible problem is no gluster-node (gluster_node list: %s)" %
+                (command, usmqe.inventory.role2hosts("gluster")[0]))
+        if not executor:
+            executor = self.cmd
+        try:
+            output = executor.run(node, command)
+        except CephCommandErrorException as err:
+            last_error = err
+        if last_error:
+            raise GlusterCommandErrorException(
+                "Problem with gluster command '%s'.\n"
+                "Last command rcode: %s, stdout: %s, stderr: %s" %
+                (last_error.cmd, last_error.rcode,
+                 last_error.stdout, last_error.stderr))
+
+        if parse_output:
+            output = parse_output(output)
+        return output
+
+
+    def run_on_all_nodes(self, command, nodes=None, executor=None,
                    parse_output=xml.etree.ElementTree.fromstring):
         """
         Run command on gluster node

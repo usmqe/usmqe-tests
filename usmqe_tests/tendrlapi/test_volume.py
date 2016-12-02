@@ -10,7 +10,7 @@ import re
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
 
-volume_id = ""
+VOLUME_ID = ""
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
 Setup
@@ -58,13 +58,13 @@ def test_cluster_import():
     		Return code should be **200** with data ``{"message": "OK"}``.
 
     	"""
-    global volume_id
+    global VOLUME_ID
     api = tendrlapi.ApiCommon()
-    nodes = api.call(pattern="/1.0/GetNodeList")
+    nodes = api.call(pattern="/GetNodeList")
     """@pylatest api/gluster.cluster_import
     	.. test_step:: 2
 
-    		Send POST request to Tendrl API ``APIURL/1.0/GlusterImportCluster
+    		Send POST request to Tendrl API ``APIURL/GlusterImportCluster
 
     	.. test_result:: 2
 
@@ -78,18 +78,32 @@ def test_cluster_import():
 
     	"""
     test_gluster = gluster.GlusterCommon()
-    test_gluster.run_on_node(command="volume info")
+    response = api.call(pattern="/GetNodeList", method="GET")
+
+    expected_response = 200
+    LOGGER.debug("response: %s" % response.status_code)
+    pytest.check( response.status_code == expected_response)
+
+    nodes = [ x["node_id"] for x in response.json() ]
     post_data = {
-        "Node[]":["1b5a0ec3-d660-48cb-bc47-897789a5bc6",
-            "32c96426-9cf5-41b9-84ce-a769c2a1a6f8",
-            "887f9263-414e-480a-8026-4e14b48cfa6a",
-            "007d2e7a-8717-488d-8adb-ffcf58fdab01"],
+        "Node[]": nodes,
         "Tendrl_context.sds_name": "gluster",
         "Tendrl_context.sds_version": "3.8.3"
         }
-    #print( json.loads(gluster.actions(1)).items())
-    #pytest.check( json.loads(gluster.actions(1)).keys() == json.loads(test_string).keys())
-    #pytest.check( test.actions(1) == json.loads(expected_response))
+
+#    response = api.call(pattern="/GlusterImportCluster", method="POST", json=post_data)
+#
+#    expected_response = 202
+#    pytest.check( response.status_code == expected_response)
+
+    response = api.call(pattern="/GetClusterList", method="GET")
+
+    expected_response = 200
+    pytest.check( response.status_code == expected_response)
+
+    CLUSTER_ID = response.json()[0]["cluster_id"]
+    LOGGER.debug("cluster_id: %s" % CLUSTER_ID)
+    pytest.check( response.status_code != None)
 
 """@pylatest api/gluster.volume_attributes
     API-gluster: volume_attributes
@@ -126,14 +140,14 @@ def test_create_volume():
 
     		Return code should be **202** with data ``{"message": "Accepted"}``.
     		"""
-    global volume_id
+    global VOLUME_ID
     cluster_id = "147cac1f-fc1f-4ffb-9bff-97ccc95cdcf7"
     api = tendrlapi.ApiCommon()
     post_data = {
         "Volume.volname":"Vol_test",
         "Volume.bricks":["dhcp-126-104.lab.eng.brq.redhat.com:/mnt/gluster2","dhcp-126-107.lab.eng.brq.redhat.com:/mnt/gluster2"]
     }
-    response = api.call(pattern="/1.0/{}/GlusterCreateVolume".format(cluster_id), method="POST", json=json.loads(json.dumps(post_data)))
+    response = api.call(pattern="/{}/GlusterCreateVolume".format(cluster_id), method="POST", json=post_data)
 
     expected_response = 202
     LOGGER.debug("post_data: %s" % json.dumps(post_data))
@@ -166,7 +180,7 @@ def test_create_volume():
     vol_name = xml.findtext(".//name")
     LOGGER.debug("res: %s" % vol_name)
 
-    volume_id = xml.findtext(".//id")
+    VOLUME_ID = xml.findtext(".//id")
     expected_vol_name = "Vol_test"
     pytest.check( vol_name == expected_vol_name)
 
@@ -193,14 +207,14 @@ def test_delete_volume():
 
     		Return code should be **202** with data ``{"message": "Accepted"}``.
     		"""
-    global volume_id
+    global VOLUME_ID
     cluster_id = "147cac1f-fc1f-4ffb-9bff-97ccc95cdcf7"
     api = tendrlapi.ApiCommon()
     post_data = {
             "Volume.volname":"Vol_test",
-            "Volume.vol_id":volume_id
+            "Volume.vol_id":VOLUME_ID
             }
-    response = api.call(pattern="/1.0/{}/GlusterDeleteVolume".format(cluster_id), method="POST", json=json.loads(json.dumps(post_data)))
+    response = api.call(pattern="/{}/GlusterDeleteVolume".format(cluster_id), method="POST", json=post_data)
 
     expected_response = 202
     LOGGER.debug("post_data: %s" % post_data)
