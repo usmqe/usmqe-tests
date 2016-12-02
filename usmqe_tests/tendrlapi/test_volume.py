@@ -7,10 +7,28 @@ import json
 
 import re
 
+import usmqe
+
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
 
-VOLUME_ID = ""
+@pytest.fixture
+def cluster_id():
+    api = tendrlapi.ApiCommon()
+    response = api.call(pattern="GetClusterList", method="GET")
+
+    expected_response = 200
+    pytest.check( response.status_code == expected_response)
+
+    return response.json()[0]["cluster_id"]
+
+@pytest.fixture
+def volume_id():
+    test_gluster = gluster.GlusterCommon()
+    xml = test_gluster.run_on_node(command="volume info")
+    vol_name = xml.findtext("./cliOutput/volInfo/volumes/volume/id")
+
+CLUSTER_ID = ""
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
 Setup
@@ -58,9 +76,9 @@ def test_cluster_import():
     		Return code should be **200** with data ``{"message": "OK"}``.
 
     	"""
-    global VOLUME_ID
+    global CLUSTER_ID
     api = tendrlapi.ApiCommon()
-    nodes = api.call(pattern="/GetNodeList")
+    nodes = api.call(pattern="GetNodeList")
     """@pylatest api/gluster.cluster_import
     	.. test_step:: 2
 
@@ -77,8 +95,7 @@ def test_cluster_import():
     		Return code should be **202** with data ``{"message": "Accepted"}``.
 
     	"""
-    test_gluster = gluster.GlusterCommon()
-    response = api.call(pattern="/GetNodeList", method="GET")
+    response = api.call(pattern="GetNodeList", method="GET")
 
     expected_response = 200
     LOGGER.debug("response: %s" % response.status_code)
@@ -96,7 +113,7 @@ def test_cluster_import():
 #    expected_response = 202
 #    pytest.check( response.status_code == expected_response)
 
-    response = api.call(pattern="/GetClusterList", method="GET")
+    response = api.call(pattern="GetClusterList", method="GET")
 
     expected_response = 200
     pytest.check( response.status_code == expected_response)
@@ -117,7 +134,7 @@ def test_cluster_import():
     Get list of attributes needed to use in cluster volume creation with given cluster_id.
     """
 
-def test_create_volume():
+def test_create_volume(cluster_id):
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
     	******************************
@@ -140,14 +157,13 @@ def test_create_volume():
 
     		Return code should be **202** with data ``{"message": "Accepted"}``.
     		"""
-    global VOLUME_ID
-    cluster_id = "147cac1f-fc1f-4ffb-9bff-97ccc95cdcf7"
     api = tendrlapi.ApiCommon()
+    bricks = [ "{}:/mnt/gluster".format(x) for x in usmqe.inventory.role2hosts("gluster") ]
     post_data = {
         "Volume.volname":"Vol_test",
-        "Volume.bricks":["dhcp-126-104.lab.eng.brq.redhat.com:/mnt/gluster2","dhcp-126-107.lab.eng.brq.redhat.com:/mnt/gluster2"]
+        "Volume.bricks":bricks
     }
-    response = api.call(pattern="/{}/GlusterCreateVolume".format(cluster_id), method="POST", json=post_data)
+    response = api.call(pattern="{}/GlusterCreateVolume".format(cluster_id), method="POST", json=post_data)
 
     expected_response = 202
     LOGGER.debug("post_data: %s" % json.dumps(post_data))
@@ -184,7 +200,7 @@ def test_create_volume():
     expected_vol_name = "Vol_test"
     pytest.check( vol_name == expected_vol_name)
 
-def test_delete_volume():
+def test_delete_volume(cluster_id, volume_id):
     """@pylatest api/gluster.delete_volume
     	API-gluster: delete_volume
     	******************************
@@ -207,14 +223,12 @@ def test_delete_volume():
 
     		Return code should be **202** with data ``{"message": "Accepted"}``.
     		"""
-    global VOLUME_ID
-    cluster_id = "147cac1f-fc1f-4ffb-9bff-97ccc95cdcf7"
     api = tendrlapi.ApiCommon()
     post_data = {
             "Volume.volname":"Vol_test",
-            "Volume.vol_id":VOLUME_ID
+            "Volume.vol_id":volume_id
             }
-    response = api.call(pattern="/{}/GlusterDeleteVolume".format(cluster_id), method="POST", json=post_data)
+    response = api.call(pattern="{}/GlusterDeleteVolume".format(cluster_id), method="POST", json=post_data)
 
     expected_response = 202
     LOGGER.debug("post_data: %s" % post_data)
@@ -243,7 +257,7 @@ def test_delete_volume():
 
     		"""
     test_gluster = gluster.GlusterCommon()
-    vol_name = test_gluster.run_on_node(command="volume info").findtext(".//name")
+    vol_name = test_gluster.run_on_node(command="volume info").findtext("./cliOutput/volInfo/volumes/volume/name")
     LOGGER.debug("res: %s" % vol_name)
 
     expected_vol_name = "Vol_test"
