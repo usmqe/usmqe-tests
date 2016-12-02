@@ -29,7 +29,6 @@ def volume_id():
     xml = test_gluster.run_on_node(command="volume info")
     vol_name = xml.findtext("./cliOutput/volInfo/volumes/volume/id")
 
-CLUSTER_ID = ""
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
 Setup
@@ -77,9 +76,7 @@ def test_cluster_import():
     		Return code should be **200** with data ``{"message": "OK"}``.
 
     	"""
-    global CLUSTER_ID
     api = tendrlapi.ApiCommon()
-    nodes = api.call(pattern="GetNodeList")
     """@pylatest api/gluster.cluster_import
     	.. test_step:: 2
 
@@ -124,7 +121,6 @@ def test_cluster_import():
     expected_response = 200
     pytest.check( response.status_code == expected_response)
 
-    CLUSTER_ID = response.json()[0]["cluster_id"]
     LOGGER.debug("cluster_id: %s" % CLUSTER_ID)
     pytest.check( response.status_code != None)
 
@@ -206,7 +202,6 @@ def test_create_volume(cluster_id):
     vol_name = xml.findtext("./cliOutput/volInfo/volumes/volume/name")
     LOGGER.debug("res: %s" % vol_name)
 
-    VOLUME_ID = xml.findtext("./cliOutput/volInfo/volumes/volume/id")
     expected_vol_name = "Vol_test"
     pytest.check( vol_name == expected_vol_name)
 

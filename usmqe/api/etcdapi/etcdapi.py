@@ -214,8 +214,8 @@ class ApiCommon(Api):
     def wait_for_job(self, id):
         count = 0
         status = ""
-        while (status!="finished" and count<20):
+        while (status!="finished" and count<30):
             status = self.check_job(id)
             count += 1
-            time.sleep(0.2)
+            time.sleep(1)
         return status
