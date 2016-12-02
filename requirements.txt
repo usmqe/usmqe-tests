@@ -1,4 +1,5 @@
 pytest
+pytest-ansible-playbook
 plumbum
 requests
 mrglog
