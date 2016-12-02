@@ -1,0 +1,16 @@
+language: python
+# we care only about python 3.5
+python:
+  - "3.5"
+# installation of dependencies, the rest is handled by tox
+install:
+  - pip install tox
+# command to run unit tests
+script:
+  - tox
+# list of tox enviroments to run
+# this way, result for each env will be reported separately
+env:
+  - TOXENV=py35
+  - TOXENV=flake8
+  - TOXENV=flake8-max-line
