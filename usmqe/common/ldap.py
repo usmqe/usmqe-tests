@@ -40,5 +40,6 @@ def main():
     """
     print(load_ldap_users_conf(sys.argv[1]))
 
+
 if __name__ == "__main__":
     main()
