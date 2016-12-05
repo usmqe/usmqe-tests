@@ -121,7 +121,6 @@ def test_cluster_import():
     expected_response = 200
     pytest.check( response.status_code == expected_response)
 
-    LOGGER.debug("cluster_id: %s" % CLUSTER_ID)
     pytest.check( response.status_code != None)
 
 """@pylatest api/gluster.volume_attributes
@@ -270,4 +269,4 @@ def test_delete_volume(cluster_id, volume_id):
     LOGGER.debug("res: %s" % vol_name)
 
     expected_vol_name = "Vol_test"
-    pytest.check( vol_name != expected_vol_name)
+    pytest.check( vol_name == expected_vol_name)
