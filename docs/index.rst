@@ -26,6 +26,7 @@ Contents
    qe_server_setup.rst
    test_configuration.rst
    test_execution.rst
+   test_development.rst
 
 
 Quick Introduction
