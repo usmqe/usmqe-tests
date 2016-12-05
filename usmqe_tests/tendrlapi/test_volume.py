@@ -27,7 +27,7 @@ def cluster_id():
 def volume_id():
     test_gluster = gluster.GlusterCommon()
     xml = test_gluster.run_on_node(command="volume info")
-    vol_name = xml.findtext("./cliOutput/volInfo/volumes/volume/id")
+    vol_name = xml.findtext("./volInfo/volumes/volume/id")
 
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
@@ -198,7 +198,7 @@ def test_create_volume(cluster_id):
     		"""
     test_gluster = gluster.GlusterCommon()
     xml = test_gluster.run_on_node(command="volume info")
-    vol_name = xml.findtext("./cliOutput/volInfo/volumes/volume/name")
+    vol_name = xml.findtext("./volInfo/volumes/volume/name")
     LOGGER.debug("res: %s" % vol_name)
 
     expected_vol_name = "Vol_test"
@@ -265,8 +265,8 @@ def test_delete_volume(cluster_id, volume_id):
 
     		"""
     test_gluster = gluster.GlusterCommon()
-    vol_name = test_gluster.run_on_node(command="volume info").findtext("./cliOutput/volInfo/volumes/volume/name")
+    vol_name = test_gluster.run_on_node(command="volume info").findtext("./volInfo/volumes/volume/name")
     LOGGER.debug("res: %s" % vol_name)
 
     expected_vol_name = "Vol_test"
-    pytest.check( vol_name == expected_vol_name)
+    pytest.check( vol_name != expected_vol_name)
