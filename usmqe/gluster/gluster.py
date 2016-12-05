@@ -71,7 +71,7 @@ class GlusterCommon(object):
             executor = self.cmd
         try:
             output = executor.run(node, command)
-        except CephCommandErrorException as err:
+        except GlusterCommandErrorException as err:
             last_error = err
         if last_error:
             raise GlusterCommandErrorException(
@@ -119,6 +119,15 @@ class GlusterCommon(object):
         if parse_output:
             output = parse_output(output)
         return output
+
+    def get_volume_name(self):
+        """
+        Returns name of volume.
+        TODO: specify order or some search if more volumes
+        """
+        vol_name = self.run_on_node(command="volume info").findtext("./volInfo/volumes/volume/name")
+        LOGGER.debug("Volume_name: %s" % vol_name)
+        return vol_name
 
 
 class GlusterVolume(GlusterCommon):

@@ -27,7 +27,7 @@ def cluster_id():
 def volume_id():
     test_gluster = gluster.GlusterCommon()
     xml = test_gluster.run_on_node(command="volume info")
-    vol_name = xml.findtext("./volInfo/volumes/volume/id")
+    return xml.findtext("./volInfo/volumes/volume/id")
 
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
@@ -96,7 +96,6 @@ def test_cluster_import():
     response = api.call(pattern="GetNodeList", method="GET")
 
     expected_response = 200
-    LOGGER.debug("response: %s" % response.status_code)
     pytest.check( response.status_code == expected_response)
 
     nodes = [ x["node_id"] for x in response.json() ]
@@ -106,14 +105,13 @@ def test_cluster_import():
         "Tendrl_context.sds_version": "3.8.3"
         }
 
-    response = api.call(pattern="/GlusterImportCluster", method="POST", json=post_data)
+    response = api.call(pattern="/GlusterImportCluster", method="POST", data=post_data)
 
     expected_response = 202
     pytest.check( response.status_code == expected_response)
 
     etcd_api = etcdapi.ApiCommon()
     status = etcd_api.wait_for_job(response.json()["job_id"])
-    LOGGER.debug("status: %s" % status)
     pytest.check( status == "finished")
 
     response = api.call(pattern="GetClusterList", method="GET")
@@ -164,16 +162,13 @@ def test_create_volume(cluster_id):
         "Volume.volname":"Vol_test",
         "Volume.bricks":bricks
     }
-    response = api.call(pattern="{}/GlusterCreateVolume".format(cluster_id), method="POST", json=post_data)
+    response = api.call(pattern="{}/GlusterCreateVolume".format(cluster_id), method="POST", data=post_data)
 
     expected_response = 202
-    LOGGER.debug("post_data: %s" % json.dumps(post_data))
-    LOGGER.debug("response: %s" % response.status_code)
     pytest.check( response.status_code == expected_response)
 
     etcd_api = etcdapi.ApiCommon()
     status = etcd_api.wait_for_job(response.json()["job_id"])
-    LOGGER.debug("status: %s" % status)
     pytest.check( status == "finished")
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
@@ -197,9 +192,7 @@ def test_create_volume(cluster_id):
 
     		"""
     test_gluster = gluster.GlusterCommon()
-    xml = test_gluster.run_on_node(command="volume info")
-    vol_name = xml.findtext("./volInfo/volumes/volume/name")
-    LOGGER.debug("res: %s" % vol_name)
+    vol_name = test_gluster.get_volume_name()
 
     expected_vol_name = "Vol_test"
     pytest.check( vol_name == expected_vol_name)
@@ -232,16 +225,13 @@ def test_delete_volume(cluster_id, volume_id):
             "Volume.volname":"Vol_test",
             "Volume.vol_id":volume_id
             }
-    response = api.call(pattern="{}/GlusterDeleteVolume".format(cluster_id), method="POST", json=post_data)
+    response = api.call(pattern="{}/GlusterDeleteVolume".format(cluster_id), method="POST", data=post_data)
 
     expected_response = 202
-    LOGGER.debug("post_data: %s" % post_data)
-    LOGGER.debug("response: %s" % response.status_code)
     pytest.check( response.status_code == expected_response)
 
     etcd_api = etcdapi.ApiCommon()
     status = etcd_api.wait_for_job(response.json()["job_id"])
-    LOGGER.debug("status: %s" % status)
     pytest.check( status == "finished")
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
@@ -265,8 +255,7 @@ def test_delete_volume(cluster_id, volume_id):
 
     		"""
     test_gluster = gluster.GlusterCommon()
-    vol_name = test_gluster.run_on_node(command="volume info").findtext("./volInfo/volumes/volume/name")
-    LOGGER.debug("res: %s" % vol_name)
+    vol_name = test_gluster.get_volume_name()
 
     expected_vol_name = "Vol_test"
     pytest.check( vol_name != expected_vol_name)

@@ -8,7 +8,7 @@ import time
 import requests
 import pytest
 
-LOGGER = pytest.get_logger("tendrlapi", module=True)
+LOGGER = pytest.get_logger("etcdapi", module=True)
 
 
 class Api(object):
@@ -218,4 +218,5 @@ class ApiCommon(Api):
             status = self.check_job(id)
             count += 1
             time.sleep(1)
+        LOGGER.debug("status: %s" % status)
         return status

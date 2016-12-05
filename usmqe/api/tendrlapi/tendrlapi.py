@@ -185,7 +185,7 @@ class ApiCommon(Api):
 #        return req.json(encoding='unicode')
     pass
 
-    def call(self, pattern=None, json=None, method="GET"):
+    def call(self, pattern=None, data=None, method="GET"):
         """ Call api function with given json.
 
         Args:
@@ -199,9 +199,10 @@ class ApiCommon(Api):
 
         if method == "POST":
             req = requests.post(pytest.config.getini("usm_api_url") + pattern,
-                            json=json)
+                            json=data)
+            LOGGER.debug("post_data: %s" % json.dumps(data))
         elif method == "GET":
             req = requests.get(pytest.config.getini("usm_api_url") + pattern,
-                            json=json)
+                            json=data)
         Api.print_req_info(req)
         return req
