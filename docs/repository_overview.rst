@@ -24,7 +24,7 @@ In the root dir of the repository, there are also:
 * main pytest ``conftest.py`` file with core configuration of the pytest
   framework (for running tests cases from ``usmqe_tests`` directory)
 * ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
-  details on unit tests of ``usmqe`` module below)
+  :ref:`unit-tests-label` for details)
 
 usmqe-setup
 ===========

@@ -8,6 +8,8 @@
 TODO: include all the details
 
 
+.. _unit-tests-label:
+
 Unit Tests
 ==========
 
