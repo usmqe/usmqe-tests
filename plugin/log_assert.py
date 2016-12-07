@@ -176,7 +176,7 @@ def pytest_runtest_makereport(item, call):
 
 def get_logger(*args, **kwargs):
     if 'verbose_lvl' not in kwargs:
-        kwargs['verbose_lvl'] = 1
+        kwargs['verbose_lvl'] = 2
     return mrglog.get_logger(*args, **kwargs)
 
 
