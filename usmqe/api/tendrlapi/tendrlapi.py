@@ -6,6 +6,9 @@ import json
 
 import requests
 import pytest
+import usmqe.inventory as inventory
+from usmqe.gluster import gluster
+from usmqe.api.etcdapi import etcdapi
 
 LOGGER = pytest.get_logger("tendrlapi", module=True)
 
@@ -118,7 +121,7 @@ class Api(object):
 
 
 class ApiCommon(Api):
-    """ Common methods for skyring REST API.
+    """ Common methods for Tendrl REST API.
     """
 
     def login(self, username, password, asserts_in=None):
@@ -133,28 +136,6 @@ class ApiCommon(Api):
             password: password
             asserts_in: assert values for this call and this method
         """
-#        asserts = Api.default_asserts.copy()
-#        asserts.update({
-#            "cookies": "session-key",
-#            "json": json.loads('''{"message": "Logged in"}'''),
-#            })
-#        if asserts_in:
-#            asserts.update(asserts_in)
-#        data = json.dumps({'username': username, 'password': password})
-#        req = requests.post(pytest.config.getini("usm_api_url") + "auth/login",
-#                            data, verify=self.verify)
-#        Api.print_req_info(req)
-#        Api.check_response(req, asserts)
-#        if asserts["cookies"]:
-#            pytest.check(req.cookies.keys(), "Cookies should not be empty.")
-#            if req.cookies.keys():
-#                pytest.check(req.cookies.keys().index(asserts["cookies"]) > -1,
-#                             "Cookies should contain: %s" % asserts["cookies"])
-#
-#        pytest.check(req.json(encoding='unicode') == asserts["json"],
-#                     "There should be login message in response.")
-#        self.cookies.update(req.cookies)
-#        return req.json(encoding='unicode')
     pass
 
     def logout(self, asserts_in=None):
@@ -167,22 +148,6 @@ class ApiCommon(Api):
         Args:
             asserts_in: assert values for this call and this method
         """
-#        asserts = Api.default_asserts.copy()
-#        asserts.update({
-#            "cookies": None,
-#            "json": json.loads('''{"message": "Logged out"}'''),
-#            })
-#        if asserts_in:
-#            asserts.update(asserts_in)
-#        req = requests.post(pytest.config.getini("usm_api_url") + "auth/logout",
-#                            cookies=self.cookies, verify=self.verify)
-#        Api.print_req_info(req)
-#        Api.check_response(req, asserts)
-#        pytest.check(
-#            req.cookies.keys() == [], "There should be empty logout cookie.")
-#        pytest.check(req.json(encoding='unicode') == asserts["json"],
-#                     "There should be logout message.")
-#        return req.json(encoding='unicode')
     pass
 
     def call(self, pattern=None, data=None, method="GET"):
@@ -191,11 +156,9 @@ class ApiCommon(Api):
         Args:
             pattern: string containing api key to given function
             json: json string containing data that will be sent to api server
-            method: strigng containing HTTP method for RESTful api
+            method: string containing HTTP method for RESTful api
         """
 
-#        client = etcd.Client(host="10.70.43.91", port=2379)
-#        client.write("/api_job_queue/job_%s" % job_id1, json.dumps(job))
 
         if method == "POST":
             req = requests.post(pytest.config.getini("usm_api_url") + pattern,
@@ -206,3 +169,111 @@ class ApiCommon(Api):
                             json=data)
         Api.print_req_info(req)
         return req
+
+
+class ApiGluster(ApiCommon):
+    """ Gluster methods for Tendrl REST API.
+    """
+
+    def get_nodes(self):
+        """ Get list node ids.
+
+        Name:        "get_nodes",
+        Method:      "GET",
+        Pattern:     "GetNodeList",
+        """
+        response = self.call(pattern="GetNodeList", method="GET")
+        expected_response = 200
+        pytest.check( response.status_code == expected_response)
+        return [ x["node_id"] for x in response.json() ]
+
+    def import_cluster(self, cluster_data):
+        """ Import gluster cluster defined by json.
+
+        Name:        "import_cluster",
+        Method:      "POST",
+        Pattern:     "GlusterImportCluster",
+
+        Args:
+            cluster_data: json structure containing data that will be sent to api server
+        """
+        response = self.call(pattern="/GlusterImportCluster", method="POST", data=cluster_data)
+        expected_response = 202
+        pytest.check( response.status_code == expected_response)
+        etcd_api = etcdapi.ApiCommon()
+        job_id = response.json()["job_id"]
+        status = etcd_api.wait_for_job(job_id)
+        pytest.check( status == "finished")
+
+        response = self.call(pattern="GetClusterList", method="GET")
+        expected_response = 200
+        pytest.check( response.status_code == expected_response)
+        pytest.check( response.status_code != None)
+
+        cluster_id = etcd_api.get_job_attribute(id=job_id, attribute="cluster_id")
+        return cluster_id
+
+    def get_brick_addresses(self, brick="/bricks/fs_gluster01/test", role="gluster"):
+        """ Get list of host urls from specified role with path to brick.
+
+        Args:
+            brick: path where should be placed brick in filesystem
+            role: role from inventory file
+        """
+        return [ "{}:{}".format(x,brick) for x in inventory.role2hosts(role) ]
+
+    def get_volume_id(self, cluster, name):
+        """ Get id of gluster volume specified by name from cluster with given id
+
+        Name:        "get_volume_id",
+        Method:      "GET",
+        Pattern:     ":cluster_id:/GetVolumeList",
+
+        Args:
+            cluster: id of cluster where will be created volume
+            name: name of volume
+        """
+        response = self.call(pattern="{}/GetVolumeList".format(cluster), method="GET")
+        id = False
+        for item in response.json():
+            if item["name"] == name:
+                id = item["vol_id"]
+        return id
+
+    def create_volume(self, cluster, volume_data):
+        """ Import gluster cluster defined by json.
+
+        Name:        "create_volume",
+        Method:      "POST",
+        Pattern:     ":cluster_id:/GlusterCreateVolume",
+
+        Args:
+            cluster: id of a cluster where will be created volume
+            volume_data: json structure containing data that will be sent to api server
+        """
+        response = self.call(pattern="{}/GlusterCreateVolume".format(cluster), method="POST", data=volume_data)
+        expected_response = 202
+        pytest.check(response.status_code == expected_response, "Status code should be {}".format(expected_response))
+
+        etcd_api = etcdapi.ApiCommon()
+        status = etcd_api.wait_for_job(response.json()["job_id"])
+        pytest.check( status == "finished", "Status of job should be `finished`")
+
+    def delete_volume(self, cluster, post_data):
+        """ Import gluster cluster defined by json.
+
+        Name:        "delete_volume",
+        Method:      "POST",
+        Pattern:     ":cluster_id:/GlusterDeleteVolume",
+
+        Args:
+            cluster: id of a cluster where will be created volume
+            volume_data: json structure containing data that will be sent to api server
+        """
+        response = self.call(pattern="{}/GlusterDeleteVolume".format(cluster), method="POST", data=post_data)
+        expected_response = 202
+        pytest.check( response.status_code == expected_response, "Status code should be {}".format(expected_response))
+
+        etcd_api = etcdapi.ApiCommon()
+        status = etcd_api.wait_for_job(response.json()["job_id"])
+        pytest.check( status == "finished", "Status of job should be `finished`")

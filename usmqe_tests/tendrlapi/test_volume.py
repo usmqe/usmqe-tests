@@ -7,19 +7,17 @@ import json
 
 import re
 
-import usmqe
-
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
 from usmqe.api.etcdapi import etcdapi
 
 @pytest.fixture
 def cluster_id():
-    api = tendrlapi.ApiCommon()
+    api = tendrlapi.ApiGluster()
     response = api.call(pattern="GetClusterList", method="GET")
 
     expected_response = 200
-    pytest.check( response.status_code == expected_response)
+    pytest.check(response.status_code == expected_response)
 
     return response.json()[0]["cluster_id"]
 
@@ -76,7 +74,7 @@ def test_cluster_import():
     		Return code should be **200** with data ``{"message": "OK"}``.
 
     	"""
-    api = tendrlapi.ApiCommon()
+    api = tendrlapi.ApiGluster()
     """@pylatest api/gluster.cluster_import
     	.. test_step:: 2
 
@@ -93,33 +91,14 @@ def test_cluster_import():
     		Return code should be **202** with data ``{"message": "Accepted"}``.
 
     	"""
-    response = api.call(pattern="GetNodeList", method="GET")
-
-    expected_response = 200
-    pytest.check( response.status_code == expected_response)
-
-    nodes = [ x["node_id"] for x in response.json() ]
-    post_data = {
+    nodes = api.get_nodes()
+    cluster_data = {
         "Node[]": nodes,
         "Tendrl_context.sds_name": "gluster",
         "Tendrl_context.sds_version": "3.8.3"
         }
 
-    response = api.call(pattern="/GlusterImportCluster", method="POST", data=post_data)
-
-    expected_response = 202
-    pytest.check( response.status_code == expected_response)
-
-    etcd_api = etcdapi.ApiCommon()
-    status = etcd_api.wait_for_job(response.json()["job_id"])
-    pytest.check( status == "finished")
-
-    response = api.call(pattern="GetClusterList", method="GET")
-
-    expected_response = 200
-    pytest.check( response.status_code == expected_response)
-
-    pytest.check( response.status_code != None)
+    api.import_cluster(cluster_data)
 
 """@pylatest api/gluster.volume_attributes
     API-gluster: volume_attributes
@@ -156,20 +135,13 @@ def test_create_volume(cluster_id):
 
     		Return code should be **202** with data ``{"message": "Accepted"}``.
     		"""
-    api = tendrlapi.ApiCommon()
-    bricks = [ "{}:/mnt/gluster".format(x) for x in usmqe.inventory.role2hosts("gluster") ]
-    post_data = {
+    api = tendrlapi.ApiGluster()
+    bricks = api.get_brick_addresses()
+    volume_data = {
         "Volume.volname":"Vol_test",
         "Volume.bricks":bricks
     }
-    response = api.call(pattern="{}/GlusterCreateVolume".format(cluster_id), method="POST", data=post_data)
-
-    expected_response = 202
-    pytest.check( response.status_code == expected_response)
-
-    etcd_api = etcdapi.ApiCommon()
-    status = etcd_api.wait_for_job(response.json()["job_id"])
-    pytest.check( status == "finished")
+    api.create_volume(cluster_id, volume_data)
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
     	******************************
@@ -192,10 +164,7 @@ def test_create_volume(cluster_id):
 
     		"""
     test_gluster = gluster.GlusterCommon()
-    vol_name = test_gluster.get_volume_name()
-
-    expected_vol_name = "Vol_test"
-    pytest.check( vol_name == expected_vol_name)
+    test_gluster.find_volume_name("Vol_test")
 
 def test_delete_volume(cluster_id, volume_id):
     """@pylatest api/gluster.delete_volume
@@ -220,19 +189,13 @@ def test_delete_volume(cluster_id, volume_id):
 
     		Return code should be **202** with data ``{"message": "Accepted"}``.
     		"""
-    api = tendrlapi.ApiCommon()
-    post_data = {
+    api = tendrlapi.ApiGluster()
+    volume_data = {
             "Volume.volname":"Vol_test",
             "Volume.vol_id":volume_id
             }
-    response = api.call(pattern="{}/GlusterDeleteVolume".format(cluster_id), method="POST", data=post_data)
+    api.delete_volume(cluster_id, volume_data)
 
-    expected_response = 202
-    pytest.check( response.status_code == expected_response)
-
-    etcd_api = etcdapi.ApiCommon()
-    status = etcd_api.wait_for_job(response.json()["job_id"])
-    pytest.check( status == "finished")
     """@pylatest api/gluster.create_volume
     	API-gluster: create_volume
     	******************************
@@ -255,7 +218,4 @@ def test_delete_volume(cluster_id, volume_id):
 
     		"""
     test_gluster = gluster.GlusterCommon()
-    vol_name = test_gluster.get_volume_name()
-
-    expected_vol_name = "Vol_test"
-    pytest.check( vol_name != expected_vol_name)
+    test_gluster.find_volume_name("Vol_test", False)

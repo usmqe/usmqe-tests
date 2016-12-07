@@ -88,7 +88,7 @@ class GlusterCommon(object):
     def run_on_all_nodes(self, command, nodes=None, executor=None,
                    parse_output=xml.etree.ElementTree.fromstring):
         """
-        Run command on gluster node
+        Run command on all gluster nodes
         """
         last_error = None
         output = None
@@ -120,15 +120,35 @@ class GlusterCommon(object):
             output = parse_output(output)
         return output
 
-    def get_volume_name(self):
+    def get_volume_names(self):
         """
-        Returns name of volume.
+        Returns name(s) of volume.
         TODO: specify order or some search if more volumes
         """
         vol_name = self.run_on_node(command="volume info").findtext("./volInfo/volumes/volume/name")
         LOGGER.debug("Volume_name: %s" % vol_name)
         return vol_name
 
+    def find_volume_name(self, name, expected=True):
+        """
+        Check if there is volume with given name.
+        """
+        volume_name = self.get_volume_names()
+        found = False
+        # TODO test what vol_name looks like when there are more volumes name
+        if isinstance(volume_name, list):
+            for item in volume_name:
+                # TODO use pytest.check in if?
+                if item == name:
+                    found == True
+        else:
+            if volume_name == name:
+                found = True
+        if expected:
+            pytest.check(found == True)
+        else:
+            pytest.check(found == False)
+        return found
 
 class GlusterVolume(GlusterCommon):
     """
@@ -137,7 +157,7 @@ class GlusterVolume(GlusterCommon):
 
     def __init__(self, cluster):
         """
-        Initialize CephCluster object.
+        Initialize GlusterCluster object.
 
         Args:
             cluster: cluster name or dict with ``name`` key or

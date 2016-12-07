@@ -207,16 +207,17 @@ class ApiCommon(Api):
         Api.print_req_info(req)
         return req
 
-    def check_job(self, id):
-        response = self.call(pattern="keys/queue/{}".format(id))
-        return json.loads(response.json()["node"]["value"])["status"]
-
     def wait_for_job(self, id):
         count = 0
         status = ""
         while (status!="finished" and count<30):
-            status = self.check_job(id)
+            status = self.get_job_attribute(id, "status")
             count += 1
             time.sleep(1)
         LOGGER.debug("status: %s" % status)
         return status
+
+    def get_job_attribute(self, id, attribute):
+        response = self.call(pattern="keys/queue/{}".format(id))
+        return json.loads(response.json()["node"]["value"])[attribute]
+
