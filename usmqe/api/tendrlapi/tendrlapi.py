@@ -35,10 +35,10 @@ class Api(object):
     }
 
     def __init__(self, copy_from=None):
-#        self.cookies = {}
+        #        self.cookies = {}
         self.verify = pytest.config.getini("usm_ca_cert")
         if copy_from:
-#            self.cookies = copy_from.cookies
+            #            self.cookies = copy_from.cookies
             self.verify = copy_from.verify
 
     @staticmethod
@@ -159,14 +159,13 @@ class ApiCommon(Api):
             method: string containing HTTP method for RESTful api
         """
 
-
         if method == "POST":
             req = requests.post(pytest.config.getini("usm_api_url") + pattern,
-                            json=data)
+                                json=data)
             LOGGER.debug("post_data: %s" % json.dumps(data))
         elif method == "GET":
             req = requests.get(pytest.config.getini("usm_api_url") + pattern,
-                            json=data)
+                               json=data)
         Api.print_req_info(req)
         return req
 
@@ -184,8 +183,8 @@ class ApiGluster(ApiCommon):
         """
         response = self.call(pattern="GetNodeList", method="GET")
         expected_response = 200
-        pytest.check( response.status_code == expected_response)
-        return [ x["node_id"] for x in response.json() ]
+        pytest.check(response.status_code == expected_response)
+        return [x["node_id"] for x in response.json()]
 
     def import_cluster(self, cluster_data):
         """ Import gluster cluster defined by json.
@@ -197,30 +196,37 @@ class ApiGluster(ApiCommon):
         Args:
             cluster_data: json structure containing data that will be sent to api server
         """
-        response = self.call(pattern="/GlusterImportCluster", method="POST", data=cluster_data)
+        response = self.call(
+            pattern="/GlusterImportCluster",
+            method="POST",
+            data=cluster_data)
         expected_response = 202
-        pytest.check( response.status_code == expected_response)
+        pytest.check(response.status_code == expected_response)
         etcd_api = etcdapi.ApiCommon()
         job_id = response.json()["job_id"]
         status = etcd_api.wait_for_job(job_id)
-        pytest.check( status == "finished")
+        pytest.check(status == "finished")
 
         response = self.call(pattern="GetClusterList", method="GET")
         expected_response = 200
-        pytest.check( response.status_code == expected_response)
-        pytest.check( response.status_code != None)
+        pytest.check(response.status_code == expected_response)
+        pytest.check(response.status_code is not None)
 
-        cluster_id = etcd_api.get_job_attribute(id=job_id, attribute="cluster_id")
+        cluster_id = etcd_api.get_job_attribute(
+            id=job_id, attribute="cluster_id")
         return cluster_id
 
-    def get_brick_addresses(self, brick="/bricks/fs_gluster01/test", role="gluster"):
+    def get_brick_addresses(
+            self,
+            brick="/bricks/fs_gluster01/test",
+            role="gluster"):
         """ Get list of host urls from specified role with path to brick.
 
         Args:
             brick: path where should be placed brick in filesystem
             role: role from inventory file
         """
-        return [ "{}:{}".format(x,brick) for x in inventory.role2hosts(role) ]
+        return ["{}:{}".format(x, brick) for x in inventory.role2hosts(role)]
 
     def get_volume_id(self, cluster, name):
         """ Get id of gluster volume specified by name from cluster with given id
@@ -233,7 +239,9 @@ class ApiGluster(ApiCommon):
             cluster: id of cluster where will be created volume
             name: name of volume
         """
-        response = self.call(pattern="{}/GetVolumeList".format(cluster), method="GET")
+        response = self.call(
+            pattern="{}/GetVolumeList".format(cluster),
+            method="GET")
         id = False
         for item in response.json():
             if item["name"] == name:
@@ -251,13 +259,19 @@ class ApiGluster(ApiCommon):
             cluster: id of a cluster where will be created volume
             volume_data: json structure containing data that will be sent to api server
         """
-        response = self.call(pattern="{}/GlusterCreateVolume".format(cluster), method="POST", data=volume_data)
+        response = self.call(
+            pattern="{}/GlusterCreateVolume".format(cluster),
+            method="POST",
+            data=volume_data)
         expected_response = 202
-        pytest.check(response.status_code == expected_response, "Status code should be {}".format(expected_response))
+        pytest.check(response.status_code == expected_response,
+                     "Status code should be {}".format(expected_response))
 
         etcd_api = etcdapi.ApiCommon()
         status = etcd_api.wait_for_job(response.json()["job_id"])
-        pytest.check( status == "finished", "Status of job should be `finished`")
+        pytest.check(
+            status == "finished",
+            "Status of job should be `finished`")
 
     def delete_volume(self, cluster, post_data):
         """ Import gluster cluster defined by json.
@@ -270,10 +284,16 @@ class ApiGluster(ApiCommon):
             cluster: id of a cluster where will be created volume
             volume_data: json structure containing data that will be sent to api server
         """
-        response = self.call(pattern="{}/GlusterDeleteVolume".format(cluster), method="POST", data=post_data)
+        response = self.call(
+            pattern="{}/GlusterDeleteVolume".format(cluster),
+            method="POST",
+            data=post_data)
         expected_response = 202
-        pytest.check( response.status_code == expected_response, "Status code should be {}".format(expected_response))
+        pytest.check(response.status_code == expected_response,
+                     "Status code should be {}".format(expected_response))
 
         etcd_api = etcdapi.ApiCommon()
         status = etcd_api.wait_for_job(response.json()["job_id"])
-        pytest.check( status == "finished", "Status of job should be `finished`")
+        pytest.check(
+            status == "finished",
+            "Status of job should be `finished`")

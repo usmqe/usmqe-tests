@@ -54,7 +54,7 @@ class GlusterCommon(object):
         self.cluster = cluster
 
     def run_on_node(self, command, node=None, executor=None,
-                   parse_output=xml.etree.ElementTree.fromstring):
+                    parse_output=xml.etree.ElementTree.fromstring):
         """
         Run command on gluster node
         """
@@ -84,9 +84,8 @@ class GlusterCommon(object):
             output = parse_output(output)
         return output
 
-
     def run_on_all_nodes(self, command, nodes=None, executor=None,
-                   parse_output=xml.etree.ElementTree.fromstring):
+                         parse_output=xml.etree.ElementTree.fromstring):
         """
         Run command on all gluster nodes
         """
@@ -125,7 +124,8 @@ class GlusterCommon(object):
         Returns name(s) of volume.
         TODO: specify order or some search if more volumes
         """
-        vol_name = self.run_on_node(command="volume info").findtext("./volInfo/volumes/volume/name")
+        vol_name = self.run_on_node(command="volume info").findtext(
+            "./volInfo/volumes/volume/name")
         LOGGER.debug("Volume_name: %s" % vol_name)
         return vol_name
 
@@ -140,15 +140,16 @@ class GlusterCommon(object):
             for item in volume_name:
                 # TODO use pytest.check in if?
                 if item == name:
-                    found == True
+                    found
         else:
             if volume_name == name:
                 found = True
         if expected:
-            pytest.check(found == True)
+            pytest.check(found)
         else:
             pytest.check(found == False)
         return found
+
 
 class GlusterVolume(GlusterCommon):
     """

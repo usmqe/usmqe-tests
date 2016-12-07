@@ -11,6 +11,7 @@ from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
 from usmqe.api.etcdapi import etcdapi
 
+
 @pytest.fixture
 def cluster_id():
     api = tendrlapi.ApiGluster()
@@ -20,6 +21,7 @@ def cluster_id():
     pytest.check(response.status_code == expected_response)
 
     return response.json()[0]["cluster_id"]
+
 
 @pytest.fixture
 def volume_id():
@@ -51,17 +53,19 @@ Description
 
 Import gluster cluster.
 """
+
+
 def test_cluster_import():
     """@pylatest api/gluster.cluster_import
-    	.. test_step:: 1
+        .. test_step:: 1
 
-    	Get list of ids of availible nodes.
+        Get list of ids of availible nodes.
 
-    	.. test_result:: 1
+        .. test_result:: 1
 
-    		Server should return response in JSON format:
+                Server should return response in JSON format:
 
-    			{
+                        {
                 ...
                   {
                   "fqdn": hostname,
@@ -69,11 +73,11 @@ def test_cluster_import():
                   "node_id": node_id
                   },
                 ...
-    			}
+                        }
 
-    		Return code should be **200** with data ``{"message": "OK"}``.
+                Return code should be **200** with data ``{"message": "OK"}``.
 
-    	"""
+        """
     api = tendrlapi.ApiGluster()
     """@pylatest api/gluster.cluster_import
     	.. test_step:: 2
@@ -96,7 +100,7 @@ def test_cluster_import():
         "Node[]": nodes,
         "Tendrl_context.sds_name": "gluster",
         "Tendrl_context.sds_version": "3.8.3"
-        }
+    }
 
     api.import_cluster(cluster_data)
 
@@ -112,34 +116,35 @@ def test_cluster_import():
     Get list of attributes needed to use in cluster volume creation with given cluster_id.
     """
 
+
 def test_create_volume(cluster_id):
     """@pylatest api/gluster.create_volume
-    	API-gluster: create_volume
-    	******************************
+        API-gluster: create_volume
+        ******************************
 
-    	.. test_metadata:: author fbalak@redhat.com
+        .. test_metadata:: author fbalak@redhat.com
 
-    	Description
-    	===========
+        Description
+        ===========
 
-    	Get list of attributes needed to use in cluster volume creation with given cluster_id.
+        Get list of attributes needed to use in cluster volume creation with given cluster_id.
 
-    	.. test_step:: 1
+        .. test_step:: 1
 
-    		Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
-    		Where cluster_id is set to predefined value.
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
+                Where cluster_id is set to predefined value.
 
-    	.. test_result:: 1
+        .. test_result:: 1
 
-    		Server should return response in JSON format:
+                Server should return response in JSON format:
 
-    		Return code should be **202** with data ``{"message": "Accepted"}``.
-    		"""
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                """
     api = tendrlapi.ApiGluster()
     bricks = api.get_brick_addresses()
     volume_data = {
-        "Volume.volname":"Vol_test",
-        "Volume.bricks":bricks
+        "Volume.volname": "Vol_test",
+        "Volume.bricks": bricks
     }
     api.create_volume(cluster_id, volume_data)
     """@pylatest api/gluster.create_volume
@@ -166,34 +171,35 @@ def test_create_volume(cluster_id):
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name("Vol_test")
 
+
 def test_delete_volume(cluster_id, volume_id):
     """@pylatest api/gluster.delete_volume
-    	API-gluster: delete_volume
-    	******************************
+        API-gluster: delete_volume
+        ******************************
 
-    	.. test_metadata:: author fbalak@redhat.com
+        .. test_metadata:: author fbalak@redhat.com
 
-    	Description
-    	===========
+        Description
+        ===========
 
         Delete gluster volume ``Vol_test`` via API.
 
-    	.. test_step:: 1
+        .. test_step:: 1
 
-    		Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
-    		Where cluster_id is set to predefined value.
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
+                Where cluster_id is set to predefined value.
 
-    	.. test_result:: 1
+        .. test_result:: 1
 
-    		Server should return response in JSON format:
+                Server should return response in JSON format:
 
-    		Return code should be **202** with data ``{"message": "Accepted"}``.
-    		"""
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                """
     api = tendrlapi.ApiGluster()
     volume_data = {
-            "Volume.volname":"Vol_test",
-            "Volume.vol_id":volume_id
-            }
+        "Volume.volname": "Vol_test",
+        "Volume.vol_id": volume_id
+    }
     api.delete_volume(cluster_id, volume_data)
 
     """@pylatest api/gluster.create_volume
