@@ -10,24 +10,24 @@ import re
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
 from usmqe.api.etcdapi import etcdapi
+import usmqe.inventory as inventory
 
 
 @pytest.fixture
 def cluster_id():
     api = tendrlapi.ApiGluster()
-    response = api.call(pattern="GetClusterList", method="GET")
-
-    expected_response = 200
-    pytest.check(response.status_code == expected_response)
-
-    return response.json()[0]["cluster_id"]
+    return api.get_cluster_list()[0]["cluster_id"]
 
 
 @pytest.fixture
-def volume_id():
-    test_gluster = gluster.GlusterCommon()
-    xml = test_gluster.run_on_node(command="volume info")
-    return xml.findtext("./volInfo/volumes/volume/id")
+def volume_id(cluster_id):
+    api = tendrlapi.ApiGluster()
+    volumes = api.get_volume_list(cluster_id)
+    volume_id = False
+    for item in volumes:
+        if item["name"] == name:
+            id = item["vol_id"]
+    return volume_id
 
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
@@ -97,12 +97,21 @@ def test_cluster_import():
     	"""
     nodes = api.get_nodes()
     cluster_data = {
-        "Node[]": nodes,
+        "Node[]": [x["node_id"] for x in nodes],
         "Tendrl_context.sds_name": "gluster",
         "Tendrl_context.sds_version": "3.8.3"
     }
 
-    api.import_cluster(cluster_data)
+    job_id = api.import_cluster(cluster_data)["job_id"]
+
+    etcd_api = etcdapi.ApiCommon()
+    status = etcd_api.wait_for_job(job_id)
+    pytest.check(status == "finished")
+
+    cluster_id = etcd_api.get_job_attribute(
+        id=job_id, attribute="cluster_id")
+    return cluster_id
+
 
 """@pylatest api/gluster.volume_attributes
     API-gluster: volume_attributes
@@ -141,7 +150,17 @@ def test_create_volume(cluster_id):
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 """
     api = tendrlapi.ApiGluster()
-    bricks = api.get_brick_addresses()
+
+    role = pytest.config.getini("usm_gluster_role")
+    try:
+        bricks = ["{}:{}".format(x, pytest.config.getini(
+            "usm_brick_path")) for x in inventory.role2hosts(role)]
+    except typeError as e:
+        print(
+            "TypeError({0}): You should probably define usm_brick_path and usm_gluster_role in usm.ini. {1}".format(
+                e.errno,
+                e.strerror))
+
     volume_data = {
         "Volume.volname": "Vol_test",
         "Volume.bricks": bricks
@@ -196,6 +215,11 @@ def test_delete_volume(cluster_id, volume_id):
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 """
     api = tendrlapi.ApiGluster()
+    list = api.get_volume_list(cluster_id)
+    volume_id = False
+    for item in list:
+        if item["name"] == name:
+            id = item["vol_id"]
     volume_data = {
         "Volume.volname": "Vol_test",
         "Volume.vol_id": volume_id
