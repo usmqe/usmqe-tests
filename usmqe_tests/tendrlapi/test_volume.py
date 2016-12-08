@@ -3,10 +3,6 @@ REST API test suite - gluster volume
 """
 import pytest
 
-import json
-
-import re
-
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
 from usmqe.api.etcdapi import etcdapi
@@ -25,14 +21,16 @@ def volume_id(cluster_id):
     volumes = api.get_volume_list(cluster_id)
     volume_id = False
     for item in volumes:
-        if item["name"] == name:
-            id = item["vol_id"]
+        if item["name"] == "Vol_test":
+            volume_id = item["vol_id"]
     return volume_id
+
 
 LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
 Setup
 =====
+
 
 Further mentioned ``APIURL`` points to: ``http://USMSERVER:8080``.
 """
@@ -80,21 +78,21 @@ def test_cluster_import():
         """
     api = tendrlapi.ApiGluster()
     """@pylatest api/gluster.cluster_import
-    	.. test_step:: 2
+        .. test_step:: 2
 
-    		Send POST request to Tendrl API ``APIURL/GlusterImportCluster
+            Send POST request to Tendrl API ``APIURL/GlusterImportCluster
 
-    	.. test_result:: 2
+        .. test_result:: 2
 
-    		Server should return response in JSON format:
+            Server should return response in JSON format:
 
-    			{
+                {
                   "job_id": job_id
-    			}
+                }
 
-    		Return code should be **202** with data ``{"message": "Accepted"}``.
+            Return code should be **202** with data ``{"message": "Accepted"}``.
 
-    	"""
+        """
     nodes = api.get_nodes()
     cluster_data = {
         "Node[]": [x["node_id"] for x in nodes],
@@ -155,9 +153,10 @@ def test_create_volume(cluster_id):
     try:
         bricks = ["{}:{}".format(x, pytest.config.getini(
             "usm_brick_path")) for x in inventory.role2hosts(role)]
-    except typeError as e:
+    except TypeError as e:
         print(
-            "TypeError({0}): You should probably define usm_brick_path and usm_gluster_role in usm.ini. {1}".format(
+            "TypeError({0}): You should probably define usm_brick_path and \
+                    usm_gluster_role in usm.ini. {1}".format(
                 e.errno,
                 e.strerror))
 
@@ -167,26 +166,26 @@ def test_create_volume(cluster_id):
     }
     api.create_volume(cluster_id, volume_data)
     """@pylatest api/gluster.create_volume
-    	API-gluster: create_volume
-    	******************************
+        API-gluster: create_volume
+        ******************************
 
-    	.. test_metadata:: author fbalak@redhat.com
+        .. test_metadata:: author fbalak@redhat.com
 
-    	Description
-    	===========
+        Description
+        ===========
 
-    	Check if there is created volume on gluster nodes via CLI.
+        Check if there is created volume on gluster nodes via CLI.
 
-    	.. test_step:: 1
+        .. test_step:: 1
 
-    		Connect to gluster node machine via ssh and run
+            Connect to gluster node machine via ssh and run
             ``gluster volume info command``
 
-    	.. test_result:: 1
+        .. test_result:: 1
 
             There should be listed gluster volume named ``Vol_test``.
 
-    		"""
+            """
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name("Vol_test")
 
@@ -215,11 +214,6 @@ def test_delete_volume(cluster_id, volume_id):
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 """
     api = tendrlapi.ApiGluster()
-    list = api.get_volume_list(cluster_id)
-    volume_id = False
-    for item in list:
-        if item["name"] == name:
-            id = item["vol_id"]
     volume_data = {
         "Volume.volname": "Vol_test",
         "Volume.vol_id": volume_id
@@ -227,25 +221,25 @@ def test_delete_volume(cluster_id, volume_id):
     api.delete_volume(cluster_id, volume_data)
 
     """@pylatest api/gluster.create_volume
-    	API-gluster: create_volume
-    	******************************
+        API-gluster: create_volume
+        ******************************
 
-    	.. test_metadata:: author fbalak@redhat.com
+        .. test_metadata:: author fbalak@redhat.com
 
-    	Description
-    	===========
+        Description
+        ===========
 
-    	Check if there is created volume on gluster nodes via CLI.
+        Check if there is created volume on gluster nodes via CLI.
 
-    	.. test_step:: 1
+        .. test_step:: 1
 
-    		Connect to gluster node machine via ssh and run
+            Connect to gluster node machine via ssh and run
             ``gluster volume info command``
 
-    	.. test_result:: 1
+        .. test_result:: 1
 
             There should be listed gluster volume named ``Vol_test``.
 
-    		"""
+            """
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name("Vol_test", False)

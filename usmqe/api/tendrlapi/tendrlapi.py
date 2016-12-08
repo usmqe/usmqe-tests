@@ -2,12 +2,8 @@
 Tendrl REST API.
 """
 
-import json
-
 import requests
 import pytest
-from usmqe.gluster import gluster
-from usmqe.api.etcdapi import etcdapi
 import usmqe.api.api as api
 
 LOGGER = pytest.get_logger("tendrlapi", module=True)

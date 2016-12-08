@@ -24,8 +24,6 @@ Quick example of usage::
 """
 
 
-import json
-import re
 import xml.etree.ElementTree
 
 import pytest
@@ -98,7 +96,7 @@ class GlusterCommon(object):
         for node in nodes:
             try:
                 output = executor.run(node, command)
-            except CephCommandErrorException as err:
+            except GlusterCommandErrorException as err:
                 last_error = err
                 continue
             break
@@ -147,7 +145,7 @@ class GlusterCommon(object):
         if expected:
             pytest.check(found)
         else:
-            pytest.check(found == False)
+            pytest.check(not found)
         return found
 
 
@@ -164,16 +162,16 @@ class GlusterVolume(GlusterCommon):
             cluster: cluster name or dict with ``name`` key or
                      :py:class:`CephCommon`/:py:class:`CephCluster` object
         """
-        super(GlusterCluster, self).__init__(cluster)
+        super(GlusterCommon, self).__init__(cluster)
 
-    @property
-    def node(self):
-        """
-        Property node returns initialized :py:class:`CephClusterMon` object.
-        """
-        if not self._node:
-            self._node = GlusterVolumeNode(self)
-        return self._node
+#    @property
+#    def node(self):
+#        """
+#        Property node returns initialized :py:class:`CephClusterMon` object.
+#        """
+#        if not self._node:
+#            self._node = GlusterVolumeNode(self)
+#        return self._node
 
     def info(self):
         """

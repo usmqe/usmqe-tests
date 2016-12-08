@@ -30,11 +30,11 @@ class GlusterCommand(object):
         """
         Prepare gluster command.
         """
-        #format_str = "--format {}".format(self._format) if self._format else ""
+        # format_str = "--format {}".format(self._format) if self._format else ""
         format_str = "--xml"
-        timeout_str = "--connect-timeout {}".format(self._timeout) \
-                      if self._timeout else ""
-        #return "{} {} {} {}".format(
+        # timeout_str = "--connect-timeout {}".format(self._timeout) \
+        #              if self._timeout else ""
+        # return "{} {} {} {}".format(
         #    self._base_command, command, timeout_str, format_str)
         return "{} {} {}".format(
             self._base_command, command, format_str)
@@ -77,7 +77,6 @@ class GlusterVolumeCommand(GlusterCommand):
         cmd = "{} {} {} {}".format(
             self._base_command, timeout_str, format_str, command)
         return cmd
-
 
 
 class GlusterCommandErrorException(Exception):
