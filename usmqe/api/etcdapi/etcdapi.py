@@ -29,6 +29,6 @@ class ApiCommon(api.Api):
     def get_job_attribute(self, id, attribute):
         pattern = "keys/queue/{}".format(id)
         response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
-        self.print_req_info(response)
+        # self.print_req_info(response)
         self.check_response(response)
         return json.loads(response.json()["node"]["value"])[attribute]

@@ -21,7 +21,7 @@ def volume_id(cluster_id):
     volumes = api.get_volume_list(cluster_id)
     volume_id = False
     for item in volumes:
-        if item["name"] == "Vol_test":
+        if item["name"] == pytest.config.getini("usm_volume_name"):
             volume_id = item["vol_id"]
     return volume_id
 
@@ -30,7 +30,6 @@ LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
 Setup
 =====
-
 
 Further mentioned ``APIURL`` points to: ``http://USMSERVER:8080``.
 """
@@ -161,7 +160,7 @@ def test_create_volume(cluster_id):
                 e.strerror))
 
     volume_data = {
-        "Volume.volname": "Vol_test",
+        "Volume.volname": pytest.config.getini("usm_volume_name"),
         "Volume.bricks": bricks
     }
     api.create_volume(cluster_id, volume_data)
@@ -187,7 +186,7 @@ def test_create_volume(cluster_id):
 
             """
     test_gluster = gluster.GlusterCommon()
-    test_gluster.find_volume_name("Vol_test")
+    test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"))
 
 
 def test_delete_volume(cluster_id, volume_id):
@@ -215,7 +214,7 @@ def test_delete_volume(cluster_id, volume_id):
                 """
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": "Vol_test",
+        "Volume.volname": pytest.config.getini("usm_volume_name"),
         "Volume.vol_id": volume_id
     }
     api.delete_volume(cluster_id, volume_data)
@@ -242,4 +241,4 @@ def test_delete_volume(cluster_id, volume_id):
 
             """
     test_gluster = gluster.GlusterCommon()
-    test_gluster.find_volume_name("Vol_test", False)
+    test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
