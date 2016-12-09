@@ -16,14 +16,10 @@ def cluster_id():
 
 
 @pytest.fixture
-def volume_id(cluster_id):
-    api = tendrlapi.ApiGluster()
-    volumes = api.get_volume_list(cluster_id)
-    volume_id = False
-    for item in volumes:
-        if item["name"] == pytest.config.getini("usm_volume_name"):
-            volume_id = item["vol_id"]
-    return volume_id
+def volume_id():
+    test_gluster = gluster.GlusterCommon()
+    xml = test_gluster.run_on_node(command="volume info")
+    return xml.findtext("./volInfo/volumes/volume/id")
 
 
 LOGGER = pytest.get_logger('volume_test', module=True)

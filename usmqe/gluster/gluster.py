@@ -138,7 +138,7 @@ class GlusterCommon(object):
             for item in volume_name:
                 # TODO use pytest.check in if?
                 if item == name:
-                    found
+                    found = True
         else:
             if volume_name == name:
                 found = True
