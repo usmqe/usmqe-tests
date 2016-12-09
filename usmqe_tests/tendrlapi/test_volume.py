@@ -98,8 +98,7 @@ def test_cluster_import():
     job_id = api.import_cluster(cluster_data)["job_id"]
 
     etcd_api = etcdapi.ApiCommon()
-    status = etcd_api.wait_for_job(job_id)
-    pytest.check(status == "finished")
+    etcd_api.wait_for_job(job_id)
 
     cluster_id = etcd_api.get_job_attribute(
         id=job_id, attribute="cluster_id")
@@ -159,7 +158,10 @@ def test_create_volume(cluster_id):
         "Volume.volname": pytest.config.getini("usm_volume_name"),
         "Volume.bricks": bricks
     }
-    api.create_volume(cluster_id, volume_data)
+
+    job_id = api.create_volume(cluster_id, volume_data)["job_id"]
+    etcd_api = etcdapi.ApiCommon()
+    etcd_api.wait_for_job(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -213,8 +215,10 @@ def test_delete_volume(cluster_id, volume_id):
         "Volume.volname": pytest.config.getini("usm_volume_name"),
         "Volume.vol_id": volume_id
     }
-    api.delete_volume(cluster_id, volume_data)
 
+    job_id = api.delete_volume(cluster_id, volume_data)["job_id"]
+    etcd_api = etcdapi.ApiCommon()
+    etcd_api.wait_for_job(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************

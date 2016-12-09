@@ -24,6 +24,7 @@ class ApiCommon(ApiBase):
             count += 1
             time.sleep(1)
         LOGGER.debug("status: %s" % status)
+        pytest.check(status == "finished")
         return status
 
     def get_job_attribute(self, id, attribute):
