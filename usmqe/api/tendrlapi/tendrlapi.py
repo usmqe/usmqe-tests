@@ -152,3 +152,47 @@ class ApiGluster(ApiCommon):
         self.print_req_info(response)
         self.check_response(response, asserts)
         return response.json()
+
+    def start_volume(self, cluster, volume_data):
+        """ Start gluster volume specified by json.
+
+        Name:        "start_volume",
+        Method:      "POST",
+        Pattern:     ":cluster_id:/GlusterStartVolume",
+
+        Args:
+            cluster: id of a cluster where will be created volume
+            volume_data: json structure containing data that will be sent to api server
+        """
+        pattern = "{}/GlusterStartVolume".format(cluster)
+        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
+                                 json=volume_data)
+        asserts = {
+            "reason": 'Accepted',
+            "status": 202,
+        }
+        self.print_req_info(response)
+        self.check_response(response, asserts)
+        return response.json()
+
+    def stop_volume(self, cluster, volume_data):
+        """ Stop gluster volume specified by json.
+
+        Name:        "stop_volume",
+        Method:      "POST",
+        Pattern:     ":cluster_id:/GlusterStartVolume",
+
+        Args:
+            cluster: id of a cluster where will be created volume
+            volume_data: json structure containing data that will be sent to api server
+        """
+        pattern = "{}/GlusterStopVolume".format(cluster)
+        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
+                                 json=volume_data)
+        asserts = {
+            "reason": 'Accepted',
+            "status": 202,
+        }
+        self.print_req_info(response)
+        self.check_response(response, asserts)
+        return response.json()

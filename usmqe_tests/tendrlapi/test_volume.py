@@ -242,3 +242,27 @@ def test_delete_volume(cluster_id, volume_id):
             """
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
+
+def test_start_volume(cluster_id):
+    api = tendrlapi.ApiGluster()
+    volume_data = {
+        "Volume.volname": pytest.config.getini("usm_volume_name"),
+    }
+
+    job_id = api.start_volume(cluster_id, volume_data)["job_id"]
+    etcd_api = etcdapi.ApiCommon()
+    etcd_api.wait_for_job(job_id)
+    test_gluster = gluster.GlusterCommon()
+    test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
+
+def test_stop_volume(cluster_id):
+    api = tendrlapi.ApiGluster()
+    volume_data = {
+        "Volume.volname": pytest.config.getini("usm_volume_name"),
+    }
+
+    job_id = api.stop_volume(cluster_id, volume_data)["job_id"]
+    etcd_api = etcdapi.ApiCommon()
+    etcd_api.wait_for_job(job_id)
+    test_gluster = gluster.GlusterCommon()
+    test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Stopped")

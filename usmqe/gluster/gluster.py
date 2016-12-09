@@ -148,6 +148,16 @@ class GlusterCommon(object):
             pytest.check(not found)
         return found
 
+    # TODO do it universal with name checking
+    def check_status(self, name, status="Started"):
+        """
+        Check if volume status corresponds with specified status.
+        """
+        real_status = self.run_on_node(command="volume info").findtext(
+            "./volInfo/volumes/volume/statusStr")
+        LOGGER.debug("Volume_status: %s" % real_status)
+        pytest.check(status == real_status)
+
 
 class GlusterVolume(GlusterCommon):
     """
