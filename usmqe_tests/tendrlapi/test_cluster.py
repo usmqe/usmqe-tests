@@ -6,7 +6,6 @@ import pytest
 
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.api.etcdapi import etcdapi
-import usmqe.inventory as inventory
 
 
 LOGGER = pytest.get_logger('cluster_test', module=True)
