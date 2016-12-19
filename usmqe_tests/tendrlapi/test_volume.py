@@ -116,10 +116,10 @@ def test_create_volume(cluster_id):
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"))
 
-    volume_id = volume_id()
+    vol_id = volume_id()
     api.check_volume_attribute(
             cluster_id,
-            volume_id,
+            vol_id,
             "name",
             pytest.config.getini("usm_volume_name"))
 

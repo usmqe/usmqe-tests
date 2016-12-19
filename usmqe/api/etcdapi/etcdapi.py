@@ -27,8 +27,8 @@ class ApiCommon(ApiBase):
         pytest.check(status == "finished")
         return status
 
-    def get_job_attribute(self, id, attribute):
-        pattern = "keys/queue/{}".format(id)
+    def get_job_attribute(self, cluster_id, attribute):
+        pattern = "keys/queue/{}".format(cluster_id)
         response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
         # self.print_req_info(response)
         self.check_response(response)

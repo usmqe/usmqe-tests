@@ -85,13 +85,16 @@ class ApiGluster(ApiCommon):
         self.check_response(response)
         return response.json()
 
-    def find_id_in_list(self, id):
+    def find_id_in_list(self, cluster_id, positive=True):
         found = False
         # TODO correct to be more pythonic
         for item in self.get_cluster_list():
-            if item["cluster_id"] == id:
+            if item["cluster_id"] == cluster_id:
                 found = True
-        pytest.check(found, "")
+        if positive:
+            pytest.check(found, "")
+        else:
+            pytest.check(not found, "")
 
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id
