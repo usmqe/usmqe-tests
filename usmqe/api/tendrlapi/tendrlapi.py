@@ -196,3 +196,16 @@ class ApiGluster(ApiCommon):
         self.print_req_info(response)
         self.check_response(response, asserts)
         return response.json()
+
+    def check_volume_attribute(self, cluster, volume, attribute, value, positive=True):
+        pattern = "{}/GetVolumeList".format(cluster)
+        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        self.print_req_info(response)
+        self.check_response(response)
+
+        for item in response.json():
+            if item["vol_id"] == volume:
+                if positive:
+                    pytest.check(item[attribute] == value)
+                else:
+                    pytest.check(item[attribute] != value)
