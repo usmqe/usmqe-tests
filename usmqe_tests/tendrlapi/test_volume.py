@@ -48,7 +48,7 @@ Teardown
     """
 
 
-def test_create_volume(cluster_id):
+def test_create_volume_valid(cluster_id):
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -122,6 +122,56 @@ def test_create_volume(cluster_id):
             vol_id,
             "name",
             pytest.config.getini("usm_volume_name"))
+
+
+"""@pylatest api/gluster.volume_attributes
+    API-gluster: volume_attributes
+    ******************************
+
+    .. test_metadata:: author fbalak@redhat.com
+
+    Description
+    ===========
+
+    Get list of attributes needed to use in cluster volume creation with given cluster_id.
+    """
+
+
+def test_create_volume_invalid(cluster_id):
+    """@pylatest api/gluster.create_volume
+        API-gluster: create_volume
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Get list of attributes needed to use in cluster volume creation with given cluster_id.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                """
+    api = tendrlapi.ApiGluster()
+
+    volume_data = {
+        "Volume.volname": None,
+        "Volume.bricks": None
+    }
+
+    job_id = api.create_volume(cluster_id, volume_data)["job_id"]
+    etcd_api = etcdapi.ApiCommon()
+    etcd_api.wait_for_job(job_id)
+
+    # TODO check correctly server response or etcd job status
 
 
 def test_start_volume(cluster_id):
