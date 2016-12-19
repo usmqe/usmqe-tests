@@ -202,7 +202,7 @@ def test_stop_volume(cluster_id):
     api.check_volume_attribute(cluster_id, volume_id, "status", "Stopped")
 
 
-def test_delete_volume(cluster_id, volume_id):
+def test_delete_volume_valid(cluster_id, volume_id):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -258,3 +258,39 @@ def test_delete_volume(cluster_id, volume_id):
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
     api.check_volume_attribute(cluster_id, volume_id, "deleted", "True")
+
+
+def test_delete_volume_invalid(cluster_id, volume_id):
+    """@pylatest api/gluster.delete_volume
+        API-gluster: delete_volume
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Delete gluster volume ``Vol_test`` via API.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                """
+    api = tendrlapi.ApiGluster()
+    volume_data = {
+        "Volume.volname": None,
+        "Volume.vol_id": None
+    }
+
+    job_id = api.delete_volume(cluster_id, volume_data)["job_id"]
+    etcd_api = etcdapi.ApiCommon()
+    etcd_api.wait_for_job(job_id)
+
+    # TODO check correctly server response or etcd job status
