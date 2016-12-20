@@ -25,6 +25,7 @@ Contents
    repository_overview.rst
    qe_server_setup.rst
    test_configuration.rst
+   test_env_setup.rst
    test_execution.rst
    test_development.rst
 
