@@ -1,3 +1,5 @@
+.. _test-enviroment-label:
+
 ==========================
  Setup of Test Enviroment
 ==========================

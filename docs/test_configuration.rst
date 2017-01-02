@@ -51,6 +51,9 @@ Details for Test Development
 To learn how to access configuration values from code of a test case, see
 :ref:`config-devel-label` for more details.
 
+
+.. _config-before-testrun-label:
+
 Configuration before test run
 =============================
 

@@ -1,3 +1,5 @@
+.. _usmqe-team-label:
+
 =============
  USM QE Team
 =============

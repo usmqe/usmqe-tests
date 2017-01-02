@@ -110,10 +110,20 @@ uses explicit shebang:
     [usmqe@qeserver ~]$ head -1 /usr/bin/ansible
     #!/usr/bin/python2
 
-The last step is to go into `~/usmqe-tests` directory and configure the pytest
-there (see `conf` directory for examples). Then to run the integration tests,
-one runs `py.test` there. TODO: link to other files (both topics deserves a
-separate document with description and full example).
+
+Related information
+===================
+
+At this point, we have a fresh QE server machine. But for us to be able to run
+integration tests, we need to:
+
+* Prepare fresh machines where Tendrl, Ceph and/or Gluster will be installed.
+  See :ref:`test-enviroment-label`.
+* Configure the tests, go into ``~/usmqe-tests`` directory and
+  follow :ref:`config-before-testrun-label`
+
+For full description and examples how to run integration tests, see
+:ref:`test-execution-label`.
 
 
 .. _`virt-builder`: http://libguestfs.org/virt-builder.1.html
