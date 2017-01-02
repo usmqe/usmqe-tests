@@ -7,7 +7,7 @@ The USM QE Team members are (in alphabetical order):
 * Daniel Horák (`github.com/dahorak`_)
 * Filip Balák (`github.com/fbalak`_)
 * Luboš Tříletý (`github.com/ltrilety`_)
-* Martin Bukatovič (`gitlab.com/u/mbukatov`_, `github.com/mbukatov`_)
+* Martin Bukatovič (`gitlab.com/mbukatov`_, `github.com/mbukatov`_)
 * Martin Kudlej (`github.com/mkudlej`_)
 
 
@@ -16,4 +16,4 @@ The USM QE Team members are (in alphabetical order):
 .. _`github.com/ltrilety`: https://github.com/ltrilety
 .. _`github.com/mbukatov`: https://github.com/mbukatov
 .. _`github.com/mkudlej`: https://github.com/mkudlej
-.. _`gitlab.com/u/mbukatov`: https://gitlab.com/u/mbukatov
+.. _`gitlab.com/mbukatov`: https://gitlab.com/mbukatov
