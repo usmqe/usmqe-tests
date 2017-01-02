@@ -48,35 +48,8 @@ scheme:
 Details for Test Development
 ============================
 
-To access data from the host inventory, use functions provided by
-``usmqe.inventory`` module:
-
-.. code-block:: python
-
-    import usmqe.inventory as inventory
-
-    for host in inventory.role2hosts("ceph_osd"):
-        print("check storage server {0}".format(host))
-
-To access USM QE configuration, use standard pytest configuration functions:
-
-.. code-block:: python
-
-    import pytest
-
-    pytest.config.getini("usm_username")
-
-Obviously this assumes that the ``usm_username`` option has been specified in
-USM QE config file (which is referenced via ``usm_config`` option). The minimal
-ini file for the previous example to work would look like this::
-
-    [usmqepytest]
-    usm_username = admin
-
-Reading of both *USM QE config file* and *host inventory file* is implemented
-in ``plugin/usmqe_config.py`` module, while management of *host inventory file*
-is handled by ``usmqe/inventory.py`` module.
-
+To learn how to access configuration values from code of a test case, see
+:ref:`config-devel-label` for more details.
 
 Configuration before test run
 =============================
