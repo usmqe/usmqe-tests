@@ -24,8 +24,9 @@ qe machines.
 Quick Example of QE Server deployment
 =====================================
 
-You need a CentOS 7 machine for the QE Server. We are going to quickly create 
-one via `virt-builder`_ tool.
+You need a RHEL or CentOS 7 machine for the QE Server. For to purpose of this
+example, we are going to quickly create virtual machine one via `virt-builder`_
+tool.
 
 First we build a vm image (uploading ssh authorized keys like this would make
 the machine accessible for everyone who has keys on the machine you are running
@@ -33,14 +34,14 @@ this command):
 
 .. code-block:: console
 
-    $ virt-builder centos-7.2 -o qe-server.qcow2 --size 15G --format qcow2 --mkdir /root/.ssh  --chmod 0700:/root/.ssh  --upload /root/.ssh/authorized_keys:/root/.ssh/authorized_keys --selinux-relabel --update
+    $ virt-builder centos-7.2 -o mbukatov-qe-server.qcow2 --size 15G --format qcow2 --mkdir /root/.ssh  --chmod 0700:/root/.ssh  --upload /root/.ssh/authorized_keys:/root/.ssh/authorized_keys --selinux-relabel --update
 
-Then we import the new image into libvirt, booting the new virtual machine for
-the first time:
+Then we `import the new image into libvirt`_, creating new virtual machine (aka
+guest) and  booting it for the first time:
 
 .. code-block:: console
 
-    # virt-install --import --name mbukatov-qe-server --ram 2048 --os-variant rhel7 --disk path=/var/lib/libvirt/images/qe-server.qcow2,format=qcow2 --network default --noautoconsole
+    # virt-install --import --name mbukatov-qe-server --ram 2048 --os-variant rhel7 --disk path=/var/lib/libvirt/images/mbukatov-qe-server.qcow2,format=qcow2 --network default --noautoconsole
 
 When the new machine is ready, specify an ip address or fqdn of the new qe
 server in the inventory file:
@@ -127,5 +128,6 @@ For full description and examples how to run integration tests, see
 
 
 .. _`virt-builder`: http://libguestfs.org/virt-builder.1.html
+.. _`import the new image into libvirt`: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/sect-Guest_virtual_machine_installation_overview-Creating_guests_with_virt_install.html
 .. _`qe_server.yml`: https://github.com/Tendrl/usmqe-setup/blob/master/qe_server.yml
 .. _`usmqe-setup repository`: https://github.com/Tendrl/usmqe-setup
