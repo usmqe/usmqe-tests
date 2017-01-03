@@ -91,6 +91,37 @@ tasks directly.
 Details On Installation From Sources
 ====================================
 
+To install Tendrl component from source code, we clone git source repository
+into ``/opt/tendrl/${component_name}`` first.
+
+Here is an example from ``tendrl-common`` role, default values of related
+variables::
+
+    #
+    # variables used when install_from == source
+    #
+
+    # url of the source repository and the branch to checkout
+    tendrl_common_repo_url: 'https://github.com/Tendrl/common'
+    # note that you need to change the branch in the url as well
+    tendrl_common_repo_branch: master
+
+    # directory where the git repo would be cloned into
+    tendrl_common_repo: /opt/tendrl/common
+
+... and related tasks which do the cloning::
+
+    - name: Directory for git repository
+      file:
+        path="{{ tendrl_common_repo }}"
+        state=directory
+
+    - name: Clone git repository
+      git:
+        repo={{ tendrl_common_repo_url }}
+        version={{ tendrl_common_repo_branch }}
+        dest={{ tendrl_common_repo }}
+
 When a Tendrl component is implemented in python, virtualenv is not used, but
 tendrl python components are installed into the system site-packages. Since
 such operation breaks system consistency, this is another reason why this
