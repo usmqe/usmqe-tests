@@ -24,8 +24,8 @@ qe machines.
 Quick Example of QE Server deployment
 =====================================
 
-You need a RHEL or CentOS 7 machine for the QE Server. For to purpose of this
-example, we are going to quickly create virtual machine one via `virt-builder`_
+You need a RHEL 7 or CentOS 7 machine for the QE Server. For the purpose of this
+example, we are going to quickly create one virtual machine via `virt-builder`_
 tool.
 
 First we build a vm image (uploading ssh authorized keys like this would make
@@ -36,7 +36,7 @@ this command):
 
     $ virt-builder centos-7.2 -o mbukatov-qe-server.qcow2 --size 15G --format qcow2 --mkdir /root/.ssh  --chmod 0700:/root/.ssh  --upload /root/.ssh/authorized_keys:/root/.ssh/authorized_keys --selinux-relabel --update
 
-Then we `import the new image into libvirt`_, creating new virtual machine (aka
+Then we `import the new image into libvirt`_ creating new virtual machine (aka
 guest) and  booting it for the first time:
 
 .. code-block:: console
