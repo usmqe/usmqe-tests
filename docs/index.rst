@@ -24,8 +24,8 @@ Contents
    usmqe_team.rst
    repository_overview.rst
    qe_server_setup.rst
-   test_configuration.rst
    test_env_setup.rst
+   test_configuration.rst
    test_execution.rst
    test_development.rst
 
@@ -49,7 +49,7 @@ USM QE tests are:
   plugins
 * written in `Python 3.5`_ only
 * expected to be executed from Red Hat (or CentOS) 7 machine
-* maintained by USM QE Team
+* maintained by :ref:`usmqe-team-label`
 
 There are 2 kind of test cases:
 

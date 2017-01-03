@@ -10,10 +10,11 @@ usmqe-tests
 
 Upstream: https://github.com/Tendrl/usmqe-tests
 
-This is a main repository, there are the following top level directories:
+This repository is most important, because it contains python code of automated
+integration test cases. There are the following top level directories:
 
-* ``docs``: documentation (sphinx) of usmqe integration tests and it's setup
-  (you are reading it right now)
+* ``docs``: sphinx based documentation of usmqe integration tests and it's
+  setup (you are reading it right now)
 * ``conf``: configuration files, only examples are commited in the repository
 * ``plugin``: custom pytest plugins
 * ``usmqe``: main usmqe python module
