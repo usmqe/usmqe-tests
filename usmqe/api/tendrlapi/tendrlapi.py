@@ -79,22 +79,17 @@ class ApiGluster(ApiCommon):
         return response.json()
 
     def get_cluster_list(self):
+        """ Get list of clusters
+
+        Name:        "get_cluster_list",
+        Method:      "GET",
+        Pattern:     "GetClusterList",
+        """
         pattern = "GetClusterList"
         response = requests.get(pytest.config.getini("usm_api_url") + pattern)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
-
-    def find_id_in_list(self, cluster_id, positive=True):
-        found = False
-        # TODO correct to be more pythonic
-        for item in self.get_cluster_list():
-            if item["cluster_id"] == cluster_id:
-                found = True
-        if positive:
-            pytest.check(found, "")
-        else:
-            pytest.check(not found, "")
 
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id
@@ -201,14 +196,20 @@ class ApiGluster(ApiCommon):
         return response.json()
 
     def check_volume_attribute(self, cluster, volume, attribute, value, positive=True):
-        pattern = "{}/GetVolumeList".format(cluster)
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
-        self.print_req_info(response)
-        self.check_response(response)
+        """ Check if provided volume has attribute of given value.
 
-        for item in response.json():
-            if item["vol_id"] == volume:
-                if positive:
-                    pytest.check(item[attribute] == value)
-                else:
-                    pytest.check(item[attribute] != value)
+        Args:
+            cluster: id of a cluster
+            volume: id of a volume
+            attribute: name of the searched attribute
+            value: value of the searched attribute
+            positive: if it is a positive or negative test case
+        """
+        current_value = [x[attribute] for x in self.get_volume_list(cluster)
+                         if x["vol_id"] == volume]
+        current_value = current_value[0]
+        LOGGER.debug("{} = {}, should be {}".format(attribute, current_value, value))
+        if positive:
+            pytest.check(current_value == value)
+        else:
+            pytest.check(current_value != value)

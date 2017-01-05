@@ -4,6 +4,7 @@ Basic REST API.
 """
 
 import pytest
+import json
 
 LOGGER = pytest.get_logger("api_base", module=True)
 
@@ -44,19 +45,24 @@ class ApiBase(object):
         LOGGER.debug("response.text:    %s" % resp.text)
 
     @staticmethod
-    def check_response(resp, asserts_in=None, issue=None):
+    def check_response(resp, asserts_in=None):
         """ Check default asserts.
 
         It checks: *ok*, *status*, *reason*.
         Args:
             resp: response to check
+            asserts_in: asserts that are compared with response
         """
 
         asserts = ApiBase.default_asserts.copy()
         if asserts_in:
             asserts.update(asserts_in)
-        if "cookies" in asserts and asserts["cookies"] is None:
-            pytest.check(not(resp.cookies), "Cookies should be empty.")
+        # if "cookies" in asserts and asserts["cookies"] is None:
+        #    pytest.check(not(resp.cookies), "Cookies should be empty.")
+        try:
+            json.dumps(resp.json(encoding='unicode'))
+        except ValueError:
+            pytest.check(False, issue="Bad response json format.")
         pytest.check(
             resp.ok == asserts["ok"],
             "There should be ok == %s." % str(asserts["ok"]))

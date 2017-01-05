@@ -11,12 +11,14 @@ import usmqe.inventory as inventory
 
 @pytest.fixture
 def cluster_id():
+    # TODO change
     api = tendrlapi.ApiGluster()
     return api.get_cluster_list()[0]["cluster_id"]
 
 
 @pytest.fixture
 def volume_id():
+    # TODO change
     test_gluster = gluster.GlusterCommon()
     xml = test_gluster.run_on_node(command="volume info")
     return xml.findtext("./volInfo/volumes/volume/id")
@@ -26,26 +28,12 @@ LOGGER = pytest.get_logger('volume_test', module=True)
 """@pylatest default
 Setup
 =====
-
-Further mentioned ``APIURL`` points to: ``http://USMSERVER:8080``.
 """
 
 """@pylatest default
 Teardown
 ========
 """
-
-"""@pylatest api/gluster.volume_attributes
-    API-gluster: volume_attributes
-    ******************************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
-    Get list of attributes needed to use in cluster volume creation with given cluster_id.
-    """
 
 
 def test_create_volume_valid(cluster_id):
@@ -91,7 +79,7 @@ def test_create_volume_valid(cluster_id):
 
     job_id = api.create_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -103,12 +91,12 @@ def test_create_volume_valid(cluster_id):
 
         Check if there is created volume on gluster nodes via CLI.
 
-        .. test_step:: 1
+        .. test_step:: 2
 
             Connect to gluster node machine via ssh and run
             ``gluster volume info command``
 
-        .. test_result:: 1
+        .. test_result:: 2
 
             There should be listed gluster volume named ``Vol_test``.
 
@@ -122,19 +110,6 @@ def test_create_volume_valid(cluster_id):
             vol_id,
             "name",
             pytest.config.getini("usm_volume_name"))
-
-
-"""@pylatest api/gluster.volume_attributes
-    API-gluster: volume_attributes
-    ******************************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
-    Get list of attributes needed to use in cluster volume creation with given cluster_id.
-    """
 
 
 def test_create_volume_invalid(cluster_id):
@@ -169,8 +144,10 @@ def test_create_volume_invalid(cluster_id):
 
     job_id = api.create_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
-
+    etcd_api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
     # TODO check correctly server response or etcd job status
 
 
@@ -182,13 +159,14 @@ def test_start_volume_valid(cluster_id):
 
     job_id = api.start_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
     api.check_volume_attribute(cluster_id, volume_id, "status", "Started")
 
 
 def test_start_volume_invalid():
+    cluster_id = "incorrect"
     api = tendrlapi.ApiGluster()
     volume_data = {
         "Volume.volname": pytest.config.getini("usm_volume_name"),
@@ -196,7 +174,10 @@ def test_start_volume_invalid():
 
     job_id = api.start_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
     # TODO check correctly server response or etcd job status
 
 
@@ -208,7 +189,7 @@ def test_stop_volume_valid(cluster_id):
 
     job_id = api.stop_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Stopped")
     api.check_volume_attribute(cluster_id, volume_id, "status", "Stopped")
@@ -223,7 +204,10 @@ def test_stop_volume_invalid():
 
     job_id = api.stop_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
     # TODO check correctly server response or etcd job status
 
 
@@ -258,7 +242,7 @@ def test_delete_volume_valid(cluster_id, volume_id):
 
     job_id = api.delete_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -316,6 +300,8 @@ def test_delete_volume_invalid(cluster_id, volume_id):
 
     job_id = api.delete_volume(cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
-
+    etcd_api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
     # TODO check correctly server response or etcd job status

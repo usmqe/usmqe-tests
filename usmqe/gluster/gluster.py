@@ -7,19 +7,8 @@ Quick example of usage::
 
     from usmqe.gluster import gluster
 
-    gluster_cl = gluster_cluster.CephCluster(CLUSTER_NAME)
-    gluster_cl.status()
-    gluster_cl.report()
-    ...
-    gluster_cl.mon.stat()
-    gluster_cl.mon.dump()
-    ...
-    gluster_cl.osd.stat()
-    gluster_cl.osd.df()
-    gluster_cl.osd.dump()
-    ...
-    gluster_cl.rados.df()
-    gluster_cl.rados.lspools()
+    gluster_cl = gluster_cluster.GlusterVolume(cluster_id)
+    gluster_cl.info()
     ...
 """
 
@@ -120,7 +109,7 @@ class GlusterCommon(object):
     def get_volume_names(self):
         """
         Returns name(s) of volume.
-        TODO: specify order or some search if more volumes
+        TODO specify order or some search if more volumes
         """
         vol_name = self.run_on_node(command="volume info").findtext(
             "./volInfo/volumes/volume/name")
@@ -169,8 +158,7 @@ class GlusterVolume(GlusterCommon):
         Initialize GlusterCluster object.
 
         Args:
-            cluster: cluster name or dict with ``name`` key or
-                     :py:class:`CephCommon`/:py:class:`CephCluster` object
+            cluster: cluster name
         """
         super(GlusterCommon, self).__init__(cluster)
 
@@ -191,17 +179,5 @@ class GlusterVolume(GlusterCommon):
             dictionary: parsed json from
                         ``gluster --format json --cluster CLUSTERNAME status``
                         command
-
-        Example output (only root elements)::
-
-            { 'election_epoch': 6,
-              'fsid': 'aaaaaaaa-bbbb-cccc-ddddddddddddddddd',
-              'health': {...},
-              'mdsmap': {...},
-              'monmap': {...},
-              'osdmap': {...},
-              'pgmap': {...},
-              'quorum': [0, 1, 2],
-              'quorum_names': ['b', 'c', 'a'],}
         """
         return self.run_on_node('info')

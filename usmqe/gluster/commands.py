@@ -22,7 +22,7 @@ class GlusterCommand(object):
         """
         Run gluster command.
         """
-        self._format = 'json'
+        self._format_str = '--xml'
         self._timeout = 3
         self._base_command = 'gluster'
 
@@ -30,14 +30,8 @@ class GlusterCommand(object):
         """
         Prepare gluster command.
         """
-        # format_str = "--format {}".format(self._format) if self._format else ""
-        format_str = "--xml"
-        # timeout_str = "--connect-timeout {}".format(self._timeout) \
-        #              if self._timeout else ""
-        # return "{} {} {} {}".format(
-        #    self._base_command, command, timeout_str, format_str)
         return "{} {} {}".format(
-            self._base_command, command, format_str)
+            self._base_command, command, self._format_str)
 
     def run(self, host, command):
         """
@@ -70,12 +64,11 @@ class GlusterVolumeCommand(GlusterCommand):
         """
         Prepare gluster command.
         """
-        format_str = "--format {}".format(self._format) if self._format else ""
         timeout_str = "--connect-timeout {}".format(self._timeout) \
                       if self._timeout else ""
 
         cmd = "{} {} {} {}".format(
-            self._base_command, timeout_str, format_str, command)
+            self._base_command, timeout_str, self._format_str, command)
         return cmd
 
 

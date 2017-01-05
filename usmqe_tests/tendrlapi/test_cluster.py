@@ -12,8 +12,6 @@ LOGGER = pytest.get_logger('cluster_test', module=True)
 """@pylatest default
 Setup
 =====
-
-Further mentioned ``APIURL`` points to: ``http://USMSERVER:8080``.
 """
 
 """@pylatest default
@@ -78,17 +76,18 @@ def test_cluster_import_valid():
     cluster_data = {
         "Node[]": [x["node_id"] for x in nodes],
         "Tendrl_context.sds_name": "gluster",
-        "Tendrl_context.sds_version": "3.8.3"
+        "Tendrl_context.sds_version": pytest.config.getini("usm_gluster_version")
     }
 
     job_id = api.import_cluster(cluster_data)["job_id"]
 
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(job_id)
 
     cluster_id = etcd_api.get_job_attribute(
         cluster_id=job_id, attribute="cluster_id")
-    api.find_id_in_list(cluster_id)
+    pytest.check([x for x in api.get_cluster_list() if x["cluster_id"] == cluster_id])
+    # TODO add test case for checking imported machines
 
 
 """@pylatest api/gluster.cluster_import
@@ -148,15 +147,15 @@ def test_cluster_import_invalid():
     cluster_data = {
         "Node[]": ["000000-0000-0000-0000-000000000" for x in nodes],
         "Tendrl_context.sds_name": "gluster",
-        "Tendrl_context.sds_version": "3.8.3"
+        "Tendrl_context.sds_version": pytest.config.getini("usm_gluster_version")
     }
 
     job_id = api.import_cluster(cluster_data)["job_id"]
 
     # TODO check true response code of etcd (should be some kind of error)
     etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job(job_id)
+    etcd_api.wait_for_job_status(job_id)
 
     cluster_id = etcd_api.get_job_attribute(
         cluster_id=job_id, attribute="cluster_id")
-    api.find_id_in_list(cluster_id, False)
+    pytest.check(not [x for x in api.get_cluster_list() if x["cluster_id"] == cluster_id])
