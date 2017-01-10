@@ -19,7 +19,7 @@ def pytest_addoption(parser):
     """
     # defaults are specified in root pytest.ini file
     parser.addini('usm_config', 'USM configuration')
-    parser.addini('usm_host_config', 'USM host configuration')
+    parser.addini('usm_inventory', 'USM host configuration')
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -29,13 +29,13 @@ def load_inventory():
 
     To use content from inventory file just *import inventory* and then use
     proper function from ``usmqe.inventory``.
-    Name of inventory file is stored in ``usm_host_config`` option in
+    Name of inventory file is stored in ``usm_inventory`` option in
     ``pytest.ini``.  Its value can be overriden by ``pytest -o
-    usm_host_config=path``.
+    usm_inventory=path``.
     """
     # update machine config (reading ansible inventory)
     hosts = ConfigParser(allow_no_value=True)
-    hosts.read(pytest.config.getini("usm_host_config"))
+    hosts.read(pytest.config.getini("usm_inventory"))
     for rolename in hosts.sections():
         for hostname, _ in hosts.items(rolename):
             usmqe.inventory.add_host_entry(rolename, hostname)

@@ -19,7 +19,7 @@ scheme:
   normal circumstances (configuring ``usmqe-tests`` before test run) one would
   not need to change this file at all, because any default value specified here
   can be reconfigured in USM QE config file (with the exception of
-  ``usm_config`` and ``usm_host_config`` options).
+  ``usm_config`` and ``usm_inventory`` options).
 
 * *USM QE config file* is expected to contain actual configuration. See an
   example in `conf/example_usm.ini`_, while the actual path of this file is
@@ -31,7 +31,7 @@ scheme:
 * Ansible *host inventory file* (see an example in ``conf/example.hosts``),
   which is used both by ansible and by USM QE inventory module to organize
   machines into groups by it's role in test cluster. Actual path of this file
-  is configured in ``usm_host_config`` option in main ``pytest.ini`` file.
+  is configured in ``usm_inventory`` option in main ``pytest.ini`` file.
 
 * Moreover ad hoc reconfiguration of any USM QE option is possible via pytest
   command line option ``--override-ini``. See an example how to use different
@@ -39,7 +39,7 @@ scheme:
 
   .. code-block:: console
 
-      $ py.test -o=usm_host_config=conf/mbukatov01.hosts usmqe_tests/foo/bar
+      $ py.test -o=usm_inventory=conf/mbukatov01.hosts usmqe_tests/foo/bar
 
   This is usefull for test runs started by hand during test development or
   debugging.
@@ -76,7 +76,7 @@ Now, you need to:
   cluster.
 
 * Store *host inventory file* in ``conf/clustername.hosts`` and specify this
-  path in ``usm_host_config`` option of ``pytest.ini``.
+  path in ``usm_inventory`` option of ``pytest.ini``.
 
 * Verify that ssh and ansible are configured so that one can reach all machines
   from test cluster:
