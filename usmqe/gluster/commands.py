@@ -59,6 +59,7 @@ class GlusterVolumeCommand(GlusterCommand):
         Run gluster command.
         """
         super(GlusterVolumeCommand, self).__init__()
+        self._base_command = 'gluster volume'
 
     def cmd(self, command):
         """

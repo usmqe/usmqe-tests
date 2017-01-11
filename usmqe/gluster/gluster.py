@@ -17,7 +17,11 @@ import xml.etree.ElementTree
 
 import pytest
 
-from usmqe.gluster.commands import GlusterCommand, GlusterCommandErrorException
+from usmqe.gluster.commands import (
+    GlusterCommand,
+    GlusterCommandErrorException,
+    GlusterVolumeCommand
+)
 import usmqe.inventory
 
 
@@ -161,6 +165,7 @@ class GlusterVolume(GlusterCommon):
             cluster: cluster name
         """
         super(GlusterCommon, self).__init__(cluster)
+        self.cmd = GlusterVolumeCommand()
 
 #    @property
 #    def node(self):

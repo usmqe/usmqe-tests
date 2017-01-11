@@ -62,8 +62,7 @@ class ApiBase(object):
         try:
             json.dumps(resp.json(encoding='unicode'))
         except ValueError as e:
-            pytest.check(False, issue="Bad response json format({}): {}".format(
-                e.errno, e.strerror))
+            pytest.check(False, issue="Bad response json format: {}".format(e.msg))
         pytest.check(
             resp.ok == asserts["ok"],
             "There should be ok == {}".format(str(asserts["ok"])))
