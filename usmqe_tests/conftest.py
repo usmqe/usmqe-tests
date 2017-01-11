@@ -2,7 +2,7 @@ import pytest
 
 
 # initialize usmqe logging module
-LOGGER = pytest.get_logger('rest_api_test')
+LOGGER = pytest.get_logger("pytests_test")
 pytest.set_logger(LOGGER)
 
 
