@@ -27,22 +27,22 @@ class ApiBase(object):
         Args:
             resp: response
         """
-        LOGGER.debug("request.url:  %s" % resp.request.url)
-        LOGGER.debug("request.method:  %s" % resp.request.method)
-        LOGGER.debug("request.body:  %s" % resp.request.body)
-        LOGGER.debug("request.headers:  %s" % resp.request.headers)
-        LOGGER.debug("response.cookies: %s" % resp.cookies)
-        LOGGER.debug("response.content: %s" % resp.content)
-        LOGGER.debug("response.headers: %s" % resp.headers)
+        LOGGER.debug("request.url:  {}".format(resp.request.url))
+        LOGGER.debug("request.method:  {}".format(resp.request.method))
+        LOGGER.debug("request.body:  {}".format(resp.request.body))
+        LOGGER.debug("request.headers:  {}".format(resp.request.headers))
+        LOGGER.debug("response.cookies: {}".format(resp.cookies))
+        LOGGER.debug("response.content: {}".format(resp.content))
+        LOGGER.debug("response.headers: {}".format(resp.headers))
         try:
             LOGGER.debug(
-                "response.json:    %s" % resp.json(encoding='unicode'))
+                "response.json:    {}".format(resp.json(encoding='unicode')))
         except ValueError:
             LOGGER.debug("response.json:    ")
-        LOGGER.debug("response.ok:      %s" % resp.ok)
-        LOGGER.debug("response.reason:  %s" % resp.reason)
-        LOGGER.debug("response.status:  %s" % resp.status_code)
-        LOGGER.debug("response.text:    %s" % resp.text)
+        LOGGER.debug("response.ok:      {}".format(resp.ok))
+        LOGGER.debug("response.reason:  {}".format(resp.reason))
+        LOGGER.debug("response.status:  {}".format(resp.status_code))
+        LOGGER.debug("response.text:    {}".format(resp.text))
 
     @staticmethod
     def check_response(resp, asserts_in=None):
@@ -61,15 +61,16 @@ class ApiBase(object):
         #    pytest.check(not(resp.cookies), "Cookies should be empty.")
         try:
             json.dumps(resp.json(encoding='unicode'))
-        except ValueError:
-            pytest.check(False, issue="Bad response json format.")
+        except ValueError as e:
+            pytest.check(False, issue="Bad response json format({}): {}".format(
+                e.errno, e.strerror))
         pytest.check(
             resp.ok == asserts["ok"],
-            "There should be ok == %s." % str(asserts["ok"]))
+            "There should be ok == {}".format(str(asserts["ok"])))
         pytest.check(resp.status_code == asserts["status"],
-                     "Status code should equal to %s" % asserts["status"])
+                     "Status code should equal to {}".format(asserts["status"]))
         pytest.check(resp.reason == asserts["reason"],
-                     "Reason should equal to %s" % asserts["reason"])
+                     "Reason should equal to {}".format(asserts["reason"]))
 
     @staticmethod
     def check_dict(data, schema):
@@ -81,24 +82,16 @@ class ApiBase(object):
           schema - dictionary with keys and value types, e.g.:
                   {'name': str, 'size': int, 'tasks': dict}
         """
-        LOGGER.debug("check_dict - data: %s", data)
-        LOGGER.debug("check_dict - schema: %s", schema)
+        LOGGER.debug("check_dict - data: {}".format(data))
+        LOGGER.debug("check_dict - schema: []".format(schema))
         expected_keys = sorted(schema.keys())
         keys = sorted(data.keys())
         pytest.check(
             keys == expected_keys,
-            "Data should contains keys: %s" % expected_keys)
+            "Data should contains keys: {}".format(expected_keys))
         for key in keys:
             pytest.check(key in expected_keys,
-                         "Unknown key '%s' with value '%s' (type: '%s')." %
-                         (key, data[key], type(data[key])))
+                         "Unknown key '{}' with value '{}' (type: '{}').".format(
+                             key, data[key], type(data[key])))
             if key in expected_keys:
                 pytest.check(isinstance(data[key], schema[key]))
-                if isinstance(data[key], schema[key]):
-                    LOGGER.passed(
-                        "Value '%s' (type: %s) for key '%s' should be '%s'." %
-                        (data[key], type(data[key]), key, schema[key]))
-                else:
-                    LOGGER.failed(
-                        "Value '%s' (type: %s) for key '%s' should be '%s'." %
-                        (data[key], type(data[key]), key, schema[key]))

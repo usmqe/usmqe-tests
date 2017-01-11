@@ -204,6 +204,6 @@ class ApiGluster(ApiCommon):
             attribute: name of the searched attribute
         """
         value = [x[attribute] for x in self.get_volume_list(cluster)
-                         if x["vol_id"] == volume][0]
+                 if x["vol_id"] == volume][0]
         LOGGER.debug("{} = {}".format(attribute, value))
         return value
