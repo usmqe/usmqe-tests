@@ -195,21 +195,15 @@ class ApiGluster(ApiCommon):
         self.check_response(response, asserts)
         return response.json()
 
-    def check_volume_attribute(self, cluster, volume, attribute, value, positive=True):
+    def get_volume_attribute(self, cluster, volume, attribute):
         """ Check if provided volume has attribute of given value.
 
         Args:
             cluster: id of a cluster
             volume: id of a volume
             attribute: name of the searched attribute
-            value: value of the searched attribute
-            positive: if it is a positive or negative test case
         """
-        current_value = [x[attribute] for x in self.get_volume_list(cluster)
-                         if x["vol_id"] == volume]
-        current_value = current_value[0]
-        LOGGER.debug("{} = {}, should be {}".format(attribute, current_value, value))
-        if positive:
-            pytest.check(current_value == value)
-        else:
-            pytest.check(current_value != value)
+        value = [x[attribute] for x in self.get_volume_list(cluster)
+                         if x["vol_id"] == volume][0]
+        LOGGER.debug("{} = {}".format(attribute, value))
+        return value

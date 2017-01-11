@@ -105,11 +105,8 @@ def test_create_volume_valid(cluster_id):
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"))
 
     vol_id = volume_id()
-    api.check_volume_attribute(
-            cluster_id,
-            vol_id,
-            "name",
-            pytest.config.getini("usm_volume_name"))
+    value = api.get_volume_attribute(cluster_id, vol_id, "name")
+    pytest.check(value == pytest.config.getini("usm_volume_name"))
 
 
 def test_create_volume_invalid(cluster_id):
@@ -162,7 +159,8 @@ def test_start_volume_valid(cluster_id):
     etcd_api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
-    api.check_volume_attribute(cluster_id, volume_id, "status", "Started")
+    value = api.get_volume_attribute(cluster_id, volume_id, "status")
+    pytest.check(value == "Started")
 
 
 def test_start_volume_invalid():
@@ -192,7 +190,8 @@ def test_stop_volume_valid(cluster_id):
     etcd_api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Stopped")
-    api.check_volume_attribute(cluster_id, volume_id, "status", "Stopped")
+    value = api.get_volume_attribute(cluster_id, volume_id, "status")
+    pytest.check(value == "Stopped")
 
 
 def test_stop_volume_invalid():
@@ -266,7 +265,8 @@ def test_delete_volume_valid(cluster_id, volume_id):
             """
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
-    api.check_volume_attribute(cluster_id, volume_id, "deleted", "True")
+    value = api.get_volume_attribute(cluster_id, volume_id, "deleted")
+    pytest.check(value == "True")
 
 
 def test_delete_volume_invalid(cluster_id, volume_id):
