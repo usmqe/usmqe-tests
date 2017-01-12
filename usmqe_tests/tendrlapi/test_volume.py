@@ -160,7 +160,7 @@ def test_start_volume_valid(cluster_id):
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
     value = api.get_volume_attribute(cluster_id, volume_id, "status")
-    pytest.check(value == "Started")
+    pytest.check(value == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
 
 
 def test_start_volume_invalid():
@@ -191,7 +191,7 @@ def test_stop_volume_valid(cluster_id):
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Stopped")
     value = api.get_volume_attribute(cluster_id, volume_id, "status")
-    pytest.check(value == "Stopped")
+    pytest.check(value == "Stopped", issue="https://github.com/Tendrl/tendrl-api/issues/56")
 
 
 def test_stop_volume_invalid():
@@ -266,7 +266,7 @@ def test_delete_volume_valid(cluster_id, volume_id):
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
     value = api.get_volume_attribute(cluster_id, volume_id, "deleted")
-    pytest.check(value == "True")
+    pytest.check(value == "True", issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
 def test_delete_volume_invalid(cluster_id, volume_id):
