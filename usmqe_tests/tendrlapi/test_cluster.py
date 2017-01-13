@@ -6,6 +6,7 @@ import pytest
 
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.api.etcdapi import etcdapi
+from usmqe.gluster import gluster
 
 
 LOGGER = pytest.get_logger('cluster_test', module=True)
@@ -56,6 +57,7 @@ def test_cluster_import_valid():
 
         """
     api = tendrlapi.ApiGluster()
+    storage = gluster.GlusterCommon()
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
 
@@ -73,8 +75,11 @@ def test_cluster_import_valid():
 
         """
     nodes = api.get_nodes()
+    trusted_pool = gluster.get_hosts_from_trusted_pool(nodes[0]["hostname"])
+    node_ids = [x["node_id"] if x["hostname"] in trusted_pool for x in nodes]
+    pytest.check(len(trusted_pool) == len(node_ids))
     cluster_data = {
-        "Node[]": [x["node_id"] for x in nodes],
+        "Node[]": node_ids,
         "Tendrl_context.sds_name": "gluster",
         "Tendrl_context.sds_version": pytest.config.getini("usm_gluster_version")
     }

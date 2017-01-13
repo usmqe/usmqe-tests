@@ -120,6 +120,16 @@ class GlusterCommon(object):
         LOGGER.debug("Volume_name: %s" % vol_name)
         return vol_name
 
+    def get_hosts_from_trusted_pool(self, host):
+        """
+        Returns host names from trusted pool with given hostname.
+        """
+        # TODO change to right path to hostnames
+        hosts = self.run_on_node(node=host, command="peer status").findtext(
+            "./volInfo/volumes/volume/name")
+        LOGGER.debug("Hosts in trusted pool: %s" % hosts)
+        return hosts
+
     def find_volume_name(self, name, expected=True):
         """
         Check if there is volume with given name.
