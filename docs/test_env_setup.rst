@@ -29,7 +29,7 @@ README files of each component.
 For each Tendrl component, there is a role in `usmqe-setup repository`_. For
 example, there are:
 
-* `tendrl-common`_
+* `tendrl-commons`_
 * `tendrl-node-agent`_
 * `tendrl-api`_
 
@@ -44,7 +44,7 @@ structure::
     ├── main.yml
     └── source.ym
 
-Where ``main.yml`` looks like this (the example comes from ``tendrl-common``)::
+Where ``main.yml`` looks like this (the example comes from ``tendrl-commons``)::
 
     #
     # installation
@@ -94,7 +94,7 @@ Details On Installation From Sources
 To install Tendrl component from source code, we clone git source repository
 into ``/opt/tendrl/${component_name}`` first.
 
-Here is an example from ``tendrl-common`` role, default values of related
+Here is an example from ``tendrl-commons`` role, default values of related
 variables::
 
     #
@@ -156,7 +156,7 @@ it's cost and we may drop this entirely in the future.
 
 .. _`qe_server.yml`: https://github.com/Tendrl/usmqe-setup/blob/master/qe_server.yml
 .. _`usmqe-setup repository`: https://github.com/Tendrl/usmqe-setup
-.. _`tendrl-common`: https://github.com/Tendrl/usmqe-setup/tree/master/roles/tendrl-common
+.. _`tendrl-commons`: https://github.com/Tendrl/usmqe-setup/tree/master/roles/tendrl-commons
 .. _`tendrl-node-agent`: https://github.com/Tendrl/usmqe-setup/tree/master/roles/tendrl-node-agent
 .. _`tendrl-api`: https://github.com/Tendrl/usmqe-setup/tree/master/roles/tendrl-api
 .. _`added a task to install systemd unit files`: https://github.com/Tendrl/usmqe-setup/commit/75f489d850ea753582cfa8532957c2a9d153d186
