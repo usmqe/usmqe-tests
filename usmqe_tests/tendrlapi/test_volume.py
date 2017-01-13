@@ -109,7 +109,11 @@ def test_create_volume_valid(cluster_id):
     pytest.check(value == pytest.config.getini("usm_volume_name"))
 
 
-def test_create_volume_invalid(cluster_id):
+@pytest.mark.parametrize("cluster_id, volume_name, volume_bricks", [
+        (cluster_id, None, None),
+        (cluster_id, "Valid_name", "Invalid_brick")
+        ])
+def test_create_volume_invalid(cluster_id, volume_name, volume_bricks):
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -135,8 +139,8 @@ def test_create_volume_invalid(cluster_id):
     api = tendrlapi.ApiGluster()
 
     volume_data = {
-        "Volume.volname": None,
-        "Volume.bricks": None
+        "Volume.volname": volume_name,
+        "Volume.bricks": volume_bricks,
     }
 
     job_id = api.create_volume(cluster_id, volume_data)["job_id"]
@@ -163,11 +167,15 @@ def test_start_volume_valid(cluster_id):
     pytest.check(value == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
 
 
-def test_start_volume_invalid():
-    cluster_id = "incorrect"
+@pytest.mark.parametrize("cluster_id, volume_name", [
+        ("incorrect", pytest.config.getini("usm_volume_name")),
+        (cluster_id, "invalid_name")
+        (cluster_id, None),
+        ])
+def test_start_volume_invalid(cluster_id, volume_name):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
+        "Volume.volname": volume_name
     }
 
     job_id = api.start_volume(cluster_id, volume_data)["job_id"]
@@ -194,11 +202,15 @@ def test_stop_volume_valid(cluster_id):
     pytest.check(value == "Stopped", issue="https://github.com/Tendrl/tendrl-api/issues/56")
 
 
-def test_stop_volume_invalid():
-    cluster_id = "incorrect"
+@pytest.mark.parametrize("cluster_id, volume_name", [
+        ("incorrect", pytest.config.getini("usm_volume_name")),
+        (cluster_id, "invalid_name"),
+        (cluster_id, None),
+        ])
+def test_stop_volume_invalid(cluster_id, volume_name):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
+        "Volume.volname": volume_name,
     }
 
     job_id = api.stop_volume(cluster_id, volume_data)["job_id"]
@@ -269,6 +281,10 @@ def test_delete_volume_valid(cluster_id, volume_id):
     pytest.check(value == "True", issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
+@pytest.mark.parametrize("cluster_id, volume_id", [
+        (cluster_id, None),
+        (None, volume_id)
+        ])
 def test_delete_volume_invalid(cluster_id, volume_id):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
@@ -294,8 +310,8 @@ def test_delete_volume_invalid(cluster_id, volume_id):
                 """
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": None,
-        "Volume.vol_id": None
+        "Volume.volname": cluster_id,
+        "Volume.vol_id": volume_id
     }
 
     job_id = api.delete_volume(cluster_id, volume_data)["job_id"]
