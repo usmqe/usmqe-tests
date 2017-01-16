@@ -9,7 +9,8 @@ from webstr.selenium.driver import Driver
 def refresh_driver(testcase, relogin=False):
     """
     Reload page or log again and go back to the volumes tab
-    if reload of the page fails because there is no page present, it logs again anyway
+    if reload of the page fails because there is no page present
+    it logs again anyway
 
     Args:
         testcase - instance of UITestCase

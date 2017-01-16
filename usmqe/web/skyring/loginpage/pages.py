@@ -20,7 +20,7 @@ class LoginPage(WebstrPage):
         _label - a read-able description of a class
         _required_elems - web elements to be checked
     """
-    #_location = m_loginpage.LoginPage.location
+#    _location = m_loginpage.LoginPage.location
     _model = m_loginpage.LoginPageModel
     _label = 'login page'
     _required_elems = ['username', 'password', 'login_btn']
@@ -63,6 +63,6 @@ class LoginPage(WebstrPage):
         """
         self.fill_form_values(username=username, password=password)
         self._model.login_btn.click()
-        #TODO https://github.com/skyrings/kitoon/issues/93
+        # TODO https://github.com/skyrings/kitoon/issues/93
         WaitForWebstrPage(self, 10).to_disappear()
         return navpage.NavMenuBars(self.driver)

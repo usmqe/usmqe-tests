@@ -10,9 +10,6 @@ from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
 
 
-#location = pytest.config.getini("usm_web_url")
-
-
 class LoginPageModel(WebstrModel):
     """
     Common page model for the login page.
@@ -25,7 +22,6 @@ class LoginPageModel(WebstrModel):
     error_label = PageElement(
         by=By.XPATH,
         locator='//*[@ng-bind="login.errorMsg"]/..')
-    #location = pytest.config.getini("usm_web_url")
 
     def __init__(self, driver):
         """

@@ -13,8 +13,8 @@ from webstr.selenium.ui.support import WebDriverWait, WaitForWebstrPage
 from usmqe.web.skyring.loginpage import pages as loginpage
 from usmqe.web.skyring.mainpage.navpage import pages as navpage
 
-#from usmqe.web.test_case import TestBase, this_testcase
-#from usmqe.web.test_case import TestCase
+#from usmqe.web.test_case import TestBase, this_testcase # noqa: E265
+#from usmqe.web.test_case import TestCase # noqa: E265
 
 
 # NOTE: example of test with log_in fixture used
@@ -32,7 +32,6 @@ def test_positive_login(testcase_set, testcase_end):
     Login as valid user.
     """
     loginpage_inst = loginpage.LoginPage(testcase_set.driver)
-    #loginpage_inst = loginpage.LoginPage(pytest.testcase.driver)
     pytest.check(
         loginpage_inst.login_user(
             pytest.config.getini("usm_username"),
@@ -86,8 +85,8 @@ def test_login_positive_enter(testcase_set, testcase_end):
         "Fill form for submit by enter.")
 
     loginpage_inst.get_model_element("password").send_keys(Keys.ENTER)
-    #TODO https://github.com/skyrings/kitoon/issues/94
-    #https://bugzilla.redhat.com/show_bug.cgi?id=1298539
+    # TODO https://github.com/skyrings/kitoon/issues/94
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1298539
     WaitForWebstrPage(loginpage_inst, 10).to_disappear()
     navpag = navpage.NavMenuBars(testcase_set.driver)
     pytest.check(

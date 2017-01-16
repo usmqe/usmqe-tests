@@ -4,22 +4,22 @@ Common page model for navigation bars.
 """
 
 
-#import pytest
+# import pytest
 
-#import urllib.parse
+# import urllib.parse
 
 from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
 
 
-#location = urllib.parse.urljoin(pytest.config.getini("usm_web_url"), "/#")
+#location = urllib.parse.urljoin( # noqa: E265
+#    pytest.config.getini("usm_web_url"), "/#")
 
 
 class NavMenuBarsModel(WebstrModel):
     """
     Common page model for the main page - navigation.
     """
-    #location = urllib.parse.urljoin(pytest.config.getini("usm_web_url"), "/#")
     # left part of upper navbar
     navbar_toggle = form.Button(by=By.XPATH,
                                 locator='//*[@class="navbar-toggle"]')
