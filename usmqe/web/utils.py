@@ -12,11 +12,12 @@ def refresh_driver(testcase, relogin=False):
     if reload of the page fails because there is no page present
     it logs again anyway
 
-    Args:
+    Atributes:
         testcase - instance of UITestCase
         relogin - reload driver and log again
 
-    Returns: True if log in was done
+    Returns:
+        True if log in was done, False otherwise
     """
     if relogin:
         try:

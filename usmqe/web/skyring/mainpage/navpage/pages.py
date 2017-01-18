@@ -1,4 +1,3 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Page objects for navigation bars (both top and left menu bars).
 
@@ -21,13 +20,11 @@ class NavMenuBars(WebstrPage):
     - left navigation menu bar (with links to other pages)
     - top navigation menu bar (with icons for popup menus)
 
-    Parameters:
-        (_location - initial URL to load upon instance creation)
+    Atributes:
         _model - page model
         _label - human readable description of this *page object*
         _required_elems - web elements to be checked
     """
-#    _location = m_navpage.location
     _model = m_navpage.NavMenuBarsModel
     _label = 'main page - menu bar'
     _required_elems = [

@@ -1,8 +1,7 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Webadmin specific test case functionality.
 
-Author: pnovotny, ltrilety, mkudlej
+Author: ltrilety
 """
 
 
@@ -16,7 +15,7 @@ class CommonTestCase(test.UITestCase):
     class similar to base UITestCase, only it will remember
     two additional informations
 
-    Parameters:
+    Atributes:
         loginpage - LoginPage object instance
         navbar - NavMenuBars instance
     """

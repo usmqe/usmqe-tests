@@ -1,8 +1,7 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Webadmin specific test case functionality.
 
-Author: pnovotny, ltrilety, mkudlej
+Author: ltrilety
 """
 
 

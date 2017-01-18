@@ -1,4 +1,3 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Common page model for navigation bars.
 """
@@ -12,8 +11,9 @@ from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
 
 
-#location = urllib.parse.urljoin( # noqa: E265
-#    pytest.config.getini("usm_web_url"), "/#")
+# part of url which is placed after 'usm_web_url'
+# for getting on the described page in the module
+LOCATION = '/#'
 
 
 class NavMenuBarsModel(WebstrModel):

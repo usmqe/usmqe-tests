@@ -13,9 +13,6 @@ from webstr.selenium.ui.support import WebDriverWait, WaitForWebstrPage
 from usmqe.web.skyring.loginpage import pages as loginpage
 from usmqe.web.skyring.mainpage.navpage import pages as navpage
 
-#from usmqe.web.test_case import TestBase, this_testcase # noqa: E265
-#from usmqe.web.test_case import TestCase # noqa: E265
-
 
 # NOTE: example of test with log_in fixture used
 #       it should not be run hence not in the name

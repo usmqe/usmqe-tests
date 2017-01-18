@@ -1,4 +1,3 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Common page model for login page.
 """
@@ -8,6 +7,11 @@ import pytest
 
 from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
+
+
+# part of url which is placed after 'usm_web_url'
+# for getting on the described page in the module
+LOCATION = None
 
 
 class LoginPageModel(WebstrModel):
@@ -22,13 +26,3 @@ class LoginPageModel(WebstrModel):
     error_label = PageElement(
         by=By.XPATH,
         locator='//*[@ng-bind="login.errorMsg"]/..')
-
-    def __init__(self, driver):
-        """
-        Save the webdriver instance to attribute.
-
-        Parameters:
-            driver: webdriver instance
-        """
-        self.location = pytest.config.getini("usm_web_url")
-        super(WebstrModel, self).__init__(driver)
