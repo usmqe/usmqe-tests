@@ -3,6 +3,8 @@ Login page abstraction.
 """
 
 
+import pytest
+
 from webstr.core import WebstrPage
 from webstr.selenium.ui.support import WaitForWebstrPage
 

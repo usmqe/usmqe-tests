@@ -3,8 +3,6 @@ Common page model for login page.
 """
 
 
-import pytest
-
 from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
 
