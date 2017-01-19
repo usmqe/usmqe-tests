@@ -246,7 +246,7 @@ def test_user_get_not_found():
     test.logout()
 
 
-def test_user_add_del(self):
+def test_user_add_del():
     """@pylatest api/user.add_delete
     API-users: add and delete
     *************************
