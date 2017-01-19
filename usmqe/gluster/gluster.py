@@ -126,7 +126,7 @@ class GlusterCommon(object):
         """
         # TODO change to right path to hostnames
         hosts = self.run_on_node(node=host, command="peer status").findtext(
-            "./volInfo/volumes/volume/name")
+            "./peerStatus/peer/hostnames/hostname")
         LOGGER.debug("Hosts in trusted pool: %s" % hosts)
         return hosts
 
