@@ -17,10 +17,10 @@ class CommonTestCase(test.UITestCase):
 
     Atributes:
         loginpage - LoginPage object instance
-        navbar - NavMenuBars instance
+        init_object - Initial page deputy instance
     """
     loginpage = None
-    navbar = None
+    init_object = None
 
 
 @pytest.fixture(scope="function", autouse=True)

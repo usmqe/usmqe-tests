@@ -21,7 +21,7 @@ def not_test_it(log_in, testcase_end):
     with prepared log in outside of test
     """
     pytest.check(log_in.loginpage)
-    pytest.check(log_in.navbar)
+    pytest.check(log_in.init_object)
 
 
 def test_positive_login(testcase_set, testcase_end):
