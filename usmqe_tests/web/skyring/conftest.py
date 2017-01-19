@@ -17,7 +17,9 @@ def log_in(testcase_set):
     that the default user is already logged in
     for the test to work should extend this class.
     """
-    testcase_set.loginpage = loginpage.LoginPage(testcase_set.driver)
+    testcase_set.loginpage = loginpage.LoginPage(
+        testcase_set.driver,
+        pytest.config.getini("usm_web_url"))
     testcase_set.navbar = testcase_set.loginpage.login_user(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))

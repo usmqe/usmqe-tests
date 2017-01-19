@@ -28,12 +28,14 @@ def test_positive_login(testcase_set, testcase_end):
     """@usmid web/login_positive
     Login as valid user.
     """
-    loginpage_inst = loginpage.LoginPage(testcase_set.driver)
+    loginpage_inst = loginpage.LoginPage(
+        testcase_set.driver,
+        pytest.config.getini("usm_web_url"))
+    page_inst = loginpage_inst.login_user(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
     pytest.check(
-        loginpage_inst.login_user(
-            pytest.config.getini("usm_username"),
-            pytest.config.getini("usm_password")
-        ).__class__.__name__ == 'NavMenuBars',
+        page_inst.__class__.__name__ == 'NavMenuBars',
         "Login and wait for main page.")
 
 
@@ -49,9 +51,11 @@ def test_negative_login(testcase_set, testcase_end,
     """
     if username is True:
         username = pytest.config.getini("usm_username")
-    if password is None:
+    if password is True:
         password = pytest.config.getini("usm_password")
-    loginpage_inst = loginpage.LoginPage(testcase_set.driver)
+    loginpage_inst = loginpage.LoginPage(
+        testcase_set.driver,
+        pytest.config.getini("usm_web_url"))
     pytest.check(
         loginpage_inst.fill_form_values(username, password),
         "Fill bad credentials")
@@ -74,7 +78,9 @@ def test_login_positive_enter(testcase_set, testcase_end):
     """@usmid web/login_positive_enter
     Submit login form by "Enter" key
     """
-    loginpage_inst = loginpage.LoginPage(testcase_set.driver)
+    loginpage_inst = loginpage.LoginPage(
+        testcase_set.driver,
+        pytest.config.getini("usm_web_url"))
     pytest.check(
         loginpage_inst.fill_form_values(
             pytest.config.getini("usm_username"),

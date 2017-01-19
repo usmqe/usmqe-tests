@@ -13,7 +13,7 @@ def refresh_driver(testcase, relogin=False):
     it logs again anyway
 
     Atributes:
-        testcase - instance of UITestCase
+        testcase - instance of webstr.core.test.UITestCase
         relogin - reload driver and log again
 
     Returns:

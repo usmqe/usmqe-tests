@@ -3,8 +3,6 @@ Login page abstraction.
 """
 
 
-import pytest
-
 from webstr.core import WebstrPage
 from webstr.selenium.ui.support import WaitForWebstrPage
 
@@ -27,7 +25,7 @@ class LoginPage(WebstrPage):
     _label = 'login page'
     _required_elems = ['username', 'password', 'login_btn']
 
-    def __init__(self, driver):
+    def __init__(self, driver, location):
         """ init
         Note: _location has to be initialized here as it needs
             a config parameter which is not know before the actual run
@@ -35,8 +33,9 @@ class LoginPage(WebstrPage):
 
         Atributes:
             driver: web driver
+            location: web URL
         """
-        self._location = pytest.config.getini("usm_web_url")
+        self._location = location
         super(self.__class__, self).__init__(driver)
 
     def fill_form_values(self, username, password):
