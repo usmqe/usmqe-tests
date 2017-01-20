@@ -75,7 +75,7 @@ def test_cluster_import_valid():
 
         """
     nodes = api.get_nodes()
-    trusted_pool = gluster.get_hosts_from_trusted_pool(nodes[0]["hostname"])
+    trusted_pool = storage.get_hosts_from_trusted_pool(nodes[0]["hostname"])
     node_ids = [x["node_id"] for x in nodes if x["hostname"] in trusted_pool]
     pytest.check(len(trusted_pool) == len(node_ids))
     cluster_data = {

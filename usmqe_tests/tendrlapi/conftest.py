@@ -5,7 +5,19 @@ import usmqe.inventory as inventory
 
 
 def generate_test_parameters(*args):
-    return [tuple(fixture1[1] if index1 == index2 else fixture1[0]
+    """ From input consisting of single values, lists or tuples of test parameters
+    in format:
+    (positive1, negative1), (positive2, negative2) .. (positiveN, negativeN)
+    is created created list of tuples with length of *args. These tuples are mixture
+    of positive and negative parameters with at least one negative parameter.
+    e.g.: [(positive1,negative2,positive3), (negative1,negative2,positive3), ...]
+
+    Args:
+        args: tuples of given format
+    """
+    return [tuple(fixture1[1] if index1 == index2 else tuple(fixture1)[0]
+            if type(fixture1) is not tuple or type(fixture1) is not list
+            else fixture1[0]
             for index2, fixture2 in enumerate(args))
             for index1, fixture1 in enumerate(args)]
 
