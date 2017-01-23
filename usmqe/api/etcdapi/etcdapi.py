@@ -36,14 +36,14 @@ class ApiCommon(ApiBase):
         pytest.check(current_status == status, issue=issue)
         return current_status
 
-    def get_job_attribute(self, cluster_id, attribute):
+    def get_job_attribute(self, job_id, attribute):
         """ Get required attribute of given cluster.
 
         Args:
-            cluster_id: tendrl id of cluster
+            job_id: id of created job
             attribute: attribute that is in given cluster
         """
-        pattern = "keys/queue/{}".format(cluster_id)
+        pattern = "keys/queue/{}".format(job_id)
         response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
         self.check_response(response)
         return json.loads(response.json()["node"]["value"])[attribute]
