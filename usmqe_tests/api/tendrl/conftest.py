@@ -4,24 +4,6 @@ from usmqe.gluster import gluster
 import usmqe.inventory as inventory
 
 
-def generate_test_parameters(*args):
-    """ From input consisting of single values, lists or tuples of test parameters
-    in format:
-    (positive1, negative1), (positive2, negative2) .. (positiveN, negativeN)
-    is created created list of tuples with length of *args. These tuples are mixture
-    of positive and negative parameters with at least one negative parameter.
-    e.g.: [(positive1,negative2,positive3), (negative1,negative2,positive3), ...]
-
-    Args:
-        args: tuples of given format
-    """
-    return [tuple(fixture1[1] if index1 == index2 else tuple(fixture1)[0]
-            if type(fixture1) is not tuple or type(fixture1) is not list
-            else fixture1[0]
-            for index2, fixture2 in enumerate(args))
-            for index1, fixture1 in enumerate(args)]
-
-
 @pytest.fixture
 def valid_cluster_id():
     # TODO change
@@ -29,22 +11,24 @@ def valid_cluster_id():
     return api.get_cluster_list()[0]["cluster_id"]
 
 
+@pytest.mark.parametrize(params=[None, "0000000000000000"])
 @pytest.fixture
-def invalid_cluster_ids():
-    return (None, "0000000000000000")
+def invalid_cluster_id(request):
+    return request.param
 
 
 @pytest.fixture
 def valid_volume_id():
     # TODO change
-    test_gluster = gluster.GlusterCommon()
-    xml = test_gluster.run_on_node(command="volume info")
+    storage = gluster.GlusterCommon()
+    xml = storage.run_on_node(command="volume info")
     return xml.findtext("./volInfo/volumes/volume/id")
 
 
+@pytest.mark.parametrize(params=[None, "0000000000000000"])
 @pytest.fixture
-def invalid_volume_ids():
-    return (None, "0000000000000000")
+def invalid_volume_id(request):
+    return request.param
 
 
 @pytest.fixture
@@ -61,9 +45,10 @@ def valid_volume_bricks():
                 e.strerror))
 
 
+@pytest.mark.parametrize(params=[None, "0000000000000000"])
 @pytest.fixture
-def invalid_volume_bricks():
-    return (None, "0000000000000000")
+def invalid_volume_bricks(request):
+    return request.param
 
 
 @pytest.fixture
@@ -71,6 +56,7 @@ def valid_volume_name():
     return pytest.config.getini("usm_volume_name")
 
 
+@pytest.mark.parametrize(params=[None, "./,!@##$%^&*()__{}|:';/<*+>)("])
 @pytest.fixture
-def invalid_volume_names():
-    return (None, "./,!@##$%^&*()__{}|:';/<*+>)(")
+def invalid_volume_name(request):
+    return request.param

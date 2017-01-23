@@ -74,21 +74,17 @@ def test_create_volume_valid(valid_cluster_id, valid_bricks):
             There should be listed gluster volume named ``Vol_test``.
 
             """
-    test_gluster = gluster.GlusterCommon()
-    test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"))
+    storage = gluster.GlusterCommon()
+    storage.find_volume_name(pytest.config.getini("usm_volume_name"))
 
-    volume_id = valid_volume_id()
+    # TODO change
+    xml = storage.run_on_node(command="volume info")
+    volume_id = xml.findtext("./volInfo/volumes/volume/id")
     value = api.get_volume_attribute(valid_cluster_id, volume_id, "name")
     pytest.check(value == pytest.config.getini("usm_volume_name"))
 
 
-@pytest.mark.parametrize("cluster_id, volume_name, volume_bricks",
-                         generate_test_parameters(
-                             (valid_cluster_id, invalid_cluster_ids),
-                             (valid_volume_name, invalid_volume_names),
-                             (valid_bricks, invalid_bricks)
-                             ))
-def test_create_volume_invalid(cluster_id, volume_name, volume_bricks):
+def test_create_volume_invalid(invalid_cluster_id, invalid_volume_name, invalid_volume_bricks):
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -114,11 +110,11 @@ def test_create_volume_invalid(cluster_id, volume_name, volume_bricks):
     api = tendrlapi.ApiGluster()
 
     volume_data = {
-        "Volume.volname": volume_name,
-        "Volume.bricks": volume_bricks,
+        "Volume.volname": invalid_volume_name,
+        "Volume.bricks": invalid_volume_bricks,
     }
 
-    job_id = api.create_volume(cluster_id, volume_data)["job_id"]
+    job_id = api.create_volume(invalid_cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
     etcd_api.wait_for_job_status(
             job_id,
@@ -142,18 +138,13 @@ def test_start_volume_valid(valid_cluster_id, valid_volume_id):
     pytest.check(value == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
 
 
-@pytest.mark.parametrize("cluster_id, volume_name",
-                         generate_test_parameters(
-                             (valid_cluster_id, invalid_cluster_ids),
-                             (valid_volume_name, invalid_volume_names),
-                             ))
-def test_start_volume_invalid(cluster_id, volume_name):
+def test_start_volume_invalid(invalid_cluster_id, invalid_volume_name):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": volume_name
+        "Volume.volname": invalid_volume_name
     }
 
-    job_id = api.start_volume(cluster_id, volume_data)["job_id"]
+    job_id = api.start_volume(invalid_cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
     etcd_api.wait_for_job_status(
             job_id,
@@ -162,10 +153,10 @@ def test_start_volume_invalid(cluster_id, volume_name):
     # TODO check correctly server response or etcd job status
 
 
-def test_stop_volume_valid(valid_cluster_id):
+def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
+        "Volume.volname": valid_volume_name,
     }
 
     job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
@@ -177,18 +168,13 @@ def test_stop_volume_valid(valid_cluster_id):
     pytest.check(value == "Stopped", issue="https://github.com/Tendrl/tendrl-api/issues/56")
 
 
-@pytest.mark.parametrize("cluster_id, volume_name",
-                         generate_test_parameters(
-                             (valid_cluster_id, invalid_cluster_ids),
-                             (valid_volume_name, invalid_volume_names),
-                             ))
-def test_stop_volume_invalid(cluster_id, volume_name):
+def test_stop_volume_invalid(invalid_cluster_id, invalid_volume_name):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": volume_name,
+        "Volume.volname": invalid_volume_name,
     }
 
-    job_id = api.stop_volume(cluster_id, volume_data)["job_id"]
+    job_id = api.stop_volume(invalid_cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
     etcd_api.wait_for_job_status(
             job_id,
@@ -256,12 +242,7 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
     pytest.check(value == "True", issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
-@pytest.mark.parametrize("cluster_id, volume_id",
-                         generate_test_parameters(
-                             (valid_cluster_id, invalid_cluster_ids),
-                             (valid_volume_id, invalid_volume_id),
-                             ))
-def test_delete_volume_invalid(cluster_id, volume_id):
+def test_delete_volume_invalid(invalid_cluster_id, invalid_volume_id):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -286,11 +267,11 @@ def test_delete_volume_invalid(cluster_id, volume_id):
                 """
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": cluster_id,
-        "Volume.vol_id": volume_id
+        "Volume.volname": invalid_cluster_id,
+        "Volume.vol_id": invalid_volume_id
     }
 
-    job_id = api.delete_volume(cluster_id, volume_data)["job_id"]
+    job_id = api.delete_volume(invalid_cluster_id, volume_data)["job_id"]
     etcd_api = etcdapi.ApiCommon()
     etcd_api.wait_for_job_status(
             job_id,
