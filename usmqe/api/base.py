@@ -32,13 +32,13 @@ class ApiBase(object):
         LOGGER.debug("request.body:  {}".format(resp.request.body))
         LOGGER.debug("request.headers:  {}".format(resp.request.headers))
         LOGGER.debug("response.cookies: {}".format(resp.cookies))
-        LOGGER.debug("response.content: {}".format(resp.content))
+        #LOGGER.debug("response.content: {}".format(resp.content))
         LOGGER.debug("response.headers: {}".format(resp.headers))
-        try:
-            LOGGER.debug(
-                "response.json:    {}".format(resp.json(encoding='unicode')))
-        except ValueError:
-            LOGGER.debug("response.json:    ")
+        #try:
+        #    LOGGER.debug(
+        #        "response.json:    {}".format(resp.json(encoding='unicode')))
+        #except ValueError:
+        #    LOGGER.debug("response.json:    ")
         LOGGER.debug("response.ok:      {}".format(resp.ok))
         LOGGER.debug("response.reason:  {}".format(resp.reason))
         LOGGER.debug("response.status:  {}".format(resp.status_code))
@@ -59,10 +59,10 @@ class ApiBase(object):
             asserts.update(asserts_in)
         # if "cookies" in asserts and asserts["cookies"] is None:
         #    pytest.check(not(resp.cookies), "Cookies should be empty.")
-        try:
-            json.dumps(resp.json(encoding='unicode'))
-        except ValueError as e:
-            pytest.check(False, issue="Bad response json format: {}".format(e.msg))
+        #try:
+        #    json.dumps(resp.json(encoding='unicode'))
+        #except ValueError as e:
+        #    pytest.check(False, issue="Bad response json format: {}".format(e.msg))
         pytest.check(
             resp.ok == asserts["ok"],
             "There should be ok == {}".format(str(asserts["ok"])))

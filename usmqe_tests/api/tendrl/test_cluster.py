@@ -75,13 +75,12 @@ def test_cluster_import_valid():
 
         """
     nodes = api.get_nodes()
-    trusted_pool = storage.get_hosts_from_trusted_pool(nodes[0]["hostname"])
-    node_ids = [x["node_id"] for x in nodes if x["hostname"] in trusted_pool]
+    trusted_pool = storage.get_hosts_from_trusted_pool(nodes["nodes"][0]["fqdn"])
+    node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in trusted_pool]
     pytest.check(len(trusted_pool) == len(node_ids))
     cluster_data = {
-        "Node[]": node_ids,
-        "Tendrl_context.sds_name": "gluster",
-        "Tendrl_context.sds_version": pytest.config.getini("usm_gluster_version")
+        "node_ids": node_ids,
+        "sds_type": "gluster",
     }
 
     job_id = api.import_cluster(cluster_data)["job_id"]
@@ -90,7 +89,7 @@ def test_cluster_import_valid():
     etcd_api.wait_for_job_status(job_id)
 
     cluster_id = etcd_api.get_job_attribute(
-        cluster_id=job_id, attribute="cluster_id")
+        job_id=job_id, attribute="integration_id")
     pytest.check([x for x in api.get_cluster_list() if x["cluster_id"] == cluster_id])
     # TODO add test case for checking imported machines
 

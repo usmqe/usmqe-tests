@@ -13,6 +13,43 @@ class ApiCommon(ApiBase):
     """ Common methods for Tendrl REST API.
     """
 
+    def get_job_attribute(self, job_id, attribute="status"):
+        """ Get attrubute from job specified by job_id.
+
+        Name:       "get_job_attribute",
+        Method:     "GET",
+        Pattern     "jobs",
+
+        Args:
+            job_id:     id of job
+            attribute:  attribute which value is looked for
+        """
+        pattern = "jobs{}".format(job_id)
+        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()[attribute]
+
+    def wait_for_job_status(self, job_id, max_count=30, status="finished", issue=None):
+        """ Repeatedly check if status of job with provided id is in reqquired state.
+
+        Args:
+            job_id: id provided by api request
+            max_count: maximum of iterations
+            status: expected status of job that is checked
+            issue: pytest issue message (usually github issue link)
+        """
+        count = 0
+        current_status = ""
+        while (current_status != status and count < max_count):
+            current_status = self.get_job_attribute(job_id, "status")
+            count += 1
+            time.sleep(1)
+        LOGGER.debug("status: %s" % current_status)
+        pytest.check(current_status == status, issue=issue)
+        return current_status
+
+
     def login(self, username, password, asserts_in=None):
         """ Login to REST API
 
@@ -67,7 +104,7 @@ class ApiGluster(ApiCommon):
         Args:
             cluster_data: json structure containing data that will be sent to api server
         """
-        pattern = "GlusterImportCluster"
+        pattern = "ImportCluster"
         response = requests.post(pytest.config.getini("usm_api_url") + pattern,
                                  json=cluster_data)
         asserts = {
@@ -89,7 +126,7 @@ class ApiGluster(ApiCommon):
         response = requests.get(pytest.config.getini("usm_api_url") + pattern)
         self.print_req_info(response)
         self.check_response(response)
-        return response.json()
+        return response.json()["clusters"]
 
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id

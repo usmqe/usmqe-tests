@@ -125,8 +125,10 @@ class GlusterCommon(object):
         Returns host names from trusted pool with given hostname.
         """
         # TODO change to right path to hostnames
-        hosts = self.run_on_node(node=host, command="peer status").findtext(
+        hosts = self.run_on_node(node=host, command="peer status").findall(
             "./peerStatus/peer/hostnames/hostname")
+        hosts = [x.text for x in hosts]
+        hosts.append(host)
         LOGGER.debug("Hosts in trusted pool: %s" % hosts)
         return hosts
 
