@@ -54,7 +54,6 @@ class ApiCommon(ApiBase):
         pytest.check(current_status == status, issue=issue)
         return current_status
 
-
     def login(self, username, password, asserts_in=None):
         """ Login to REST API
 
