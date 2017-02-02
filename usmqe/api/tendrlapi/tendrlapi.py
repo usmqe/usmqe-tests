@@ -3,6 +3,7 @@ Tendrl REST API.
 """
 
 import requests
+import time
 import pytest
 from usmqe.api.base import ApiBase
 
@@ -13,7 +14,7 @@ class ApiCommon(ApiBase):
     """ Common methods for Tendrl REST API.
     """
 
-    def get_job_attribute(self, job_id, attribute="status"):
+    def get_job_attribute(self, job_id, attribute="status", section=None):
         """ Get attrubute from job specified by job_id.
 
         Name:       "get_job_attribute",
@@ -23,12 +24,16 @@ class ApiCommon(ApiBase):
         Args:
             job_id:     id of job
             attribute:  attribute which value is looked for
+            section:    section of response in which is attribute located
         """
-        pattern = "jobs{}".format(job_id)
+        pattern = "jobs/{}".format(job_id)
         response = requests.get(pytest.config.getini("usm_api_url") + pattern)
         self.print_req_info(response)
         self.check_response(response)
-        return response.json()[attribute]
+        if section:
+            return response.json()[section][attribute]
+        else:
+            return response.json()[attribute]
 
     def wait_for_job_status(self, job_id, max_count=30, status="finished", issue=None):
         """ Repeatedly check if status of job with provided id is in reqquired state.

@@ -5,7 +5,6 @@ REST API test suite - gluster cluster
 import pytest
 
 from usmqe.api.tendrlapi import tendrlapi
-from usmqe.api.etcdapi import etcdapi
 from usmqe.gluster import gluster
 
 
@@ -85,12 +84,13 @@ def test_cluster_import_valid():
 
     job_id = api.import_cluster(cluster_data)["job_id"]
 
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id)
 
-    cluster_id = etcd_api.get_job_attribute(
-        job_id=job_id, attribute="integration_id")
-    pytest.check([x for x in api.get_cluster_list() if x["cluster_id"] == cluster_id])
+    integration_id = api.get_job_attribute(
+        job_id=job_id, attribute="integration_id", section="parameters")
+    LOGGER.debug("integration_id: %s" % integration_id)
+
+    pytest.check([x for x in api.get_cluster_list() if x["integration_id"] == integration_id])
     # TODO add test case for checking imported machines
 
 
@@ -149,17 +149,15 @@ def test_cluster_import_invalid():
         """
     nodes = api.get_nodes()
     cluster_data = {
-        "Node[]": ["000000-0000-0000-0000-000000000" for x in nodes],
-        "Tendrl_context.sds_name": "gluster",
-        "Tendrl_context.sds_version": pytest.config.getini("usm_gluster_version")
+        "node_ids": ["000000-0000-0000-0000-000000000" for x in nodes],
+        "sds_type": "gluster"
     }
 
     job_id = api.import_cluster(cluster_data)["job_id"]
 
     # TODO check true response code of etcd (should be some kind of error)
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id)
 
-    cluster_id = etcd_api.get_job_attribute(
-        cluster_id=job_id, attribute="cluster_id")
-    pytest.check(not [x for x in api.get_cluster_list() if x["cluster_id"] == cluster_id])
+    integration_id = api.get_job_attribute(
+        job_id=job_id, attribute="integration_id")
+    pytest.check(not [x for x in api.get_cluster_list() if x["integration_id"] == integration_id])

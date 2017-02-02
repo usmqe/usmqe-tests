@@ -5,7 +5,6 @@ import pytest
 
 from usmqe.api.tendrlapi import tendrlapi
 from usmqe.gluster import gluster
-from usmqe.api.etcdapi import etcdapi
 
 
 LOGGER = pytest.get_logger('volume_test', module=True)
@@ -20,7 +19,7 @@ Teardown
 """
 
 
-def test_create_volume_valid(valid_cluster_id, valid_bricks):
+def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -47,12 +46,11 @@ def test_create_volume_valid(valid_cluster_id, valid_bricks):
 
     volume_data = {
         "Volume.volname": pytest.config.getini("usm_volume_name"),
-        "Volume.bricks": valid_bricks
+        "Volume.bricks": valid_volume_bricks
     }
 
     job_id = api.create_volume(valid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -115,8 +113,7 @@ def test_create_volume_invalid(invalid_cluster_id, invalid_volume_name, invalid_
     }
 
     job_id = api.create_volume(invalid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(
+    api.wait_for_job_status(
             job_id,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
@@ -130,8 +127,7 @@ def test_start_volume_valid(valid_cluster_id, valid_volume_id):
     }
 
     job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
     value = api.get_volume_attribute(valid_cluster_id, valid_volume_id, "status")
@@ -145,8 +141,7 @@ def test_start_volume_invalid(invalid_cluster_id, invalid_volume_name):
     }
 
     job_id = api.start_volume(invalid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(
+    api.wait_for_job_status(
             job_id,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
@@ -160,8 +155,7 @@ def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id)
     }
 
     job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Stopped")
     value = api.get_volume_attribute(valid_cluster_id, valid_volume_id, "status")
@@ -175,8 +169,7 @@ def test_stop_volume_invalid(invalid_cluster_id, invalid_volume_name):
     }
 
     job_id = api.stop_volume(invalid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(
+    api.wait_for_job_status(
             job_id,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
@@ -213,8 +206,7 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
     }
 
     job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -272,8 +264,7 @@ def test_delete_volume_invalid(invalid_cluster_id, invalid_volume_id):
     }
 
     job_id = api.delete_volume(invalid_cluster_id, volume_data)["job_id"]
-    etcd_api = etcdapi.ApiCommon()
-    etcd_api.wait_for_job_status(
+    api.wait_for_job_status(
             job_id,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
