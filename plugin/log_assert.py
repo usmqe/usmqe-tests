@@ -50,7 +50,7 @@ def pytest_namespace():
     :return: Dictionary of name: values added to the pytest namespace.
     """
 
-    def check(expr, msg='', hard=False, issue=''):
+    def check(expr, msg='', hard=False, issue=None):
         """
         Checks the expression, if it's false, add it to the
         list of failed assumptions. Also, add the locals at each failed
@@ -82,7 +82,7 @@ def pytest_namespace():
                 pretty_locals = ["%-10s = %s" % (name, saferepr(val))
                                  for name, val in frame.f_locals.items()]
                 pytest._assumption_locals.append(pretty_locals)
-            if issue != '':
+            if issue is not None:
                 entry = '{entry}\n\tKnown issue: {issue}'.format(**locals())
                 CHECKLOGGER.waived(entry)
                 CHECKLOGGER.add_issue(issue)
