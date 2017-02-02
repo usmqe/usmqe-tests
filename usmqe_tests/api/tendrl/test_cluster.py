@@ -90,7 +90,9 @@ def test_cluster_import_valid():
         job_id=job_id, attribute="integration_id", section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
 
-    pytest.check([x for x in api.get_cluster_list() if x["integration_id"] == integration_id])
+    pytest.check(
+        [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
+        "If integration_id from job list is not in cluster list")
     # TODO add test case for checking imported machines
 
 
@@ -156,8 +158,10 @@ def test_cluster_import_invalid():
     job_id = api.import_cluster(cluster_data)["job_id"]
 
     # TODO check true response code of etcd (should be some kind of error)
-    api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id, status="failed")
 
     integration_id = api.get_job_attribute(
         job_id=job_id, attribute="integration_id")
-    pytest.check(not [x for x in api.get_cluster_list() if x["integration_id"] == integration_id])
+    pytest.check(
+        not [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
+        "If integration_id from job list is not in cluster list")
