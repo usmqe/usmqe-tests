@@ -25,6 +25,7 @@ def test_initial_import_cluster(log_in, testcase_end):
     import_cluster_page.import_click()
 # TODO: Wait till the cluster is imported, check task
 #       When finished, remove following line(s)
+#       https://github.com/Tendrl/usmqe-tests/issues/33
     import time
     time.sleep(60)
     log_in.driver.get(pytest.config.getini("usm_web_url"))

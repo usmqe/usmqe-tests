@@ -60,6 +60,9 @@ class Home(WebstrPage):
         'import_btn'
     ]
 
+    # NOTE: this will be probably splitted to two methods
+    #       import_gluster_cluster and import_ceph_cluster
+    #       current one is about importing gluster cluster
     def import_cluster(self, click_only=False):
         """
         Opens import cluster dialog.

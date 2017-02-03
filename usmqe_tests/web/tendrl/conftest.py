@@ -21,6 +21,8 @@ def log_in(testcase_set):
     """
 # NOTE: For now it just solves the landing page - no log in
 #       Remove following line when log in is done
+# TODO
+# https://github.com/Tendrl/specifications/issues/128
     testcase_set.driver.get(pytest.config.getini("usm_web_url"))
     testcase_set.init_object = get_landing_page(testcase_set.driver)
     msg = "Initial element - Home page or navigation part of the main page "\

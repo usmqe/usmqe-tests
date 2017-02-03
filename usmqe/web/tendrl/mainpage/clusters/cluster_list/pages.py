@@ -25,38 +25,29 @@ class ClustersMenu(WebstrPage):
         """
         self._model.import_btn.click()
 
-    def import_cluster(self, name, hosts=None):
-        """
-        Import cluster via the wizard.
-
-        Args:
-            name (str): name of cluster
-            hosts (list): list of dictionaries
-                          {'hostname': <hostname>,
-                           'role': <'Monitor' or 'OSD Host'>}
-                          by default all host are selected with default roles
-        """
-        # TODO: support other options
-        self.start_import_cluster_wizard()
-        # TODO: close the warning dialogue about unaccepted hosts if needed
-#        current_page = wizard.ImportClusterConfigure(self.driver)
-# Coming soon...
-#        current_page.get_model_element("next_btn").click()
-#        current_page.name = name
-#        current_page.click_next()
-#        current_page = wizard.CreateClusterSelectHost(self.driver)
-#        if hosts is None:
-#            current_page.select_all()
-#        else:
-#            pass
-#            # TODO: click on some hosts and choose their role
-#        current_page.click_next()
-#        current_page = wizard.CreateClusterChooseNetwork(self.driver)
-#        current_page.click_next()
-#        current_page = wizard.CreateClusterStorageProfiles(self.driver)
-#        current_page.click_next()
-#        current_page = wizard.CreateClusterReview(self.driver)
-#        current_page.create()
+# TODO
+#    # NOTE: it will be probably splitted to two methods
+#    # import_gluster_cluster and import_ceph_cluster
+#    def import_cluster(self, name, hosts=None):
+#        """
+#        Import cluster via the wizard.
+#
+#        Args:
+#            name (str): name of cluster
+#            hosts (list): list of dictionaries
+#                          {'hostname': <hostname>,
+#                           'role': <'Monitor' or 'OSD Host'>}
+#                          by default all host are selected with default roles
+#        """
+#        # TODO: support other options
+#        self.start_import_cluster_wizard()
+#        current_page = wizard.ImportCluster(self.driver)
+#        # TODO: choose cluster
+#        # TODO: set name https://github.com/Tendrl/api/issues/70
+#        # TODO: check and work with hosts
+#        current_page.import_click()
+#        # TODO: work or return the object representing
+#        #       next page with link to a task
 
 
 class ClusterRow(contentviews.ListViewRow):
@@ -67,6 +58,7 @@ class ClusterRow(contentviews.ListViewRow):
     _required_elems = []
 
 # Coming soon...
+# waiting for the model, see models.py
 #    @property
 #    def name(self):
 #      """ returns cluster name """

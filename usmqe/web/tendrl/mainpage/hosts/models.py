@@ -15,15 +15,16 @@ class HostsMenuModel(WebstrModel):
     Hosts page top menu
     """
     header = PageElement(by=By.XPATH, locator="//h1[text()='Hosts']")
-    search = form.TextInput(
-        by=By.XPATH,
-        locator="//*[@placeholder='Search'][@ng-model='node.search']")
+    # TODO add other elements filter, order_by and add button
 
 
 class HostItemModel(contentviews.ListViewRowModel):
     """
     An item (row) in a Hosts list.
     """
+# TODO
+# https://github.com/Tendrl/specifications/pull/95
+# https://github.com/Tendrl/specifications/pull/77
 #    type_label = PageElement(by=By.XPATH, locator=".//span[@ng-bind='host.cluster_type']")
 #    status_icon = PageElement(by=By.XPATH, locator=".//span[contains(@class,'status-icon')]")
     name_label = PageElement(

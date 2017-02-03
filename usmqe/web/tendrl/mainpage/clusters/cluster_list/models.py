@@ -31,6 +31,7 @@ class ClusterRowModel(contentviews.ListViewRowModel):
     Row in Cluster table model.
     """
 #   TODO
+#   https://github.com/Tendrl/specifications/pull/82
 #    type_text = PageElement(
 #        by=By.XPATH,
 #        locator='.//span[contains(@class, \'vertical-text-for-\')]')

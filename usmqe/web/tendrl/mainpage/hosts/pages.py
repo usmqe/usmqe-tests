@@ -15,9 +15,9 @@ class HostsMenu(WebstrPage):
     """
     _model = m_hosts.HostsMenuModel
     _label = 'hosts top menu'
-    _required_elems = ['header', 'search']
+    _required_elems = ['header']
 
-# TODO use search
+# TODO use filter
 
 
 class HostItem(contentviews.ListViewRow):
