@@ -150,12 +150,12 @@ class GlusterCommon(object):
         if expected:
             pytest.check(
                 found,
-                "If {} is among volumes from output \
+                "{} should be among volumes from output \
                 of gluster volume info command".format(name))
         else:
             pytest.check(
                 not found,
-                "If {} is not among volumes from output \
+                "{} should not be among volumes from output \
                 of gluster volume info command".format(name))
         return found
 
@@ -167,7 +167,9 @@ class GlusterCommon(object):
         real_status = self.run_on_node(command="volume info").findtext(
             "./volInfo/volumes/volume/statusStr")
         LOGGER.debug("Volume_status: %s" % real_status)
-        pytest.check(status == real_status)
+        pytest.check(
+            status == real_status,
+            "Volume status is {}, should be {}".format(status, real_status))
 
 
 class GlusterVolume(GlusterCommon):
