@@ -148,9 +148,15 @@ class GlusterCommon(object):
             if volume_name == name:
                 found = True
         if expected:
-            pytest.check(found)
+            pytest.check(
+                found,
+                "If {} is among volumes from output \
+                of gluster volume info command".format(name))
         else:
-            pytest.check(not found)
+            pytest.check(
+                not found,
+                "If {} is not among volumes from output \
+                of gluster volume info command".format(name))
         return found
 
     # TODO do it universal with name checking

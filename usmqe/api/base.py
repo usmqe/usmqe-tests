@@ -60,7 +60,7 @@ class ApiBase(object):
         try:
             json.dumps(resp.json(encoding='unicode'))
         except ValueError as e:
-            pytest.check(False, issue="Bad response json format: {}".format(e.msg))
+            pytest.check(False, "Bad response json format: {}".format(e.msg))
         pytest.check(
             resp.ok == asserts["ok"],
             "There should be ok == {}".format(str(asserts["ok"])))
@@ -91,4 +91,6 @@ class ApiBase(object):
                          "Unknown key '{}' with value '{}' (type: '{}').".format(
                              key, data[key], type(data[key])))
             if key in expected_keys:
-                pytest.check(isinstance(data[key], schema[key]))
+                pytest.check(
+                    isinstance(data[key], schema[key]),
+                    "{} should be instance of {}".format(data[key], schema[key]))

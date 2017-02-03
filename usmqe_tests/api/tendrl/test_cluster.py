@@ -76,7 +76,10 @@ def test_cluster_import_valid():
     nodes = api.get_nodes()
     trusted_pool = storage.get_hosts_from_trusted_pool(nodes["nodes"][0]["fqdn"])
     node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in trusted_pool]
-    pytest.check(len(trusted_pool) == len(node_ids))
+    pytest.check(
+        len(trusted_pool) == len(node_ids),
+        "number of nodes in trusted pool ({}) should correspond \
+        with number of imported nodes ({})".format(len(trusted_pool), len(node_ids)))
     cluster_data = {
         "node_ids": node_ids,
         "sds_type": "gluster",
@@ -92,7 +95,7 @@ def test_cluster_import_valid():
 
     pytest.check(
         [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
-        "If integration_id from job list is not in cluster list")
+        "Job list integration_id '{}' should be present in cluster list.".format(integration_id))
     # TODO add test case for checking imported machines
 
 
@@ -164,4 +167,4 @@ def test_cluster_import_invalid():
         job_id=job_id, attribute="integration_id")
     pytest.check(
         not [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
-        "If integration_id from job list is not in cluster list")
+        "Job list integration_id '{}' should be present in cluster list.".format(integration_id))

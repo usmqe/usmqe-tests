@@ -33,7 +33,10 @@ class ApiCommon(ApiBase):
             count += 1
             time.sleep(1)
         LOGGER.debug("status: %s" % current_status)
-        pytest.check(current_status == status, issue=issue)
+        pytest.check(
+            current_status == status,
+            msg="Job status is {} and should be {}".format(current_status, status),
+            issue=issue)
         return current_status
 
     def get_job_attribute(self, job_id, attribute):
