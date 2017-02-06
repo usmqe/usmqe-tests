@@ -139,22 +139,14 @@ class GlusterCommon(object):
         volume_name = self.get_volume_names()
         found = False
         # TODO test what vol_name looks like when there are more volumes name
-        if isinstance(volume_name, list):
-            for item in volume_name:
-                # TODO use pytest.check in if?
-                if item == name:
-                    found = True
-        else:
-            if volume_name == name:
-                found = True
         if expected:
             pytest.check(
-                found,
+                name in volume_name if isinstance(volume_name, list) else volume_name == name,
                 "{} should be among volumes from output \
                 of gluster volume info command".format(name))
         else:
             pytest.check(
-                not found,
+                name not in volume_name if isinstance(volume_name, list) else volume_name != name,
                 "{} should not be among volumes from output \
                 of gluster volume info command".format(name))
         return found
