@@ -4,7 +4,6 @@ Common page model for hosts.
 
 
 from webstr.core import WebstrModel, By, PageElement
-from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
 LOCATION = "#/node"
