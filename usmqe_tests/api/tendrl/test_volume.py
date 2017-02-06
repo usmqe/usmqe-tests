@@ -76,7 +76,7 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
     storage.find_volume_name(pytest.config.getini("usm_volume_name"))
 
     # TODO change
-    xml = storage.run_on_node(command="volume info")
+    xml = storage.run_on_node(command="volume info {}".format(pytest.config.getini("usm_volume_name")))
     volume_id = xml.findtext("./volInfo/volumes/volume/id")
     value = api.get_volume_attribute(valid_cluster_id, volume_id, "name")
     pytest.check(value == pytest.config.getini("usm_volume_name"))
