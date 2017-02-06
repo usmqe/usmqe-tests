@@ -7,47 +7,101 @@ from webstr.core import WebstrPage
 from webstr.patternfly.contentviews import pages as contentviews
 
 import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
-# import usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard as wizard
+from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
+    import ImportCluster
 
 
-class ClustersMenu(WebstrPage):
+class ClusterWorkBase(object):
+    """
+    auxiliary base class with methods for work with clusters - create/import
+    """
+
+    def start_import_cluster(self):
+        """
+        auxiliary method for clicking on proper import button
+        """
+        self._model.import_btn.click()
+
+    def start_create_cluster(self):
+        """
+        auxiliary method for clicking on proper create button
+        """
+        self._model.create_btn.click()
+
+    def import_gluster_cluster(self, name=None, hosts=None):
+        """
+        import gluster cluster
+
+        Parameters:
+            name (str): name of the cluster
+                        TODO: Not used for now
+                              https://github.com/Tendrl/api/issues/70
+            hosts (list): list of dictionaries
+                          {'hostname': <hostname>, 'release': <release>, ...
+                          for check only
+                          TODO: not used for now
+        """
+        self.start_import_cluster()
+        import_page = ImportCluster(self.driver)
+# TODO: Check hosts list
+        import_page.import_click()
+# TODO: Wait till the cluster is imported
+#       OR (probably better)
+#       work or return the object representing
+#       next page with link to a task
+#       https://github.com/Tendrl/usmqe-tests/issues/33
+
+# TODO
+    def import_ceph_cluster(self, name=None, hosts=None):
+        """
+        import gluster cluster
+
+        Parameters:
+            name (str): name of the cluster
+            hosts (list): list of dictionaries
+                          {'hostname': <hostname>,
+                           'role': <'Monitor' or 'OSD Host'>, ...
+        """
+        raise NotImplementedError('import_ceph_cluster does not exist yet')
+
+# TODO
+    def create_gluster_cluster(self, name=None, hosts=None):
+        """
+        import gluster cluster
+
+        Parameters:
+            name (str): name of the cluster
+                        TODO: Not used for now
+                              https://github.com/Tendrl/api/issues/70
+            hosts (list): list of dictionaries
+                          {'hostname': <hostname>, 'release': <release>, ...
+                          for check only
+        """
+        raise NotImplementedError('create_gluster_cluster does not exist yet')
+
+# TODO
+    def create_ceph_cluster(self, name=None, hosts=None):
+        """
+        import gluster cluster
+
+        Parameters:
+            name (str): name of the cluster
+                        TODO: Not used for now
+                              https://github.com/Tendrl/api/issues/70
+            hosts (list): list of dictionaries
+                          {'hostname': <hostname>,
+                           'role': <'Monitor' or 'OSD Host'>, ...
+        """
+        raise NotImplementedError('create_ceph_cluster does not exist yet')
+
+
+class ClustersMenu(WebstrPage, ClusterWorkBase):
     """
     Clusters page top menu
     """
     _model = m_cluster_list.ClustersMenuModel
     _label = 'cluster page top menu'
     _required_elems = ['header', 'search', 'import_btn']
-
-    def start_import_cluster_wizard(self):
-        """
-        Just click on button to start Import Cluster wizard
-        Nothing else is done.
-        """
-        self._model.import_btn.click()
-
-# TODO
-#    # NOTE: it will be probably splitted to two methods
-#    # import_gluster_cluster and import_ceph_cluster
-#    def import_cluster(self, name, hosts=None):
-#        """
-#        Import cluster via the wizard.
-#
-#        Args:
-#            name (str): name of cluster
-#            hosts (list): list of dictionaries
-#                          {'hostname': <hostname>,
-#                           'role': <'Monitor' or 'OSD Host'>}
-#                          by default all host are selected with default roles
-#        """
-#        # TODO: support other options
-#        self.start_import_cluster_wizard()
-#        current_page = wizard.ImportCluster(self.driver)
-#        # TODO: choose cluster
-#        # TODO: set name https://github.com/Tendrl/api/issues/70
-#        # TODO: check and work with hosts
-#        current_page.import_click()
-#        # TODO: work or return the object representing
-#        #       next page with link to a task
 
 
 class ClusterRow(contentviews.ListViewRow):

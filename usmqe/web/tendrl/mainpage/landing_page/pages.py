@@ -12,8 +12,8 @@ from webstr.core import WebstrPage
 
 import usmqe.web.tendrl.mainpage.landing_page.models as m_landing_page
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
-from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
-    import ImportCluster
+from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages\
+    import ClusterWorkBase
 
 
 class LandingException(Exception):
@@ -41,7 +41,7 @@ def get_landing_page(driver):
         raise LandingException('Not expected landing page')
 
 
-class Home(WebstrPage):
+class Home(WebstrPage, ClusterWorkBase):
     """
     Common page object for navigation bars:
 
@@ -59,22 +59,3 @@ class Home(WebstrPage):
         'welcome_message',
         'import_btn'
     ]
-
-    # NOTE: this will be probably splitted to two methods
-    #       import_gluster_cluster and import_ceph_cluster
-    #       current one is about importing gluster cluster
-    def import_cluster(self, click_only=False):
-        """
-        Opens import cluster dialog.
-
-        Parameters:
-            click_only (bool): just click on the link and return None
-
-        Returns:
-            Instance of ImportClusterConfigure from
-            clusters.import_cluster_wizard.pages
-        """
-        self._model.import_btn.click()
-        if click_only:
-            return None
-        return ImportCluster(self.driver)

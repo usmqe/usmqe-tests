@@ -20,9 +20,8 @@ def test_initial_import_cluster(log_in, testcase_end):
                  'Tendrl should route to home page'
                  ' if there is no cluster present',
                  hard=True)
-    import_cluster_page = home_page.import_cluster()
-# TODO: Check hosts list
-    import_cluster_page.import_click()
+
+    home_page.import_gluster_cluster()
 # TODO: Wait till the cluster is imported, check task
 #       When finished, remove following line(s)
 #       https://github.com/Tendrl/usmqe-tests/issues/33
