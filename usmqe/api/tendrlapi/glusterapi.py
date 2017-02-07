@@ -110,7 +110,7 @@ class TendrlApiGluster(TendrlApi):
             volume_data: json structure containing data that will be sent to api server
         """
         pattern = "{}/GlusterDeleteVolume".format(cluster)
-        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
+        response = requests.delete(pytest.config.getini("usm_api_url") + pattern,
                                  json=post_data)
         asserts = {
             "reason": 'Accepted',

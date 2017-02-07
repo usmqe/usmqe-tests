@@ -11,8 +11,7 @@ def valid_cluster_id():
     return api.get_cluster_list()[0]["cluster_id"]
 
 
-@pytest.mark.parametrize(params=[None, "0000000000000000"])
-@pytest.fixture
+@pytest.fixture(params=[None, "0000000000000000"])
 def invalid_cluster_id(request):
     return request.param
 
@@ -25,8 +24,7 @@ def valid_volume_id():
     return xml.findtext("./volInfo/volumes/volume/id")
 
 
-@pytest.mark.parametrize(params=[None, "0000000000000000"])
-@pytest.fixture
+@pytest.fixture(params=[None, "0000000000000000"])
 def invalid_volume_id(request):
     return request.param
 
@@ -45,8 +43,7 @@ def valid_volume_bricks():
                 e.strerror))
 
 
-@pytest.mark.parametrize(params=[None, "0000000000000000"])
-@pytest.fixture
+@pytest.fixture(params=[None, "0000000000000000"])
 def invalid_volume_bricks(request):
     return request.param
 
@@ -56,7 +53,6 @@ def valid_volume_name():
     return pytest.config.getini("usm_volume_name")
 
 
-@pytest.mark.parametrize(params=[None, "./,!@##$%^&*()__{}|:';/<*+>)("])
-@pytest.fixture
+@pytest.fixture(params=[None, "./,!@##$%^&*()__{}|:';/<*+>)("])
 def invalid_volume_name(request):
     return request.param
