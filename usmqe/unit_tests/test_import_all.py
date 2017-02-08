@@ -16,7 +16,8 @@ def list_submodules(module_path, module_prefix):
     For given module, return list of full module path names for all submodules
     recursively.
     """
-    return [name for _, name, _ in pkgutil.walk_packages(path=[module_path], prefix=module_prefix)]
+    return [name for _, name, _ in
+            pkgutil.walk_packages(path=[module_path], prefix=module_prefix)]
 
 
 # parametrize makes this case run for every submodule in webstr module
@@ -25,4 +26,11 @@ def test_import(module):
     """
     Just try to import given module.
     """
-    importlib.import_module(module)
+    try:
+        importlib.import_module(module)
+    # TODO: FIXME Remove try except block when webstr will be public
+    except ImportError as exc:
+        if 'webstr' not in str(exc):
+            raise exc
+        else:
+            pytest.xfail(reason=str(exc))
