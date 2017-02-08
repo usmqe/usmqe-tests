@@ -32,3 +32,5 @@ def test_import(module):
     except ImportError as exc:
         if 'webstr' not in str(exc):
             raise exc
+        else:
+            pytest.xfail(reason=str(exc))
