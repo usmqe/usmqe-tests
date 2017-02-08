@@ -19,6 +19,45 @@ Teardown
 """
 
 
+#TODO create negative test case generator http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
+def test_create_volume_invalid(valid_cluster_id, invalid_volume_name, invalid_volume_bricks):
+    """@pylatest api/gluster.create_volume
+        API-gluster: create_volume
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Get list of attributes needed to use in cluster volume creation with given cluster_id.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                """
+    api = tendrlapi.ApiGluster()
+
+    volume_data = {
+        "Volume.volname": invalid_volume_name,
+        "Volume.bricks": invalid_volume_bricks,
+    }
+
+    job_id = api.create_volume(valid_cluster_id, volume_data)["job_id"]
+    # TODO check correctly server response or etcd job status
+    api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+
+
 def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
@@ -83,71 +122,18 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
 
 
 #TODO create negative test case generator http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
-def test_create_volume_invalid(valid_cluster_id, invalid_volume_name, invalid_volume_bricks):
-    """@pylatest api/gluster.create_volume
-        API-gluster: create_volume
-        ******************************
-
-        .. test_metadata:: author fbalak@redhat.com
-
-        Description
-        ===========
-
-        Get list of attributes needed to use in cluster volume creation with given cluster_id.
-
-        .. test_step:: 1
-
-                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
-                Where cluster_id is set to predefined value.
-
-        .. test_result:: 1
-
-                Server should return response in JSON format:
-
-                Return code should be **202** with data ``{"message": "Accepted"}``.
-                """
+def test_stop_volume_invalid(valid_cluster_id, invalid_volume_name):
     api = tendrlapi.ApiGluster()
-
     volume_data = {
         "Volume.volname": invalid_volume_name,
-        "Volume.bricks": invalid_volume_bricks,
     }
 
-    job_id = api.create_volume(valid_cluster_id, volume_data)["job_id"]
+    job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
+    # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
-    # TODO check correctly server response or etcd job status
-
-
-def test_start_volume_valid(valid_cluster_id, valid_volume_id):
-    api = tendrlapi.ApiGluster()
-    volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
-    }
-
-    job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
-    api.wait_for_job_status(job_id)
-    test_gluster = gluster.GlusterCommon()
-    test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
-    status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
-    pytest.check(status == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
-
-
-#TODO create negative test case generator http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
-def test_start_volume_invalid(valid_cluster_id, invalid_volume_name):
-    api = tendrlapi.ApiGluster()
-    volume_data = {
-        "Volume.volname": invalid_volume_name
-    }
-
-    job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
-    api.wait_for_job_status(
-            job_id,
-            status="failed",
-            issue="https://github.com/Tendrl/tendrl-api/issues/33")
-    # TODO check correctly server response or etcd job status
 
 
 def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id):
@@ -165,18 +151,70 @@ def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id)
 
 
 #TODO create negative test case generator http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
-def test_stop_volume_invalid(valid_cluster_id, invalid_volume_name):
+def test_start_volume_invalid(valid_cluster_id, invalid_volume_name):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": invalid_volume_name,
+        "Volume.volname": invalid_volume_name
     }
 
-    job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
+    job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
+    # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
+
+
+def test_start_volume_valid(valid_cluster_id, valid_volume_id):
+    api = tendrlapi.ApiGluster()
+    volume_data = {
+        "Volume.volname": pytest.config.getini("usm_volume_name"),
+    }
+
+    job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
+    api.wait_for_job_status(job_id)
+    test_gluster = gluster.GlusterCommon()
+    test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
+    status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
+    pytest.check(status == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
+
+
+#TODO create negative test case generator http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
+def test_delete_volume_invalid(valid_cluster_id, invalid_volume_id):
+    """@pylatest api/gluster.delete_volume
+        API-gluster: delete_volume
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Delete gluster volume ``Vol_test`` via API.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                """
+    api = tendrlapi.ApiGluster()
+    volume_data = {
+        "Volume.volname": valid_cluster_id,
+        "Volume.vol_id": invalid_volume_id
+    }
+
+    job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
     # TODO check correctly server response or etcd job status
+    api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
 def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
@@ -235,41 +273,3 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
     test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
     deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
     pytest.check(deleted == "True", issue="https://github.com/Tendrl/tendrl-api/issues/33")
-
-
-#TODO create negative test case generator http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
-def test_delete_volume_invalid(valid_cluster_id, invalid_volume_id):
-    """@pylatest api/gluster.delete_volume
-        API-gluster: delete_volume
-        ******************************
-
-        .. test_metadata:: author fbalak@redhat.com
-
-        Description
-        ===========
-
-        Delete gluster volume ``Vol_test`` via API.
-
-        .. test_step:: 1
-
-                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
-                Where cluster_id is set to predefined value.
-
-        .. test_result:: 1
-
-                Server should return response in JSON format:
-
-                Return code should be **202** with data ``{"message": "Accepted"}``.
-                """
-    api = tendrlapi.ApiGluster()
-    volume_data = {
-        "Volume.volname": valid_cluster_id,
-        "Volume.vol_id": invalid_volume_id
-    }
-
-    job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
-    api.wait_for_job_status(
-            job_id,
-            status="failed",
-            issue="https://github.com/Tendrl/tendrl-api/issues/33")
-    # TODO check correctly server response or etcd job status
