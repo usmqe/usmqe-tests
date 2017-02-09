@@ -111,7 +111,7 @@ class TendrlApiGluster(TendrlApi):
         """
         pattern = "{}/GlusterDeleteVolume".format(cluster)
         response = requests.delete(pytest.config.getini("usm_api_url") + pattern,
-                                 json=post_data)
+                                   json=post_data)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
