@@ -41,6 +41,8 @@ class NavMenuBars(WebstrPage):
         'nodes_link'
     ]
 
+# TODO
+# dashboard page not working yet
 #    def open_dashboard(self, click_only=False):
 #        """
 #        Opens dashboard page.

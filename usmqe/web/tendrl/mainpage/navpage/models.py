@@ -24,7 +24,9 @@ class NavMenuBarsModel(WebstrModel):
 #    navbar_brand = PageElement(by=By.XPATH,
 #                               locator='//*[@class="navbar-brand"]')
 
+# TODO
 # Coming soon...
+# Waiting for functional upper navbar
 #    # right part of upper navbar
 #    alerts_link = PageElement(
 #        by=By.XPATH,
@@ -49,7 +51,9 @@ class NavMenuBarsModel(WebstrModel):
     dashboard_link = PageElement(by=By.LINK_TEXT, locator="Dashboard")
     clusters_link = PageElement(by=By.LINK_TEXT, locator="Clusters")
     nodes_link = PageElement(by=By.LINK_TEXT, locator="Hosts")
+# TODO
 # Coming soon...
+# Not working yet
 #    storages_link = PageElement(by=By.LINK_TEXT, locator="Storage")
 #    # Storages sub-menu links
 #    pools_link = PageElement(by=By.LINK_TEXT, locator="Pools")

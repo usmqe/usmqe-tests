@@ -111,6 +111,7 @@ class ClusterRow(contentviews.ListViewRow):
     _model = m_cluster_list.ClusterRowModel
     _required_elems = []
 
+# TODO
 # Coming soon...
 # waiting for the model, see models.py
 #    @property
@@ -134,6 +135,7 @@ class ClusterRow(contentviews.ListViewRow):
 #      return ClusterRowMenu(self.driver)
 
 # Coming soon...
+# waiting for the model, see models.py
 #  class ClusterRowMenu(dropdown.DropDownMenu):
 #    """ menu availalble for a cluster/row """
 #    _model = m_cluster_list.ClusterRowMenu
