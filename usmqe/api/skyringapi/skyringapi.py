@@ -173,8 +173,9 @@ class ApiCommon(Api):
             })
         if asserts_in:
             asserts.update(asserts_in)
-        req = requests.post(pytest.config.getini("usm_api_url") + "auth/logout",
-                            cookies=self.cookies, verify=self.verify)
+        req = requests.post(
+            pytest.config.getini("usm_api_url") + "auth/logout",
+            cookies=self.cookies, verify=self.verify)
         Api.print_req_info(req)
         Api.check_response(req, asserts)
         pytest.check(

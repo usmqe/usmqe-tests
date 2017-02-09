@@ -20,10 +20,10 @@ def log_in(testcase_set):
     testcase_set.loginpage = loginpage.LoginPage(
         testcase_set.driver,
         pytest.config.getini("usm_web_url"))
-    testcase_set.navbar = testcase_set.loginpage.login_user(
+    testcase_set.init_object = testcase_set.loginpage.login_user(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))
     msg = "Navigation part of the main page should contain all "\
         "required components."
-    pytest.check(testcase_set.navbar.is_present, msg)
+    pytest.check(testcase_set.init_object.is_present, msg)
     yield testcase_set

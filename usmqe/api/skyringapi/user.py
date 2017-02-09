@@ -174,7 +174,8 @@ class ApiUser(skyringapi.ApiCommon):
         elif isinstance(user_in, dict):
             data = user_in
         req = requests.put(
-            pytest.config.getini("usm_api_url") + "users/%s" % data["username"],
+            pytest.config.getini("usm_api_url")
+            + "users/%s" % data["username"],
             json.dumps(data), cookies=self.cookies, verify=self.verify)
         ApiUser.print_req_info(req)
         ApiUser.check_response(req, asserts)

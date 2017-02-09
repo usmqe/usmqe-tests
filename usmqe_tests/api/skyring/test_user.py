@@ -54,7 +54,8 @@ def test_login_valid():
         Return code should be **200** with data ``{"message": "Logged in"}``.
         It should return session cookie.
     """
-    test.login(pytest.config.getini("usm_username"), pytest.config.getini("usm_password"))
+    test.login(pytest.config.getini("usm_username"),
+               pytest.config.getini("usm_password"))
     test.logout()
 
 
@@ -121,7 +122,8 @@ def test_logout():
     .. test_result:: 1
        :include: api/user.login_valid:1
     """
-    test.login(pytest.config.getini("usm_username"), pytest.config.getini("usm_password"))
+    test.login(pytest.config.getini("usm_username"),
+               pytest.config.getini("usm_password"))
     """@pylatest api/user.logout
     .. test_step:: 2
 
@@ -151,7 +153,8 @@ def test_logout():
 
     .. test_result:: 4
 
-        "Error code **401** with data ``{"Error": "Unauthorized"}`` is returned.
+        "Error code **401** with data ``{"Error": "Unauthorized"}``
+        is returned.
     """
     test.users(asserts_in={
         "cookies": None,
@@ -181,7 +184,8 @@ def test_user_get():
     .. test_result:: 1
        :include: api/user.login_valid:1
     """
-    test.login(pytest.config.getini("usm_username"), pytest.config.getini("usm_password"))
+    test.login(pytest.config.getini("usm_username"),
+               pytest.config.getini("usm_password"))
     """@pylatest api/user.get
     .. test_step:: 2
 
@@ -217,7 +221,8 @@ def test_user_get_not_found():
     .. test_result:: 1
        :include: api/user.login_valid:1
     """
-    test.login(pytest.config.getini("usm_username"), pytest.config.getini("usm_password"))
+    test.login(pytest.config.getini("usm_username"),
+               pytest.config.getini("usm_password"))
 
     """@pylatest api/user.get_nonexistent
     .. test_step:: 2
@@ -266,7 +271,8 @@ def test_user_add_del():
     .. test_result:: 1
        :include: api/user.login_valid:1
     """
-    test.login(pytest.config.getini("usm_username"), pytest.config.getini("usm_password"))
+    test.login(pytest.config.getini("usm_username"),
+               pytest.config.getini("usm_password"))
     """@pylatest api/user.add_delete
     .. test_step:: 2
 
