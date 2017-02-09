@@ -252,7 +252,7 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_i
     }
 
     job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
-    api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id, issue="")
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
