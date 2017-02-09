@@ -59,7 +59,7 @@ def test_create_volume_invalid(valid_cluster_id, invalid_volume_name, invalid_vo
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
-def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
+def test_create_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_bricks):
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -85,7 +85,7 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
     api = tendrlapi.ApiGluster()
 
     volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
+        "Volume.volname": valid_volume_name,
         "Volume.bricks": valid_volume_bricks
     }
 
@@ -113,14 +113,14 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_bricks):
 
             """
     storage = gluster.GlusterCommon()
-    storage.find_volume_name(pytest.config.getini("usm_volume_name"))
+    storage.find_volume_name(valid_volume_name)
 
     # TODO change
     xml = storage.run_on_node(
-        command="volume info {}".format(pytest.config.getini("usm_volume_name")))
+        command="volume info {}".format(valid_volume_name))
     volume_id = xml.findtext("./volInfo/volumes/volume/id")
     name = api.get_volume_list(valid_cluster_id)[0][volume_id]["name"]
-    pytest.check(name == pytest.config.getini("usm_volume_name"))
+    pytest.check(name == valid_volume_name)
 
 
 # TODO create negative test case generator
@@ -148,7 +148,7 @@ def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id)
     job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
     api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
-    test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Stopped")
+    test_gluster.check_status(valid_volume_name, "Stopped")
     status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
     pytest.check(status == "Stopped", issue="https://github.com/Tendrl/tendrl-api/issues/56")
 
@@ -169,16 +169,16 @@ def test_start_volume_invalid(valid_cluster_id, invalid_volume_name):
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
-def test_start_volume_valid(valid_cluster_id, valid_volume_id):
+def test_start_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id):
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
+        "Volume.volname": valid_volume_name,
     }
 
     job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
     api.wait_for_job_status(job_id)
     test_gluster = gluster.GlusterCommon()
-    test_gluster.check_status(pytest.config.getini("usm_volume_name"), "Started")
+    test_gluster.check_status(valid_volume_name, "Started")
     status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
     pytest.check(status == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
 
@@ -222,7 +222,7 @@ def test_delete_volume_invalid(valid_cluster_id, invalid_volume_id):
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
-def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
+def test_delete_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -247,7 +247,7 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
                 """
     api = tendrlapi.ApiGluster()
     volume_data = {
-        "Volume.volname": pytest.config.getini("usm_volume_name"),
+        "Volume.volname": valid_volume_name,
         "Volume.vol_id": valid_volume_id
     }
 
@@ -275,6 +275,6 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_id):
 
             """
     test_gluster = gluster.GlusterCommon()
-    test_gluster.find_volume_name(pytest.config.getini("usm_volume_name"), False)
+    test_gluster.find_volume_name(valid_volume_name, False)
     deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
     pytest.check(deleted == "True", issue="https://github.com/Tendrl/tendrl-api/issues/33")
