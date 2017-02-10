@@ -3,18 +3,19 @@ Common page model for hosts.
 """
 
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import By, PageElement
 import webstr.patternfly.contentviews.models as contentviews
+
+from usmqe.web.tendrl.auxiliary.models import ListMenuModel
 
 LOCATION = "#/node"
 
 
-class HostsMenuModel(WebstrModel):
+class HostsMenuModel(ListMenuModel):
     """
     Hosts page top menu
     """
     header = PageElement(by=By.XPATH, locator="//h1[text()='Hosts']")
-    # TODO add other elements filter, order_by and add button
 
 
 class HostItemModel(contentviews.ListViewRowModel):

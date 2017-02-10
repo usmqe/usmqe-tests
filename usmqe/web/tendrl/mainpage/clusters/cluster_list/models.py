@@ -3,23 +3,25 @@ Common page models for clusters.
 """
 
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import By, PageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
+import webstr.patternfly.dropdown.models as dropdown
+
+from usmqe.web.tendrl.auxiliary.models import ListMenuModel
 
 
 LOCATION = '/#/cluster'
 
 
-class ClustersMenuModel(WebstrModel):
+class ClustersMenuModel(ListMenuModel):
     """
     Clusters page top menu
     """
     header = PageElement(by=By.XPATH, locator="//h1[text()='Clusters']")
-    search = form.TextInput(
-        by=By.XPATH,
-        locator="//*[@placeholder='Search'][@ng-model='cluster.search']")
-    import_btn = form.Button(By.XPATH, '//button[@ng-click="cluster.importCluster()"]')
+    import_btn = form.Button(
+        By.XPATH,
+        '//button[@ng-click="cluster.importCluster()"]')
 
 
 class ClusterListModel(contentviews.ListViewModel):

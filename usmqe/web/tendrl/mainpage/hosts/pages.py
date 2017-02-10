@@ -3,21 +3,21 @@ Hosts page abstraction.
 """
 
 
-from webstr.core import WebstrPage
 from webstr.patternfly.contentviews import pages as contentviews
 
 import usmqe.web.tendrl.mainpage.hosts.models as m_hosts
+from usmqe.web.tendrl.auxiliary.pages import ListMenu
 
 
-class HostsMenu(WebstrPage):
+class HostsMenu(ListMenu):
     """
     page object for hosts top menu
     """
     _model = m_hosts.HostsMenuModel
     _label = 'hosts top menu'
-    _required_elems = ['header']
+    _required_elems = ListMenu._required_elems
+    _required_elems.append('header')
 
-# TODO use filter
 
 
 class HostItem(contentviews.ListViewRow):

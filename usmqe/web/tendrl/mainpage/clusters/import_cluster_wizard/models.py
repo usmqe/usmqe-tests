@@ -8,10 +8,12 @@ from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
+from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+
 location = '/#/import-cluster'
 
 
-class ImportClusterModel(WebstrModel):
+class ImportClusterModel(ListMenuModel):
     """
     model for Import Cluster - Configure Cluster page
     """
@@ -19,16 +21,6 @@ class ImportClusterModel(WebstrModel):
     cluster = form.Select(
         By.XPATH,
         '//select[@data-ng-model="importClusterCntrl.selectedCluster"]')
-    filter_by = form.Select(
-        By.XPATH,
-        '//select[@ng-model="importClusterCntrl.filterBy"]')
-    filter_input = form.TextInput(By.ID, 'filter')
-    order_by = form.TextInput(
-        By.XPATH,
-        '//select[@ng-model="importClusterCntrl.orderBy"]')
-    order_btn = form.Button(
-        By.XPATH,
-        '//button[contains(@ng-init, "Order")]')
     refresh_btn = form.Button(
         By.XPATH,
         '//button[contains(text(), "Refresh")]')

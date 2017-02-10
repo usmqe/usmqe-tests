@@ -3,12 +3,12 @@ Clusters page abstraction.
 """
 
 
-from webstr.core import WebstrPage
 from webstr.patternfly.contentviews import pages as contentviews
 
 import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
 from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
     import ImportCluster
+from usmqe.web.tendrl.auxiliary.pages import ListMenu
 
 
 class ClusterWorkBase(object):
@@ -95,13 +95,14 @@ class ClusterWorkBase(object):
         raise NotImplementedError('create_ceph_cluster does not exist yet')
 
 
-class ClustersMenu(WebstrPage, ClusterWorkBase):
+class ClustersMenu(ListMenu, ClustersWorkBase):
     """
     Clusters page top menu
     """
     _model = m_cluster_list.ClustersMenuModel
     _label = 'cluster page top menu'
-    _required_elems = ['header', 'search', 'import_btn']
+    _required_elems = ListMenu._required_elems
+    _required_elems.extend(['header', 'import_btn'])
 
 
 class ClusterRow(contentviews.ListViewRow):
@@ -123,31 +124,31 @@ class ClusterRow(contentviews.ListViewRow):
 #    def status(self):
 #      """ returns status on behalf of status_icon """
 #      return self._model.status_icon.get_attribute('title')
-#
-#    def open_row_menu(self):
-#      """
-#      open a dropdown menu for the row
-#
-#      Returns:
-#          ClusterRowMenu instance
-#      """
-#      self._model.menu_link.click()
-#      return ClusterRowMenu(self.driver)
+
+    def open_menu(self):
+        """
+        open a dropdown menu for the row
+
+        Returns:
+            ClustersRowMenu instance
+        """
+        self._model.menu_link.click()
+        return ClustersRowMenu(self.driver)
+
 
 # Coming soon...
-# waiting for the model, see models.py
-#  class ClusterRowMenu(dropdown.DropDownMenu):
-#    """ menu availalble for a cluster/row """
-#    _model = m_cluster_list.ClusterRowMenu
-#    _required_elems = [
-#      'expand_link',
-#      'enable_link',
-#      'disable_link',
-#      'forget_link'
-#    ]
+class ClustersRowMenu(dropdown.DropDownMenu):
+    """ menu availalble for a cluster/row """
+    _model = m_cluster_list.ClustersRowMenuModel
+    _required_elems = [
+      'expand_link',
+      'shrink_link'
+    ]
+
+# TODO use menu
 
 
-class ClusterList(contentviews.ListView):
+class ClustersList(contentviews.ListView):
     """
     Base page object for Clusters list.
 
