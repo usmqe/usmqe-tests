@@ -4,7 +4,11 @@ Tendrl REST API common functions.
 
 import time
 import pytest
+import requests
 from usmqe.api.base import ApiBase
+
+LOGGER = pytest.get_logger("commonapi", module=True)
+
 
 class ApiCommon(ApiBase):
     """ Common methods for Tendrl REST API.
@@ -78,4 +82,3 @@ class ApiCommon(ApiBase):
             asserts_in: assert values for this call and this method
         """
     pass
-

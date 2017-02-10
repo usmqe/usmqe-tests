@@ -6,7 +6,8 @@ import requests
 import pytest
 from usmqe.api.tendrlapi.common import ApiCommon
 
-LOGGER = pytest.get_logger("tendrlapi", module=True)
+LOGGER = pytest.get_logger("glusterapi", module=True)
+
 
 class ApiGluster(ApiCommon):
     """ Gluster methods for Tendrl REST API.
