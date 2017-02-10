@@ -120,6 +120,18 @@ class GlusterCommon(object):
         LOGGER.debug("Volume_name: %s" % vol_name)
         return vol_name
 
+    def get_volume_id(self, volume_name):
+        """
+        Returns id of volume with given name.
+
+        Args:
+            volume_name: name of volume
+        """
+        xml = self.run_on_node(command="volume info {}".format(volume_name))
+        volume_id = xml.findtext("./volInfo/volumes/volume/id")
+        LOGGER.debug("Volume_id: %s" % volume_id)
+        return volume_id
+
     def get_hosts_from_trusted_pool(self, host):
         """
         Returns host names from trusted pool with given hostname.
