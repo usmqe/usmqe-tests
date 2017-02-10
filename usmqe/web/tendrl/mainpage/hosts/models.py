@@ -4,7 +4,9 @@ Common page model for hosts.
 
 
 from webstr.core import By, PageElement
+from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
+import webstr.patternfly.dropdown.models as dropdown
 
 from usmqe.web.utils import StatusIcon
 from usmqe.web.tendrl.auxiliary.models import ListMenuModel
@@ -27,13 +29,12 @@ class HostsItemModel(contentviews.ListViewRowModel):
     status_icon = StatusIcon(
         by=By.XPATH,
         locator=".//span[contains(@ng-if,'host.status')]")
+    name_label = PageElement(
+        by=By.XPATH,
+        locator="./div/a")
 # TODO
 # https://github.com/Tendrl/specifications/pull/95
 # https://github.com/Tendrl/specifications/pull/77
-#    type_label = PageElement(by=By.XPATH, locator=".//span[@ng-bind='host.cluster_type']")
-    name_label = PageElement(
-        by=By.XPATH,
-        locator=".//p[contains(@ng-bind,'node.fqdn')]")
 #    ip_label = PageElement(
 #        by=By.XPATH,
 #        locator=".//span[contains(@ng-bind,'host.management_ip4')]")
@@ -61,32 +62,49 @@ class HostsItemModel(contentviews.ListViewRowModel):
 #        locator=".//div[.='Memory']/..//chart-column[@column-id='Using']/*")
 #
 #    cluster_label = PageElement(by=By.XPATH, locator=".//div[.='Cluster']")
-#    cluster_value = PageElement(by=By.XPATH, locator=".//div[.='Cluster']/following-sibling::*")
+#    cluster_value = PageElement(
+#        by=By.XPATH,
+#        locator=".//div[.='Cluster']/following-sibling::*")
 #
 #    roles_label = PageElement(by=By.XPATH, locator=".//div[.='Roles']")
-#    roles_value = PageElement(by=By.XPATH, locator=".//div[.='Roles']/following-sibling::*")
+#    roles_value = PageElement(
+#        by=By.XPATH,
+#        locator=".//div[.='Roles']/following-sibling::*")
 #
-#    info_version_label = PageElement(by=By.XPATH, locator=".//span[.='Version : ']")
+#    info_version_label = PageElement(
+#        by=By.XPATH,
+#        locator=".//span[.='Version : ']")
 #    info_version_value = PageElement(
 #        by=By.XPATH,
 #        locator=".//span[.='Version : ']/following-sibling::*")
 #
-#    info_kernel_label = PageElement(by=By.XPATH, locator=".//span[.='Kernel : ']")
+#    info_kernel_label = PageElement(
+#        by=By.XPATH,
+#        locator=".//span[.='Kernel : ']")
 #    info_kernel_value = PageElement(
 #        by=By.XPATH,
 #        locator=".//span[.='Kernel : ']/following-sibling::*")
 #
 #    alerts_label = PageElement(by=By.XPATH, locator=".//div[.='Alerts']")
-#    alerts_value = PageElement(by=By.XPATH, locator=".//div[.='Alerts']/following-sibling::*/span")
-#
+#    alerts_value = PageElement(
+#        by=By.XPATH,
+#        locator=".//div[.='Alerts']/following-sibling::*/span")
+
     name = name_label
-#
-#    # TODO: use menu object instead
-#    menu_link = PageElement(by=By.XPATH, locator=".//div[last()]/a/i")
-#    menu_delete = PageElement(by=By.XPATH, locator=".//div[last()]/ul/li/a")
+
+    menu_link = form.Button(by=By.ID, locator="dropdownKebabRight12")
 
 
 class HostsListModel(contentviews.ListViewModel):
     """
     Page model for list of nodes/hosts.
     """
+
+
+# TODO
+# Coming soon...
+class HostsRowMenuModel(dropdown.DropDownMenuModel):
+    """ menu availalble for a host/row """
+    forget_link = PageElement(by=By.LINK_TEXT, locator='Forget')
+    remove_link = PageElement(by=By.LINK_TEXT, locator='Remove')
+    replace_link = PageElement(by=By.LINK_TEXT, locator='Replace')
