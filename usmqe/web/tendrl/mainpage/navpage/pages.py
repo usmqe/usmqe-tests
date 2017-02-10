@@ -11,9 +11,16 @@ Author: ltrilety
 from webstr.core import WebstrPage
 
 from usmqe.web.tendrl.mainpage.navpage import models as m_navpage
+# TODO
+# not available for now
 # from usmqe.web.tendrl.mainpage.dashboard.pages import Dashboard
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersMenu
-from usmqe.web.tendrl.mainpage.hosts.pages import HostsMenu
+from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
+from usmqe.web.tendrl.mainpage.hosts.pages import HostsList
+from usmqe.web.tendrl.mainpage.file_shares.pages import FileSharesList
+from usmqe.web.tendrl.mainpage.pools.pages import PoolsList
+# TODO
+# not available yet
+# from usmqe.web.tendrl.mainpage.admin.tasks.pages import TasksList
 
 
 class NavMenuBars(WebstrPage):
@@ -38,7 +45,10 @@ class NavMenuBars(WebstrPage):
         # left navbar
         # 'dashboard_link',
         'clusters_link',
-        'nodes_link'
+        'nodes_link',
+        'file_shares_link',
+        'pools_link',
+        'tasks_link'
     ]
 
 # TODO
@@ -62,20 +72,88 @@ class NavMenuBars(WebstrPage):
         """
         Opens clusters page.
 
-        Args:
+        Parameters:
             click_only (bool): just click on the link and return None
 
         Returns:
-            Instance of ClusterList
+            Instance of ClustersList if click_only is False
+            None otherwise
         """
         self._model.clusters_link.click()
         if click_only:
             return None
-        return ClustersMenu(self.driver)
+        return ClustersList(self.driver)
 
-    def open_hosts(self):
+    def open_hosts(self, click_only=False):
         """
         Opens hosts page.
+
+        Parameters:
+            click_only (bool): just click on the link and return None
+
+        Returns:
+            Instance of HostsList if click_only is False
+            None otherwise
         """
         self._model.nodes_link.click()
-        return HostsMenu(self.driver)
+        if click_only:
+            return None
+        return HostsList(self.driver)
+
+    def open_file_shares(self, click_only=False):
+        """
+        Opens file shares page.
+
+        Parameters:
+            click_only (bool): just click on the link and return None
+
+        Returns:
+            Instance of FileSharesList if click_only is False
+            None otherwise
+        """
+        self._model.file_shares_link.click()
+        if click_only:
+            return None
+        return FileSharesList(self.driver)
+
+    def open_pools(self, click_only=False):
+        """
+        Opens pools page.
+
+        Parameters:
+            click_only (bool): just click on the link and return None
+
+        Returns:
+            Instance of PoolsList if click_only is False
+            None otherwise
+        """
+        self._model.pools_link.click()
+        if click_only:
+            return None
+        return PoolsList(self.driver)
+
+    def open_admin_submenu(self):
+        """
+        Opens admin sub-menu
+        """
+        self._model.admin_link.click()
+
+    # Admin sub-menu links
+    def open_tasks(self, click_only=False):
+        """
+        Opens tasks page.
+
+        Parameters:
+            click_only (bool): just click on the link and return None
+
+        Returns:
+            Instance of TasksList if click_only is False
+            None otherwise
+        """
+        self.open_admin_submenu()
+        self._model.tasks_link.click()
+# TODO
+# uncomment when Tasks page will be working
+#        if click_only:
+#            return None
+#        return TasksList(self.driver)
