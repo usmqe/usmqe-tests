@@ -9,3 +9,4 @@ dist
 .tox
 *.html
 .cache
+*.ini
