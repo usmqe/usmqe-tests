@@ -120,18 +120,6 @@ class GlusterCommon(object):
         LOGGER.debug("Volume_name: %s" % vol_name)
         return vol_name
 
-    def get_volume_id(self, volume_name):
-        """
-        Returns id of volume with given name.
-
-        Args:
-            volume_name: name of volume
-        """
-        xml = self.run_on_node(command="volume info {}".format(volume_name))
-        volume_id = xml.findtext("./volInfo/volumes/volume/id")
-        LOGGER.debug("Volume_id: %s" % volume_id)
-        return volume_id
-
     def get_hosts_from_trusted_pool(self, host):
         """
         Returns host names from trusted pool with given hostname.
@@ -163,25 +151,13 @@ class GlusterCommon(object):
                 of gluster volume info command".format(name))
         return found
 
-    # TODO do it universal with name checking
-    def check_status(self, name, status="Started"):
-        """
-        Check if volume status corresponds with specified status.
-        """
-        real_status = self.run_on_node(command="volume info").findtext(
-            "./volInfo/volumes/volume/statusStr")
-        LOGGER.debug("Volume_status: %s" % real_status)
-        pytest.check(
-            status == real_status,
-            "Volume status is {}, should be {}".format(status, real_status))
-
 
 class GlusterVolume(GlusterCommon):
     """
-    Class representing gluster cluster.
+    Class representing gluster volume.
     """
 
-    def __init__(self, cluster):
+    def __init__(self, cluster=None, volume_name=None):
         """
         Initialize GlusterCluster object.
 
@@ -189,7 +165,10 @@ class GlusterVolume(GlusterCommon):
             cluster: cluster name
         """
         super(GlusterCommon, self).__init__(cluster)
+        self.volume_name = volume_name
         self.cmd = GlusterVolumeCommand()
+        self.status = None
+        self.id = None
 
 #    @property
 #    def node(self):
@@ -206,7 +185,34 @@ class GlusterVolume(GlusterCommon):
 
         Returns:
             dictionary: parsed json from
-                        ``gluster --format json --cluster CLUSTERNAME status``
+                        ``gluster volume info VOLUMENAME --xml``
                         command
         """
-        return self.run_on_node('info')
+        xml = self.run_on_node('info {}').format(self.volume_name)
+        self.id = xml.findtext("./volInfo/volumes/volume/id")
+        LOGGER.debug("Volume_id: %s" % volume_id)
+        self.status = xml.findtext(
+            "./volInfo/volumes/volume/statusStr")
+        LOGGER.debug("Volume_status: %s" % real_status)
+
+    def get_volume_id(self):
+        """
+        Returns id of volume with given name.
+
+        Args:
+            volume_name: name of volume
+        """
+        if not self.id:
+            info()
+        return self.id
+
+    # TODO do it universal with name checking
+    def check_status(self, status="Started"):
+        """
+        Check if volume status corresponds with specified status.
+        """
+        info()
+        real_status = self.status
+        pytest.check(
+            status == real_status,
+            "Volume status is {}, should be {}".format(real_status, status))

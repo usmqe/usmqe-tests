@@ -18,8 +18,8 @@ def invalid_cluster_id(request):
 
 @pytest.fixture
 def valid_volume_id():
-    storage = gluster.GlusterCommon()
-    return storage.get_volume_id(pytest.config.getini("usm_volume_name"))
+    volume = gluster.GlusterVolume(pytest.config.getini("usm_volume_name"))
+    return volume.get_volume_id()
 
 
 @pytest.fixture(params=[None, "0000000000000000"])

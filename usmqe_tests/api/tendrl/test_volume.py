@@ -117,7 +117,8 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_b
     storage = gluster.GlusterCommon()
     storage.find_volume_name(valid_volume_name)
 
-    volume_id = storage.get_volume_id(valid_volume_name)
+    volume = gluster.GlusterVolume(valid_volume_name)
+    volume_id = volume.get_volume_id()
     name = api.get_volume_list(valid_cluster_id)[0][volume_id]["name"]
     pytest.check(
         name == valid_volume_name,
@@ -193,8 +194,8 @@ def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id)
 
     job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
     api.wait_for_job_status(job_id)
-    test_gluster = gluster.GlusterCommon()
-    test_gluster.check_status(valid_volume_name, "Stopped")
+    volume = gluster.GlusterVolume(valid_volume_name)
+    volume.check_status("Stopped")
     status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
     pytest.check(
         status == "Stopped",
@@ -272,8 +273,8 @@ def test_start_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id
 
     job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
     api.wait_for_job_status(job_id)
-    test_gluster = gluster.GlusterCommon()
-    test_gluster.check_status(valid_volume_name, "Started")
+    volume = gluster.GlusterVolume(valid_volume_name)
+    volume.check_status("Started")
     status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
     pytest.check(
         status == "Started",
@@ -372,8 +373,9 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_i
             There should be listed gluster volume named ``Vol_test``.
 
             """
-    test_gluster = gluster.GlusterCommon()
-    test_gluster.find_volume_name(valid_volume_name, False)
+    storage = gluster.GlusterCommon()
+    storage.find_volume_name(valid_volume_name, False)
+
     # There should be either deleted attribute or record should be removed from database
     # https://github.com/Tendrl/api/issues/78
     #
