@@ -19,12 +19,11 @@ class HostsMenu(ListMenu):
     _required_elems.append('header')
 
 
-
-class HostItem(contentviews.ListViewRow):
+class HostsItem(contentviews.ListViewRow):
     """
     An item (row) in a Hosts list.
     """
-    _model = m_hosts.HostItemModel
+    _model = m_hosts.HostsItemModel
     _label = 'hosts row'
     _required_elems = ['_root', 'name_label']
 
@@ -35,4 +34,4 @@ class HostsList(contentviews.ListView):
     """
     _model = m_hosts.HostsListModel
     _label = 'main page - hosts'
-    _row_class = HostItem
+    _row_class = HostsItem

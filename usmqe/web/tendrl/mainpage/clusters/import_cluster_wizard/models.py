@@ -36,7 +36,7 @@ class ImportClusterSummaryModel(WebstrModel):
         '//button[contains(text(), "View Task Progress"')
 
 
-class HostItemModel(contentviews.ListViewRowModel):
+class HostsItemModel(contentviews.ListViewRowModel):
     """
     An item (row) in a Hosts list.
     """

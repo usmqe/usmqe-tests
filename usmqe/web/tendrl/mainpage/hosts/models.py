@@ -18,7 +18,7 @@ class HostsMenuModel(ListMenuModel):
     header = PageElement(by=By.XPATH, locator="//h1[text()='Hosts']")
 
 
-class HostItemModel(contentviews.ListViewRowModel):
+class HostsItemModel(contentviews.ListViewRowModel):
     """
     An item (row) in a Hosts list.
     """

@@ -72,11 +72,11 @@ class ImportClusterSummary(WebstrPage):
         self._model.view_task_btn.click()
 
 
-class HostItem(contentviews.ListViewRow):
+class HostsItem(contentviews.ListViewRow):
     """
     An item (row) in a Hosts list.
     """
-    _model = m_wizard.HostItemModel
+    _model = m_wizard.HostsItemModel
     _label = 'clusters import host'
     _required_elems = ['name']
 
