@@ -1,4 +1,3 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Import Cluster wizard module.
 """

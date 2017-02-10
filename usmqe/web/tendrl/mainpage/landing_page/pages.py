@@ -13,7 +13,7 @@ from webstr.core import WebstrPage
 import usmqe.web.tendrl.mainpage.landing_page.models as m_landing_page
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages\
-    import ClusterWorkBase
+    import ClustersWorkBase
 
 
 class LandingException(Exception):
@@ -31,7 +31,7 @@ def get_landing_page(driver):
     Returns:
         instance of
             landing_page.LandingPage OR
-            clusters.clusterlist.ClusterList
+            clusters.clusterlist.ClustersList
     """
     if 'cluster' in driver.current_url:
         return NavMenuBars(driver)
@@ -41,7 +41,7 @@ def get_landing_page(driver):
         raise LandingException('Not expected landing page')
 
 
-class Home(WebstrPage, ClusterWorkBase):
+class Home(WebstrPage, ClustersWorkBase):
     """
     Common page object for navigation bars:
 

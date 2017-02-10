@@ -11,7 +11,7 @@ from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
 
 
-class ClusterWorkBase(object):
+class ClustersWorkBase(object):
     """
     auxiliary base class with methods for work with clusters - create/import
     """
@@ -105,11 +105,11 @@ class ClustersMenu(ListMenu, ClustersWorkBase):
     _required_elems.extend(['header', 'import_btn'])
 
 
-class ClusterRow(contentviews.ListViewRow):
+class ClustersRow(contentviews.ListViewRow):
     """
     Cluster in Clusters list
     """
-    _model = m_cluster_list.ClusterRowModel
+    _model = m_cluster_list.ClustersRowModel
     _required_elems = []
 
 # TODO
@@ -156,6 +156,6 @@ class ClustersList(contentviews.ListView):
       _location - initial URL to load upon instance creation
       _model - page model
     """
-    _model = m_cluster_list.ClusterListModel
+    _model = m_cluster_list.ClustersListModel
     _label = 'main page - clusters - list'
-    _row_class = ClusterRow
+    _row_class = ClustersRow

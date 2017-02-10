@@ -24,11 +24,11 @@ class ClustersMenuModel(ListMenuModel):
         '//button[@ng-click="cluster.importCluster()"]')
 
 
-class ClusterListModel(contentviews.ListViewModel):
+class ClustersListModel(contentviews.ListViewModel):
     """ list of clusters with common cluster elements """
 
 
-class ClusterRowModel(contentviews.ListViewRowModel):
+class ClustersRowModel(contentviews.ListViewRowModel):
     """
     Row in Cluster table model.
     """
