@@ -157,7 +157,7 @@ class GlusterVolume(GlusterCommon):
     Class representing gluster volume.
     """
 
-    def __init__(self, cluster=None, volume_name=None):
+    def __init__(self, volume_name=None, cluster=None):
         """
         Initialize GlusterCluster object.
 
@@ -190,10 +190,10 @@ class GlusterVolume(GlusterCommon):
         """
         xml = self.run_on_node('info {}').format(self.volume_name)
         self.id = xml.findtext("./volInfo/volumes/volume/id")
-        LOGGER.debug("Volume_id: %s" % volume_id)
+        LOGGER.debug("Volume_id: %s" % self.id)
         self.status = xml.findtext(
             "./volInfo/volumes/volume/statusStr")
-        LOGGER.debug("Volume_status: %s" % real_status)
+        LOGGER.debug("Volume_status: %s" % self.status)
 
     def get_volume_id(self):
         """
@@ -203,7 +203,7 @@ class GlusterVolume(GlusterCommon):
             volume_name: name of volume
         """
         if not self.id:
-            info()
+            self.info()
         return self.id
 
     # TODO do it universal with name checking
@@ -211,7 +211,7 @@ class GlusterVolume(GlusterCommon):
         """
         Check if volume status corresponds with specified status.
         """
-        info()
+        self.info()
         real_status = self.status
         pytest.check(
             status == real_status,
