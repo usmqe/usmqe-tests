@@ -6,6 +6,7 @@ Common page model for hosts.
 from webstr.core import By, PageElement
 import webstr.patternfly.contentviews.models as contentviews
 
+from usmqe.web.utils import StatusIcon
 from usmqe.web.tendrl.auxiliary.models import ListMenuModel
 
 LOCATION = "#/node"
@@ -22,11 +23,14 @@ class HostsItemModel(contentviews.ListViewRowModel):
     """
     An item (row) in a Hosts list.
     """
+# Design: https://redhat.invisionapp.com/share/BR8JDCGSQ
+    status_icon = StatusIcon(
+        by=By.XPATH,
+        locator=".//span[contains(@ng-if,'host.status')]")
 # TODO
 # https://github.com/Tendrl/specifications/pull/95
 # https://github.com/Tendrl/specifications/pull/77
 #    type_label = PageElement(by=By.XPATH, locator=".//span[@ng-bind='host.cluster_type']")
-#    status_icon = PageElement(by=By.XPATH, locator=".//span[contains(@class,'status-icon')]")
     name_label = PageElement(
         by=By.XPATH,
         locator=".//p[contains(@ng-bind,'node.fqdn')]")

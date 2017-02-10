@@ -27,6 +27,16 @@ class HostsItem(contentviews.ListViewRow):
     _label = 'hosts row'
     _required_elems = ['_root', 'name_label']
 
+    @property
+    def status(self):
+        """
+        find status
+
+        Returns:
+            status_icon element title
+        """
+        return self._model.status_icon.value
+
 
 class HostsList(contentviews.ListView):
     """

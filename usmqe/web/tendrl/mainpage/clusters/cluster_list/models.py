@@ -9,6 +9,7 @@ import webstr.patternfly.contentviews.models as contentviews
 import webstr.patternfly.dropdown.models as dropdown
 
 from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+# from usmqe.web.utils import StatusIcon
 
 
 LOCATION = '/#/cluster'
@@ -39,7 +40,10 @@ class ClustersRowModel(contentviews.ListViewRowModel):
 #        locator='.//span[contains(@class, \'vertical-text-for-\')]')
 #
 #    # TODO: change it to patternfly icon
-#    status_icon = PageElement(By.XPATH, './/*[contains(@class, "pficon"]')
+# TODO
+# https://redhat.invisionapp.com/share/BR8JDCGSQ#/screens/185937524
+# No status icon yet
+#    status_icon = StatusIcon(By.XPATH, '')
 #
 #    name_text = PageElement(by=By.XPATH, locator='.//a[contains(@href, \'#/clusters/detail/\')]')
 #    usage_percent_text = PageElement(
