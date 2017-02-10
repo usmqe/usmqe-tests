@@ -4,6 +4,7 @@ Clusters page abstraction.
 
 
 from webstr.patternfly.contentviews import pages as contentviews
+import webstr.patternfly.dropdown.pages as dropdown
 
 import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
 from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
