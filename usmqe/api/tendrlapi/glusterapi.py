@@ -4,7 +4,7 @@ Tendrl REST API.
 
 import requests
 import pytest
-from common import ApiCommon
+from usmqe.api.tendrlapi.common import ApiCommon
 
 LOGGER = pytest.get_logger("tendrlapi", module=True)
 
