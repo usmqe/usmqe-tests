@@ -120,11 +120,12 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_b
         command="volume info {}".format(valid_volume_name))
     volume_id = xml.findtext("./volInfo/volumes/volume/id")
     name = api.get_volume_list(valid_cluster_id)[0][volume_id]["name"]
-    pytest.check(name == valid_volume_name)
+    pytest.check(
+        name == valid_volume_name,
+        "Volume name on the machine is {}, should be {}".format(
+            name, valid_volume_name))
 
 
-# TODO create negative test case generator
-# http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
 def test_stop_volume_invalid(valid_cluster_id, invalid_volume_name):
     api = tendrlapi.ApiGluster()
     volume_data = {
@@ -150,7 +151,10 @@ def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id)
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(valid_volume_name, "Stopped")
     status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
-    pytest.check(status == "Stopped", issue="https://github.com/Tendrl/tendrl-api/issues/56")
+    pytest.check(
+        status == "Stopped",
+        "Status from API is {}, should be 'Stopped'".format(status),
+        issue="https://github.com/Tendrl/tendrl-api/issues/56")
 
 
 # TODO create negative test case generator
@@ -180,11 +184,12 @@ def test_start_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id
     test_gluster = gluster.GlusterCommon()
     test_gluster.check_status(valid_volume_name, "Started")
     status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
-    pytest.check(status == "Started", issue="https://github.com/Tendrl/tendrl-api/issues/55")
+    pytest.check(
+        status == "Started",
+        "Status from API is {}, should be 'Started'".format(status),
+        issue="https://github.com/Tendrl/tendrl-api/issues/55")
 
 
-# TODO create negative test case generator
-# http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
 def test_delete_volume_invalid(valid_cluster_id, invalid_volume_id):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
@@ -276,5 +281,11 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_i
             """
     test_gluster = gluster.GlusterCommon()
     test_gluster.find_volume_name(valid_volume_name, False)
-    deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
-    pytest.check(deleted == "True", issue="https://github.com/Tendrl/tendrl-api/issues/33")
+    # There should be either deleted attribute or record should be removed from database
+    # https://github.com/Tendrl/api/issues/78
+    #
+    # deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
+    # pytest.check(
+    #     deleted == "True",
+    #     "deleted attribute should be True, is {}".format(deleted),
+    #     issue="https://github.com/Tendrl/tendrl-api/issues/33")
