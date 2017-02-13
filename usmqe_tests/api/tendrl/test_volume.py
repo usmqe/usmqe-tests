@@ -119,11 +119,32 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_b
 
     volume = gluster.GlusterVolume(valid_volume_name)
     volume_id = volume.get_volume_id()
-    name = api.get_volume_list(valid_cluster_id)[0][volume_id]["name"]
+    storage_volume_attributes = {
+            "name": volume.name,
+            "id": volume.id,
+            "status": volume.status,
+            "stripe_count": volume.stripe_count,
+            "replica_count": volume.replica_count,
+            "brick_count": volume.brick_count,
+            "snapshot_count": volume.snap_count
+        }
+
+    volume_tendrl = api.get_volume_list(valid_cluster_id)[0][volume_id]
+    tendrl_volume_attributes = {
+            "name": volume_tendrl["name"],
+            "id": volume_tendrl["vol_id"],
+            "status": volume_tendrl["status"],
+            "stripe_count": volume_tendrl["stripe_count"],
+            "replica_count": volume_tendrl["replica_count"],
+            "brick_count": volume_tendrl["brick_count"],
+            "snapshot_count": volume_tendrl["snap_count"]
+        }
     pytest.check(
-        name == valid_volume_name,
-        "Volume name on the machine is {}, should be {}".format(
-            name, valid_volume_name))
+        tendrl_volume_attributes == storage_volume_attributes,
+        """Storage volume attributes: {}
+        Tendrl volume attributes: {}
+        These should be the same.""".format(
+            tendrl_volume_attributes, storage_volume_attributes))
 
 
 def test_stop_volume_invalid(valid_cluster_id, invalid_volume_name):

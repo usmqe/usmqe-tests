@@ -165,10 +165,14 @@ class GlusterVolume(GlusterCommon):
             cluster: cluster name
         """
         super().__init__(cluster)
-        self.volume_name = volume_name
+        self.name = volume_name
         self.cmd = GlusterVolumeCommand()
         self.status = None
         self.id = None
+        self.stripe_count = None
+        self.replica_count = None
+        self.brick_count = None
+        self.snap_count = None
 
 #    @property
 #    def node(self):
@@ -188,19 +192,24 @@ class GlusterVolume(GlusterCommon):
                         ``gluster volume info VOLUMENAME --xml``
                         command
         """
-        xml = self.run_on_node('info {}'.format(self.volume_name))
+        xml = self.run_on_node('info {}'.format(self.name))
         self.id = xml.findtext("./volInfo/volumes/volume/id")
         LOGGER.debug("Volume_id: %s" % self.id)
         self.status = xml.findtext(
             "./volInfo/volumes/volume/statusStr")
+        self.stripe_count = xml.findtext(
+            "./volInfo/volumes/volume/stripeCount")
+        self.replica_count = xml.findtext(
+            "./volInfo/volumes/volume/stripeCount")
+        self.brick_count = xml.findtext(
+            "./volInfo/volumes/volume/brickCount")
+        self.snap_count = xml.findtext(
+            "./volInfo/volumes/volume/snapshotCount")
         LOGGER.debug("Volume_status: %s" % self.status)
 
     def get_volume_id(self):
         """
         Returns id of volume with given name.
-
-        Args:
-            volume_name: name of volume
         """
         if not self.id:
             self.info()
