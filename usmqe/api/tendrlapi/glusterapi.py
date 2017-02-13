@@ -4,12 +4,12 @@ Tendrl REST API.
 
 import requests
 import pytest
-from usmqe.api.tendrlapi.common import ApiCommon
+from usmqe.api.tendrlapi.common import TendrlApi
 
 LOGGER = pytest.get_logger("glusterapi", module=True)
 
 
-class ApiGluster(ApiCommon):
+class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
 

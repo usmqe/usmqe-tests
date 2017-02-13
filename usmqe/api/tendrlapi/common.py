@@ -10,7 +10,7 @@ from usmqe.api.base import ApiBase
 LOGGER = pytest.get_logger("commonapi", module=True)
 
 
-class ApiCommon(ApiBase):
+class TendrlApi(ApiBase):
     """ Common methods for Tendrl REST API.
     """
 
