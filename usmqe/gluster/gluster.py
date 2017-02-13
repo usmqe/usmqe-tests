@@ -164,7 +164,7 @@ class GlusterVolume(GlusterCommon):
         Args:
             cluster: cluster name
         """
-        super(GlusterCommon, self).__init__(cluster)
+        super().__init__(cluster)
         self.volume_name = volume_name
         self.cmd = GlusterVolumeCommand()
         self.status = None
@@ -188,7 +188,7 @@ class GlusterVolume(GlusterCommon):
                         ``gluster volume info VOLUMENAME --xml``
                         command
         """
-        xml = self.run_on_node('info {}').format(self.volume_name)
+        xml = self.run_on_node('info {}'.format(self.volume_name))
         self.id = xml.findtext("./volInfo/volumes/volume/id")
         LOGGER.debug("Volume_id: %s" % self.id)
         self.status = xml.findtext(

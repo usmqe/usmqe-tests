@@ -65,11 +65,8 @@ class GlusterVolumeCommand(GlusterCommand):
         """
         Prepare gluster command.
         """
-        timeout_str = "--connect-timeout {}".format(self._timeout) \
-                      if self._timeout else ""
-
-        cmd = "{} {} {} {}".format(
-            self._base_command, timeout_str, self._format_str, command)
+        cmd = "{} {} {}".format(
+            self._base_command, self._format_str, command)
         return cmd
 
 
