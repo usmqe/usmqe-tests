@@ -1,4 +1,4 @@
-There are 2 types of tests here:
- 1. Gluster ones in ``gluster`` directory and
- 2. Ceph ones in ``ceph`` directory.
-Other tests unrelated to gluster or ceph will stay in this directory.
+There are 3 types of tests here:
+ 1. Gluster ones in ``gluster`` directory,
+ 2. Ceph ones in ``ceph`` directory and
+ 3. other tests are in ``others`` directory.
