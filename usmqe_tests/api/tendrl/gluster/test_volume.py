@@ -45,7 +45,7 @@ def test_create_volume_invalid(valid_cluster_id, invalid_volume_name, invalid_vo
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should fail.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
 
     volume_data = {
         "Volume.volname": invalid_volume_name,
@@ -84,7 +84,7 @@ def test_create_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_b
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
 
     volume_data = {
         "Volume.volname": valid_volume_name,
@@ -171,7 +171,7 @@ def test_stop_volume_invalid(valid_cluster_id, invalid_volume_name):
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 Job should fail.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": invalid_volume_name,
     }
@@ -208,7 +208,7 @@ def test_stop_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id)
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_volume_name,
     }
@@ -250,7 +250,7 @@ def test_start_volume_invalid(valid_cluster_id, invalid_volume_name):
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should fail.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": invalid_volume_name
     }
@@ -287,7 +287,7 @@ def test_start_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_id
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_volume_name,
     }
@@ -327,7 +327,7 @@ def test_delete_volume_invalid(valid_cluster_id, invalid_volume_id):
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should fail.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_cluster_id,
         "Volume.vol_id": invalid_volume_id
@@ -365,7 +365,7 @@ def test_delete_volume_valid(valid_cluster_id, valid_volume_name, valid_volume_i
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_volume_name,
         "Volume.vol_id": valid_volume_id
