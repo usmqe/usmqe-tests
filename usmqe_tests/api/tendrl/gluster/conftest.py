@@ -1,5 +1,5 @@
 import pytest
-from usmqe.api.tendrlapi import tendrlapi
+from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 import usmqe.inventory as inventory
 
@@ -7,7 +7,7 @@ import usmqe.inventory as inventory
 @pytest.fixture
 def valid_cluster_id():
     # TODO change
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.ApiGluster()
     return api.get_cluster_list()[0]["cluster_id"]
 
 
