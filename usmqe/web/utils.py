@@ -4,6 +4,7 @@ Some usefull methods and classes for common work with web
 
 from selenium.common import exceptions as selenium_ex
 from webstr.selenium.driver import Driver
+from webstr.core import BaseWebElementHelper, PageElement
 
 
 def refresh_driver(testcase, relogin=False):
@@ -35,3 +36,27 @@ def refresh_driver(testcase, relogin=False):
             Driver.destroy_default_driver()
             testcase.set_up()
             return True
+
+
+class StatusIconHelper(BaseWebElementHelper):
+    """
+    StatusIcon helper (Selenium webelement wrapper).
+    Provides basic methods for manipulation with a status icon.
+    """
+
+    @property
+    def value(self):
+        """
+        find status
+
+        Returns:
+            value of title attribute of the StatusIcon element
+        """
+        return self.get_attribute['title']
+
+
+class StatusIcon(PageElement):
+    """
+    Page element for a status icon.
+    """
+    _helper = StatusIconHelper

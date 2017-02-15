@@ -1,4 +1,3 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Import Cluster wizard module.
 """
@@ -8,10 +7,12 @@ from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
+from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+
 location = '/#/import-cluster'
 
 
-class ImportClusterModel(WebstrModel):
+class ImportClusterModel(ListMenuModel):
     """
     model for Import Cluster - Configure Cluster page
     """
@@ -19,16 +20,6 @@ class ImportClusterModel(WebstrModel):
     cluster = form.Select(
         By.XPATH,
         '//select[@data-ng-model="importClusterCntrl.selectedCluster"]')
-    filter_by = form.Select(
-        By.XPATH,
-        '//select[@ng-model="importClusterCntrl.filterBy"]')
-    filter_input = form.TextInput(By.ID, 'filter')
-    order_by = form.TextInput(
-        By.XPATH,
-        '//select[@ng-model="importClusterCntrl.orderBy"]')
-    order_btn = form.Button(
-        By.XPATH,
-        '//button[contains(@ng-init, "Order")]')
     refresh_btn = form.Button(
         By.XPATH,
         '//button[contains(text(), "Refresh")]')
@@ -45,7 +36,7 @@ class ImportClusterSummaryModel(WebstrModel):
         '//button[contains(text(), "View Task Progress"')
 
 
-class HostItemModel(contentviews.ListViewRowModel):
+class HostsItemModel(contentviews.ListViewRowModel):
     """
     An item (row) in a Hosts list.
     """

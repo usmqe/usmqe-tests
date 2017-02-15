@@ -1,27 +1,17 @@
-# vim: set tabstop=2 shiftwidth=2 softtabstop=2 colorcolumn=120:
 """
 Import Cluster wizard module.
-
-Right now, the wizard contains the following pages/screens:
-
-1. Configure Cluster
-2. Select Hosts
-3. Choose Networks
-4. Provision Storage
-5. Review Summary
 """
 
-
-from selenium.webdriver.common.keys import Keys
 
 from webstr.core import WebstrPage
 import webstr.patternfly.contentviews.pages as contentviews
 
 import usmqe.web.tendrl.mainpage.clusters.\
     import_cluster_wizard.models as m_wizard
+from usmqe.web.tendrl.auxiliary.pages import ListMenu
 
 
-class ImportCluster(WebstrPage):
+class ImportCluster(ListMenu):
     """
     Import Cluster page
     """
@@ -67,44 +57,6 @@ class ImportCluster(WebstrPage):
         """
         self._model.cancel_btn.click()
 
-    def set_filter(self, filter_type=None, filter_input=None):
-        """
-        Set filter and press ENTER key
-
-        Parameters:
-            filter_type (str) - by which type of filter hosts are filtered by
-            filter_input (str) - text to be filled in the filter text field
-        """
-        if filter_type is not None:
-            self._model.filter_by.value = filter_type
-        if filter_input is not None:
-            self._model.filter_input.value = filter_input
-        self._model.filter_input.send_keys(Keys.RETURN)
-
-    @property
-    def order_by(self):
-        """ get by which hosts are ordered
-
-        Returns:
-            order by
-        """
-        return self._model.order_by.value
-
-    @order_by.setter
-    def order_by(self, value):
-        """ set the order by field
-
-        Parameters:
-            value (str): cluster name
-        """
-        self._model.order_by.value = value
-
-    def order_order(self):
-        """
-        switch order of hosts
-        """
-        self._model.order_btn.click()
-
 
 class ImportClusterSummary(WebstrPage):
     """
@@ -120,11 +72,11 @@ class ImportClusterSummary(WebstrPage):
         self._model.view_task_btn.click()
 
 
-class HostItem(contentviews.ListViewRow):
+class HostsItem(contentviews.ListViewRow):
     """
     An item (row) in a Hosts list.
     """
-    _model = m_wizard.HostItemModel
+    _model = m_wizard.HostsItemModel
     _label = 'clusters import host'
     _required_elems = ['name']
 

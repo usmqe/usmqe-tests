@@ -8,7 +8,7 @@ Author: ltrilety
 import pytest
 
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClusterList
+from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
 from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
 
 
@@ -34,7 +34,7 @@ def test_initial_import_cluster(log_in, testcase_end):
                  'Tendrl should not route to home page any more',
                  hard=True)
     NavMenuBars(log_in.driver).open_clusters(click_only=True)
-    cluster_list = ClusterList(log_in.driver)
+    cluster_list = ClustersList(log_in.driver)
 # TODO: Check that correct cluster is present in the list
     pytest.check(len(cluster_list) == 1,
                  'There should be exactly one cluster ion tendrl')
