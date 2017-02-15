@@ -4,7 +4,7 @@ REST API test suite - gluster cluster
 """
 import pytest
 
-from usmqe.api.tendrlapi import tendrlapi
+from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 
 
@@ -55,7 +55,7 @@ def test_cluster_import_valid():
                 Return code should be **200** with data ``{"message": "OK"}``.
 
         """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     storage = gluster.GlusterCommon()
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
@@ -135,7 +135,7 @@ def test_cluster_import_invalid():
                 Return code should be **200** with data ``{"message": "OK"}``.
 
         """
-    api = tendrlapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
 
