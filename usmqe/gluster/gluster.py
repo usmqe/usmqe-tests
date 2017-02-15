@@ -163,6 +163,7 @@ class GlusterVolume(GlusterCommon):
 
         Args:
             cluster: cluster name
+            volume_name: volume name
         """
         super().__init__(cluster)
         self.name = volume_name
@@ -186,12 +187,9 @@ class GlusterVolume(GlusterCommon):
     def info(self):
         """
         Run gluster command: ``gluster volume info``
-
-        Returns:
-            dictionary: parsed json from
-                        ``gluster volume info VOLUMENAME --xml``
-                        command
+        with volume name specified by class.
         """
+
         xml = self.run_on_node('info {}'.format(self.name))
         self.id = xml.findtext("./volInfo/volumes/volume/id")
         LOGGER.debug("Volume_id: %s" % self.id)
