@@ -3,7 +3,7 @@ REST API test suite - gluster volume
 """
 import pytest
 
-from usmqe.api.tendrlapi import tendrlapi
+from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 
 
