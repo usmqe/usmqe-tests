@@ -139,53 +139,41 @@ class GlusterCommon(object):
         volume_name = self.get_volume_names()
         found = False
         # TODO test what vol_name looks like when there are more volumes name
-        if isinstance(volume_name, list):
-            for item in volume_name:
-                # TODO use pytest.check in if?
-                if item == name:
-                    found = True
-        else:
-            if volume_name == name:
-                found = True
         if expected:
             pytest.check(
-                found,
+                name in volume_name if isinstance(volume_name, list) else volume_name == name,
                 "{} should be among volumes from output \
                 of gluster volume info command".format(name))
         else:
             pytest.check(
-                not found,
+                name not in volume_name if isinstance(volume_name, list) else volume_name != name,
                 "{} should not be among volumes from output \
                 of gluster volume info command".format(name))
         return found
 
-    # TODO do it universal with name checking
-    def check_status(self, name, status="Started"):
-        """
-        Check if volume status corresponds with specified status.
-        """
-        real_status = self.run_on_node(command="volume info").findtext(
-            "./volInfo/volumes/volume/statusStr")
-        LOGGER.debug("Volume_status: %s" % real_status)
-        pytest.check(
-            status == real_status,
-            "Volume status is {}, should be {}".format(status, real_status))
-
 
 class GlusterVolume(GlusterCommon):
     """
-    Class representing gluster cluster.
+    Class representing gluster volume.
     """
 
-    def __init__(self, cluster):
+    def __init__(self, volume_name=None, cluster=None):
         """
         Initialize GlusterCluster object.
 
         Args:
             cluster: cluster name
+            volume_name: volume name
         """
-        super(GlusterCommon, self).__init__(cluster)
+        super().__init__(cluster)
+        self.name = volume_name
         self.cmd = GlusterVolumeCommand()
+        self.status = None
+        self.id = None
+        self.stripe_count = None
+        self.replica_count = None
+        self.brick_count = None
+        self.snap_count = None
 
 #    @property
 #    def node(self):
@@ -199,10 +187,39 @@ class GlusterVolume(GlusterCommon):
     def info(self):
         """
         Run gluster command: ``gluster volume info``
-
-        Returns:
-            dictionary: parsed json from
-                        ``gluster --format json --cluster CLUSTERNAME status``
-                        command
+        with volume name specified by class.
         """
-        return self.run_on_node('info')
+
+        xml = self.run_on_node('info {}'.format(self.name))
+        self.id = xml.findtext("./volInfo/volumes/volume/id")
+        LOGGER.debug("Volume_id: %s" % self.id)
+        self.status = xml.findtext(
+            "./volInfo/volumes/volume/statusStr")
+        self.stripe_count = xml.findtext(
+            "./volInfo/volumes/volume/stripeCount")
+        self.replica_count = xml.findtext(
+            "./volInfo/volumes/volume/stripeCount")
+        self.brick_count = xml.findtext(
+            "./volInfo/volumes/volume/brickCount")
+        self.snap_count = xml.findtext(
+            "./volInfo/volumes/volume/snapshotCount")
+        LOGGER.debug("Volume_status: %s" % self.status)
+
+    def get_volume_id(self):
+        """
+        Returns id of volume with given name.
+        """
+        if not self.id:
+            self.info()
+        return self.id
+
+    # TODO do it universal with name checking
+    def check_status(self, status="Started"):
+        """
+        Check if volume status corresponds with specified status.
+        """
+        self.info()
+        real_status = self.status
+        pytest.check(
+            status == real_status,
+            "Volume status is {}, should be {}".format(real_status, status))
