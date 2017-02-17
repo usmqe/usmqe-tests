@@ -115,6 +115,7 @@ class TendrlApiGluster(TendrlApi):
         pattern = "{}/GlusterDeleteVolume".format(cluster)
         response = requests.delete(pytest.config.getini("usm_api_url") + pattern,
                                    json=post_data)
+
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -166,3 +167,16 @@ class TendrlApiGluster(TendrlApi):
         self.print_req_info(response)
         self.check_response(response, asserts)
         return response.json()
+
+    def get_volume_attribute(self, cluster, volume, attribute):
+        """ Check if provided volume has attribute of given value.
+
+        Args:
+            cluster: id of a cluster
+            volume: id of a volume
+            attribute: name of the searched attribute
+        """
+        value = [x[attribute] for x in self.get_volume_list(cluster)
+                 if x["vol_id"] == volume][0]
+        LOGGER.debug("{} = {}".format(attribute, value))
+        return value
