@@ -10,7 +10,7 @@ def valid_cluster_id():
     Generate valid id of imported cluster.
     """
     # TODO change
-    api = glusterapi.ApiGluster()
+    api = glusterapi.TendrlApiGluster()
     return api.get_cluster_list()[0]["cluster_id"]
 
 
