@@ -161,7 +161,10 @@ def test_cluster_import_invalid():
     job_id = api.import_cluster(cluster_data)["job_id"]
 
     # TODO check true response code of etcd (should be some kind of error)
-    api.wait_for_job_status(job_id, status="failed")
+    api.wait_for_job_status(
+        job_id,
+        status="failed",
+        issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
     integration_id = api.get_job_attribute(
         job_id=job_id, attribute="integration_id")
