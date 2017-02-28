@@ -18,7 +18,7 @@ class HostsMenuModel(ListMenuModel):
     """
     Hosts page top menu
     """
-    header = PageElement(by=By.XPATH, locator="//h1[contains(text(),'Hosts']")
+    header = PageElement(by=By.XPATH, locator="//h1[contains(text(),'Hosts')]")
 
 
 class HostsItemModel(contentviews.ListViewRowModel):

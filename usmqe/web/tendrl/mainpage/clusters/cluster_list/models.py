@@ -19,10 +19,12 @@ class ClustersMenuModel(ListMenuModel):
     """
     Clusters page top menu
     """
-    header = PageElement(by=By.XPATH, locator="//h1[text()='Clusters']")
+    header = PageElement(
+        by=By.XPATH,
+        locator="//h1[contains(text(),'Clusters')]")
     import_btn = form.Button(
         By.XPATH,
-        '//button[@ng-click="cluster.importCluster()"]')
+        '//button[@ng-click="clusterCntrl.importCluster()"]')
 
 
 class ClustersListModel(contentviews.ListViewModel):
