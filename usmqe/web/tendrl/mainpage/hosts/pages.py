@@ -3,6 +3,8 @@ Hosts page abstraction.
 """
 
 
+import copy
+
 from webstr.patternfly.contentviews import pages as contentviews
 import webstr.patternfly.dropdown.pages as dropdown
 
@@ -16,7 +18,7 @@ class HostsMenu(ListMenu):
     """
     _model = m_hosts.HostsMenuModel
     _label = 'hosts top menu'
-    _required_elems = ListMenu._required_elems
+    _required_elems = copy.deepcopy(ListMenu._required_elems)
     _required_elems.append('header')
 
 

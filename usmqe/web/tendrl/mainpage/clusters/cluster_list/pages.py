@@ -3,6 +3,8 @@ Clusters page abstraction.
 """
 
 
+import copy
+
 from webstr.patternfly.contentviews import pages as contentviews
 import webstr.patternfly.dropdown.pages as dropdown
 
@@ -102,7 +104,7 @@ class ClustersMenu(ListMenu, ClustersWorkBase):
     """
     _model = m_cluster_list.ClustersMenuModel
     _label = 'cluster page top menu'
-    _required_elems = ListMenu._required_elems
+    _required_elems = copy.deepcopy(ListMenu._required_elems)
     _required_elems.extend(['header', 'import_btn'])
 
 
