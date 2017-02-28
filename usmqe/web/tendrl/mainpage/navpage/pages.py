@@ -47,8 +47,7 @@ class NavMenuBars(WebstrPage):
         'clusters_link',
         'nodes_link',
         'file_shares_link',
-        'pools_link',
-        'tasks_link'
+        'pools_link'
     ]
 
 # TODO
