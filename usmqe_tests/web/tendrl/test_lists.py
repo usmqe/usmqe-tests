@@ -1,5 +1,5 @@
 """
-Description: Simple log in test
+Description: Simple tests for lists pages
 
 Author: ltrilety
 """
