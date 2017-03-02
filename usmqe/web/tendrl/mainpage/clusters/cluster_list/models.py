@@ -47,6 +47,7 @@ class ClustersRowModel(contentviews.ListViewRowModel):
         locator='.//div[contains(@class, "cluster-name")]')
 
 # TODO
+# Uncomment when fields are present on the page
 #    usage_percent_text = PageElement(
 #        by=By.XPATH,
 #        locator='.//div[contains(@class, \'percentage-heading\')]')
@@ -63,15 +64,21 @@ class ClustersRowModel(contentviews.ListViewRowModel):
 #    iops_text = PageElement(
 #        by=By.XPATH,
 #        locator='.//chart-column[@column-id=\'IOPS-0\']/chart-gauge')
-#
-#    hosts_value = PageElement(
-#        by=By.XPATH,
-#        locator='.//div[@ng-bind=\'cluster.no_of_hosts\']')
-#    hosts_text = PageElement(
-#        by=By.XPATH,
-#        locator='.//div[@ng-bind=\'cluster.no_of_hosts\']'
-#                '/preceding-sibling::div')
-#
+
+    hosts_label = PageElement(
+        by=By.XPATH,
+        locator='.//div[contains(text(),"Hosts")]')
+    hosts_value = PageElement(
+        by=By.XPATH,
+        locator='.//div[contains(text(),"Hosts")]/following-sibling::*')
+
+    file_share_label = PageElement(
+        by=By.XPATH,
+        locator='.//div[contains(text(),"File Shares")]')
+    file_share_value = PageElement(
+        by=By.XPATH,
+        locator='.//div[contains(text(),"File Shares")]/following-sibling::*')
+
 #    pools_value = PageElement(
 #        by=By.XPATH,
 #        locator='.//div[@ng-bind=\'cluster.no_of_volumes_or_pools\']')
@@ -79,14 +86,13 @@ class ClustersRowModel(contentviews.ListViewRowModel):
 #        by=By.XPATH,
 #        locator='.//div[@ng-bind=\'cluster.no_of_volumes_or_pools\']'
 #                '/preceding-sibling::div')
-#
-#    alerts_value = PageElement(
-#        by=By.XPATH,
-#        locator='.//span[@ng-bind=\'cluster.alerts\']')
-#    alerts_text = PageElement(
-#        by=By.XPATH,
-#        locator='.//span[@ng-bind=\'cluster.alerts\']'
-#                '/../preceding-sibling::div')
+
+    alerts_label = PageElement(
+        by=By.XPATH,
+        locator='.//div[contains(text(),"Alerts")]')
+    alerts_value = PageElement(
+        by=By.XPATH,
+        locator='.//div[contains(text(),"Alerts")]/following-sibling::*')
 
     menu_link = PageElement(By.ID, "dropdownKebabRight12")
 
