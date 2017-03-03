@@ -26,11 +26,4 @@ def test_import(module):
     """
     Just try to import given module.
     """
-    try:
-        importlib.import_module(module)
-    # TODO: FIXME Remove try except block when webstr will be public
-    except ImportError as exc:
-        if 'webstr' not in str(exc):
-            raise exc
-        else:
-            pytest.xfail(reason=str(exc))
+    importlib.import_module(module)
