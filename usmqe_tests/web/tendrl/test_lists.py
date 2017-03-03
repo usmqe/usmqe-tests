@@ -29,7 +29,7 @@ def test_hosts_list(log_in, testcase_end):
         'There should be exactly {} hosts'.format(len(inventory_hosts)))
     HostsMenu(log_in.driver)
     for host in hosts_list:
-        # the check is extra, it's not needed, there could be just pass
+        # the host.is_present check is extra, it's not needed
         pytest.check(host.is_present,
                      'Any host (line in Hosts list) should have some elements')
         host_name = host.name
@@ -62,9 +62,15 @@ def test_cluster_list(log_in, testcase_end, sds_name):
     clusters_list = navMenuBar.open_clusters()
     pytest.check(len(clusters_list) > 0, 'Cluster list should not be empty')
     ClustersMenu(log_in.driver)
-    inventory_hosts = usmqe.inventory.role2hosts(sds_name)
+    if sds_name == 'ceph':
+        inventory_hosts = usmqe.inventory.role2hosts('ceph_mon')
+        inventory_hosts.extend(usmqe.inventory.role2hosts('ceph_osd'))
+        # remove duplicates
+        inventory_hosts = list(set(inventory_hosts))
+    else:
+        inventory_hosts = usmqe.inventory.role2hosts(sds_name)
     for cluster in clusters_list:
-        # the check is extra, it's not needed, there could be just pass
+        # the cluster.is_present check is extra, it's not needed
         pytest.check(
             cluster.is_present,
             'Any cluster (line in Clusters list) should have some elements')
