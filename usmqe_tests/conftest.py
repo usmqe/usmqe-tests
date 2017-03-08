@@ -10,7 +10,9 @@ def get_name(fname):
     """
     Generate test name from method name.
     """
-    return fname.lstrip('test_').replace('_', ' ')
+    # remove 'test_' from the beginning and
+    # replace all underscores with spaces
+    return fname[5:].replace('_', ' ')
 
 
 @pytest.fixture(scope="session", autouse=True)
