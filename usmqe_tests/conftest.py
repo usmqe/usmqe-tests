@@ -1,12 +1,9 @@
 import pytest
-from itertools import cycle
 
 
 # initialize usmqe logging module
 LOGGER = pytest.get_logger("pytests_test")
 pytest.set_logger(LOGGER)
-
-parametrized_tests = {}
 
 
 def get_name(fname):
