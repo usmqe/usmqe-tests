@@ -122,19 +122,15 @@ def pytest_runtest_makereport(item, call):
         set_logger()
     outcome = yield
     report = outcome.get_result()
-    # from pprint import pprint
-    # pprint(report.__dict__, indent=2)
-    # pprint(report.longrepr.reprcrash.__dict__, indent=2)
+    # add an error to mrglog module if needed
+    try:
+        message = report.longrepr.reprcrash.message
+        CHECKLOGGER.error(message)
+    except AttributeError:
+        pass
     failed_assumptions = CHECKLOGGER.act_test['fail']
     passed_assumptions = CHECKLOGGER.act_test['pass']
     waived_assumptions = CHECKLOGGER.act_test['waive']
-    # add an error to mrglog module if needed
-    if report.outcome == 'failed' and not failed_assumptions:
-        try:
-            message = report.longrepr.reprcrash.message
-            CHECKLOGGER.error(message)
-        except:
-            CHECKLOGGER.error('Some problem occured')
     assumption_locals = getattr(pytest, "_assumption_locals", [])
     evalxfail = getattr(item, '_evalxfail', None)
     if call.when == "call" and (failed_assumptions or waived_assumptions):
