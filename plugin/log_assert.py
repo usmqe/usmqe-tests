@@ -27,7 +27,6 @@
 import inspect
 import os
 import os.path
-import logging
 
 import pytest
 import mrglog
@@ -143,7 +142,7 @@ def pytest_runtest_makereport(item, call):
     assumption_locals = getattr(pytest, "_assumption_locals", [])
     evalxfail = getattr(item, '_evalxfail', None)
     if call.when == "call" and (failed_assumptions or waived_assumptions):
-        if ((evalxfail and evalxfail.wasvalid() and evalxfail.istrue()) or\
+        if ((evalxfail and evalxfail.wasvalid() and evalxfail.istrue()) or
            waived_assumptions) and not failed_assumptions:
             report.outcome = "skipped"
             if evalxfail and evalxfail.wasvalid() and evalxfail.istrue():
