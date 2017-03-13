@@ -3,7 +3,7 @@ Common page model for hosts.
 """
 
 
-from webstr.core import By, PageElement
+from webstr.core import By, PageElement, DynamicPageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 import webstr.patternfly.dropdown.models as dropdown
@@ -18,13 +18,20 @@ class HostsMenuModel(ListMenuModel):
     """
     Hosts page top menu
     """
-    header = PageElement(by=By.XPATH, locator="//h1[text()='Hosts']")
+    header = PageElement(by=By.XPATH, locator="//h1[contains(text(),'Hosts')]")
 
 
 class HostsItemModel(contentviews.ListViewRowModel):
     """
     An item (row) in a Hosts list.
     """
+
+    def _instance_identifier(self):
+        """
+        instance identifier: line number - 1
+        """
+        return self._name - 1
+
 # Design: https://redhat.invisionapp.com/share/BR8JDCGSQ
     status_icon = StatusIcon(
         by=By.XPATH,
@@ -32,65 +39,88 @@ class HostsItemModel(contentviews.ListViewRowModel):
     name_label = PageElement(
         by=By.XPATH,
         locator="./div/a")
+    name = name_label
 # TODO
 # https://github.com/Tendrl/specifications/pull/95
 # https://github.com/Tendrl/specifications/pull/77
 #    ip_label = PageElement(
 #        by=By.XPATH,
 #        locator=".//span[contains(@ng-bind,'host.management_ip4')]")
-#
-#    cpu_label = PageElement(by=By.XPATH, locator=".//div[.='CPU']")
-#    cpu_graph_free = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='CPU']/..//chart-column[@column-id='Free']")
-#    cpu_graph_using = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='CPU']/..//chart-column[@column-id='Using']")
-#    cpu_graph_title = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='CPU']/..//chart-column[@column-id='Using']/*")
-#
-#    memory_label = PageElement(by=By.XPATH, locator=".//div[.='Memory']")
-#    memory_graph_free = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='Memory']/..//chart-column[@column-id='Free']")
-#    memory_graph_using = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='Memory']/..//chart-column[@column-id='Using']")
-#    memory_graph_title = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='Memory']/..//chart-column[@column-id='Using']/*")
-#
-#    cluster_label = PageElement(by=By.XPATH, locator=".//div[.='Cluster']")
-#    cluster_value = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='Cluster']/following-sibling::*")
-#
-#    roles_label = PageElement(by=By.XPATH, locator=".//div[.='Roles']")
-#    roles_value = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='Roles']/following-sibling::*")
-#
-#    info_version_label = PageElement(
-#        by=By.XPATH,
-#        locator=".//span[.='Version : ']")
-#    info_version_value = PageElement(
-#        by=By.XPATH,
-#        locator=".//span[.='Version : ']/following-sibling::*")
-#
-#    info_kernel_label = PageElement(
-#        by=By.XPATH,
-#        locator=".//span[.='Kernel : ']")
-#    info_kernel_value = PageElement(
-#        by=By.XPATH,
-#        locator=".//span[.='Kernel : ']/following-sibling::*")
-#
-#    alerts_label = PageElement(by=By.XPATH, locator=".//div[.='Alerts']")
-#    alerts_value = PageElement(
-#        by=By.XPATH,
-#        locator=".//div[.='Alerts']/following-sibling::*/span")
+#    ip = ip_label
 
-    name = name_label
+    storage_locator = ".//donut-chart[@id='storage-donut-chart%d']"
+    storage_label = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}//*[contains(text(),'Storage')]".format(storage_locator))
+    storage_used_chart = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[1]".format(storage_locator))
+    storage_used_nr = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[2]/[contains(@ng-if,'vm.chartData.used')]".
+        format(storage_locator))
+    # TODO make helper if needed
+    #      as of now there's not just number in text(), bu also 'of ' string
+    #      e.g. 'of XXXX', where the important part is just XXXX
+    storage_total_nr = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[2]/[contains(@ng-if,'vm.chartData.total')]".
+        format(storage_locator))
+
+    cpu_locator = ".//donut-chart[@id='cpu-donut-chart%d']"
+    cpu_label = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}//*[contains(text(),'CPU')]".format(cpu_locator))
+    cpu_percent_chart = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[1]".format(cpu_locator))
+    # TODO make helper if needed
+    #      as of now there's not just number in text(), bu also ' % ' string
+    #      e.g. ' XXXX %', where the important part is just XXXX
+    cpu_percent = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[2]/[contains(@ng-if,'vm.chartData.used')]".
+        format(cpu_locator))
+
+    memory_locator = ".//donut-chart[@id='memory-donut-chart%d']"
+    memory_label = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}//*[contains(text(),'Memory')]".format(memory_locator))
+    memory_used_chart = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[1]".format(memory_locator))
+    memory_used_nr = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[2]/[contains(@ng-if,'vm.chartData.used')]".
+        format(memory_locator))
+    # TODO make helper if needed
+    #      as of now there's not just number in text(), bu also 'of ' string
+    #      e.g. 'of XXXX', where the important part is just XXXX
+    memory_total_nr = DynamicPageElement(
+        by=By.XPATH,
+        locator="{}/span[2]/[contains(@ng-if,'vm.chartData.total')]".
+        format(memory_locator))
+
+    cluster_label = PageElement(
+        by=By.XPATH,
+        locator=".//div/b[contains(text(),'Cluster')]")
+    cluster_value = PageElement(
+        by=By.XPATH,
+        locator=".//div/b[contains(text(),'Cluster')]/following-sibling::*")
+
+    roles_label = PageElement(
+        by=By.XPATH,
+        locator=".//div/b[contains(text(),'Role')]")
+    roles_value = PageElement(
+        by=By.XPATH,
+        locator=".//*[contains(@ng-if,'host.role')]")
+
+    alerts_label = PageElement(
+        by=By.XPATH,
+        locator=".//div/b[contains(text(),'Alerts')]")
+    alerts_value = PageElement(
+        by=By.XPATH,
+        locator=".//div/b[contains(text(),'Alerts')]/following-sibling::*")
 
     menu_link = form.Button(by=By.ID, locator="dropdownKebabRight12")
 
