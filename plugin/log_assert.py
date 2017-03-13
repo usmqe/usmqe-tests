@@ -27,6 +27,7 @@
 import inspect
 import os
 import os.path
+import logging
 
 import pytest
 import mrglog
@@ -40,6 +41,14 @@ CHECKLOGGER = None
 
 
 """ pytest conditional assert """
+
+
+class No_log_filter(object):
+    """ filter all messages with LOG_LEVEL """
+
+    def filter(self, logRecord):
+        """ return False for LOG_LEVEL messages, True otherwise """
+        return logRecord.levelno != mrglog.LOG_LEVEL
 
 
 def pytest_namespace():
@@ -134,8 +143,8 @@ def pytest_runtest_makereport(item, call):
     assumption_locals = getattr(pytest, "_assumption_locals", [])
     evalxfail = getattr(item, '_evalxfail', None)
     if call.when == "call" and (failed_assumptions or waived_assumptions):
-        if (evalxfail and evalxfail.wasvalid() and evalxfail.istrue()) or\
-           waived_assumptions:
+        if ((evalxfail and evalxfail.wasvalid() and evalxfail.istrue()) or\
+           waived_assumptions) and not failed_assumptions:
             report.outcome = "skipped"
             if evalxfail and evalxfail.wasvalid() and evalxfail.istrue():
                 report.wasxfail = evalxfail.getexplanation()
@@ -183,7 +192,11 @@ def pytest_runtest_makereport(item, call):
 def get_logger(*args, **kwargs):
     if 'verbose_lvl' not in kwargs:
         kwargs['verbose_lvl'] = 0
-    return mrglog.get_logger(*args, **kwargs)
+    logger = mrglog.get_logger(*args, **kwargs)
+    for handler in logger.handlers:
+        if isinstance(handler, logging.StreamHandler):
+            handler.addFilter(No_log_filter())
+    return logger
 
 
 def set_logger(logger=None):
