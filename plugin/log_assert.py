@@ -122,6 +122,12 @@ def pytest_runtest_makereport(item, call):
         set_logger()
     outcome = yield
     report = outcome.get_result()
+    # add an error to mrglog module if needed
+    try:
+        message = report.longrepr.reprcrash.message
+        CHECKLOGGER.error(message)
+    except AttributeError:
+        pass
     failed_assumptions = CHECKLOGGER.act_test['fail']
     passed_assumptions = CHECKLOGGER.act_test['pass']
     waived_assumptions = CHECKLOGGER.act_test['waive']
