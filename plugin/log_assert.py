@@ -194,7 +194,10 @@ def get_logger(*args, **kwargs):
         kwargs['verbose_lvl'] = 0
     logger = mrglog.get_logger(*args, **kwargs)
     for handler in logger.handlers:
-        if isinstance(handler, logging.StreamHandler):
+        # logging.FileHandler is probably inherited from logging.StreamHandler
+        # hence isinstance is not working properly
+        # if isinstance(handler, logging.StreamHandler):
+        if 'logging.StreamHandler' in str(handler):
             handler.addFilter(No_log_filter())
     return logger
 
