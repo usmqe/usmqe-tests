@@ -36,6 +36,7 @@ def logger_testcase(request):
     """
     Mark start and end of a test case using usmqe logger.
     """
+    print()
     LOGGER.testStart(get_name(str(request.node)))
     yield
     LOGGER.testEnd()
