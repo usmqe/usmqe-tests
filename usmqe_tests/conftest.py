@@ -1,4 +1,6 @@
 import pytest
+from usmqe.api.tendrlapi.common import login, logout
+from usmqe.api.tendrlapi import user as tendrlapi_user
 
 
 # initialize usmqe logging module
@@ -40,3 +42,49 @@ def logger_testcase(request):
     LOGGER.testStart(get_name(str(request.node)))
     yield
     LOGGER.testEnd()
+
+
+@pytest.fixture(
+    params=[{
+        "name": "Tom Hardy",
+        "username": "thardy",
+        "email": "thardy@tendrl.org",
+        "role": "admin",
+        "password": "pass1234",
+        "password_confirmation": "pass1234"}])
+def valid_user_data(request):
+    """
+    Generate valid data that can be imported into tendrl as a new user.
+
+    ``params`` parameter takes list of dictionaries where each dictionary
+        contains ``username`` and ``password`` as keys.
+    """
+
+    return request.param
+
+
+@pytest.fixture
+def valid_new_user(valid_user_data):
+    """
+    Create user from valid_user_data fixture and return these data.
+    At the end remove this user.
+    """
+
+    auth = login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    admin = tendrlapi_user.ApiUser(auth=auth)
+    admin.user_add(valid_user_data)
+    yield valid_user_data
+    admin.user_del(valid_user_data["username"])
+    logout(auth=auth)
+
+
+@pytest.fixture(params=[
+        "new_password_123"
+        ])
+def valid_password(request):
+    """
+    Return valid password string.
+    """
+    return request.param
