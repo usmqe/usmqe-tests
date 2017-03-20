@@ -82,3 +82,15 @@ class TendrlApi(ApiBase):
             asserts_in: assert values for this call and this method
         """
     pass
+
+    def ping(self):
+        """ Ping REST API
+        Name:        "ping",
+        Method:      "GET",
+        Pattern:     "ping",
+        """
+        pattern = "ping"
+        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
