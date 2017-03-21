@@ -40,3 +40,26 @@ def test_rpmlint(rpm_package):
     LOGGER.debug(" ".join(cmd))
     status = subprocess.run(cmd)
     pytest.check(status.returncode == 0)
+
+
+@pytest.mark.parametrize("check_command", [
+    "check-sat",
+    "check-conflicts",
+    ])
+def test_rpmdeplint(rpm_package, check_command, rpm_repo):
+    rpm_name, rpm_path = rpm_package
+    LOGGER.info("checking %s", rpm_name)
+    cmd = ["rpmdeplint", check_command]
+    # configure systemd default repositories
+    for name, url in CENTOS_REPOS.items():
+        cmd.append("--repo")
+        cmd.append("{},{}".format(name, url))
+    # configure tendrl repository (passed via rpm_repo fixture)
+    cmd.append("--repo")
+    cmd.append("tendrl,{}".format(rpm_repo))
+    # and last but not least: specify the package
+    cmd.append(rpm_path)
+    # running the check
+    LOGGER.debug(" ".join(cmd))
+    status = subprocess.run(cmd)
+    pytest.check(status.returncode == 0)
