@@ -31,3 +31,12 @@ def test_repoclosure(rpm_repo):
     # TODO: log stdout properly
     status = subprocess.run(repoclosure_cmd)
     pytest.check(status.returncode == 0)
+
+
+def test_rpmlint(rpm_package):
+    rpm_name, rpm_path = rpm_package
+    LOGGER.info("checking %s", rpm_name)
+    cmd = ["rpmlint", rpm_path]
+    LOGGER.debug(" ".join(cmd))
+    status = subprocess.run(cmd)
+    pytest.check(status.returncode == 0)
