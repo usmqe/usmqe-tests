@@ -2,19 +2,21 @@
 Tendrl REST API.
 """
 
-import json
-
 import requests
 
 import pytest
 
-from usmqe.api.tendrlapi import tendrlgapi
+from usmqe.api.tendrlapi.common import TendrlApi
 
 LOGGER = pytest.get_logger("tendrlapi.authentication", module=True)
 
 
-class Authentication(tendrlapi.ApiCommon):
+class Authentication(TendrlApi):
     """ Main class for interact with REST API - authentication."""
+
+    def __init__(self):
+        self.username = None
+        self.access_token = None
 
     def login(self, username, password, asserts_in=None):
         """ Login user.
@@ -31,9 +33,10 @@ class Authentication(tendrlapi.ApiCommon):
         pattern = "login"
         request = requests.get(
             pytest.config.getini("USM_APIURL") + pattern)
-        ApiUser.print_req_info(request)
-        ApiUser.check_response(request, asserts_in)
-        return {"username": username, "access_token": response.json()["access_token"]}
+        self.print_req_info(request)
+        self.check_response(request, asserts_in)
+        self.username = username
+        self.access_token = request.json()["access_token"]
 
     def logout(self, asserts_in=None):
         """ Logout user.
@@ -48,5 +51,5 @@ class Authentication(tendrlapi.ApiCommon):
         pattern = "logout"
         request = requests.delete(
             pytest.config.getini("USM_APIURL") + pattern)
-        ApiUser.print_req_info(request)
-        ApiUser.check_response(request, asserts_in)
+        self.print_req_info(request)
+        self.check_response(request, asserts_in)
