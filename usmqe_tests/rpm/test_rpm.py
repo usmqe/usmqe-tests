@@ -2,6 +2,7 @@
 
 import pytest
 import subprocess
+import tempfile
 
 
 LOGGER = pytest.get_logger(__name__, module=True)
@@ -29,7 +30,12 @@ def test_repoclosure(rpm_repo):
     cmd.append("--repoid=tendrl")
     # running repoclosure
     LOGGER.info(" ".join(cmd))
-    cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        cp = subprocess.run(
+            cmd,
+            cwd=tmpdirname,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
     LOGGER.debug("STDOUT: %s", cp.stdout)
     LOGGER.debug("STDERR: %s", cp.stderr)
     check_msg = "repoclosure return code should be 0 indicating no errors"
