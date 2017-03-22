@@ -9,7 +9,7 @@ import requests
 import subprocess
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def rpm_repo():
     """
     Check if we can connect to the repo. If not, this issue will be immediately
@@ -22,7 +22,7 @@ def rpm_repo():
     return baseurl
 
 
-@pytest.fixture(params=[
+@pytest.fixture(scope="module", params=[
     "tendrl-commons",
     "tendrl-node-agent",
     "tendrl-ceph-integration",
