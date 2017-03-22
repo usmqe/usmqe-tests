@@ -37,9 +37,9 @@ def test_repoclosure(rpm_repo):
     # when the check fails, report the error in readable way
     if cp.returncode != 0:
         for line in cp.stdout.splitlines():
-            LOGGER.failed(str(line))
+            LOGGER.failed(line.decode())
         for line in cp.stderr.splitlines():
-            LOGGER.failed(str(line))
+            LOGGER.failed(line.decode())
 
 
 def test_rpmlint(rpm_package):
@@ -55,7 +55,7 @@ def test_rpmlint(rpm_package):
     # when the check fails, report the error in readable way
     if cp.returncode != 0:
         for line in cp.stdout.splitlines():
-            LOGGER.failed(str(line))
+            LOGGER.failed(line.decode())
 
 
 @pytest.mark.parametrize("check_command", [
@@ -85,4 +85,4 @@ def test_rpmdeplint(rpm_package, check_command, rpm_repo):
     # when the check fails, report the error in readable way
     if cp.returncode != 0:
         for line in cp.stderr.splitlines():
-            LOGGER.failed(str(line))
+            LOGGER.failed(line.decode())
