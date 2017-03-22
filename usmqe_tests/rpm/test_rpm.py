@@ -12,7 +12,7 @@ CENTOS_REPOS = {
     "centos-base": "http://mirror.centos.org/centos/7/os/x86_64/",
     "centos-updates": "http://mirror.centos.org/centos/7/updates/x86_64/",
     "centos-extras": "http://mirror.centos.org/centos/7/extras/x86_64/",
-    "epel": "http://mirror.karneval.cz/pub/linux/fedora/epel/7/x86_64/",
+    "fedora-epel": "http://mirror.karneval.cz/pub/linux/fedora/epel/7/x86_64/",
     }
 
 
