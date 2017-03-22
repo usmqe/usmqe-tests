@@ -34,6 +34,12 @@ def test_repoclosure(rpm_repo):
     LOGGER.debug("STDERR: %s", cp.stderr)
     check_msg = "repoclosure return code should be 0 indicating no errors"
     pytest.check(cp.returncode == 0, msg=check_msg)
+    # when the check fails, report the error in readable way
+    if cp.returncode != 0:
+        for line in cp.stdout.splitlines():
+            LOGGER.failed(str(line))
+        for line in cp.stderr.splitlines():
+            LOGGER.failed(str(line))
 
 
 def test_rpmlint(rpm_package):
@@ -46,6 +52,10 @@ def test_rpmlint(rpm_package):
     LOGGER.debug("STDERR: %s", cp.stderr)
     check_msg = "rpmlint return code should be 0 indicating no errors"
     pytest.check(cp.returncode == 0, msg=check_msg)
+    # when the check fails, report the error in readable way
+    if cp.returncode != 0:
+        for line in cp.stdout.splitlines():
+            LOGGER.failed(str(line))
 
 
 @pytest.mark.parametrize("check_command", [
@@ -71,3 +81,7 @@ def test_rpmdeplint(rpm_package, check_command, rpm_repo):
     LOGGER.debug("STDERR: %s", cp.stderr)
     check_msg = "rpmdeplint return code should be 0 indicating no errors"
     pytest.check(cp.returncode == 0, msg=check_msg)
+    # when the check fails, report the error in readable way
+    if cp.returncode != 0:
+        for line in cp.stderr.splitlines():
+            LOGGER.failed(str(line))
