@@ -47,7 +47,7 @@ def rpm_package(request, rpm_repo):
         os.makedirs(yum_repos_d)
         repofile_template = textwrap.dedent("""
         [tmp]
-        name=Temporary Repository
+        name=Temporary Yum Repository
         baseurl={}
         enabled=1
         """)
