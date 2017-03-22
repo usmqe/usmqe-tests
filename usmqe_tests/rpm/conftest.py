@@ -63,7 +63,7 @@ def rpm_package(request, rpm_repo):
             "--installroot={}".format(os.path.join(tmpdirname, "chroot")),
             "--destdir={}".format(os.path.join(tmpdirname, "rpms")),
             rpm_name]
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, cwd=tmpdirname, check=True)
         # and check file in rpms directory
         rpms_list = os.listdir(os.path.join(tmpdirname, "rpms"))
         assert len(rpms_list) == 1
