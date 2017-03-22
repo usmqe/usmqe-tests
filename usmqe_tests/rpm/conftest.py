@@ -18,7 +18,7 @@ def rpm_repo():
     """
     baseurl = pytest.config.getini("usm_rpm_baseurl")
     reg = requests.get(baseurl)
-    pytest.check(reg.status_code == 200)
+    assert reg.status_code == 200
     return baseurl
 
 
@@ -63,12 +63,11 @@ def rpm_package(request, rpm_repo):
             "--installroot={}".format(os.path.join(tmpdirname, "chroot")),
             "--destdir={}".format(os.path.join(tmpdirname, "rpms")),
             rpm_name]
-        status = subprocess.run(cmd)
-        pytest.check(status.returncode == 0)
+        subprocess.run(cmd, check=True)
         # and check file in rpms directory
         rpms_list = os.listdir(os.path.join(tmpdirname, "rpms"))
-        pytest.check(len(rpms_list) == 1)
+        assert len(rpms_list) == 1
         file_name = rpms_list[0]
-        pytest.check(file_name.endswith("rpm"))
+        assert file_name.endswith("rpm")
         rpm_path = os.path.join(tmpdirname, "rpms", file_name)
         yield rpm_name, rpm_path
