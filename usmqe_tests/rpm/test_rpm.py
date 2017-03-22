@@ -17,29 +17,35 @@ CENTOS_REPOS = {
 
 
 def test_repoclosure(rpm_repo):
-    repoclosure_cmd = ["repoclosure", "--newest"]
+    cmd = ["repoclosure", "--newest"]
     # configure systemd default repositories
     for name, url in CENTOS_REPOS.items():
-        repoclosure_cmd.append("--repofrompath")
-        repoclosure_cmd.append("{},{}".format(name, url))
-        repoclosure_cmd.append("--lookaside={}".format(name))
+        cmd.append("--repofrompath")
+        cmd.append("{},{}".format(name, url))
+        cmd.append("--lookaside={}".format(name))
     # configure tendrl repository (passed via rpm_repo fixture)
-    repoclosure_cmd.append("--repofrompath")
-    repoclosure_cmd.append("tendrl,{}".format(rpm_repo))
-    repoclosure_cmd.append("--repoid=tendrl")
-    LOGGER.debug(" ".join(repoclosure_cmd))
-    # TODO: log stdout properly
-    status = subprocess.run(repoclosure_cmd)
-    pytest.check(status.returncode == 0)
+    cmd.append("--repofrompath")
+    cmd.append("tendrl,{}".format(rpm_repo))
+    cmd.append("--repoid=tendrl")
+    # running repoclosure
+    LOGGER.info(" ".join(cmd))
+    cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    LOGGER.debug("STDOUT: %s", cp.stdout)
+    LOGGER.debug("STDERR: %s", cp.stderr)
+    check_msg = "repoclosure return code should be 0 indicating no errors"
+    pytest.check(cp.returncode == 0, msg=check_msg)
 
 
 def test_rpmlint(rpm_package):
     rpm_name, rpm_path = rpm_package
-    LOGGER.info("checking %s", rpm_name)
     cmd = ["rpmlint", rpm_path]
-    LOGGER.debug(" ".join(cmd))
-    status = subprocess.run(cmd)
-    pytest.check(status.returncode == 0)
+    # running rpmlint
+    LOGGER.info(" ".join(cmd))
+    cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    LOGGER.debug("STDOUT: %s", cp.stdout)
+    LOGGER.debug("STDERR: %s", cp.stderr)
+    check_msg = "rpmlint return code should be 0 indicating no errors"
+    pytest.check(cp.returncode == 0, msg=check_msg)
 
 
 @pytest.mark.parametrize("check_command", [
@@ -48,7 +54,6 @@ def test_rpmlint(rpm_package):
     ])
 def test_rpmdeplint(rpm_package, check_command, rpm_repo):
     rpm_name, rpm_path = rpm_package
-    LOGGER.info("checking %s", rpm_name)
     cmd = ["rpmdeplint", check_command]
     # configure systemd default repositories
     for name, url in CENTOS_REPOS.items():
@@ -59,7 +64,10 @@ def test_rpmdeplint(rpm_package, check_command, rpm_repo):
     cmd.append("tendrl,{}".format(rpm_repo))
     # and last but not least: specify the package
     cmd.append(rpm_path)
-    # running the check
-    LOGGER.debug(" ".join(cmd))
-    status = subprocess.run(cmd)
-    pytest.check(status.returncode == 0)
+    # running rpmdeplint
+    LOGGER.info(" ".join(cmd))
+    cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    LOGGER.debug("STDOUT: %s", cp.stdout)
+    LOGGER.debug("STDERR: %s", cp.stderr)
+    check_msg = "rpmdeplint return code should be 0 indicating no errors"
+    pytest.check(cp.returncode == 0, msg=check_msg)
