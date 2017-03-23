@@ -4,8 +4,8 @@ from usmqe.api.tendrlapi.authentication import Authentication
 
 
 @pytest.fixture(params=[{
-    "username": pytest.config.getini("username"),
-    "password": pytest.config.getini("password"),
+    "username": pytest.config.getini("usm_username"),
+    "password": pytest.config.getini("usm_password"),
     "role": "admin"}], scope="session")
 def valid_access_credentials(request):
     """Generate tuple consisting of username and valid access token for
