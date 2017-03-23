@@ -5,7 +5,8 @@ from usmqe.api.tendrlapi.authentication import Authentication
 
 @pytest.fixture(params=[{
     "username": pytest.config.getini("username"),
-    "password": pytest.config.getini("password")}], scope="module")
+    "password": pytest.config.getini("password"),
+    "role": "admin"}], scope="session")
 def valid_access_credentials(request):
     """Generate tuple consisting of username and valid access token for
     username and password.
@@ -18,12 +19,14 @@ def valid_access_credentials(request):
     credentials.login(request.param[0], request.param[1])
     return {
         "username": credentials.username,
-        "access_token": credentials.access_token}
+        "access_token": credentials.access_token,
+        "role": "admin"}
 
 
 @pytest.fixture(params=[{
     "username": pytest.config.getini("username"),
-    "access_token": "invalid00000"}], scope="module")
+    "access_token": "invalid00000",
+    "role": "admin"}], scope="session")
 def invalid_access_credentials(request):
     """Generate tuple consisting of username and invalid access token.
 
