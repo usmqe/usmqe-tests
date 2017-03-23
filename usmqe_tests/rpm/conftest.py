@@ -10,6 +10,28 @@ import subprocess
 
 
 @pytest.fixture(scope="module")
+def centos_repos():
+    """
+    Hardcoded list of default el7 repositories for upstream use case.
+
+    Check if we can connect to all default repositories. If not, this issue
+    will be immediately reported during setup so that the test case will end up
+    in ERROR state (instead of FAILED if we were checking this during test
+    itself).
+    """
+    repo_dict = {
+        "centos-base": "http://mirror.centos.org/centos/7/os/x86_64/",
+        "centos-updates": "http://mirror.centos.org/centos/7/updates/x86_64/",
+        "centos-extras": "http://mirror.centos.org/centos/7/extras/x86_64/",
+        "fedora-epel": "http://mirror.karneval.cz/pub/linux/fedora/epel/7/x86_64/",
+        }
+    for url in repo_dict.values():
+        reg = requests.get(url)
+        assert reg.status_code == 200
+    return repo_dict
+
+
+@pytest.fixture(scope="module")
 def rpm_repo():
     """
     Check if we can connect to the repo. If not, this issue will be immediately
