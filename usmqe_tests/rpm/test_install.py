@@ -2,7 +2,6 @@
 
 import pytest
 import subprocess
-import tempfile
 
 
 LOGGER = pytest.get_logger(__name__, module=True)

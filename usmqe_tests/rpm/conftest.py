@@ -64,7 +64,7 @@ def chroot_dir(rpm_repo):
     repo_keys = [
         os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7"),
         os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
-        os.path.join(tmpdirname, "tmp/pubkey.gpg"), # product gpg repo key
+        os.path.join(tmpdirname, "tmp/pubkey.gpg"),  # product gpg repo key
         ]
     for key in repo_keys:
         cmd = ["rpm", "--root", tmpdirname, "--import", key]
