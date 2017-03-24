@@ -2,7 +2,6 @@ import pytest
 
 from usmqe.api.tendrlapi.authentication import Authentication
 
-from usmqe.api.tendrlapi.common import TendrlApi
 
 @pytest.fixture(scope="session")
 def valid_access_credentials(request):

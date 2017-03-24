@@ -23,7 +23,7 @@ class TendrlApiGluster(TendrlApi):
         pattern = "GetNodeList"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
@@ -42,7 +42,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=cluster_data,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -61,7 +61,7 @@ class TendrlApiGluster(TendrlApi):
         pattern = "GetClusterList"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         self.print_req_info(response)
         self.check_response(response)
         return response.json()["clusters"]
@@ -82,7 +82,7 @@ class TendrlApiGluster(TendrlApi):
         pattern = "{}/GetVolumeList".format(cluster)
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
@@ -102,7 +102,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=volume_data,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -126,7 +126,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.delete(
             pytest.config.getini("usm_api_url") + pattern,
             json=post_data,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
 
         asserts = {
             "reason": 'Accepted',
@@ -151,7 +151,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=volume_data,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -175,7 +175,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=volume_data,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         asserts = {
             "reason": 'Accepted',
             "status": 202,

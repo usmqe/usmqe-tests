@@ -1,6 +1,4 @@
-"""
-Tendrl REST API common functions.
-"""
+"""Tendrl REST API common functions."""
 
 import time
 import pytest
@@ -29,7 +27,7 @@ class TendrlApi(ApiBase):
         pattern = "jobs/{}".format(job_id)
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
+            headers={"Authorization": "Bearer {}".format(credentials["access_token"])})
         self.print_req_info(response)
         self.check_response(response)
         if section:
@@ -38,12 +36,12 @@ class TendrlApi(ApiBase):
             return response.json()[attribute]
 
     def wait_for_job_status(
-        self,
-        job_id,
-        credentials,
-        max_count=30,
-        status="finished",
-        issue=None):
+            self,
+            job_id,
+            credentials,
+            max_count=30,
+            status="finished",
+            issue=None):
         """ Repeatedly check if status of job with provided id is in reqquired state.
 
         Args:
@@ -52,6 +50,7 @@ class TendrlApi(ApiBase):
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
         """
+
         count = 0
         current_status = ""
         while (current_status != status and count < max_count):

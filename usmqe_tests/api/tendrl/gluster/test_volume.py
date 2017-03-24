@@ -22,10 +22,10 @@ Teardown
 # TODO create negative test case generator
 # http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
 def test_create_volume_invalid(
-    valid_cluster_id,
-    invalid_volume_name,
-    invalid_volume_bricks,
-    valid_access_credentials):
+        valid_cluster_id,
+        invalid_volume_name,
+        invalid_volume_bricks,
+        valid_access_credentials):
     """@pylatest api/gluster.create_volume_invalid
         API-gluster: create_volume
         ******************************
@@ -49,6 +49,7 @@ def test_create_volume_invalid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should fail.
                 """
+
     api = glusterapi.TendrlApiGluster()
 
     volume_data = {
@@ -64,10 +65,11 @@ def test_create_volume_invalid(
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
-def test_create_volume_valid(valid_cluster_id,
-    valid_volume_name,
-    valid_volume_bricks,
-    valid_access_credentials):
+def test_create_volume_valid(
+        valid_cluster_id,
+        valid_volume_name,
+        valid_volume_bricks,
+        valid_access_credentials):
     """@pylatest api/gluster.create_volume_valid
         API-gluster: create_volume
         ******************************
@@ -91,6 +93,7 @@ def test_create_volume_valid(valid_cluster_id,
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
+
     api = glusterapi.TendrlApiGluster()
 
     volume_data = {
@@ -155,9 +158,9 @@ def test_create_volume_valid(valid_cluster_id,
 
 
 def test_stop_volume_invalid(
-    valid_cluster_id,
-    invalid_volume_name,
-    valid_access_credentials):
+        valid_cluster_id,
+        invalid_volume_name,
+        valid_access_credentials):
     """@pylatest api/gluster.stop_volume_invalid
         API-gluster: stop_volume
         ******************************
@@ -181,6 +184,7 @@ def test_stop_volume_invalid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 Job should fail.
                 """
+
     api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": invalid_volume_name,
@@ -196,10 +200,10 @@ def test_stop_volume_invalid(
 
 
 def test_stop_volume_valid(
-    valid_cluster_id,
-    valid_volume_name,
-    valid_volume_id,
-    valid_access_credentials):
+        valid_cluster_id,
+        valid_volume_name,
+        valid_volume_id,
+        valid_access_credentials):
     """@pylatest api/gluster.stop_volume_valid
         API-gluster: stop_volume
         ******************************
@@ -223,6 +227,7 @@ def test_stop_volume_valid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
+
     api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_volume_name,
@@ -244,9 +249,9 @@ def test_stop_volume_valid(
 # TODO create negative test case generator
 # http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
 def test_start_volume_invalid(
-    valid_cluster_id,
-    invalid_volume_name,
-    valid_access_credentials):
+        valid_cluster_id,
+        invalid_volume_name,
+        valid_access_credentials):
     """@pylatest api/gluster.start_volume_invalid
         API-gluster: start_volume
         ******************************
@@ -270,6 +275,7 @@ def test_start_volume_invalid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should fail.
                 """
+
     api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": invalid_volume_name
@@ -288,10 +294,10 @@ def test_start_volume_invalid(
 
 
 def test_start_volume_valid(
-    valid_cluster_id,
-    valid_volume_name,
-    valid_volume_id,
-    valid_access_credentials):
+        valid_cluster_id,
+        valid_volume_name,
+        valid_volume_id,
+        valid_access_credentials):
     """@pylatest api/gluster.start_volume_valid
         API-gluster: start_volume
         ******************************
@@ -315,6 +321,7 @@ def test_start_volume_valid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
+
     api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_volume_name,
@@ -337,9 +344,9 @@ def test_start_volume_valid(
 
 
 def test_delete_volume_invalid(
-    valid_cluster_id,
-    invalid_volume_id,
-    valid_access_credentials):
+        valid_cluster_id,
+        invalid_volume_id,
+        valid_access_credentials):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -363,6 +370,7 @@ def test_delete_volume_invalid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should fail.
                 """
+
     api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_cluster_id,
@@ -382,10 +390,10 @@ def test_delete_volume_invalid(
 
 
 def test_delete_volume_valid(
-    valid_cluster_id,
-    valid_volume_name,
-    valid_volume_id,
-    valid_access_credentials):
+        valid_cluster_id,
+        valid_volume_name,
+        valid_volume_id,
+        valid_access_credentials):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -409,6 +417,7 @@ def test_delete_volume_valid(
                 Return code should be **202** with data ``{"message": "Accepted"}``.
                 job should finish.
                 """
+
     api = glusterapi.TendrlApiGluster()
     volume_data = {
         "Volume.volname": valid_volume_name,
