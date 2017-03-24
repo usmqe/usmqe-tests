@@ -31,11 +31,12 @@ class Authentication(TendrlApi):
             asserts_in: assert values for this call and this method
         """
         pattern = "login"
-        request = requests.get(
-            pytest.config.getini("USM_APIURL") + pattern)
+        request = requests.post(
+            pytest.config.getini("usm_api_url") + pattern)
         self.print_req_info(request)
         self.check_response(request, asserts_in)
         self.username = username
+        self.role = "admin"
         self.access_token = request.json()["access_token"]
 
     def logout(self, asserts_in=None):
@@ -50,6 +51,6 @@ class Authentication(TendrlApi):
         """
         pattern = "logout"
         request = requests.delete(
-            pytest.config.getini("USM_APIURL") + pattern)
+            pytest.config.getini("usm_api_url") + pattern)
         self.print_req_info(request)
         self.check_response(request, asserts_in)

@@ -2,11 +2,9 @@ import pytest
 
 from usmqe.api.tendrlapi.authentication import Authentication
 
+from usmqe.api.tendrlapi.common import TendrlApi
 
-@pytest.fixture(params=[{
-    "username": pytest.config.getini("usm_username"),
-    "password": pytest.config.getini("usm_password"),
-    "role": "admin"}], scope="session")
+@pytest.fixture(scope="session")
 def valid_access_credentials(request):
     """Generate tuple consisting of username and valid access token for
     username and password.
@@ -16,17 +14,16 @@ def valid_access_credentials(request):
     """
 
     credentials = Authentication()
-    credentials.login(request.param[0], request.param[1])
+    credentials.login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
     return {
         "username": credentials.username,
         "access_token": credentials.access_token,
-        "role": "admin"}
+        "role": credentials.role}
 
 
-@pytest.fixture(params=[{
-    "username": pytest.config.getini("username"),
-    "access_token": "invalid00000",
-    "role": "admin"}], scope="session")
+@pytest.fixture(scope="session")
 def invalid_access_credentials(request):
     """Generate tuple consisting of username and invalid access token.
 
@@ -35,4 +32,7 @@ def invalid_access_credentials(request):
         second value represents access_token
     """
 
-    return request.param
+    return {
+        "username": pytest.config.getini("usm_username"),
+        "access_token": "invalid00000",
+        "role": "admin"}
