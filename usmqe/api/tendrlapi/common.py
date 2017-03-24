@@ -14,7 +14,7 @@ class TendrlApi(ApiBase):
     """ Common methods for Tendrl REST API.
     """
 
-    def get_job_attribute(self, job_id, attribute="status", section=None):
+    def get_job_attribute(self, job_id, credentials, attribute="status", section=None):
         """ Get attrubute from job specified by job_id.
 
         Name:       "get_job_attribute",
@@ -27,7 +27,9 @@ class TendrlApi(ApiBase):
             section:    section of response in which is attribute located
         """
         pattern = "jobs/{}".format(job_id)
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            headers = {"Authorization": "Bearer {}".format(credentials["access_token"])})
         self.print_req_info(response)
         self.check_response(response)
         if section:
@@ -35,7 +37,13 @@ class TendrlApi(ApiBase):
         else:
             return response.json()[attribute]
 
-    def wait_for_job_status(self, job_id, max_count=30, status="finished", issue=None):
+    def wait_for_job_status(
+        self,
+        job_id,
+        credentials,
+        max_count=30,
+        status="finished",
+        issue=None):
         """ Repeatedly check if status of job with provided id is in reqquired state.
 
         Args:
@@ -47,7 +55,10 @@ class TendrlApi(ApiBase):
         count = 0
         current_status = ""
         while (current_status != status and count < max_count):
-            current_status = self.get_job_attribute(job_id, "status")
+            current_status = self.get_job_attribute(
+                job_id,
+                "status",
+                credentials)
             count += 1
             time.sleep(1)
         LOGGER.debug("status: %s" % current_status)
