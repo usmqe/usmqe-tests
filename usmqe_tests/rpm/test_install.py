@@ -8,12 +8,13 @@ LOGGER = pytest.get_logger(__name__, module=True)
 
 
 @pytest.mark.parametrize("rpm_name", [
-    "tendrl-commons",
-    "tendrl-node-agent",
-    "tendrl-ceph-integration",
-    "tendrl-gluster-integration",
     "tendrl-api",
+    "tendrl-api-httpd",
+    "tendrl-ceph-integration",
+    "tendrl-commons",
     "tendrl-dashboard",
+    "tendrl-gluster-integration",
+    "tendrl-node-agent",
     "tendrl-node-monitoring",
     "tendrl-performance-monitoring",
     ])
