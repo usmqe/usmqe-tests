@@ -57,13 +57,12 @@ def test_rpmlint(rpm_package):
 
 
 @pytest.mark.parametrize("check_command", [
-    # TODO: enable check-sat again when we understand what we are doing wrong
-    # "check-sat",
+    "check-sat",
     "check-conflicts",
     ])
 def test_rpmdeplint(rpm_package, check_command, rpm_repo, centos_repos):
     rpm_name, rpm_path = rpm_package
-    cmd = ["rpmdeplint", check_command]
+    cmd = ["rpmdeplint", check_command, "--arch", "x86_64"]
     # configure systemd default repositories
     for name, url in centos_repos.items():
         cmd.append("--repo")
