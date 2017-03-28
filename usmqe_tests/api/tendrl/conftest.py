@@ -1,37 +1,33 @@
+# -*- coding: utf8 -*-
+
 import pytest
 
-from usmqe.api.tendrlapi.authentication import Authentication
+from usmqe.api.tendrlapi.common import TendrlApi
+from usmqe.api.tendrlapi.common import TendrlAuth
 
 
 @pytest.fixture(scope="session")
-def valid_access_credentials(request):
-    """Generate tuple consisting of username and valid access token for
-    username and password.
-
-    ``params`` parameter takes list of dictionaries where each dictionary
-    contains ``username`` and ``password`` as keys.
+def default_session_credentials(request):
     """
-
-    credentials = Authentication()
-    credentials.login(
+    During setup phase, login default usmqe user account (username and password
+    comes from usm.ini config file) and return requests auth object.
+    Then during teardown logout the user to close the session.
+    """
+    api = TendrlApi()
+    auth = api.login(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))
-    return {
-        "username": credentials.username,
-        "access_token": credentials.access_token,
-        "role": credentials.role}
+    yield auth
+    api.logout(auth=auth)
 
 
 @pytest.fixture(scope="session")
-def invalid_access_credentials(request):
-    """Generate tuple consisting of username and invalid access token.
-
-    ``params`` parameter takes list of tuples where:
-        first value represents username
-        second value represents access_token
+def invalid_session_credentials(request):
     """
-
-    return {
-        "username": pytest.config.getini("usm_username"),
-        "access_token": "invalid00000",
-        "role": "admin"}
+    Return invalid access (for testing negative use cases), no login or logout
+    is performed during setup or teardown.
+    """
+    username = pytest.config.getini("usm_username")
+    invalid_token = "this_is_invalid_access_token_00000"
+    auth = TendrlAuth(token=invalid_token, username=username)
+    return auth
