@@ -1,8 +1,10 @@
 """Tendrl REST API common functions."""
 
 import time
+
 import pytest
 import requests
+
 from usmqe.api.base import ApiBase
 
 LOGGER = pytest.get_logger("commonapi", module=True)
