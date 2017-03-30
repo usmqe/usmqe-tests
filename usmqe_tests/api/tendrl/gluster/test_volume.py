@@ -25,7 +25,7 @@ def test_create_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
         invalid_volume_bricks,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.create_volume_invalid
         API-gluster: create_volume
         ******************************
@@ -57,7 +57,10 @@ def test_create_volume_invalid(
         "Volume.bricks": invalid_volume_bricks,
     }
 
-    job_id = api.create_volume(valid_cluster_id, volume_data, valid_access_credentials)["job_id"]
+    job_id = api.create_volume(
+        valid_cluster_id,
+        volume_data,
+        auth=default_session_credentials)["job_id"]
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
@@ -69,7 +72,7 @@ def test_create_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_bricks,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.create_volume_valid
         API-gluster: create_volume
         ******************************
@@ -101,8 +104,11 @@ def test_create_volume_valid(
         "Volume.bricks": valid_volume_bricks
     }
 
-    job_id = api.create_volume(valid_cluster_id, volume_data, valid_access_credentials)["job_id"]
-    api.wait_for_job_status(job_id, valid_access_credentials)
+    job_id = api.create_volume(
+        valid_cluster_id,
+        volume_data,
+        auth=default_session_credentials)["job_id"]
+    api.wait_for_job_status(job_id, auth=default_session_credentials)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -160,7 +166,7 @@ def test_create_volume_valid(
 def test_stop_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.stop_volume_invalid
         API-gluster: stop_volume
         ******************************
@@ -190,11 +196,14 @@ def test_stop_volume_invalid(
         "Volume.volname": invalid_volume_name,
     }
 
-    job_id = api.stop_volume(valid_cluster_id, volume_data, valid_access_credentials)["job_id"]
+    job_id = api.stop_volume(
+        valid_cluster_id,
+        volume_data,
+        auth=default_session_credentials)["job_id"]
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
-            valid_access_credentials,
+            auth=default_session_credentials,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
@@ -203,7 +212,7 @@ def test_stop_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_id,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.stop_volume_valid
         API-gluster: stop_volume
         ******************************
@@ -233,13 +242,16 @@ def test_stop_volume_valid(
         "Volume.volname": valid_volume_name,
     }
 
-    job_id = api.stop_volume(valid_cluster_id, volume_data, valid_access_credentials)["job_id"]
-    api.wait_for_job_status(job_id, valid_access_credentials)
+    job_id = api.stop_volume(
+        valid_cluster_id,
+        volume_data,
+        auth=default_session_credentials)["job_id"]
+    api.wait_for_job_status(job_id, auth=default_session_credentials)
     volume = gluster.GlusterVolume(valid_volume_name)
     volume.check_status("Stopped")
     status = api.get_volume_list(
         valid_cluster_id,
-        valid_access_credentials)[0][valid_volume_id]["status"]
+        auth=default_session_credentials)[0][valid_volume_id]["status"]
     pytest.check(
         status == "Stopped",
         "Status from API is {}, should be 'Stopped'".format(status),
@@ -251,7 +263,7 @@ def test_stop_volume_valid(
 def test_start_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.start_volume_invalid
         API-gluster: start_volume
         ******************************
@@ -284,11 +296,11 @@ def test_start_volume_invalid(
     job_id = api.start_volume(
         valid_cluster_id,
         volume_data,
-        valid_access_credentials)["job_id"]
+        auth=default_session_credentials)["job_id"]
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
         job_id,
-        valid_access_credentials,
+        auth=default_session_credentials,
         status="failed",
         issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
@@ -297,7 +309,7 @@ def test_start_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_id,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.start_volume_valid
         API-gluster: start_volume
         ******************************
@@ -330,13 +342,13 @@ def test_start_volume_valid(
     job_id = api.start_volume(
         valid_cluster_id,
         volume_data,
-        valid_access_credentials)["job_id"]
-    api.wait_for_job_status(job_id, valid_access_credentials)
+        auth=default_session_credentials)["job_id"]
+    api.wait_for_job_status(job_id, auth=default_session_credentials)
     volume = gluster.GlusterVolume(valid_volume_name)
     volume.check_status("Started")
     status = api.get_volume_list(
         valid_cluster_id,
-        valid_access_credentials)[0][valid_volume_id]["status"]
+        auth=default_session_credentials)[0][valid_volume_id]["status"]
     pytest.check(
         status == "Started",
         "Status from API is {}, should be 'Started'".format(status),
@@ -346,7 +358,7 @@ def test_start_volume_valid(
 def test_delete_volume_invalid(
         valid_cluster_id,
         invalid_volume_id,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -380,11 +392,11 @@ def test_delete_volume_invalid(
     job_id = api.delete_volume(
         valid_cluster_id,
         volume_data,
-        valid_access_credentials)["job_id"]
+        auth=default_session_credentials)["job_id"]
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
-            valid_access_credentials,
+            auth=default_session_credentials,
             status="failed",
             issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
@@ -393,7 +405,7 @@ def test_delete_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_id,
-        valid_access_credentials):
+        default_session_credentials):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -427,10 +439,10 @@ def test_delete_volume_valid(
     job_id = api.delete_volume(
         valid_cluster_id,
         volume_data,
-        valid_access_credentials)["job_id"]
+        auth=default_session_credentials)["job_id"]
     api.wait_for_job_status(
         job_id,
-        valid_access_credentials,
+        auth=default_session_credentials,
         issue="https://github.com/Tendrl/api/issues/33")
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
