@@ -143,14 +143,16 @@ class TendrlApi(ApiBase):
             issue=issue)
         return current_status
 
-    def ping(self):
+    def ping(self, auth, asserts_in=None):
         """ Ping REST API
         Name:        "ping",
         Method:      "GET",
         Pattern:     "ping",
         """
         pattern = "ping"
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=auth,)
         self.print_req_info(response)
-        self.check_response(response)
+        self.check_response(response, asserts_in)
         return response.json()

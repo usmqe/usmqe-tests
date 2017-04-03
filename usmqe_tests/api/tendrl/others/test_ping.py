@@ -15,7 +15,7 @@ Teardown
 """
 
 
-def test_ping():
+def test_ping(default_session_credentials):
     """@pylatest api/ping
     API: ping
     **********************
@@ -38,4 +38,4 @@ def test_ping():
 
         Return code should be **200** with data ``{"status": "OK"}``.
     """
-    test.ping()
+    test.ping(auth=default_session_credentials)

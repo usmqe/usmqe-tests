@@ -2,18 +2,13 @@
 
 
 import pytest
-import requests
 
 from usmqe.api.tendrlapi.common import TendrlApi
-import usmqe.api.base
 
 
 def test_login(default_session_credentials):
-    response = requests.get(
-        pytest.config.getini("usm_api_url") + "ping",
-        auth=default_session_credentials)
-    usmqe.api.base.ApiBase.print_req_info(response)
-    usmqe.api.base.ApiBase.check_response(response)
+    api = TendrlApi()
+    api.ping(auth=default_session_credentials)
 
 
 def test_login_invalid():
@@ -25,11 +20,7 @@ def test_login_invalid():
         }
     api = TendrlApi()
     auth = api.login("invalid_user", "invalid_password", asserts_in=asserts)
-    response = requests.get(
-        pytest.config.getini("usm_api_url") + "ping",
-        auth=auth)
-    usmqe.api.base.ApiBase.print_req_info(response)
-    usmqe.api.base.ApiBase.check_response(response, asserts_in=asserts)
+    api.ping(auth=auth, asserts_in=asserts)
 
 
 def test_session_invalid(invalid_session_credentials):
@@ -39,11 +30,8 @@ def test_session_invalid(invalid_session_credentials):
         "reason": 'Unauthorized',
         "status": 401,
         }
-    response = requests.get(
-        pytest.config.getini("usm_api_url") + "ping",
-        auth=invalid_session_credentials)
-    usmqe.api.base.ApiBase.print_req_info(response)
-    usmqe.api.base.ApiBase.check_response(response, asserts_in=asserts)
+    api = TendrlApi()
+    api.ping(auth=invalid_session_credentials, asserts_in=asserts)
 
 
 # TODO: find out why xfail doesn't work here
