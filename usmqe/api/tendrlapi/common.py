@@ -143,7 +143,6 @@ class TendrlApi(ApiBase):
             issue=issue)
         return current_status
 
-
     def ping(self):
         """ Ping REST API
         Name:        "ping",
