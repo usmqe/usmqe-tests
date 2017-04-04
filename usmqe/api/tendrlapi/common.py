@@ -42,53 +42,56 @@ class TendrlAuth(requests.auth.AuthBase):
         return r
 
 
+def login(username, password, asserts_in=None):
+    """
+    Login Tendrl user.
+
+    Args:
+        username: name of user that is going logged in
+        password: password for username
+        asserts_in: assert values for this call and this method
+
+    Returns requests auth object (instance of TendrlAuth)
+    """
+    pattern = "login"
+    post_data = {"username": username, "password": password}
+    request = requests.post(
+        pytest.config.getini("usm_api_url") + pattern,
+        data=json.dumps(post_data))
+    ApiBase.print_req_info(request)
+    ApiBase.check_response(request, asserts_in)
+    token = request.json().get("access_token")
+    LOGGER.info("access_token: {}".format(token))
+    auth = TendrlAuth(token, username)
+    return auth
+
+
+def logout(auth, asserts_in=None):
+    """
+    Logout Tendrl user.
+
+    Args:
+        asserts_in: assert values for this call and this method
+        auth: TendrlAuth object (defines bearer token header)
+    """
+    pattern = "logout"
+    request = requests.delete(
+        pytest.config.getini("usm_api_url") + pattern,
+        auth=auth)
+    ApiBase.print_req_info(request)
+    ApiBase.check_response(request, asserts_in)
+
+
 class TendrlApi(ApiBase):
     """ Common methods for Tendrl REST API.
     """
 
-    def login(self, username, password, asserts_in=None):
-        """ Login user.
+    def __init__(self, auth=None):
+        # requests auth object with so called tendrl bearer token
+        # when auth is None, requests are send without athentication header
+        self._auth = auth
 
-        Name:        "login",
-        Method:      "GET",
-        Pattern:     "login",
-
-        Args:
-            username: name of user that is going logged in
-            password: password for username
-            asserts_in: assert values for this call and this method
-        """
-        pattern = "login"
-        post_data = {"username": username, "password": password}
-        request = requests.post(
-            pytest.config.getini("usm_api_url") + pattern,
-            data=json.dumps(post_data))
-        self.print_req_info(request)
-        self.check_response(request, asserts_in)
-        LOGGER.debug("access_token: {}".format(request.json()))
-        token = request.json().get("access_token")
-        auth = TendrlAuth(token, username)
-        return auth
-
-    def logout(self, asserts_in=None, auth=None):
-        """ Logout user.
-
-        Name:        "logout",
-        Method:      "DELETE",
-        Pattern:     "logout",
-
-        Args:
-            asserts_in: assert values for this call and this method
-            auth: TendrlAuth object (defines bearer token header)
-        """
-        pattern = "logout"
-        request = requests.delete(
-            pytest.config.getini("usm_api_url") + pattern,
-            auth=auth)
-        self.print_req_info(request)
-        self.check_response(request, asserts_in)
-
-    def get_job_attribute(self, job_id, auth=None, attribute="status", section=None):
+    def get_job_attribute(self, job_id, attribute="status", section=None):
         """ Get attrubute from job specified by job_id.
 
         Name:       "get_job_attribute",
@@ -103,7 +106,7 @@ class TendrlApi(ApiBase):
         pattern = "jobs/{}".format(job_id)
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            auth=auth,)
+            auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response)
         if section:
@@ -114,7 +117,6 @@ class TendrlApi(ApiBase):
     def wait_for_job_status(
             self,
             job_id,
-            auth,
             max_count=30,
             status="finished",
             issue=None):
@@ -132,7 +134,6 @@ class TendrlApi(ApiBase):
         while (current_status != status and count < max_count):
             current_status = self.get_job_attribute(
                 job_id,
-                auth=auth,
                 attribute="status")
             count += 1
             time.sleep(1)
@@ -143,7 +144,7 @@ class TendrlApi(ApiBase):
             issue=issue)
         return current_status
 
-    def ping(self, auth, asserts_in=None):
+    def ping(self, asserts_in=None):
         """ Ping REST API
         Name:        "ping",
         Method:      "GET",
@@ -152,7 +153,7 @@ class TendrlApi(ApiBase):
         pattern = "ping"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            auth=auth,)
+            auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response, asserts_in)
         return response.json()

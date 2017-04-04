@@ -27,7 +27,7 @@ def test_ping(default_session_credentials):
 
     Positive ping test.
     """
-    test = TendrlApi()
+    test = TendrlApi(auth=default_session_credentials)
     # TODO(fbalak): add valid returned json to docstring and test them
     """@pylatest api/common.ping_valid
     .. test_step:: 1
@@ -38,4 +38,4 @@ def test_ping(default_session_credentials):
 
         Return code should be **200** with data ``{"status": "OK"}``.
     """
-    test.ping(auth=default_session_credentials)
+    test.ping()

@@ -2,8 +2,7 @@
 
 import pytest
 
-from usmqe.api.tendrlapi.common import TendrlApi
-from usmqe.api.tendrlapi.common import TendrlAuth
+from usmqe.api.tendrlapi.common import TendrlAuth, login, logout
 
 
 @pytest.fixture(scope="session")
@@ -13,12 +12,11 @@ def default_session_credentials(request):
     comes from usm.ini config file) and return requests auth object.
     Then during teardown logout the user to close the session.
     """
-    api = TendrlApi()
-    auth = api.login(
+    auth = login(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))
     yield auth
-    api.logout(auth=auth)
+    logout(auth=auth)
 
 
 @pytest.fixture(scope="session")

@@ -13,7 +13,7 @@ class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
 
-    def get_nodes(self, auth):
+    def get_nodes(self):
         """ Get list node ids.
 
         Name:        "get_nodes",
@@ -23,12 +23,12 @@ class TendrlApiGluster(TendrlApi):
         pattern = "GetNodeList"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            auth=auth)
+            auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
 
-    def import_cluster(self, cluster_data, auth):
+    def import_cluster(self, cluster_data):
         """ Import gluster cluster defined by json.
 
         Name:        "import_cluster",
@@ -42,7 +42,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=cluster_data,
-            auth=auth)
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -51,7 +51,7 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response, asserts)
         return response.json()
 
-    def get_cluster_list(self, auth):
+    def get_cluster_list(self):
         """ Get list of clusters
 
         Name:        "get_cluster_list",
@@ -61,7 +61,7 @@ class TendrlApiGluster(TendrlApi):
         pattern = "GetClusterList"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            auth=auth)
+            auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()["clusters"]
@@ -69,7 +69,7 @@ class TendrlApiGluster(TendrlApi):
 # TODO: https://github.com/Tendrl/api/issues/78
 # In tendrl api are not correctly shown volumes
 # because after deletion they stay in the list.
-    def get_volume_list(self, cluster, auth):
+    def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id
 
         Name:        "get_volume_list",
@@ -82,12 +82,12 @@ class TendrlApiGluster(TendrlApi):
         pattern = "{}/GetVolumeList".format(cluster)
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            auth=auth)
+            auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
 
-    def create_volume(self, cluster, volume_data, auth):
+    def create_volume(self, cluster, volume_data):
         """ Import gluster cluster defined by json.
 
         Name:        "create_volume",
@@ -102,7 +102,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=volume_data,
-            auth=auth)
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -111,7 +111,7 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response, asserts)
         return response.json()
 
-    def delete_volume(self, cluster, post_data, auth):
+    def delete_volume(self, cluster, post_data):
         """ Import gluster cluster defined by json.
 
         Name:        "delete_volume",
@@ -126,7 +126,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.delete(
             pytest.config.getini("usm_api_url") + pattern,
             json=post_data,
-            auth=auth)
+            auth=self._auth)
 
         asserts = {
             "reason": 'Accepted',
@@ -136,7 +136,7 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response, asserts)
         return response.json()
 
-    def start_volume(self, cluster, volume_data, auth):
+    def start_volume(self, cluster, volume_data):
         """ Start gluster volume specified by json.
 
         Name:        "start_volume",
@@ -151,7 +151,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=volume_data,
-            auth=auth)
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -160,7 +160,7 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response, asserts)
         return response.json()
 
-    def stop_volume(self, cluster, volume_data, auth):
+    def stop_volume(self, cluster, volume_data):
         """ Stop gluster volume specified by json.
 
         Name:        "stop_volume",
@@ -175,7 +175,7 @@ class TendrlApiGluster(TendrlApi):
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=volume_data,
-            auth=auth)
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -184,7 +184,7 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response, asserts)
         return response.json()
 
-    def get_volume_attribute(self, cluster, volume, attribute, auth):
+    def get_volume_attribute(self, cluster, volume, attribute):
         """ Check if provided volume has attribute of given value.
 
         Args:
@@ -192,7 +192,7 @@ class TendrlApiGluster(TendrlApi):
             volume: id of a volume
             attribute: name of the searched attribute
         """
-        value = [x[attribute] for x in self.get_volume_list(cluster, auth)
+        value = [x[attribute] for x in self.get_volume_list(cluster)
                  if x["vol_id"] == volume][0]
         LOGGER.debug("{} = {}".format(attribute, value))
         return value
