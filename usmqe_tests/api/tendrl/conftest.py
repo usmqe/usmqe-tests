@@ -19,13 +19,20 @@ def valid_session_credentials(request):
     logout(auth=auth)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(
+    scope="session",
+    params=[
+        "",
+        None,
+        "this_is_invalid_access_token_00000",
+        "4e3459381b5b94fcd642fb0ca30eba062fbcc126a47c6280945a3405e018e824",
+        ])
 def invalid_session_credentials(request):
     """
     Return invalid access (for testing negative use cases), no login or logout
     is performed during setup or teardown.
     """
     username = pytest.config.getini("usm_username")
-    invalid_token = "this_is_invalid_access_token_00000"
+    invalid_token = request.param
     auth = TendrlAuth(token=invalid_token, username=username)
     return auth
