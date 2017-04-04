@@ -6,8 +6,8 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi, login, logout
 
 
-def test_login_valid(default_session_credentials):
-    api = TendrlApi(auth=default_session_credentials)
+def test_login_valid(valid_session_credentials):
+    api = TendrlApi(auth=valid_session_credentials)
     api.ping()
 
 

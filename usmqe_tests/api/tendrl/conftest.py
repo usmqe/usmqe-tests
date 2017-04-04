@@ -6,7 +6,7 @@ from usmqe.api.tendrlapi.common import TendrlAuth, login, logout
 
 
 @pytest.fixture(scope="session")
-def default_session_credentials(request):
+def valid_session_credentials(request):
     """
     During setup phase, login default usmqe user account (username and password
     comes from usm.ini config file) and return requests auth object.

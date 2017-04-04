@@ -25,7 +25,7 @@ def test_create_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
         invalid_volume_bricks,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.create_volume_invalid
         API-gluster: create_volume
         ******************************
@@ -50,7 +50,7 @@ def test_create_volume_invalid(
                 job should fail.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     volume_data = {
         "Volume.volname": invalid_volume_name,
@@ -69,7 +69,7 @@ def test_create_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_bricks,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.create_volume_valid
         API-gluster: create_volume
         ******************************
@@ -94,7 +94,7 @@ def test_create_volume_valid(
                 job should finish.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     volume_data = {
         "Volume.volname": valid_volume_name,
@@ -160,7 +160,7 @@ def test_create_volume_valid(
 def test_stop_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.stop_volume_invalid
         API-gluster: stop_volume
         ******************************
@@ -185,7 +185,7 @@ def test_stop_volume_invalid(
                 Job should fail.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
         "Volume.volname": invalid_volume_name,
     }
@@ -202,7 +202,7 @@ def test_stop_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_id,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.stop_volume_valid
         API-gluster: stop_volume
         ******************************
@@ -227,7 +227,7 @@ def test_stop_volume_valid(
                 job should finish.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
         "Volume.volname": valid_volume_name,
     }
@@ -248,7 +248,7 @@ def test_stop_volume_valid(
 def test_start_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.start_volume_invalid
         API-gluster: start_volume
         ******************************
@@ -273,7 +273,7 @@ def test_start_volume_invalid(
                 job should fail.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
         "Volume.volname": invalid_volume_name
     }
@@ -290,7 +290,7 @@ def test_start_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_id,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.start_volume_valid
         API-gluster: start_volume
         ******************************
@@ -315,7 +315,7 @@ def test_start_volume_valid(
                 job should finish.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
         "Volume.volname": valid_volume_name,
     }
@@ -334,7 +334,7 @@ def test_start_volume_valid(
 def test_delete_volume_invalid(
         valid_cluster_id,
         invalid_volume_id,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -359,7 +359,7 @@ def test_delete_volume_invalid(
                 job should fail.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
         "Volume.volname": valid_cluster_id,
         "Volume.vol_id": invalid_volume_id
@@ -377,7 +377,7 @@ def test_delete_volume_valid(
         valid_cluster_id,
         valid_volume_name,
         valid_volume_id,
-        default_session_credentials):
+        valid_session_credentials):
     """@pylatest api/gluster.delete_volume
         API-gluster: delete_volume
         ******************************
@@ -402,7 +402,7 @@ def test_delete_volume_valid(
                 job should finish.
                 """
 
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
         "Volume.volname": valid_volume_name,
         "Volume.vol_id": valid_volume_id

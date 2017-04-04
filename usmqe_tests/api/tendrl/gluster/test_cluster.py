@@ -32,7 +32,7 @@ Positive import gluster cluster.
 """
 
 
-def test_cluster_import_valid(default_session_credentials):
+def test_cluster_import_valid(valid_session_credentials):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -55,7 +55,7 @@ def test_cluster_import_valid(default_session_credentials):
                 Return code should be **200** with data ``{"message": "OK"}``.
 
         """
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     storage = gluster.GlusterCommon()
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
@@ -114,7 +114,7 @@ Negative import gluster cluster.
 """
 
 
-def test_cluster_import_invalid(default_session_credentials):
+def test_cluster_import_invalid(valid_session_credentials):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -137,7 +137,7 @@ def test_cluster_import_invalid(default_session_credentials):
                 Return code should be **200** with data ``{"message": "OK"}``.
 
         """
-    api = glusterapi.TendrlApiGluster(auth=default_session_credentials)
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
 
