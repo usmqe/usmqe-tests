@@ -97,8 +97,12 @@ class TendrlApi(ApiBase):
     """
 
     def __init__(self, auth=None):
+        """
+        Args:
+            auth: TendrlAuth object (defines bearer token header), when auth is
+               None, requests are send without athentication header
+        """
         # requests auth object with so called tendrl bearer token
-        # when auth is None, requests are send without athentication header
         self._auth = auth
 
     def get_job_attribute(self, job_id, attribute="status", section=None):
