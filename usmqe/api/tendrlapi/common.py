@@ -39,7 +39,12 @@ class TendrlAuth(requests.auth.AuthBase):
         self.username = username
 
     def __call__(self, r):
-        """Add Tendl Bearer Token into header of the request."""
+        """
+        Add Tendl Bearer Token into header of the request.
+
+        For full description, see requests documentation:
+        http://docs.python-requests.org/en/master/user/authentication/
+        """
         headers = {
             "Authorization": "Bearer {}".format(self._bearer_token),
             }
