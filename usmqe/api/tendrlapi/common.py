@@ -28,6 +28,11 @@ class TendrlAuth(requests.auth.AuthBase):
     """
 
     def __init__(self, token, username=None):
+        """
+        Args:
+            token (str): tendrl ``access_token`` string
+            username (str): username of account associated with the token
+        """
         self._bearer_token = token
         # metadata attributes for easier debugging, we need to trust login
         # function to store correct values there
