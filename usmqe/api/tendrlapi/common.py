@@ -33,10 +33,13 @@ class TendrlAuth(requests.auth.AuthBase):
             token (str): tendrl ``access_token`` string
             username (str): username of account associated with the token
         """
-        self._bearer_token = token
+        self.__bearer_token = token
         # metadata attributes for easier debugging, we need to trust login
         # function to store correct values there
         self.username = username
+
+    def __repr__(self):
+        return "TendrlAuth(token={})".format(self.__bearer_token)
 
     def __call__(self, r):
         """
@@ -46,7 +49,7 @@ class TendrlAuth(requests.auth.AuthBase):
         http://docs.python-requests.org/en/master/user/authentication/
         """
         headers = {
-            "Authorization": "Bearer {}".format(self._bearer_token),
+            "Authorization": "Bearer {}".format(self.__bearer_token),
             }
         r.prepare_headers(headers)
         return r
