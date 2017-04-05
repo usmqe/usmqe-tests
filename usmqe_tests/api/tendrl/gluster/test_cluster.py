@@ -32,7 +32,7 @@ Positive import gluster cluster.
 """
 
 
-def test_cluster_import_valid():
+def test_cluster_import_valid(valid_session_credentials):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -55,7 +55,7 @@ def test_cluster_import_valid():
                 Return code should be **200** with data ``{"message": "OK"}``.
 
         """
-    api = glusterapi.TendrlApiGluster()
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     storage = gluster.GlusterCommon()
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
@@ -90,7 +90,9 @@ def test_cluster_import_valid():
     api.wait_for_job_status(job_id)
 
     integration_id = api.get_job_attribute(
-        job_id=job_id, attribute="integration_id", section="parameters")
+        job_id=job_id,
+        attribute="integration_id",
+        section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
 
     pytest.check(
@@ -112,7 +114,7 @@ Negative import gluster cluster.
 """
 
 
-def test_cluster_import_invalid():
+def test_cluster_import_invalid(valid_session_credentials):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -135,7 +137,7 @@ def test_cluster_import_invalid():
                 Return code should be **200** with data ``{"message": "OK"}``.
 
         """
-    api = glusterapi.TendrlApiGluster()
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
 
@@ -167,7 +169,8 @@ def test_cluster_import_invalid():
         issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
     integration_id = api.get_job_attribute(
-        job_id=job_id, attribute="integration_id")
+        job_id=job_id,
+        attribute="integration_id")
     pytest.check(
         not [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
         "Job list integration_id '{}' should be present in cluster list.".format(integration_id))

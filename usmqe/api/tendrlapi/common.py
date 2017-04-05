@@ -1,18 +1,112 @@
-"""
-Tendrl REST API common functions.
-"""
+"""Tendrl REST API common functions."""
 
+import json
 import time
+
 import pytest
 import requests
+
 from usmqe.api.base import ApiBase
 
 LOGGER = pytest.get_logger("commonapi", module=True)
 
 
+class TendrlAuth(requests.auth.AuthBase):
+    """
+    Implementation of Tendrl Auth Method (Bearer Token) for requests
+    library, based on upstream documentation:
+
+    https://github.com/Tendrl/api/blob/master/docs/authentication.adoc
+
+    This way, auth. implementation is stored in a single place and it also
+    makes possible to omit auth object entrirely (thanks to design of
+    requests library) for testing purposes (eg. checks of corner cases to make
+    sure that security is not compromised) no matter if it makes sense from
+    Tendrl user perspective.
+
+    See also: http://docs.python-requests.org/en/master/user/authentication/
+    """
+
+    def __init__(self, token, username=None):
+        """
+        Args:
+            token (str): tendrl ``access_token`` string
+            username (str): username of account associated with the token
+        """
+        self.__bearer_token = token
+        # metadata attributes for easier debugging, we need to trust login
+        # function to store correct values there
+        self.username = username
+
+    def __repr__(self):
+        return "TendrlAuth(token={})".format(self.__bearer_token)
+
+    def __call__(self, r):
+        """
+        Add Tendl Bearer Token into header of the request.
+
+        For full description, see requests documentation:
+        http://docs.python-requests.org/en/master/user/authentication/
+        """
+        headers = {
+            "Authorization": "Bearer {}".format(self.__bearer_token),
+            }
+        r.prepare_headers(headers)
+        return r
+
+
+def login(username, password, asserts_in=None):
+    """
+    Login Tendrl user.
+
+    Args:
+        username: name of user that is going logged in
+        password: password for username
+        asserts_in: assert values for this call and this method
+
+    Returns requests auth object (instance of TendrlAuth)
+    """
+    pattern = "login"
+    post_data = {"username": username, "password": password}
+    request = requests.post(
+        pytest.config.getini("usm_api_url") + pattern,
+        data=json.dumps(post_data))
+    ApiBase.print_req_info(request)
+    ApiBase.check_response(request, asserts_in)
+    token = request.json().get("access_token")
+    LOGGER.info("access_token: {}".format(token))
+    auth = TendrlAuth(token, username)
+    return auth
+
+
+def logout(auth, asserts_in=None):
+    """
+    Logout Tendrl user.
+
+    Args:
+        asserts_in: assert values for this call and this method
+        auth: TendrlAuth object (defines bearer token header)
+    """
+    pattern = "logout"
+    request = requests.delete(
+        pytest.config.getini("usm_api_url") + pattern,
+        auth=auth)
+    ApiBase.print_req_info(request)
+    ApiBase.check_response(request, asserts_in)
+
+
 class TendrlApi(ApiBase):
     """ Common methods for Tendrl REST API.
     """
+
+    def __init__(self, auth=None):
+        """
+        Args:
+            auth: TendrlAuth object (defines bearer token header), when auth is
+               None, requests are send without athentication header
+        """
+        # requests auth object with so called tendrl bearer token
+        self._auth = auth
 
     def get_job_attribute(self, job_id, attribute="status", section=None):
         """ Get attrubute from job specified by job_id.
@@ -27,7 +121,9 @@ class TendrlApi(ApiBase):
             section:    section of response in which is attribute located
         """
         pattern = "jobs/{}".format(job_id)
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response)
         if section:
@@ -35,7 +131,12 @@ class TendrlApi(ApiBase):
         else:
             return response.json()[attribute]
 
-    def wait_for_job_status(self, job_id, max_count=30, status="finished", issue=None):
+    def wait_for_job_status(
+            self,
+            job_id,
+            max_count=30,
+            status="finished",
+            issue=None):
         """ Repeatedly check if status of job with provided id is in reqquired state.
 
         Args:
@@ -44,10 +145,13 @@ class TendrlApi(ApiBase):
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
         """
+
         count = 0
         current_status = ""
         while (current_status != status and count < max_count):
-            current_status = self.get_job_attribute(job_id, "status")
+            current_status = self.get_job_attribute(
+                job_id,
+                attribute="status")
             count += 1
             time.sleep(1)
         LOGGER.debug("status: %s" % current_status)
@@ -57,40 +161,16 @@ class TendrlApi(ApiBase):
             issue=issue)
         return current_status
 
-    def login(self, username, password, asserts_in=None):
-        """ Login to REST API
-
-        Name:        "login",
-        Method:      "POST",
-        Pattern:     "auth/login",
-
-        Args:
-            username: username
-            password: password
-            asserts_in: assert values for this call and this method
-        """
-    pass
-
-    def logout(self, asserts_in=None):
-        """ Logout from REST API
-
-        Name:        "logout",
-        Method:      "POST",
-        Pattern:     "auth/logout",
-
-        Args:
-            asserts_in: assert values for this call and this method
-        """
-    pass
-
-    def ping(self):
+    def ping(self, asserts_in=None):
         """ Ping REST API
         Name:        "ping",
         Method:      "GET",
         Pattern:     "ping",
         """
         pattern = "ping"
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
         self.print_req_info(response)
-        self.check_response(response)
+        self.check_response(response, asserts_in)
         return response.json()

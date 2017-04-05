@@ -21,7 +21,9 @@ class TendrlApiGluster(TendrlApi):
         Pattern:     "GetNodeList",
         """
         pattern = "GetNodeList"
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
@@ -37,8 +39,10 @@ class TendrlApiGluster(TendrlApi):
             cluster_data: json structure containing data that will be sent to api server
         """
         pattern = "ImportCluster"
-        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
-                                 json=cluster_data)
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=cluster_data,
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -55,7 +59,9 @@ class TendrlApiGluster(TendrlApi):
         Pattern:     "GetClusterList",
         """
         pattern = "GetClusterList"
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()["clusters"]
@@ -74,7 +80,9 @@ class TendrlApiGluster(TendrlApi):
             cluster: id of cluster where will be created volume
         """
         pattern = "{}/GetVolumeList".format(cluster)
-        response = requests.get(pytest.config.getini("usm_api_url") + pattern)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
         return response.json()
@@ -91,8 +99,10 @@ class TendrlApiGluster(TendrlApi):
             volume_data: json structure containing data that will be sent to api server
         """
         pattern = "{}/GlusterCreateVolume".format(cluster)
-        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
-                                 json=volume_data)
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=volume_data,
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -113,8 +123,10 @@ class TendrlApiGluster(TendrlApi):
             volume_data: json structure containing data that will be sent to api server
         """
         pattern = "{}/GlusterDeleteVolume".format(cluster)
-        response = requests.delete(pytest.config.getini("usm_api_url") + pattern,
-                                   json=post_data)
+        response = requests.delete(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=post_data,
+            auth=self._auth)
 
         asserts = {
             "reason": 'Accepted',
@@ -136,8 +148,10 @@ class TendrlApiGluster(TendrlApi):
             volume_data: json structure containing data that will be sent to api server
         """
         pattern = "{}/GlusterStartVolume".format(cluster)
-        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
-                                 json=volume_data)
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=volume_data,
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,
@@ -158,8 +172,10 @@ class TendrlApiGluster(TendrlApi):
             volume_data: json structure containing data that will be sent to api server
         """
         pattern = "{}/GlusterStopVolume".format(cluster)
-        response = requests.post(pytest.config.getini("usm_api_url") + pattern,
-                                 json=volume_data)
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=volume_data,
+            auth=self._auth)
         asserts = {
             "reason": 'Accepted',
             "status": 202,

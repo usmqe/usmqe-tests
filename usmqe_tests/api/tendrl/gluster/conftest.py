@@ -5,13 +5,14 @@ import usmqe.inventory as inventory
 
 
 @pytest.fixture
-def valid_cluster_id():
+def valid_cluster_id(valid_session_credentials):
     """
     Generate valid id of imported cluster.
     """
     # TODO change
-    api = glusterapi.TendrlApiGluster()
-    return api.get_cluster_list()[0]["cluster_id"]
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    cluster_list = api.get_cluster_list()
+    return cluster_list[0]["cluster_id"]
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
