@@ -39,7 +39,7 @@ class LoginPage(WebstrPage):
 
     def fill_form_values(self, username, password):
         """
-        Fill in the login form and submit.
+        Fill in the login form
 
         Parameters:
             username - username
@@ -50,13 +50,12 @@ class LoginPage(WebstrPage):
 
     def login_user(self, username, password):
         """
-        Login user - fill in the login form and wait for home page.
+        Login user - fill in the login form, submit and wait
+                     till a new page appears
 
         Parameters:
             username - username
             password - password
-
-        Return: <navpage.NavMenu instance>
         """
         self.fill_form_values(username=username, password=password)
         self._model.login_btn.click()
