@@ -36,9 +36,6 @@ def log_in(testcase_set):
 def log_out(testcase_end):
     """ fixture for logging out """
     yield testcase_end
-    if testcase_end.init_object is None:
-        upper_menu = UpperMenu(testcase_end.driver)
-        user_menu = upper_menu.open_user_menu()
-    else:
-        user_menu = testcase_end.init_object.open_user_menu()
+    upper_menu = UpperMenu(testcase_end.driver)
+    user_menu = upper_menu.open_user_menu()
     user_menu.logout()
