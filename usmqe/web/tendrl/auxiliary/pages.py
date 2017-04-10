@@ -6,6 +6,7 @@ Some usefull pages classes for common work with tendrl web
 from selenium.webdriver.common.keys import Keys
 
 from webstr.core import WebstrPage
+import webstr.patternfly.dropdown.pages as dropdown
 
 import usmqe.web.tendrl.auxiliary.models as m_auxiliary
 
@@ -60,3 +61,37 @@ class ListMenu(WebstrPage):
         switch order of the list
         """
         self._model.order_btn.click()
+
+
+class UpperMenu(WebstrPage):
+    """ Common page object for upper menu """
+    _model = m_auxiliary.UpperMenuModel
+    _label = 'upper menu'
+    _required_elems = [
+        # left part of upper navbar
+        'user_link',
+        # right part of upper navbar
+    ]
+
+    def open_user_menu(self):
+        """
+        Opens user drop-down menu
+        """
+        self._model.user_link.click()
+        return UserMenu(self.driver)
+
+
+class UserMenu(dropdown.DropDownMenu):
+    """
+    Base page object for user pop-up menu
+
+    Parameters:
+      _model - page model
+    """
+    _model = m_auxiliary.UserMenuModel
+    _label = 'user popup menu'
+    _required_elems = ['logout']
+
+    def logout(self):
+        """ log out current user - click on logout """
+        self._model.logout.click()

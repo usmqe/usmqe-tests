@@ -8,8 +8,9 @@ Author: ltrilety
 """
 
 
-from webstr.core import WebstrPage
+import copy
 
+from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 from usmqe.web.tendrl.mainpage.navpage import models as m_navpage
 # TODO
 # not available for now
@@ -23,7 +24,7 @@ from usmqe.web.tendrl.mainpage.pools.pages import PoolsList
 # from usmqe.web.tendrl.mainpage.admin.tasks.pages import TasksList
 
 
-class NavMenuBars(WebstrPage):
+class NavMenuBars(UpperMenu):
     """
     Common page object for navigation bars:
 
@@ -37,18 +38,15 @@ class NavMenuBars(WebstrPage):
     """
     _model = m_navpage.NavMenuBarsModel
     _label = 'main page - menu bar'
-    _required_elems = [
-        # left part of upper navbar
-        # Coming soon...
-        # right part of upper navbar
-        # Coming soon...
+    _required_elems = copy.deepcopy(UpperMenu._required_elems)
+    _required_elems.extend([
         # left navbar
         # 'dashboard_link',
         'clusters_link',
         'nodes_link',
         'file_shares_link',
         'pools_link'
-    ]
+    ])
 
 # TODO
 # dashboard page not working yet
