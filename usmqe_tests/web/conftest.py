@@ -38,5 +38,5 @@ def testcase_end(testcase_set):
     """
     close browser
     """
-    yield
+    yield testcase_set
     testcase_set.tear_down()
