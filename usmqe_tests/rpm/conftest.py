@@ -2,8 +2,10 @@
 
 import glob
 import os
+import pathlib
 import tempfile
 import textwrap
+import urllib
 
 import pytest
 import requests
@@ -107,10 +109,19 @@ def rpm_repo():
     reported during setup so that the test case will end up in ERROR state
     (instead of FAILED if we were checking this during test itself).
     """
-    baseurl = pytest.config.getini("usm_rpm_baseurl")
-    reg = requests.get(baseurl)
-    assert reg.status_code == 200
-    return baseurl
+    baseurl = urllib.parse.urlparse(pytest.config.getini("usm_rpm_baseurl"))
+    # check remote url http://, https:// or ftp://
+    if baseurl.scheme in ('http', 'https', 'ftp'):
+        reg = requests.get(baseurl.geturl())
+        assert reg.status_code == 200
+    # check local path file://...
+    elif baseurl.scheme in ('file', ):
+        base_dir = pathlib.Path(baseurl.path)
+        assert base_dir.is_dir()
+    else:
+        raise ValueError("Unsupported protocol '{}' in 'usm_rpm_baseurl': '{}'".format(
+            baseurl.scheme, baseurl.geturl()))
+    return baseurl.geturl()
 
 
 @pytest.fixture(scope="module", params=[
