@@ -10,6 +10,7 @@ import pytest
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
 from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
+from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 
 
 def test_initial_import_cluster(log_in, log_out):
@@ -26,8 +27,15 @@ def test_initial_import_cluster(log_in, log_out):
 #       When finished, remove following line(s)
 #       https://github.com/Tendrl/usmqe-tests/issues/33
     import time
-    time.sleep(600)
-    log_in.driver.get(pytest.config.getini("usm_web_url"))
+    time.sleep(180)
+    # log out and log in again
+    upper_menu = UpperMenu(log_in.driver)
+    upper_menu.open_user_menu().logout()
+    log_in.loginpage.login_user(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    # or just go to the default URL
+    # log_in.driver.get(pytest.config.getini("usm_web_url"))
     home_page = get_landing_page(log_in.driver)
 
     pytest.check(home_page._label == 'main page - menu bar',
@@ -37,4 +45,4 @@ def test_initial_import_cluster(log_in, log_out):
     cluster_list = ClustersList(log_in.driver)
 # TODO: Check that correct cluster is present in the list
     pytest.check(len(cluster_list) == 1,
-                 'There should be exactly one cluster ion tendrl')
+                 'There should be exactly one cluster in tendrl')
