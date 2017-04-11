@@ -12,7 +12,7 @@ from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
 from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
 
 
-def test_initial_import_cluster(log_in, testcase_end):
+def test_initial_import_cluster(log_in, log_out):
     """ positive import cluster test
     """
     home_page = log_in.init_object
@@ -26,7 +26,7 @@ def test_initial_import_cluster(log_in, testcase_end):
 #       When finished, remove following line(s)
 #       https://github.com/Tendrl/usmqe-tests/issues/33
     import time
-    time.sleep(60)
+    time.sleep(600)
     log_in.driver.get(pytest.config.getini("usm_web_url"))
     home_page = get_landing_page(log_in.driver)
 
