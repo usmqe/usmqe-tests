@@ -12,7 +12,7 @@ from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersMenu
 from usmqe.web.tendrl.mainpage.hosts.pages import HostsMenu
 
 
-def test_hosts_list(log_in, testcase_end):
+def test_hosts_list(log_in, log_out):
     """
     very simple test which checks the list of hosts on Hosts page
 
@@ -52,7 +52,7 @@ def test_hosts_list(log_in, testcase_end):
 
 
 @pytest.mark.parametrize("sds_name", ["gluster"])
-def test_cluster_list(log_in, testcase_end, sds_name):
+def test_cluster_list(log_in, log_out, sds_name):
     """
     very simple test which checks the list of clusters on Clusters page
 
