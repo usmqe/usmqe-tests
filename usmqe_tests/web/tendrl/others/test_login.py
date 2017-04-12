@@ -11,11 +11,13 @@ from selenium.webdriver.common.keys import Keys
 from webstr.selenium.ui.support import WaitForWebstrPage
 from usmqe.web.tendrl.loginpage import pages as loginpage
 from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
+from usmqe.web.tendrl.mainpage.landing_page.models import LOCATION
+from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 
 LOGGER = pytest.get_logger('login_test', module=True)
 
 
-def test_positive_login(testcase_set, testcase_end):
+def test_positive_login(testcase_set, log_out):
     """@usmid web/login_positive
     Login as valid user.
     """
@@ -67,7 +69,7 @@ def test_negative_login(testcase_set, testcase_end,
                      "Error message shoul be red.")
 
 
-def test_login_positive_enter(testcase_set, testcase_end):
+def test_login_positive_enter(testcase_set, log_out):
     """@usmid web/login_positive_enter
     Submit login form by "Enter" key
     """
@@ -87,3 +89,21 @@ def test_login_positive_enter(testcase_set, testcase_end):
     pytest.check(
         page_inst.is_present,
         "User should be logged in")
+
+
+def test_logout(log_in, testcase_end):
+    """
+    Test that user can be logged out from UI
+    """
+    # click on Logout
+    upper_menu = UpperMenu(log_in.driver)
+    upper_menu.open_user_menu().logout()
+    # check login page is displayed
+    pytest.check(
+        log_in.loginpage.is_present,
+        "User should be logged out and login page should be displayed")
+    # try to go on some sub-page
+    log_in.driver.get(pytest.config.getini("usm_web_url") + LOCATION)
+    pytest.check(
+        log_in.loginpage.is_present,
+        "Login page should be displayed")
