@@ -12,13 +12,13 @@ from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersMenu
 from usmqe.web.tendrl.mainpage.hosts.pages import HostsMenu
 
 
-def test_hosts_list(log_in, log_out):
+def test_hosts_list(valid_credentials):
     """
     very simple test which checks the list of hosts on Hosts page
 
     NOTE: a cluster must already exists in etcd
     """
-    navMenuBar = log_in.init_object
+    navMenuBar = valid_credentials.init_object
     hosts_list = navMenuBar.open_hosts()
     inventory_hosts = usmqe.inventory.role2hosts('usm_nodes')
     gluster_hosts = usmqe.inventory.role2hosts('gluster')
@@ -27,7 +27,7 @@ def test_hosts_list(log_in, log_out):
     pytest.check(
         len(hosts_list) == len(inventory_hosts),
         'There should be exactly {} hosts'.format(len(inventory_hosts)))
-    HostsMenu(log_in.driver)
+    HostsMenu(valid_credentials.driver)
     for host in hosts_list:
         # the host.is_present check is extra, it's not needed
         pytest.check(host.is_present,
@@ -52,16 +52,16 @@ def test_hosts_list(log_in, log_out):
 
 
 @pytest.mark.parametrize("sds_name", ["gluster"])
-def test_cluster_list(log_in, log_out, sds_name):
+def test_cluster_list(valid_credentials, sds_name):
     """
     very simple test which checks the list of clusters on Clusters page
 
     NOTE: a 'gluster' cluster must already exists in etcd
     """
-    navMenuBar = log_in.init_object
+    navMenuBar = valid_credentials.init_object
     clusters_list = navMenuBar.open_clusters()
     pytest.check(len(clusters_list) > 0, 'Cluster list should not be empty')
-    ClustersMenu(log_in.driver)
+    ClustersMenu(valid_credentials.driver)
     if sds_name == 'ceph':
         inventory_hosts = usmqe.inventory.role2hosts('ceph_mon')
         inventory_hosts.extend(usmqe.inventory.role2hosts('ceph_osd'))
