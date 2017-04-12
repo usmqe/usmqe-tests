@@ -39,3 +39,17 @@ def log_out(testcase_end):
     upper_menu = UpperMenu(testcase_end.driver)
     user_menu = upper_menu.open_user_menu()
     user_menu.logout()
+
+
+@pytest.fixture(scope="function")
+def valid_credentials(log_in, log_out):
+    """
+    Similar as for API valid_session_credentials,
+    this fixture takes care about authentication.
+    Login default usmqe user account (username and password comes
+    from usm.ini config file).
+    There is a difference with API though
+        - the fixture is not valid for the whole session
+          user is logged in at the test begin and log out when the test ends
+    """
+    yield log_in
