@@ -3,9 +3,10 @@ Common page model for navigation bars.
 """
 
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import By, PageElement
 from webstr.common.form import models as form
 
+from usmqe.web.tendrl.auxiliary.models import UpperMenuModel
 
 # part of url which is placed after 'usm_web_url'
 # for getting on the described page in the module
@@ -13,7 +14,7 @@ LOCATION = '/#/landing-page'
 # LOCATION = '/#/home'
 
 
-class HomeModel(WebstrModel):
+class HomeModel(UpperMenuModel):
     """
     Common page model for the home page.
     """

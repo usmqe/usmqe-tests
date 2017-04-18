@@ -5,7 +5,9 @@ Common page model for navigation bars.
 
 # import pytest
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import By, PageElement
+
+from usmqe.web.tendrl.auxiliary.models import UpperMenuModel
 
 
 # part of url which is placed after 'usm_web_url'
@@ -13,13 +15,10 @@ from webstr.core import WebstrModel, By, PageElement
 LOCATION = '/#'
 
 
-class NavMenuBarsModel(WebstrModel):
+class NavMenuBarsModel(UpperMenuModel):
     """
     Common page model for the main page - navigation.
     """
-# Coming soon...
-#    # left part of upper navbar
-
 # TODO
 # Coming soon...
 # Waiting for functional upper navbar

@@ -2,9 +2,9 @@
 Some usefull model classes for common work with tendrl web
 """
 
-from webstr.core import WebstrModel
+from webstr.core import WebstrModel, By, PageElement
 from webstr.common.form import models as form
-from selenium.webdriver.common.by import By
+import webstr.patternfly.dropdown.models as dropdown
 
 
 class ListMenuModel(WebstrModel):
@@ -21,3 +21,22 @@ class ListMenuModel(WebstrModel):
     order_btn = form.Button(
         By.XPATH,
         '//button[contains(@ng-init, "Order")]')
+
+
+class UpperMenuModel(WebstrModel):
+    """
+    Common model for upper menu
+    """
+    # left part of upper navbar
+#    events_link
+#    node_discovery_link
+#    tasks_link
+#    about_link
+    user_link = PageElement(By.ID, locator="userlogout")
+
+
+class UserMenuModel(dropdown.DropDownMenuModel):
+    """
+    Common page model for main page - user page
+    """
+    logout = PageElement(by=By.LINK_TEXT, locator="Logout")

@@ -8,8 +8,9 @@ Author: ltrilety
 """
 
 
-from webstr.core import WebstrPage
+import copy
 
+from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 import usmqe.web.tendrl.mainpage.landing_page.models as m_landing_page
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages\
@@ -41,7 +42,7 @@ def get_landing_page(driver):
         raise LandingException('Not expected landing page')
 
 
-class Home(WebstrPage, ClustersWorkBase):
+class Home(UpperMenu, ClustersWorkBase):
     """
     Common page object for navigation bars:
 
@@ -55,7 +56,8 @@ class Home(WebstrPage, ClustersWorkBase):
     """
     _model = m_landing_page.HomeModel
     _label = 'home page'
-    _required_elems = [
+    _required_elems = copy.deepcopy(UpperMenu._required_elems)
+    _required_elems.extend([
         'welcome_message',
         'import_btn'
-    ]
+    ])
