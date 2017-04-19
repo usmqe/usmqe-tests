@@ -174,3 +174,18 @@ class TendrlApi(ApiBase):
         self.print_req_info(response)
         self.check_response(response, asserts_in)
         return response.json()
+
+    def flows(self, asserts_in=None):
+        """ Ping REST API
+        Name:        "flows",
+        Method:      "GET",
+        Pattern:     "flows",
+        """
+        pattern = "flows"
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
+        self.print_req_info(response)
+        self.check_response(response, asserts_in)
+        # TODO: some minimal validation of flows response?
+        return response.json()
