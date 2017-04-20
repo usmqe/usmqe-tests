@@ -81,6 +81,9 @@ def test_user_change_password(valid_new_user, valid_password):
 
         Send **PUT** request to ``APIURL/users``.
 
+        During this step is set email to `testmail@tendrl.org` because
+        user can not be edited if he does not have set email. (e.g. admin)
+
     .. test_result:: 1
 
         Edited user data are returned.

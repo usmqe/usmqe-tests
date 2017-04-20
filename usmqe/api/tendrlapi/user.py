@@ -10,6 +10,7 @@ from usmqe.api.tendrlapi.common import TendrlApi
 LOGGER = pytest.get_logger("tendrlapi.user", module=True)
 USERDATA_KEYS = ('email', 'name', 'role', 'username')
 
+
 class ApiUser(TendrlApi):
     """ Main class for interact with REST API - user.
     """

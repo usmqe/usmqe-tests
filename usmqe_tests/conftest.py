@@ -43,6 +43,7 @@ def logger_testcase(request):
     yield
     LOGGER.testEnd()
 
+
 # TODO(fbalak) remove line with `password_confirmation` after
 # https://github.com/Tendrl/api/issues/106 is resolved
 @pytest.fixture(
