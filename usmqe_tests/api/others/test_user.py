@@ -47,7 +47,7 @@ def test_user_get(valid_session_credentials, valid_new_user):
 
         List of users in database is returned
     """
-    test.users()
+    test.get_users()
     """@pylatest api/user.get
     .. test_step:: 3
 
@@ -90,7 +90,7 @@ def test_user_change_password(valid_new_user, valid_password):
         "email": new_email,
         "password": valid_password,
         "password_confirmation": valid_password}
-    test.user_edit(valid_new_user["username"], edit_data)
+    test.edit_user(valid_new_user["username"], edit_data)
     """@pylatest api/user.get
     .. test_step:: 2
 
@@ -151,7 +151,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
     """
     # add test user
 
-    added_user = test.user_add(valid_user_data)
+    added_user = test.add_user(valid_user_data)
     """@pylatest api/user.add_delete
     .. test_step:: 3
        :include: api/user.get:2
@@ -173,7 +173,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
 
         Return code should be 200.
     """
-    test.user_del(valid_user_data["username"])
+    test.del_user(valid_user_data["username"])
     """@pylatest api/user.add_delete
     .. test_step:: 5
        :include: api/user.get:2
@@ -190,7 +190,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
         "ok": False,
         "reason": 'Not Found',
         "status": 404}
-    test.user(valid_user_data["username"], asserts_in=asserts)
+    test.get_user(valid_user_data["username"], asserts_in=asserts)
     """@pylatest api/user.add_delete
     .. test_step:: 6
        :include: api/user.logout:3

@@ -75,9 +75,9 @@ def valid_new_user(valid_user_data):
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))
     admin = tendrlapi_user.ApiUser(auth=auth)
-    admin.user_add(valid_user_data)
+    admin.add_user(valid_user_data)
     yield valid_user_data
-    admin.user_del(valid_user_data["username"])
+    admin.del_user(valid_user_data["username"])
     logout(auth=auth)
 
 

@@ -13,7 +13,7 @@ USERDATA_KEYS = ('email', 'name', 'role', 'username')
 class ApiUser(TendrlApi):
     """ Main class for interact with REST API - user.
     """
-    def users(self, asserts_in=None):
+    def get_users(self, asserts_in=None):
         """ Get users.
 
         Name:        "GET_users",
@@ -40,7 +40,7 @@ class ApiUser(TendrlApi):
                 msg.format(user, USERDATA_KEYS, item.keys))
         return request.json(encoding='unicode')
 
-    def user_edit(self, username, data, asserts_in=None):
+    def edit_user(self, username, data, asserts_in=None):
         """ Edit a single user
 
         Args:
@@ -58,7 +58,7 @@ class ApiUser(TendrlApi):
         self.check_response(request, asserts_in)
         return request.json(encoding='unicode')
 
-    def user_add(self, user_in, asserts_in=None):
+    def add_user(self, user_in, asserts_in=None):
         """ Add user throught **users**.
 
         Name:        "POST_users",
@@ -84,14 +84,14 @@ class ApiUser(TendrlApi):
         self.print_req_info(request)
         self.check_response(request, asserts_in)
         sent_user = {k: user_in[k] for k in USERDATA_KEYS}
-        stored_user = self.user(user_in["username"])
+        stored_user = self.get_user(user_in["username"])
         pytest.check(
             sent_user == stored_user,
             """Information sent: {}, information stored in database: {},
             These should match""".format(sent_user, stored_user))
         return stored_user
 
-    def user(self, username, asserts_in=None):
+    def get_user(self, username, asserts_in=None):
         """ Get user info..
 
         Name:        "GET_user",
@@ -118,14 +118,14 @@ class ApiUser(TendrlApi):
             user_data: user data that are going to be checked
             asserts_in: assert values for this call and this method
         """
-        stored_data = self.user(user_data["username"], asserts_in=asserts_in)
+        stored_data = self.get_user(user_data["username"], asserts_in=asserts_in)
         sent_data = {k: user_data[k] for k in USERDATA_KEYS}
         msg = "Json of stored user: {0}\n\tAnd of checked one: {1}\n\tShould be equal."
         pytest.check(
             stored_data == sent_data,
             msg.format(stored_data, sent_data))
 
-    def user_del(self, username, asserts_in=None):
+    def del_user(self, username, asserts_in=None):
         """ Delete user.
 
         Name:        "DELETE_users",
