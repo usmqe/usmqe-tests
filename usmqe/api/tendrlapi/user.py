@@ -8,7 +8,7 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
 
 LOGGER = pytest.get_logger("tendrlapi.user", module=True)
-USERDATA_KEYS = ('email', 'name', 'role', 'username')
+USERDATA_KEYS = {'email', 'name', 'role', 'username'}
 
 
 class ApiUser(TendrlApi):
@@ -36,9 +36,10 @@ class ApiUser(TendrlApi):
         msg = "User {0} should contain: {1}\n\tUser {0} contains: {2}"
         for item in request.json(encoding='unicode'):
             user = item["username"]
+            response_keys = set(item.keys())
             pytest.check(
-                item.keys() == USERDATA_KEYS,
-                msg.format(user, USERDATA_KEYS, item.keys))
+                response_keys == USERDATA_KEYS,
+                msg.format(user, USERDATA_KEYS, response_keys))
         return request.json(encoding='unicode')
 
     def edit_user(self, username, data, asserts_in=None):
