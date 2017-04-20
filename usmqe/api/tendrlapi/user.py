@@ -8,7 +8,7 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
 
 LOGGER = pytest.get_logger("tendrlapi.user", module=True)
-
+USERDATA_KEYS = ('email', 'name', 'role', 'username')
 
 class ApiUser(TendrlApi):
     """ Main class for interact with REST API - user.
@@ -31,18 +31,13 @@ class ApiUser(TendrlApi):
         self.check_response(request, asserts_in)
         if not request.ok:
             return False
-        defined_keys = {
-            "email",
-            "username",
-            "name",
-            "role"}
 
         msg = "User {0} should contain: {1}\n\tUser {0} contains: {2}"
         for item in request.json(encoding='unicode'):
             user = item["username"]
             pytest.check(
-                item.keys() == defined_keys,
-                msg.format(user, defined_keys, item.keys))
+                item.keys() == USERDATA_KEYS,
+                msg.format(user, USERDATA_KEYS, item.keys))
         return request.json(encoding='unicode')
 
     def user_edit(self, username, data, asserts_in=None):
@@ -86,7 +81,7 @@ class ApiUser(TendrlApi):
             auth=self._auth)
         self.print_req_info(request)
         self.check_response(request, asserts_in)
-        sent_user = {k: user_in[k] for k in ('email', 'name', 'role', 'username')}
+        sent_user = {k: user_in[k] for k in USERDATA_KEYS}
         stored_user = self.user(user_in["username"])
         pytest.check(
             sent_user == stored_user,
@@ -122,7 +117,7 @@ class ApiUser(TendrlApi):
             asserts_in: assert values for this call and this method
         """
         stored_data = self.user(user_data["username"], asserts_in=asserts_in)
-        sent_data = {k: user_data[k] for k in ('email', 'name', 'role', 'username')}
+        sent_data = {k: user_data[k] for k in USERDATA_KEYS}
         msg = "Json of stored user: {0}\n\tAnd of checked one: {1}\n\tShould be equal."
         pytest.check(
             stored_data == sent_data,
