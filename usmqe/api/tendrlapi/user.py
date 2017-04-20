@@ -58,11 +58,7 @@ class ApiUser(TendrlApi):
         self.check_response(request, asserts_in)
         return request.json(encoding='unicode')
 
-    def user_add(self, user_in, asserts_in={
-            "cookies": None,
-            "ok": True,
-            "reason": 'Created',
-            "status": 201}):
+    def user_add(self, user_in, asserts_in=None):
         """ Add user throught **users**.
 
         Name:        "POST_users",
@@ -74,6 +70,12 @@ class ApiUser(TendrlApi):
                      have to contain: name, username, email, role, password, password_confirmation
             asserts_in: assert values for this call and this method
         """
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
+            "reason": 'Created',
+            "status": 201}
+
         pattern = "users"
         request = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
