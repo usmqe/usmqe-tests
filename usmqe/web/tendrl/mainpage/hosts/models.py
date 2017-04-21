@@ -38,7 +38,7 @@ class HostsItemModel(contentviews.ListViewRowModel):
         locator=".//span[contains(@ng-if,'host.status')]")
     name_label = PageElement(
         by=By.XPATH,
-        locator="./div/a")
+        locator=".//div[contains(@class,'host-name')]")
     name = name_label
 # TODO
 # https://github.com/Tendrl/specifications/pull/95
@@ -113,7 +113,7 @@ class HostsItemModel(contentviews.ListViewRowModel):
         locator=".//div/b[contains(text(),'Role')]")
     roles_value = PageElement(
         by=By.XPATH,
-        locator=".//*[contains(@ng-if,'host.role')]")
+        locator=".//div/b[contains(text(),'Role')]/following-sibling::*")
 
     alerts_label = PageElement(
         by=By.XPATH,
