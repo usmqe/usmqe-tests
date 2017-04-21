@@ -24,7 +24,7 @@ Teardown
 def test_create_volume_invalid(
         valid_cluster_id,
         invalid_volume_name,
-        invalid_volume_bricks,
+        invalid_volume_configuration,
         valid_session_credentials):
     """@pylatest api/gluster.create_volume_invalid
         API-gluster: create_volume
@@ -52,12 +52,9 @@ def test_create_volume_invalid(
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
-    volume_data = {
-        "Volume.volname": invalid_volume_name,
-        "Volume.bricks": invalid_volume_bricks,
-    }
-
-    job_id = api.create_volume(valid_cluster_id, volume_data)["job_id"]
+    job_id = api.create_volume(
+        valid_cluster_id,
+        invalid_volume_configuration)["job_id"]
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
@@ -68,7 +65,7 @@ def test_create_volume_invalid(
 def test_create_volume_valid(
         valid_cluster_id,
         valid_volume_name,
-        valid_volume_bricks,
+        valid_volume_configuration,
         valid_session_credentials):
     """@pylatest api/gluster.create_volume_valid
         API-gluster: create_volume
@@ -96,12 +93,9 @@ def test_create_volume_valid(
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
-    volume_data = {
-        "Volume.volname": valid_volume_name,
-        "Volume.bricks": valid_volume_bricks
-    }
-
-    job_id = api.create_volume(valid_cluster_id, volume_data)["job_id"]
+    job_id = api.create_volume(
+        valid_cluster_id,
+        valid_volume_configuration)["job_id"]
     api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
