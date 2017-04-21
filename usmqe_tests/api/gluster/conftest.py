@@ -48,10 +48,10 @@ def valid_volume_configuration():
     """
     role = pytest.config.getini("usm_gluster_role")
     try:
-        bricks = [["{}".format(inventory.role2hosts(role)[i]):
-                    "{}".format(pytest.config.getini("usm_brick_path")),
-                    "{}".format(inventory.role2hosts(role)[i+1]):
-                    "{}".format(pytest.config.getini("usm_brick_path"))]
+        bricks = [[{"{}".format(inventory.role2hosts(role)[i]):
+                    "{}".format(pytest.config.getini("usm_brick_path"))},
+                    {"{}".format(inventory.role2hosts(role)[i+1]):
+                    "{}".format(pytest.config.getini("usm_brick_path"))}]
                     for i in range(0,len(inventory.role2hosts(role)),2)]
     except TypeError as e:
         print(

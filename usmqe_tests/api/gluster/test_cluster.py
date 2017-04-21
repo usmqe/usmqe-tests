@@ -74,7 +74,7 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
     nodes = api.get_nodes()
-    trusted_pool = storage.get_hosts_from_trusted_pool(nodes["nodes"][0]["fqdn"])
+    trusted_pool = storage.get_hosts_from_trusted_pool(nodes["nodes"][1]["fqdn"])
     node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in trusted_pool]
     pytest.check(
         len(trusted_pool) == len(node_ids),
