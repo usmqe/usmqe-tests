@@ -3,6 +3,7 @@
 REST API test suite - gluster cluster
 """
 import pytest
+import json
 
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
@@ -109,8 +110,18 @@ Description
 Negative import gluster cluster.
 """
 
-
-def test_cluster_import_invalid(valid_session_credentials):
+@pytest.mark.parametrize("cluster_data,asserts", [
+    ({
+        "node_ids": ["000000-0000-0000-0000-000000000"],
+        "sds_type": "gluster"
+    }, {
+            "json": json.loads('{"errors": "Node 000000-0000-0000-0000-000000000 not found"}'),
+            "cookies": None,
+            "ok": False,
+            "reason": 'Unprocessable Entity',
+            "status": 422,
+        })])
+def test_cluster_import_invalid(valid_session_credentials, cluster_data, asserts):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -141,29 +152,8 @@ def test_cluster_import_invalid(valid_session_credentials):
 
         .. test_result:: 2
 
-            Server should return response in JSON format:
-
-                {
-                  "job_id": job_id
-                }
-
-            Return code should be **202** with data ``{"message": "Accepted"}``.
+            Server should return response in JSON format with message set in
+            ``asserts`` test parameter.
 
         """
-    nodes = api.get_nodes()
-
-    job_id = api.import_gluster_cluster(["000000-0000-0000-0000-000000000"
-                                         for x in nodes])["job_id"]
-
-    # TODO check true response code of etcd (should be some kind of error)
-    api.wait_for_job_status(
-        job_id,
-        status="failed",
-        issue="https://github.com/Tendrl/tendrl-api/issues/33")
-
-    integration_id = api.get_job_attribute(
-        job_id=job_id,
-        attribute="integration_id")
-    pytest.check(
-        not [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
-        "Job list integration_id '{}' should be present in cluster list.".format(integration_id))
+    api.import_cluster(cluster_data, asserts_in=asserts)
