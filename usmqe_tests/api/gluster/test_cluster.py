@@ -75,7 +75,18 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
     nodes = api.get_nodes()
-    trusted_pool = storage.get_hosts_from_trusted_pool(nodes["nodes"][1]["fqdn"])
+    for cluster in nodes["clusters"]:
+        if cluster["sds_name"] == "gluster":
+            node_ids = cluster["node_ids"]
+            break
+    node_fqdns = []
+    msg = "`sds_pkg_name` of node {} should be `gluster`, it is {}"
+    for node in nodes["nodes"]:
+        if node["node_id"] in node_ids:
+            pytest.check(node["detectedcluster"]["sds_pkg_name"] == "gluster",
+                msg.format(node["fqdn"], node["detectedcluster"]["sds_pkg_name"]))
+            node_fqdns.append(node["fqdn"])
+    trusted_pool = storage.get_hosts_from_trusted_pool(node_fqdns[0])
     node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in trusted_pool]
     pytest.check(
         len(trusted_pool) == len(node_ids),
