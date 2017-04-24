@@ -13,11 +13,11 @@ import subprocess
 
 
 @pytest.fixture(scope="module")
-def chroot_dir(rpm_repo):
+def chroot_dir(tendrl_repos):
     """
     Create chroot enviroment for rpm installation test.
     """
-    gpgkey_url = pytest.config.getini("usm_rpm_gpgkey_url")
+    gpgkey_url = pytest.config.getini("usm_core_gpgkey_url")
     tmpdirname = tempfile.mkdtemp()
     # create minimal directory tree
     os.makedirs(os.path.join(tmpdirname, "var/lib/rpm"))
@@ -40,7 +40,7 @@ def chroot_dir(rpm_repo):
     gpgcheck=1
     """)
     with open(repofile_path, "w") as repofile:
-        repofile.write(repofile_template.format(rpm_repo, gpgkey_url))
+        repofile.write(repofile_template.format(tendrl_repos, gpgkey_url))
     # initialize rpmdb
     rpm_cmd = ["rpm", "--root", tmpdirname, "--initdb"]
     subprocess.run(rpm_cmd, cwd=os.path.join(tmpdirname), check=True)
@@ -102,14 +102,12 @@ def centos_repos():
     return repo_dict
 
 
-@pytest.fixture(scope="module")
-def rpm_repo():
+def get_baseurl(conf_name):
     """
-    Check if we can connect to the repo. If not, this issue will be immediately
-    reported during setup so that the test case will end up in ERROR state
-    (instead of FAILED if we were checking this during test itself).
+    Retrieve (from usmqe config file) and validate baseurl for given repo.
     """
-    baseurl = urllib.parse.urlparse(pytest.config.getini("usm_rpm_baseurl"))
+    conf_value = pytest.config.getini(conf_name)
+    baseurl = urllib.parse.urlparse(conf_value)
     # check remote url http://, https:// or ftp://
     if baseurl.scheme in ('http', 'https', 'ftp'):
         reg = requests.get(baseurl.geturl())
@@ -119,9 +117,26 @@ def rpm_repo():
         base_dir = pathlib.Path(baseurl.path)
         assert base_dir.is_dir()
     else:
-        raise ValueError("Unsupported protocol '{}' in 'usm_rpm_baseurl': '{}'".format(
-            baseurl.scheme, baseurl.geturl()))
+        raise ValueError("Unsupported protocol '{}' in '{}': '{}'".format(
+            baseurl.scheme, conf_name, baseurl.geturl()))
     return baseurl.geturl()
+
+
+@pytest.fixture(scope="module")
+def tendrl_repos():
+    """
+    Check if we can connect to the repo. If not, this issue will be immediately
+    reported during setup so that the test case will end up in ERROR state
+    (instead of FAILED if we were checking this during test itself).
+    """
+    repo_dict = {'tendrl-core': get_baseurl("usm_core_baseurl")}
+    try:
+        # usm_deps_baseurl is optional
+        deps_baseurl = get_baseurl("usm_deps_baseurl")
+        repo_dict['tendrl-deps'] = deps_baseurl
+    except ValueError:
+        pass
+    return repo_dict
 
 
 @pytest.fixture(scope="module", params=[
@@ -130,8 +145,9 @@ def rpm_repo():
     "libx86emu1",
     "namespaces",
     "python-etcd",
+    "python-gdeploy",
     "python-maps",
-    "python2-ruamel-yaml",
+    "python-ruamel-yaml",
     "rubygem-bundler",
     "rubygem-etcd",
     "rubygem-minitest",
@@ -139,6 +155,7 @@ def rpm_repo():
     "rubygem-puma",
     "rubygem-sinatra",
     "rubygem-tilt",
+    "tendrl-alerting",
     "tendrl-api",
     "tendrl-api-httpd",
     "tendrl-ceph-integration",
@@ -149,7 +166,7 @@ def rpm_repo():
     "tendrl-node-monitoring",
     "tendrl-performance-monitoring",
     ])
-def rpm_package(request, rpm_repo):
+def rpm_package(request, tendrl_repos):
     """
     Fixture downloads given rpm package from given repository
     and returns it's local path to the test. Downloaded package
@@ -164,14 +181,16 @@ def rpm_package(request, rpm_repo):
         # in the system
         yum_repos_d = os.path.join(tmpdirname, "chroot", "etc", "yum.repos.d")
         os.makedirs(yum_repos_d)
-        repofile_template = textwrap.dedent("""
-        [tmp]
-        name=Temporary Yum Repository
-        baseurl={}
+        repo_template = textwrap.dedent("""
+        [{0}]
+        name=Temporary Yum Repository for {0}
+        baseurl={1}
         enabled=1
+
         """)
         with open(os.path.join(yum_repos_d, "tmp.repo"), "w") as repofile:
-            repofile.write(repofile_template.format(rpm_repo))
+            for name, baseurl in tendrl_repos.items():
+                repofile.write(repo_template.format(name, baseurl))
         # create directory where we downdload the package
         # so that we can assume that in this directory is only single
         # file - downloaded rpm package

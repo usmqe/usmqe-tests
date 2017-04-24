@@ -8,17 +8,21 @@ import tempfile
 LOGGER = pytest.get_logger(__name__, module=True)
 
 
-def test_repoclosure(rpm_repo, centos_repos):
+def test_repoclosure(tendrl_repos, centos_repos):
     cmd = ["repoclosure", "--newest"]
     # configure systemd default repositories
     for name, url in centos_repos.items():
         cmd.append("--repofrompath")
         cmd.append("{},{}".format(name, url))
         cmd.append("--lookaside={}".format(name))
-    # configure tendrl repository (passed via rpm_repo fixture)
-    cmd.append("--repofrompath")
-    cmd.append("tendrl,{}".format(rpm_repo))
-    cmd.append("--repoid=tendrl")
+    # configure tendrl repository (passed via tendrl_repos fixture)
+    for name, baseurl in tendrl_repos.items():
+        cmd.append("--repofrompath")
+        cmd.append("{},{}".format(name, baseurl))
+        # we expect that other repositories are for dependencies
+        if name != "tendrl-core":
+            cmd.append("--lookaside={}".format(name))
+    cmd.append("--repoid=tendrl-core")
     # running repoclosure
     LOGGER.info(" ".join(cmd))
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -60,16 +64,17 @@ def test_rpmlint(rpm_package):
     "check-sat",
     "check-conflicts",
     ])
-def test_rpmdeplint(rpm_package, check_command, rpm_repo, centos_repos):
+def test_rpmdeplint(rpm_package, check_command, tendrl_repos, centos_repos):
     rpm_name, rpm_path = rpm_package
     cmd = ["rpmdeplint", check_command, "--arch", "x86_64"]
     # configure systemd default repositories
     for name, url in centos_repos.items():
         cmd.append("--repo")
         cmd.append("{},{}".format(name, url))
-    # configure tendrl repository (passed via rpm_repo fixture)
-    cmd.append("--repo")
-    cmd.append("tendrl,{}".format(rpm_repo))
+    # configure tendrl repository (passed via tendrl_repos fixture)
+    for name, baseurl in tendrl_repos.items():
+        cmd.append("--repo")
+        cmd.append("{},{}".format(name, baseurl))
     # and last but not least: specify the package
     cmd.append(rpm_path)
     # running rpmdeplint
