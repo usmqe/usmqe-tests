@@ -57,6 +57,14 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
     api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    nodes = api.get_nodes()
+    ceph_nodes = [node["node_id"] for node in nodes["nodes"] if "ceph" in node["tags"]]
+    LOGGER.debug("Nodes for importing: {}".format(ceph_nodes))
+    cluster_data = {
+        "node_ids": ceph_nodes,
+        "sds_type": "ceph"
+    }
+
     """@pylatest api/ceph.cluster_import
         .. test_step:: 2
 
@@ -73,18 +81,32 @@ def test_cluster_import_valid(valid_session_credentials):
             Return code should be **202** with data ``{"message": "Accepted"}``.
 
         """
-    nodes = api.get_nodes()
-
-    ceph_nodes = [node["node_id"] for node in nodes["nodes"] if "ceph" in node["tags"]]
-    LOGGER.debug("Nodes for importing: {}".format(ceph_nodes))
-    cluster_data = {
-        "node_ids": ceph_nodes,
-        "sds_type": "ceph"
-    }
 
     job_id = api.import_cluster(cluster_data)["job_id"]
 
+    """@pylatest api/ceph.cluster_import
+        .. test_step:: 3
+
+            Wait till job is finished.
+
+        .. test_result:: 3
+
+            Job is succesfully finished.
+
+        """
+
     api.wait_for_job_status(job_id)
+
+    """@pylatest api/ceph.cluster_import
+        .. test_step:: 4
+
+            Check if cluster import status.
+
+        .. test_result:: 4
+
+            Cluster is properly imported and can be found in cluster list.
+
+        """
 
     integration_id = api.get_job_attribute(
         job_id=job_id,
