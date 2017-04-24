@@ -84,7 +84,7 @@ def test_cluster_import_valid(valid_session_credentials):
 
     job_id = api.import_cluster(cluster_data)["job_id"]
 
-    api.wait_for_job_status(job_id, max_count=200)
+    api.wait_for_job_status(job_id)
 
     integration_id = api.get_job_attribute(
         job_id=job_id,

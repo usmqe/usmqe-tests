@@ -134,9 +134,10 @@ class TendrlApi(ApiBase):
     def wait_for_job_status(
             self,
             job_id,
-            max_count=30,
+            max_count=42,
             status="finished",
-            issue=None):
+            issue=None,
+            sleep_time=5):
         """ Repeatedly check if status of job with provided id is in reqquired state.
 
         Args:
@@ -144,6 +145,7 @@ class TendrlApi(ApiBase):
             max_count: maximum of iterations
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
+            sleep_time: time between 2 job status function calls
         """
 
         count = 0
@@ -153,7 +155,7 @@ class TendrlApi(ApiBase):
                 job_id,
                 attribute="status")
             count += 1
-            time.sleep(1)
+            time.sleep(sleep_time)
         LOGGER.debug("status: %s" % current_status)
         pytest.check(
             current_status == status,
