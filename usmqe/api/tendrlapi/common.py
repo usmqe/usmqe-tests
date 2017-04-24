@@ -176,7 +176,12 @@ class TendrlApi(ApiBase):
         return response.json()
 
     def flows(self, asserts_in=None):
-        """ Ping REST API
+        """
+        Provides list of flows which can be performed either globally or on a
+        specific resource.
+
+        See: https://github.com/Tendrl/api/blob/master/docs/overview.adoc#flows
+
         Name:        "flows",
         Method:      "GET",
         Pattern:     "Flows",
