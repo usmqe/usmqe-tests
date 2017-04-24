@@ -179,9 +179,9 @@ class TendrlApi(ApiBase):
         """ Ping REST API
         Name:        "flows",
         Method:      "GET",
-        Pattern:     "flows",
+        Pattern:     "Flows",
         """
-        pattern = "flows"
+        pattern = "Flows"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth,)
