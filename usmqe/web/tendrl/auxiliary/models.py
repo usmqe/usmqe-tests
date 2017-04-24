@@ -32,7 +32,7 @@ class UpperMenuModel(WebstrModel):
 #    node_discovery_link
 #    tasks_link
 #    about_link
-    user_link = PageElement(By.ID, locator="userlogout")
+    user_link = PageElement(By.ID, locator="usermenu")
 
 
 class UserMenuModel(dropdown.DropDownMenuModel):

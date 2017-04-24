@@ -21,9 +21,11 @@ def test_hosts_list(valid_credentials):
     navMenuBar = valid_credentials.init_object
     hosts_list = navMenuBar.open_hosts()
     inventory_hosts = usmqe.inventory.role2hosts('usm_nodes')
-    gluster_hosts = usmqe.inventory.role2hosts('gluster')
-    ceph_mon_hosts = usmqe.inventory.role2hosts('ceph_mon')
-    ceph_osd_hosts = usmqe.inventory.role2hosts('ceph_osd')
+    inventory_hosts.append(usmqe.inventory.role2hosts('usm_server')[0])
+    gluster_hosts = usmqe.inventory.role2hosts('gluster') or []
+    ceph_mon_hosts = usmqe.inventory.role2hosts('ceph_mon') or []
+    ceph_osd_hosts = usmqe.inventory.role2hosts('ceph_osd') or []
+    # there should be all storage nodes plus tendrl machine in the list
     pytest.check(
         len(hosts_list) == len(inventory_hosts),
         'There should be exactly {} hosts'.format(len(inventory_hosts)))
@@ -49,6 +51,8 @@ def test_hosts_list(valid_credentials):
             pytest.check('Monitor' in host_role,
                          "host should have Monitor role"
                          ", it has '{}'".format(host_role))
+    # TODO check other fields - cpu, memory etc.
+    #       or maybe create a new test for that
 
 
 @pytest.mark.parametrize("sds_name", ["gluster"])

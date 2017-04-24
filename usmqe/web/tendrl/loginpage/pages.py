@@ -59,4 +59,4 @@ class LoginPage(WebstrPage):
         """
         self.fill_form_values(username=username, password=password)
         self._model.login_btn.click()
-        WaitForWebstrPage(self, 10).to_disappear()
+        WaitForWebstrPage(self, 30).to_disappear()
