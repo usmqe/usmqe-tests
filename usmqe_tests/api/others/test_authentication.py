@@ -8,7 +8,7 @@ from usmqe.api.tendrlapi.common import TendrlApi, login, logout
 
 def test_login_valid(valid_session_credentials):
     api = TendrlApi(auth=valid_session_credentials)
-    api.ping()
+    api.flows()
 
 
 def test_login_invalid():
@@ -20,7 +20,7 @@ def test_login_invalid():
         }
     auth = login("invalid_user", "invalid_password", asserts_in=asserts)
     api = TendrlApi(auth)
-    api.ping(asserts_in=asserts)
+    api.flows(asserts_in=asserts)
 
 
 def test_session_unauthorized():
@@ -33,7 +33,7 @@ def test_session_unauthorized():
     # passing auth=None would result in api requests to be done without Tendrl
     # auth header
     api = TendrlApi(auth=None)
-    api.ping(asserts_in=asserts)
+    api.flows(asserts_in=asserts)
 
 
 def test_session_invalid(invalid_session_credentials):
@@ -44,11 +44,9 @@ def test_session_invalid(invalid_session_credentials):
         "status": 401,
         }
     api = TendrlApi(auth=invalid_session_credentials)
-    api.ping(asserts_in=asserts)
+    api.flows(asserts_in=asserts)
 
 
-# TODO: find out why xfail doesn't work here
-@pytest.mark.xfail(reason='https://github.com/Tendrl/api/issues/118')
 def test_login_multiple_sessions():
     auth_one = login(
         pytest.config.getini("usm_username"),
@@ -60,8 +58,6 @@ def test_login_multiple_sessions():
     logout(auth=auth_two)
 
 
-# TODO: find out why xfail doesn't work here
-@pytest.mark.xfail(reason='https://github.com/Tendrl/api/issues/118')
 def test_login_multiple_sessions_twisted():
     asserts = {
         "cookies": None,
@@ -75,11 +71,11 @@ def test_login_multiple_sessions_twisted():
     api_two = TendrlApi(auth=login(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password")))
-    api_one.ping()
-    api_two.ping()
+    api_one.flows()
+    api_two.flows()
     logout(auth=api_one._auth)
-    api_one.ping(asserts_in=asserts)
-    api_two.ping()
+    api_one.flows(asserts_in=asserts)
+    api_two.flows()
     logout(auth=api_two._auth)
-    api_one.ping(asserts_in=asserts)
-    api_two.ping(asserts_in=asserts)
+    api_one.flows(asserts_in=asserts)
+    api_two.flows(asserts_in=asserts)

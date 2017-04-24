@@ -15,7 +15,7 @@ Teardown
 """
 
 
-def test_ping(valid_session_credentials):
+def test_ping():
     """@pylatest api/ping
     API: ping
     **********************
@@ -27,7 +27,7 @@ def test_ping(valid_session_credentials):
 
     Positive ping test.
     """
-    test = TendrlApi(auth=valid_session_credentials)
+    test = TendrlApi()
     # TODO(fbalak): add valid returned json to docstring and test them
     """@pylatest api/common.ping_valid
     .. test_step:: 1

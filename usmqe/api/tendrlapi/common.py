@@ -174,3 +174,23 @@ class TendrlApi(ApiBase):
         self.print_req_info(response)
         self.check_response(response, asserts_in)
         return response.json()
+
+    def flows(self, asserts_in=None):
+        """
+        Provides list of flows which can be performed either globally or on a
+        specific resource.
+
+        See: https://github.com/Tendrl/api/blob/master/docs/overview.adoc#flows
+
+        Name:        "flows",
+        Method:      "GET",
+        Pattern:     "Flows",
+        """
+        pattern = "Flows"
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
+        self.print_req_info(response)
+        self.check_response(response, asserts_in)
+        # TODO: some minimal validation of flows response?
+        return response.json()
