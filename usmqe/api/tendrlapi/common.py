@@ -148,7 +148,7 @@ class TendrlApi(ApiBase):
 
         count = 0
         current_status = ""
-        while (current_status != status and count < max_count):
+        while current_status != status and count < max_count:
             current_status = self.get_job_attribute(
                 job_id,
                 attribute="status")
@@ -175,22 +175,55 @@ class TendrlApi(ApiBase):
         self.check_response(response, asserts_in)
         return response.json()
 
-    def flows(self, asserts_in=None):
-        """
-        Provides list of flows which can be performed either globally or on a
-        specific resource.
+    def get_nodes(self):
+        """ Get list node ids.
 
-        See: https://github.com/Tendrl/api/blob/master/docs/overview.adoc#flows
-
-        Name:        "flows",
+        Name:        "get_nodes",
         Method:      "GET",
-        Pattern:     "Flows",
+        Pattern:     "GetNodeList",
         """
-        pattern = "Flows"
+        pattern = "GetNodeList"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
-            auth=self._auth,)
+            auth=self._auth)
         self.print_req_info(response)
-        self.check_response(response, asserts_in)
-        # TODO: some minimal validation of flows response?
+        self.check_response(response)
         return response.json()
+
+    def import_cluster(self, cluster_data):
+        """ Import gluster cluster defined by json.
+
+        Name:        "import_cluster",
+        Method:      "POST",
+        Pattern:     "GlusterImportCluster",
+
+        Args:
+            cluster_data: json structure containing data that will be sent to api server
+        """
+        pattern = "ImportCluster"
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=cluster_data,
+            auth=self._auth)
+        asserts = {
+            "reason": 'Accepted',
+            "status": 202,
+        }
+        self.print_req_info(response)
+        self.check_response(response, asserts)
+        return response.json()
+
+    def get_cluster_list(self):
+        """ Get list of clusters
+
+        Name:        "get_cluster_list",
+        Method:      "GET",
+        Pattern:     "GetClusterList",
+        """
+        pattern = "GetClusterList"
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()["clusters"]
