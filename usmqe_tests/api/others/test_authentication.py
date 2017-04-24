@@ -47,8 +47,6 @@ def test_session_invalid(invalid_session_credentials):
     api.flows(asserts_in=asserts)
 
 
-# TODO: find out why xfail doesn't work here
-@pytest.mark.xfail(reason='https://github.com/Tendrl/api/issues/118')
 def test_login_multiple_sessions():
     auth_one = login(
         pytest.config.getini("usm_username"),
@@ -60,8 +58,6 @@ def test_login_multiple_sessions():
     logout(auth=auth_two)
 
 
-# TODO: find out why xfail doesn't work here
-@pytest.mark.xfail(reason='https://github.com/Tendrl/api/issues/118')
 def test_login_multiple_sessions_twisted():
     asserts = {
         "cookies": None,
