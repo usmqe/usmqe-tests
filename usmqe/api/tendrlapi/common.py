@@ -138,7 +138,7 @@ class TendrlApi(ApiBase):
             status="finished",
             issue=None,
             sleep_time=5):
-        """ Repeatedly check if status of job with provided id is in reqquired state.
+        """ Repeatedly check if status of job with provided id is in required state.
 
         Args:
             job_id: id provided by api request
@@ -213,11 +213,11 @@ class TendrlApi(ApiBase):
         return response.json()
 
     def import_cluster(self, cluster_data):
-        """ Import gluster cluster defined by json.
+        """ Import cluster defined by json.
 
         Name:        "import_cluster",
         Method:      "POST",
-        Pattern:     "GlusterImportCluster",
+        Pattern:     "ImportCluster",
 
         Args:
             cluster_data: json structure containing data that will be sent to api server
