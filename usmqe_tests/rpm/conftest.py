@@ -17,30 +17,45 @@ def chroot_dir(tendrl_repos):
     """
     Create chroot enviroment for rpm installation test.
     """
-    gpgkey_url = pytest.config.getini("usm_core_gpgkey_url")
     tmpdirname = tempfile.mkdtemp()
     # create minimal directory tree
     os.makedirs(os.path.join(tmpdirname, "var/lib/rpm"))
     os.makedirs(os.path.join(tmpdirname, "etc/yum.repos.d"))
     os.makedirs(os.path.join(tmpdirname, "tmp"))
+    # expected paths for gpg keys of rpm repositories
+    repo_keys = [
+        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7"),
+        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
+        ]
     # download repo gpg key of the product we are testing
-    req = requests.get(gpgkey_url)
-    assert req.status_code == 200
-    gpgkey_file = os.path.join(tmpdirname, "tmp", "pubkey.gpg")
-    with open(gpgkey_file, "w") as keyfile:
-        keyfile.write(req.content.decode())
+    reponame2gpgkey_confname = {
+        "tendrl-core": "usm_core_gpgkey_url",
+        "tendrl-deps": "usm_deps_gpgkey_url",
+        }
+    for name in tendrl_repos.keys():
+        gpgkey_url = pytest.config.getini(reponame2gpgkey_confname[name])
+        req = requests.get(gpgkey_url)
+        assert req.status_code == 200
+        gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
+        repo_keys.append(gpgkey_path)
+        with open(gpgkey_path, "w") as keyfile:
+            keyfile.write(req.content.decode())
     # create repo file of the product we are testing
     repofile_path = os.path.join(tmpdirname, "etc/yum.repos.d/tmp.repo")
-    repofile_template = textwrap.dedent("""
-    [tmp]
-    name=Temporary Yum Repository
-    baseurl={}
+    repo_template = textwrap.dedent("""
+    [{0}]
+    name=Temporary Yum Repository for {0}
+    baseurl={1}
     enabled=1
-    gpgkey={}
+    gpgkey={2}
     gpgcheck=1
+
     """)
     with open(repofile_path, "w") as repofile:
-        repofile.write(repofile_template.format(tendrl_repos, gpgkey_url))
+        for name, baseurl in tendrl_repos.items():
+            gpgkey_url = pytest.config.getini(reponame2gpgkey_confname[name])
+            content = repo_template.format(name, baseurl, gpgkey_url)
+            repofile.write(content)
     # initialize rpmdb
     rpm_cmd = ["rpm", "--root", tmpdirname, "--initdb"]
     subprocess.run(rpm_cmd, cwd=os.path.join(tmpdirname), check=True)
@@ -63,11 +78,6 @@ def chroot_dir(tendrl_repos):
             "rpm", "--root", tmpdirname, "-iv", "--nodeps", rpm_path]
         subprocess.run(rpm_cmd, cwd=tmpdirname, check=True)
     # import the gpg keys for all yum repositories
-    repo_keys = [
-        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7"),
-        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
-        os.path.join(tmpdirname, "tmp/pubkey.gpg"),  # product gpg repo key
-        ]
     for key in repo_keys:
         cmd = ["rpm", "--root", tmpdirname, "--import", key]
         subprocess.run(cmd, cwd=os.path.join(tmpdirname), check=True)
