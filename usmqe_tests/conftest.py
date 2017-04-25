@@ -4,7 +4,8 @@ from usmqe.api.tendrlapi import user as tendrlapi_user
 
 
 # initialize usmqe logging module
-LOGGER = pytest.get_logger("pytests_test")
+log_level = pytest.config.getini("usm_log_level")
+LOGGER = pytest.get_logger("pytests_test", level=log_level)
 pytest.set_logger(LOGGER)
 
 
