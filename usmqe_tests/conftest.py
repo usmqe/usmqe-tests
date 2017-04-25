@@ -7,8 +7,11 @@ pytest.set_logger(LOGGER)
 
 
 # NOTE beware any usmqe import has to be after LOGGER is initialized not before
-from usmqe.api.tendrlapi.common import login, logout
-from usmqe.api.tendrlapi import user as tendrlapi_user
+#      all import lines must have NOQA flag to be ignored by flake,
+#        because all imports have to be at the begginning of the file
+#      other possibility is to have imports where they are really needed
+from usmqe.api.tendrlapi.common import login, logout  # NOQA flake8
+from usmqe.api.tendrlapi import user as tendrlapi_user  # NOQA flake8
 
 
 def get_name(fname):

@@ -27,7 +27,6 @@
 import inspect
 import os
 import os.path
-import importlib
 
 import pytest
 import mrglog
