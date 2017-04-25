@@ -1,12 +1,14 @@
 import pytest
-from usmqe.api.tendrlapi.common import login, logout
-from usmqe.api.tendrlapi import user as tendrlapi_user
 
 
 # initialize usmqe logging module
-log_level = pytest.config.getini("usm_log_level")
-LOGGER = pytest.get_logger("pytests_test", level=log_level)
+LOGGER = pytest.get_logger("pytests_test")
 pytest.set_logger(LOGGER)
+
+
+# NOTE beware any usmqe import has to be after LOGGER is initialized not before
+from usmqe.api.tendrlapi.common import login, logout
+from usmqe.api.tendrlapi import user as tendrlapi_user
 
 
 def get_name(fname):
@@ -30,6 +32,8 @@ def logger_session():
     """
     Close logger on a session scope.
     """
+    log_level = pytest.config.getini("usm_log_level")
+    LOGGER.setLevel(log_level)
     yield
     LOGGER.close()
 
@@ -72,7 +76,6 @@ def valid_new_user(valid_user_data):
     Create user from valid_user_data fixture and return these data.
     At the end remove this user.
     """
-
     auth = login(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))
