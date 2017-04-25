@@ -192,7 +192,7 @@ def get_logger(*args, **kwargs):
     if 'verbose_lvl' not in kwargs:
         kwargs['verbose_lvl'] = 0
     if 'output' not in kwargs:
-        kwargs['output'] = "std, txt"
+        kwargs['output'] = ['std', 'txt']
     logger = mrglog.get_logger(*args, **kwargs)
     for handler in logger.handlers:
         # logging.FileHandler is probably inherited from logging.StreamHandler
