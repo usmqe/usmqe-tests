@@ -32,14 +32,21 @@ def chroot_dir(tendrl_repos):
         "tendrl-core": "usm_core_gpgkey_url",
         "tendrl-deps": "usm_deps_gpgkey_url",
         }
+    reponame2gpgkey_url = {}
     for name in tendrl_repos.keys():
-        gpgkey_url = pytest.config.getini(reponame2gpgkey_confname[name])
-        req = requests.get(gpgkey_url)
-        assert req.status_code == 200
-        gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
-        repo_keys.append(gpgkey_path)
-        with open(gpgkey_path, "w") as keyfile:
-            keyfile.write(req.content.decode())
+        try:
+            gpgkey_url = pytest.config.getini(reponame2gpgkey_confname[name])
+            req = requests.get(gpgkey_url)
+            assert req.status_code == 200
+            gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
+            repo_keys.append(gpgkey_path)
+            reponame2gpgkey_url[name] = gpgkey_url
+            with open(gpgkey_path, "w") as keyfile:
+                keyfile.write(req.content.decode())
+        except ValueError as ex:
+            # ignore exception raised when it is missing in the conf. file
+            if "unknown configuration value" not in str(ex):
+                raise ex
     # create repo file of the product we are testing
     repofile_path = os.path.join(tmpdirname, "etc/yum.repos.d/tmp.repo")
     repo_template = textwrap.dedent("""
@@ -47,14 +54,17 @@ def chroot_dir(tendrl_repos):
     name=Temporary Yum Repository for {0}
     baseurl={1}
     enabled=1
-    gpgkey={2}
-    gpgcheck=1
+    {2}
 
     """)
     with open(repofile_path, "w") as repofile:
         for name, baseurl in tendrl_repos.items():
-            gpgkey_url = pytest.config.getini(reponame2gpgkey_confname[name])
-            content = repo_template.format(name, baseurl, gpgkey_url)
+            gpgkey_url = reponame2gpgkey_url.get(name)
+            if gpgkey_url is None:
+                gpgcheck = "gpgcheck=0"
+            else:
+                gpgcheck = "gpgkey={}\ngpgcheck=1".format(gpgkey_url)
+            content = repo_template.format(name, baseurl, gpgcheck)
             repofile.write(content)
     # initialize rpmdb
     rpm_cmd = ["rpm", "--root", tmpdirname, "--initdb"]
