@@ -7,7 +7,7 @@ import pytest
 from usmqe.api.tendrlapi import cephapi
 
 
-LOGGER = pytest.get_logger('ceph_import_test', module=True)
+LOGGER = pytest.get_logger('test_cluster', module=True)
 """@pylatest default
 Setup
 =====

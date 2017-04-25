@@ -145,7 +145,7 @@ class TendrlApi(ApiBase):
             max_count: maximum of iterations
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
-            sleep_time: time between 2 job status function calls
+            sleep_time: time in seconds between 2 job status function calls
         """
 
         count = 0
