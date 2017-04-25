@@ -198,7 +198,7 @@ class GlusterVolume(GlusterCommon):
         self.stripe_count = xml.findtext(
             "./volInfo/volumes/volume/stripeCount")
         self.replica_count = xml.findtext(
-            "./volInfo/volumes/volume/stripeCount")
+            "./volInfo/volumes/volume/replicaCount")
         self.brick_count = xml.findtext(
             "./volInfo/volumes/volume/brickCount")
         self.snap_count = xml.findtext(

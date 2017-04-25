@@ -41,7 +41,7 @@ def invalid_volume_id(request):
 
 
 @pytest.fixture
-def valid_volume_configuration():
+def valid_volume_configuration(valid_volume_name):
     """
     Generate valid configuration for volume creation with set:
         "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
@@ -60,7 +60,7 @@ def valid_volume_configuration():
                 e.errno,
                 e.strerror))
     return {
-        "Volume.volname":"Volume_valid",
+        "Volume.volname":valid_volume_name,
         "Volume.bricks":bricks,
         "Volume.replica_count":"2",
         "Volume.force":True}

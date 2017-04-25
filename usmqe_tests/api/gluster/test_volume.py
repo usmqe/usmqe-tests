@@ -223,7 +223,9 @@ def test_stop_volume_valid(
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
+        "Volume.vol_id": valid_volume_id,
         "Volume.volname": valid_volume_name,
+
     }
 
     job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
@@ -311,6 +313,7 @@ def test_start_volume_valid(
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     volume_data = {
+        "Volume.vol_id": valid_volume_id,
         "Volume.volname": valid_volume_name,
     }
 
