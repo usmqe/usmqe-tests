@@ -131,11 +131,15 @@ def tendrl_repos():
     """
     repo_dict = {'tendrl-core': get_baseurl("usm_core_baseurl")}
     try:
-        # usm_deps_baseurl is optional
         deps_baseurl = get_baseurl("usm_deps_baseurl")
         repo_dict['tendrl-deps'] = deps_baseurl
-    except ValueError:
-        pass
+    except ValueError as ex:
+        # usm_deps_baseurl is optional
+        # ignore exception raised when it is missing in the conf. file
+        if "unknown configuration value" in str(ex):
+            pass
+        else:
+            raise ex
     return repo_dict
 
 
