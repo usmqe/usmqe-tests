@@ -9,7 +9,7 @@ import pytest
 
 from webstr.core import test
 from usmqe.web.tendrl.loginpage import pages as loginpage
-from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
+from usmqe.web.tendrl.landing_page.pages import get_landing_page
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 
 

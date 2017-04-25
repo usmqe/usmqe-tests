@@ -9,7 +9,7 @@ import pytest
 
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
-from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
+from usmqe.web.tendrl.landing_page.pages import get_landing_page
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 
 
