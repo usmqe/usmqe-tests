@@ -3,13 +3,45 @@ Common page model for tasks.
 """
 
 
-from webstr.core import By, WebstrModel, PageElement
+from webstr.core import By, WebstrModel, PageElement, BaseWebElementHelper
 import webstr.patternfly.contentviews.models as contentviews
 import webstr.common.form.models as form
 
-from usmqe.web.utils import StatusIcon
-
 LOCATION = "#/admin/tasks"
+
+
+class StatusIconHelper(BaseWebElementHelper):
+    """
+    StatusIcon helper (Selenium webelement wrapper).
+    Provides basic methods for manipulation with a task status icon.
+    """
+
+    @property
+    def value(self):
+        """
+        find status
+
+        Returns:
+            state of task
+        """
+        icon_class = self.get_attribute('class')
+        if 'pficon-error-circle-o' in icon_class:
+            return 'failed'
+        elif 'pficon-ok' in icon_class:
+            return 'finished'
+        elif 'pficon-warning-triangle-o' in icon_class:
+            return 'warning'
+        elif 'fa-spinner' in icon_class:
+            return 'new or processing'
+        else:
+            raise Exception('Unknown icon state')
+
+
+class StatusIcon(PageElement):
+    """
+    Page element for a status icon.
+    """
+    _helper = StatusIconHelper
 
 
 class TasksMenuModel(WebstrModel):
