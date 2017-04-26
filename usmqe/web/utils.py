@@ -52,7 +52,7 @@ class StatusIconHelper(BaseWebElementHelper):
         Returns:
             value of title attribute of the StatusIcon element
         """
-        return self.get_attribute['title']
+        return self.get_attribute('title')
 
 
 class StatusIcon(PageElement):
