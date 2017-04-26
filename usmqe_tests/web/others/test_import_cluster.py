@@ -22,12 +22,32 @@ def test_initial_import_cluster(valid_credentials):
                  ' if there is no cluster present',
                  hard=True)
 
-    home_page.import_gluster_cluster()
-# TODO: Wait till the cluster is imported, check task
-#       When finished, remove following line(s)
-#       https://github.com/Tendrl/usmqe-tests/issues/33
+    import_task_details = home_page.import_cluster()
+
+    # Wait till the cluster is imported, check task
+    # status_text should be New, later changed to Processing
+    # finally Finished and status icon should have the same state
     import time
-    time.sleep(180)
+    status_str = import_task_details.status_text
+    # No status icon presented till the end
+    # status = import_task_details.status
+    while status_str != 'Processing':
+        pytest.check(
+            status_str == 'New',
+            'import cluster status should be New, it is {}'.format(status_str))
+        time.sleep(1)
+        status_str = import_task_details.status_text
+    while status_str == 'Processing':
+        time.sleep(1)
+        status_str = import_task_details.status_text
+    pytest.check(
+        status_str == 'Finished',
+        'import cluster status should be Finished, it is {}'.format(status_str))
+    pytest.check(
+        import_task_details.status == 'finished',
+        'import cluster status icon should be in finished state, '
+        'it is in {} state'.format(import_task_details.status))
+
     # log out and log in again
     upper_menu = UpperMenu(valid_credentials.driver)
     upper_menu.open_user_menu().logout()
