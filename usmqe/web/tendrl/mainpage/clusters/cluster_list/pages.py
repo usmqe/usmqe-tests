@@ -57,7 +57,7 @@ class ClustersWorkBase(object):
 # TODO
     def import_ceph_cluster(self, name=None, hosts=None):
         """
-        import gluster cluster
+        import ceph cluster
 
         Parameters:
             name (str): name of the cluster
@@ -70,7 +70,7 @@ class ClustersWorkBase(object):
 # TODO
     def create_gluster_cluster(self, name=None, hosts=None):
         """
-        import gluster cluster
+        create gluster cluster
 
         Parameters:
             name (str): name of the cluster
@@ -85,7 +85,7 @@ class ClustersWorkBase(object):
 # TODO
     def create_ceph_cluster(self, name=None, hosts=None):
         """
-        import gluster cluster
+        create ceph cluster
 
         Parameters:
             name (str): name of the cluster
