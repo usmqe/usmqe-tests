@@ -8,6 +8,7 @@ LOGGER = pytest.get_logger(__name__, module=True)
 
 
 @pytest.mark.parametrize("rpm_name", [
+    "tendrl-alerting",
     "tendrl-api",
     "tendrl-api-httpd",
     "tendrl-ceph-integration",
@@ -29,7 +30,10 @@ def test_yum_install(chroot_dir, rpm_name):
     LOGGER.info(" ".join(cmd))
     cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     LOGGER.debug("STDOUT: %s", cp.stdout)
-    LOGGER.debug("STDERR: %s", cp.stderr)
+    if len(cp.stderr) > 0:
+        LOGGER.error("STDERR: %s", cp.stderr)
+    else:
+        LOGGER.debug("STDERR: %s", cp.stderr)
     check_msg = "return code of 'yum install {}' should be 0 indicating no errors"
     pytest.check(cp.returncode == 0, msg=check_msg.format(rpm_name))
     # check after installation

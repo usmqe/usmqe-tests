@@ -13,34 +13,59 @@ import subprocess
 
 
 @pytest.fixture(scope="module")
-def chroot_dir(rpm_repo):
+def chroot_dir(tendrl_repos):
     """
     Create chroot enviroment for rpm installation test.
     """
-    gpgkey_url = pytest.config.getini("usm_rpm_gpgkey_url")
     tmpdirname = tempfile.mkdtemp()
     # create minimal directory tree
     os.makedirs(os.path.join(tmpdirname, "var/lib/rpm"))
     os.makedirs(os.path.join(tmpdirname, "etc/yum.repos.d"))
     os.makedirs(os.path.join(tmpdirname, "tmp"))
+    # expected paths for gpg keys of rpm repositories
+    repo_keys = [
+        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7"),
+        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
+        ]
     # download repo gpg key of the product we are testing
-    req = requests.get(gpgkey_url)
-    assert req.status_code == 200
-    gpgkey_file = os.path.join(tmpdirname, "tmp", "pubkey.gpg")
-    with open(gpgkey_file, "w") as keyfile:
-        keyfile.write(req.content.decode())
+    reponame2gpgkey_confname = {
+        "tendrl-core": "usm_core_gpgkey_url",
+        "tendrl-deps": "usm_deps_gpgkey_url",
+        }
+    reponame2gpgkey_url = {}
+    for name in tendrl_repos.keys():
+        try:
+            gpgkey_url = pytest.config.getini(reponame2gpgkey_confname[name])
+            req = requests.get(gpgkey_url)
+            assert req.status_code == 200
+            gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
+            repo_keys.append(gpgkey_path)
+            reponame2gpgkey_url[name] = gpgkey_url
+            with open(gpgkey_path, "w") as keyfile:
+                keyfile.write(req.content.decode())
+        except ValueError as ex:
+            # ignore exception raised when it is missing in the conf. file
+            if "unknown configuration value" not in str(ex):
+                raise ex
     # create repo file of the product we are testing
     repofile_path = os.path.join(tmpdirname, "etc/yum.repos.d/tmp.repo")
-    repofile_template = textwrap.dedent("""
-    [tmp]
-    name=Temporary Yum Repository
-    baseurl={}
+    repo_template = textwrap.dedent("""
+    [{0}]
+    name=Temporary Yum Repository for {0}
+    baseurl={1}
     enabled=1
-    gpgkey={}
-    gpgcheck=1
+    {2}
+
     """)
     with open(repofile_path, "w") as repofile:
-        repofile.write(repofile_template.format(rpm_repo, gpgkey_url))
+        for name, baseurl in tendrl_repos.items():
+            gpgkey_url = reponame2gpgkey_url.get(name)
+            if gpgkey_url is None:
+                gpgcheck = "gpgcheck=0"
+            else:
+                gpgcheck = "gpgkey={}\ngpgcheck=1".format(gpgkey_url)
+            content = repo_template.format(name, baseurl, gpgcheck)
+            repofile.write(content)
     # initialize rpmdb
     rpm_cmd = ["rpm", "--root", tmpdirname, "--initdb"]
     subprocess.run(rpm_cmd, cwd=os.path.join(tmpdirname), check=True)
@@ -63,11 +88,6 @@ def chroot_dir(rpm_repo):
             "rpm", "--root", tmpdirname, "-iv", "--nodeps", rpm_path]
         subprocess.run(rpm_cmd, cwd=tmpdirname, check=True)
     # import the gpg keys for all yum repositories
-    repo_keys = [
-        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7"),
-        os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
-        os.path.join(tmpdirname, "tmp/pubkey.gpg"),  # product gpg repo key
-        ]
     for key in repo_keys:
         cmd = ["rpm", "--root", tmpdirname, "--import", key]
         subprocess.run(cmd, cwd=os.path.join(tmpdirname), check=True)
@@ -102,14 +122,12 @@ def centos_repos():
     return repo_dict
 
 
-@pytest.fixture(scope="module")
-def rpm_repo():
+def get_baseurl(conf_name):
     """
-    Check if we can connect to the repo. If not, this issue will be immediately
-    reported during setup so that the test case will end up in ERROR state
-    (instead of FAILED if we were checking this during test itself).
+    Retrieve (from usmqe config file) and validate baseurl for given repo.
     """
-    baseurl = urllib.parse.urlparse(pytest.config.getini("usm_rpm_baseurl"))
+    conf_value = pytest.config.getini(conf_name)
+    baseurl = urllib.parse.urlparse(conf_value)
     # check remote url http://, https:// or ftp://
     if baseurl.scheme in ('http', 'https', 'ftp'):
         reg = requests.get(baseurl.geturl())
@@ -119,9 +137,30 @@ def rpm_repo():
         base_dir = pathlib.Path(baseurl.path)
         assert base_dir.is_dir()
     else:
-        raise ValueError("Unsupported protocol '{}' in 'usm_rpm_baseurl': '{}'".format(
-            baseurl.scheme, baseurl.geturl()))
+        raise ValueError("Unsupported protocol '{}' in '{}': '{}'".format(
+            baseurl.scheme, conf_name, baseurl.geturl()))
     return baseurl.geturl()
+
+
+@pytest.fixture(scope="module")
+def tendrl_repos():
+    """
+    Check if we can connect to the repo. If not, this issue will be immediately
+    reported during setup so that the test case will end up in ERROR state
+    (instead of FAILED if we were checking this during test itself).
+    """
+    repo_dict = {'tendrl-core': get_baseurl("usm_core_baseurl")}
+    try:
+        deps_baseurl = get_baseurl("usm_deps_baseurl")
+        repo_dict['tendrl-deps'] = deps_baseurl
+    except ValueError as ex:
+        # usm_deps_baseurl is optional
+        # ignore exception raised when it is missing in the conf. file
+        if "unknown configuration value" in str(ex):
+            pass
+        else:
+            raise ex
+    return repo_dict
 
 
 @pytest.fixture(scope="module", params=[
@@ -130,8 +169,9 @@ def rpm_repo():
     "libx86emu1",
     "namespaces",
     "python-etcd",
+    "python-gdeploy",
     "python-maps",
-    "python2-ruamel-yaml",
+    "python-ruamel-yaml",
     "rubygem-bundler",
     "rubygem-etcd",
     "rubygem-minitest",
@@ -139,6 +179,7 @@ def rpm_repo():
     "rubygem-puma",
     "rubygem-sinatra",
     "rubygem-tilt",
+    "tendrl-alerting",
     "tendrl-api",
     "tendrl-api-httpd",
     "tendrl-ceph-integration",
@@ -149,7 +190,7 @@ def rpm_repo():
     "tendrl-node-monitoring",
     "tendrl-performance-monitoring",
     ])
-def rpm_package(request, rpm_repo):
+def rpm_package(request, tendrl_repos):
     """
     Fixture downloads given rpm package from given repository
     and returns it's local path to the test. Downloaded package
@@ -164,14 +205,16 @@ def rpm_package(request, rpm_repo):
         # in the system
         yum_repos_d = os.path.join(tmpdirname, "chroot", "etc", "yum.repos.d")
         os.makedirs(yum_repos_d)
-        repofile_template = textwrap.dedent("""
-        [tmp]
-        name=Temporary Yum Repository
-        baseurl={}
+        repo_template = textwrap.dedent("""
+        [{0}]
+        name=Temporary Yum Repository for {0}
+        baseurl={1}
         enabled=1
+
         """)
         with open(os.path.join(yum_repos_d, "tmp.repo"), "w") as repofile:
-            repofile.write(repofile_template.format(rpm_repo))
+            for name, baseurl in tendrl_repos.items():
+                repofile.write(repo_template.format(name, baseurl))
         # create directory where we downdload the package
         # so that we can assume that in this directory is only single
         # file - downloaded rpm package
