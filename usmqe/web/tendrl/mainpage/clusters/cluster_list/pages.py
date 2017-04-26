@@ -10,8 +10,9 @@ import webstr.patternfly.dropdown.pages as dropdown
 
 import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
 from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
-    import ImportCluster
+    import ImportCluster, ImportClusterSummary
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
+from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
 
 
 class ClustersWorkBase(object):
@@ -31,6 +32,35 @@ class ClustersWorkBase(object):
         """
         self._model.create_btn.click()
 
+    def import_cluster(self, cluster_id=None, name=None, hosts=None):
+        """
+        import cluster
+
+        Parameters:
+            cluster_id (str): cluster id for choosing a cluster
+                              which should be imported
+            name (str): name of the cluster
+                        TODO: Not used for now
+                              https://github.com/Tendrl/api/issues/70
+            hosts (list): list of dictionaries
+                          {'hostname': <hostname>, 'release': <release>, ...
+                          for check only
+                          TODO: not used for now
+        """
+# TODO: Choose which cluster should be imported
+# TODO: Change cluster name
+#       https://github.com/Tendrl/api/issues/70
+        self.start_import_cluster()
+        import_page = ImportCluster(self.driver)
+# TODO: Check hosts list
+        import_page.import_click()
+        final_import_page = ImportClusterSummary(self.driver)
+        final_import_page.view_import_task()
+        return TaskDetails(self.driver)
+
+# TODO
+# both ceph and gluster are imported the same way as of now
+# use import_cluster method instead
     def import_gluster_cluster(self, name=None, hosts=None):
         """
         import gluster cluster
@@ -44,17 +74,11 @@ class ClustersWorkBase(object):
                           for check only
                           TODO: not used for now
         """
-        self.start_import_cluster()
-        import_page = ImportCluster(self.driver)
-# TODO: Check hosts list
-        import_page.import_click()
-# TODO: Wait till the cluster is imported
-#       OR (probably better)
-#       work or return the object representing
-#       next page with link to a task
-#       https://github.com/Tendrl/usmqe-tests/issues/33
+        raise NotImplementedError('import_gluster_cluster does not exist yet')
 
 # TODO
+# both ceph and gluster are imported the same way as of now
+# use import_cluster method instead
     def import_ceph_cluster(self, name=None, hosts=None):
         """
         import ceph cluster
