@@ -122,6 +122,7 @@ class TaskDetails(WebstrPage):
     """
     _model = m_tasks.TaskDetailsModel
     _label = 'task details'
+    _timeout = 30
     _required_elems = [
         'name_id',
         'submitted',
