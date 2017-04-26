@@ -115,6 +115,7 @@ def centos_repos():
         "centos-updates": "http://mirror.centos.org/centos/7/updates/x86_64/",
         "centos-extras": "http://mirror.centos.org/centos/7/extras/x86_64/",
         "fedora-epel": "http://mirror.karneval.cz/pub/linux/fedora/epel/7/x86_64/",
+        "gdeploy": "http://copr-be.cloud.fedoraproject.org/results/sac/gdeploy/epel-7-x86_64/",
         }
     for url in repo_dict.values():
         reg = requests.get(url)
