@@ -51,9 +51,12 @@ class ClustersWorkBase(object):
 # TODO: Change cluster name
 #       https://github.com/Tendrl/api/issues/70
         self.start_import_cluster()
+        import time
         import_page = ImportCluster(self.driver)
 # TODO: Check hosts list
         import_page.import_click()
+        # the page is not loaded completely, better to wait a little
+        time.sleep(1)
         final_import_page = ImportClusterSummary(self.driver)
         final_import_page.view_import_task()
         return TaskDetails(self.driver)
