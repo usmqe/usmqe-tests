@@ -49,6 +49,9 @@ def test_initial_import_cluster(valid_credentials):
         'it is in {} state'.format(import_task_details.status))
 
     # log out and log in again
+    # TODO remove following sleep
+    # sleep a while because of https://github.com/Tendrl/api/issues/159
+    time.sleep(30)
     upper_menu = UpperMenu(valid_credentials.driver)
     upper_menu.open_user_menu().logout()
     valid_credentials.loginpage.login_user(
