@@ -33,7 +33,7 @@ class ImportClusterSummaryModel(WebstrModel):
     """
     view_task_btn = form.Button(
         By.XPATH,
-        '//button[contains(text(), "View Task Progress"')
+        '//button')
 
 
 class HostsItemModel(contentviews.ListViewRowModel):

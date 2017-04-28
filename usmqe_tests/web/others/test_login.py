@@ -10,8 +10,8 @@ from selenium.webdriver.common.keys import Keys
 
 from webstr.selenium.ui.support import WaitForWebstrPage
 from usmqe.web.tendrl.loginpage import pages as loginpage
-from usmqe.web.tendrl.mainpage.landing_page.pages import get_landing_page
-from usmqe.web.tendrl.mainpage.landing_page.models import LOCATION
+from usmqe.web.tendrl.landing_page.pages import get_landing_page
+from usmqe.web.tendrl.landing_page.models import LOCATION
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 
 LOGGER = pytest.get_logger('login_test', module=True)
