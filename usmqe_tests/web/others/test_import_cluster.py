@@ -5,6 +5,8 @@ Author: ltrilety
 """
 
 
+import time
+import datetime
 import pytest
 
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
@@ -14,8 +16,7 @@ from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 
 
 def test_initial_import_cluster(valid_credentials):
-    """ positive import cluster test
-    """
+    """ positive import cluster test """
     home_page = valid_credentials.init_object
     pytest.check(home_page._label == 'home page',
                  'Tendrl should route to home page'
@@ -27,19 +28,33 @@ def test_initial_import_cluster(valid_credentials):
     # Wait till the cluster is imported, check task
     # status_text should be New, later changed to Processing
     # finally Finished and status icon should have the same state
-    import time
     status_str = import_task_details.status_text
     # No status icon presented till the end
     # status = import_task_details.status
-    while status_str != 'Processing':
+    start_time = datetime.datetime.now()
+    # one hour timeout for the job to finish
+    timeout = datetime.timedelta(0, 3600, 0)
+    while status_str != 'Processing' and\
+            datetime.datetime.now() - start_time <= timeout/4:
         pytest.check(
             status_str == 'New',
             'import cluster status should be New, it is {}'.format(status_str))
         time.sleep(5)
         status_str = import_task_details.status_text
-    while status_str == 'Processing':
+    pytest.check(
+        datetime.datetime.now() - start_time <= timeout/4,
+        'Timeout check: The state of import cluster task should not remain in '
+        'New state too long',
+        hard=True)
+    while status_str == 'Processing' and\
+            datetime.datetime.now() - start_time <= timeout:
         time.sleep(5)
         status_str = import_task_details.status_text
+    pytest.check(
+        datetime.datetime.now() - start_time <= timeout,
+        'Timeout check: The state of import cluster task should not remain in '
+        'Processing state too long',
+        hard=True)
     pytest.check(
         status_str == 'Finished',
         'import cluster status should be Finished, it is {}'.format(status_str))
