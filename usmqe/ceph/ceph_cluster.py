@@ -653,6 +653,81 @@ class CephClusterOsd(CephCommon):
         """
         return self.run_on_mon('osd tree')
 
+    def pool_ls(self, detail=False):
+        """
+        Run ceph command: ``osd pool ls {detail}``
+
+        Returns:
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME osd pool ls {detail}``
+                        command
+
+        Example output (only root elements)::
+        [
+            "rbd"
+        ]
+
+        and with detail=True
+
+        [
+          {
+             "pool_name": "rbd",
+             "flags": 1,
+             "flags_names": "hashpspool",
+             "type": 1,
+             "size": 3,
+             "min_size": 2,
+             "crush_ruleset": 0,
+             "object_hash": 2,
+             "pg_num": 64,
+             "pg_placement_num": 64,
+             "crash_replay_interval": 0,
+             "last_change": "1",
+             "last_force_op_resend": "0",
+             "auid": 0,
+             "snap_mode": "selfmanaged",
+             "snap_seq": 0,
+             "snap_epoch": 0,
+             "pool_snaps": [],
+             "removed_snaps": "[]",
+             "quota_max_bytes": 0,
+             "quota_max_objects": 0,
+             "tiers": [],
+             "tier_of": -1,
+             "read_tier": -1,
+             "write_tier": -1,
+             "cache_mode": "none",
+             "target_max_bytes": 0,
+             "target_max_objects": 0,
+             "cache_target_dirty_ratio_micro": 0,
+             "cache_target_dirty_high_ratio_micro": 0,
+             "cache_target_full_ratio_micro": 0,
+             "cache_min_flush_age": 0,
+             "cache_min_evict_age": 0,
+             "erasure_code_profile": "",
+             "hit_set_params": {
+               "type": "none"
+             },
+             "hit_set_period": 0,
+             "hit_set_count": 0,
+             "use_gmt_hitset": true,
+             "min_read_recency_for_promote": 0,
+             "min_write_recency_for_promote": 0,
+             "hit_set_grade_decay_rate": 0,
+             "hit_set_search_last_n": 0,
+             "grade_table": [],
+             "stripe_width": 0,
+             "expected_num_objects": 0,
+             "fast_read": false,
+             "options": {}
+           }
+         ]
+ 
+        """
+        if detail:
+            return self.run_on_mon('osd pool ls detail')
+        else:
+            return self.run_on_mon('osd pool ls')
 
 class CephClusterStorage(CephCommon):
     """
