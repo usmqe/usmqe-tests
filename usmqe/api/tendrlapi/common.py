@@ -212,7 +212,7 @@ class TendrlApi(ApiBase):
         self.check_response(response)
         return response.json()
 
-    def import_cluster(self, sds_type, nodes):
+    def import_cluster(self, nodes, sds_type=None):
         """ Import cluster.
 
         Name:        "import_cluster",

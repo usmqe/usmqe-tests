@@ -18,7 +18,7 @@ class TendrlApiGluster(TendrlApi):
         Args:
             nodes: node list of cluster which will be imported
         """
-        TendrlApi.import_cluster("gluster", nodes)
+        TendrlApi.import_cluster(nodes, "gluster")
 
 
 # TODO: https://github.com/Tendrl/api/issues/78

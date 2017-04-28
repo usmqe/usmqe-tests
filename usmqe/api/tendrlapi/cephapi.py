@@ -17,4 +17,4 @@ class TendrlApiCeph(TendrlApi):
         Args:
             nodes: node list of cluster which will be imported
         """
-        TendrlApi.import_cluster("ceph", nodes)
+        TendrlApi.import_cluster(nodes, "ceph")
