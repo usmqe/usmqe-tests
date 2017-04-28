@@ -12,6 +12,14 @@ LOGGER = pytest.get_logger("glusterapi", module=True)
 class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
+    def import_gluster_cluster(self, nodes):
+        """ Import Gluster cluster.
+
+        Args:
+            nodes: node list of cluster which will be imported
+        """
+        TendrlApi.import_cluster("gluster", nodes)
+
 
 # TODO: https://github.com/Tendrl/api/issues/78
 # In tendrl api are not correctly shown volumes

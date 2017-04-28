@@ -212,20 +212,24 @@ class TendrlApi(ApiBase):
         self.check_response(response)
         return response.json()
 
-    def import_cluster(self, cluster_data):
-        """ Import cluster defined by json.
+    def import_cluster(self, sds_type, nodes):
+        """ Import cluster.
 
         Name:        "import_cluster",
         Method:      "POST",
         Pattern:     "ImportCluster",
 
         Args:
-            cluster_data: json structure containing data that will be sent to api server
+            sds_type: ceph or glusterfs
+            nodes: node list of cluster which will be imported
         """
         pattern = "ImportCluster"
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
-            json=cluster_data,
+            data=json.dumps({
+                "sds_type": sds_type,
+                "node_ids": nodes
+            }),
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',

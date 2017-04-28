@@ -60,10 +60,6 @@ def test_cluster_import_valid(valid_session_credentials):
     nodes = api.get_nodes()
     ceph_nodes = [node["node_id"] for node in nodes["nodes"] if "ceph" in node["tags"]]
     LOGGER.debug("Nodes for importing: {}".format(ceph_nodes))
-    cluster_data = {
-        "node_ids": ceph_nodes,
-        "sds_type": "ceph"
-    }
 
     """@pylatest api/ceph.cluster_import
         .. test_step:: 2
@@ -82,7 +78,7 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
 
-    job_id = api.import_cluster(cluster_data)["job_id"]
+    job_id = api.import_ceph_cluster(ceph_nodes)["job_id"]
 
     """@pylatest api/ceph.cluster_import
         .. test_step:: 3
