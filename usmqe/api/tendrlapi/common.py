@@ -224,12 +224,12 @@ class TendrlApi(ApiBase):
             nodes: node list of cluster which will be imported
         """
         pattern = "ImportCluster"
+        data = {"node_ids": nodes}
+        if sds_type:
+            data["sds_type"] = sds_type
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
-            data=json.dumps({
-                "sds_type": sds_type,
-                "node_ids": nodes
-            }),
+            data=json.dumps(data),
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
