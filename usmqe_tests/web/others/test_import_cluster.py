@@ -63,10 +63,18 @@ def test_initial_import_cluster(valid_credentials):
         'import cluster status icon should be in finished state, '
         'it is in {} state'.format(import_task_details.status))
 
-    # log out and log in again
     # TODO remove following sleep
     # sleep a while because of https://github.com/Tendrl/api/issues/159
     time.sleep(30)
+
+    # Check that cluster is present in the list
+    NavMenuBars(valid_credentials.driver).open_clusters(click_only=True)
+    cluster_list = ClustersList(valid_credentials.driver)
+# TODO: Check that correct cluster is present in the list
+    pytest.check(len(cluster_list) == 1,
+                 'There should be exactly one cluster in tendrl')
+
+    # log out and log in again
     upper_menu = UpperMenu(valid_credentials.driver)
     upper_menu.open_user_menu().logout()
     valid_credentials.loginpage.login_user(
@@ -79,6 +87,8 @@ def test_initial_import_cluster(valid_credentials):
     pytest.check(home_page._label == 'main page - menu bar',
                  'Tendrl should not route to home page any more',
                  hard=True)
+
+    # Check that cluster is present in the list
     NavMenuBars(valid_credentials.driver).open_clusters(click_only=True)
     cluster_list = ClustersList(valid_credentials.driver)
 # TODO: Check that correct cluster is present in the list
