@@ -134,26 +134,28 @@ class TendrlApi(ApiBase):
     def wait_for_job_status(
             self,
             job_id,
-            max_count=30,
+            max_count=42,
             status="finished",
-            issue=None):
-        """ Repeatedly check if status of job with provided id is in reqquired state.
+            issue=None,
+            sleep_time=5):
+        """ Repeatedly check if status of job with provided id is in required state.
 
         Args:
             job_id: id provided by api request
             max_count: maximum of iterations
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
+            sleep_time: time in seconds between 2 job status function calls
         """
 
         count = 0
         current_status = ""
-        while (current_status != status and count < max_count):
+        while current_status != status and count < max_count:
             current_status = self.get_job_attribute(
                 job_id,
                 attribute="status")
             count += 1
-            time.sleep(1)
+            time.sleep(sleep_time)
         LOGGER.debug("status: %s" % current_status)
         pytest.check(
             current_status == status,
@@ -194,3 +196,60 @@ class TendrlApi(ApiBase):
         self.check_response(response, asserts_in)
         # TODO: some minimal validation of flows response?
         return response.json()
+
+    def get_nodes(self):
+        """ Get list node ids.
+
+        Name:        "get_nodes",
+        Method:      "GET",
+        Pattern:     "GetNodeList",
+        """
+        pattern = "GetNodeList"
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
+
+    def import_cluster(self, nodes, sds_type=None):
+        """ Import cluster.
+
+        Name:        "import_cluster",
+        Method:      "POST",
+        Pattern:     "ImportCluster",
+
+        Args:
+            sds_type: ceph or glusterfs
+            nodes: node list of cluster which will be imported
+        """
+        pattern = "ImportCluster"
+        data = {"node_ids": nodes}
+        if sds_type:
+            data["sds_type"] = sds_type
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            data=json.dumps(data),
+            auth=self._auth)
+        asserts = {
+            "reason": 'Accepted',
+            "status": 202,
+        }
+        self.print_req_info(response)
+        self.check_response(response, asserts)
+        return response.json()
+
+    def get_cluster_list(self):
+        """ Get list of clusters
+
+        Name:        "get_cluster_list",
+        Method:      "GET",
+        Pattern:     "GetClusterList",
+        """
+        pattern = "GetClusterList"
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()["clusters"]

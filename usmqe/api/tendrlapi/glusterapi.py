@@ -1,5 +1,5 @@
 """
-Tendrl REST API.
+Tendrl REST API for gluster.
 """
 
 import requests
@@ -12,59 +12,14 @@ LOGGER = pytest.get_logger("glusterapi", module=True)
 class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
-
-    def get_nodes(self):
-        """ Get list node ids.
-
-        Name:        "get_nodes",
-        Method:      "GET",
-        Pattern:     "GetNodeList",
-        """
-        pattern = "GetNodeList"
-        response = requests.get(
-            pytest.config.getini("usm_api_url") + pattern,
-            auth=self._auth)
-        self.print_req_info(response)
-        self.check_response(response)
-        return response.json()
-
-    def import_cluster(self, cluster_data):
-        """ Import gluster cluster defined by json.
-
-        Name:        "import_cluster",
-        Method:      "POST",
-        Pattern:     "GlusterImportCluster",
+    def import_gluster_cluster(self, nodes):
+        """ Import Gluster cluster.
 
         Args:
-            cluster_data: json structure containing data that will be sent to api server
+            nodes: node list of cluster which will be imported
         """
-        pattern = "ImportCluster"
-        response = requests.post(
-            pytest.config.getini("usm_api_url") + pattern,
-            json=cluster_data,
-            auth=self._auth)
-        asserts = {
-            "reason": 'Accepted',
-            "status": 202,
-        }
-        self.print_req_info(response)
-        self.check_response(response, asserts)
-        return response.json()
+        TendrlApi.import_cluster(nodes, "gluster")
 
-    def get_cluster_list(self):
-        """ Get list of clusters
-
-        Name:        "get_cluster_list",
-        Method:      "GET",
-        Pattern:     "GetClusterList",
-        """
-        pattern = "GetClusterList"
-        response = requests.get(
-            pytest.config.getini("usm_api_url") + pattern,
-            auth=self._auth)
-        self.print_req_info(response)
-        self.check_response(response)
-        return response.json()["clusters"]
 
 # TODO: https://github.com/Tendrl/api/issues/78
 # In tendrl api are not correctly shown volumes

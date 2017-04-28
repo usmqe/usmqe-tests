@@ -80,12 +80,8 @@ def test_cluster_import_valid(valid_session_credentials):
         len(trusted_pool) == len(node_ids),
         "number of nodes in trusted pool ({}) should correspond \
         with number of imported nodes ({})".format(len(trusted_pool), len(node_ids)))
-    cluster_data = {
-        "node_ids": node_ids,
-        "sds_type": "gluster",
-    }
 
-    job_id = api.import_cluster(cluster_data)["job_id"]
+    job_id = api.import_gluster_cluster(node_ids)["job_id"]
 
     api.wait_for_job_status(job_id)
 
@@ -155,12 +151,9 @@ def test_cluster_import_invalid(valid_session_credentials):
 
         """
     nodes = api.get_nodes()
-    cluster_data = {
-        "node_ids": ["000000-0000-0000-0000-000000000" for x in nodes],
-        "sds_type": "gluster"
-    }
 
-    job_id = api.import_cluster(cluster_data)["job_id"]
+    job_id = api.import_gluster_cluster(["000000-0000-0000-0000-000000000"
+                                         for x in nodes])["job_id"]
 
     # TODO check true response code of etcd (should be some kind of error)
     api.wait_for_job_status(
