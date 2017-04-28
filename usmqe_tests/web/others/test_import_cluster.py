@@ -35,10 +35,10 @@ def test_initial_import_cluster(valid_credentials):
         pytest.check(
             status_str == 'New',
             'import cluster status should be New, it is {}'.format(status_str))
-        time.sleep(1)
+        time.sleep(5)
         status_str = import_task_details.status_text
     while status_str == 'Processing':
-        time.sleep(1)
+        time.sleep(5)
         status_str = import_task_details.status_text
     pytest.check(
         status_str == 'Finished',
