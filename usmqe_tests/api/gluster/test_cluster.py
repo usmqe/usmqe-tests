@@ -104,6 +104,10 @@ def test_cluster_import_valid(valid_session_credentials):
         section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
 
+    # TODO(fbalak) remove this sleep after https://github.com/Tendrl/api/issues/159 is resolved.
+    import time
+    time.sleep(30)
+
     imported_cluster = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
     pytest.check(
         imported_cluster is not None,
