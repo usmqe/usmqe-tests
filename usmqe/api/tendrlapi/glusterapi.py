@@ -12,25 +12,6 @@ LOGGER = pytest.get_logger("glusterapi", module=True)
 class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
-    def import_gluster_cluster(self, nodes):
-        """ Import Gluster cluster.
-
-        Args:
-            nodes: node list of cluster which will be imported
-        """
-        asserts_in = asserts_in or {
-            "cookies": None,
-            "ok": True,
-            "reason": 'Accepted',
-            "status": 202}
-        return TendrlApi.import_cluster(
-            nodes,
-            "gluster",
-            asserts_in = asserts_in)
-
-    def get_cluster_list(self):
-        """ Get list of clusters
->>>>>>> refactor code
 
 
 # TODO: https://github.com/Tendrl/api/issues/78

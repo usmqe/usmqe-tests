@@ -75,6 +75,7 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
     nodes = api.get_nodes()
+    node_ids = None
     for cluster in nodes["clusters"]:
         if cluster["sds_name"] == "gluster":
             node_ids = cluster["node_ids"]
@@ -93,7 +94,7 @@ def test_cluster_import_valid(valid_session_credentials):
         "number of nodes in trusted pool ({}) should correspond \
         with number of imported nodes ({})".format(len(trusted_pool), len(node_ids)))
 
-    job_id = api.import_gluster_cluster(node_ids)["job_id"]
+    job_id = api.import_cluster(node_ids, "gluster")["job_id"]
 
     api.wait_for_job_status(job_id)
 
@@ -109,8 +110,9 @@ def test_cluster_import_valid(valid_session_credentials):
         "Job list integration_id '{}' should be present in cluster list.".format(integration_id))
     # TODO add test case for checking imported machines
     msg = "In tendrl should be a same machines as from `gluster peer status` command ({})"
+    LOGGER.debug("debug imported clusters: %s" % imported_cluster)
     pytest.check(
-        [x[0]["fqdn"] in trusted_pool for x in imported_cluster["nodes"].items()],
+        [x["fqdn"] in trusted_pool for x in imported_cluster[0]["nodes"].values()],
         msg.format(trusted_pool))
 
 
@@ -127,18 +129,15 @@ Negative import gluster cluster.
 """
 
 
-@pytest.mark.parametrize("cluster_data,asserts", [
-    ({
-        "node_ids": ["000000-0000-0000-0000-000000000"],
-        "sds_type": "gluster"
-    }, {
+@pytest.mark.parametrize("node_ids,asserts", [
+    (["000000-0000-0000-0000-000000000"], {
             "json": json.loads('{"errors": "Node 000000-0000-0000-0000-000000000 not found"}'),
             "cookies": None,
             "ok": False,
             "reason": 'Unprocessable Entity',
             "status": 422,
         })])
-def test_cluster_import_invalid(valid_session_credentials, cluster_data, asserts):
+def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -173,4 +172,4 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_data, asserts
             ``asserts`` test parameter.
 
         """
-    api.import_cluster(cluster_data, asserts_in=asserts)
+    api.import_cluster(node_ids, "gluster", asserts_in=asserts)
