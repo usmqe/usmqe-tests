@@ -50,9 +50,9 @@ def valid_volume_configuration(valid_volume_name):
     try:
         bricks = [[{"{}".format(inventory.role2hosts(role)[i]):
                     "{}".format(pytest.config.getini("usm_brick_path"))},
-                    {"{}".format(inventory.role2hosts(role)[i+1]):
+                   {"{}".format(inventory.role2hosts(role)[i+1]):
                     "{}".format(pytest.config.getini("usm_brick_path"))}]
-                    for i in range(0,len(inventory.role2hosts(role)),2)]
+                  for i in range(0, len(inventory.role2hosts(role)), 2)]
     except TypeError as e:
         print(
             "TypeError({0}): You should probably define usm_brick_path and \
@@ -60,17 +60,17 @@ def valid_volume_configuration(valid_volume_name):
                 e.errno,
                 e.strerror))
     return {
-        "Volume.volname":valid_volume_name,
-        "Volume.bricks":bricks,
-        "Volume.replica_count":"2",
-        "Volume.force":True}
+        "Volume.volname": valid_volume_name,
+        "Volume.bricks": bricks,
+        "Volume.replica_count": "2",
+        "Volume.force": True}
 
 
 @pytest.fixture(params=[{
-    "Volume.volname":"Volume_invalid",
-    "Volume.bricks":None,
-    "Volume.replica_count":"2",
-    "Volume.force":True}])
+    "Volume.volname": "Volume_invalid",
+    "Volume.bricks": None,
+    "Volume.replica_count": "2",
+    "Volume.force": True}])
 def invalid_volume_configuration(request):
     """
     Generate invalid bricks.
@@ -86,7 +86,8 @@ def valid_volume_name():
     return pytest.config.getini("usm_volume_name")
 
 
-@pytest.fixture(params=[None, "./,!@##$%^&*()__{}|:';/<*+>)("])
+# TODO(fbalak) as `./,!@##$%^&*()__{}|:';/<*+>)(` as parameter
+@pytest.fixture(params=[None])
 def invalid_volume_name(request):
     """
     Generate invalid volume name.

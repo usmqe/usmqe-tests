@@ -84,7 +84,7 @@ def test_cluster_import_valid(valid_session_credentials):
     for node in nodes["nodes"]:
         if node["node_id"] in node_ids:
             pytest.check(node["detectedcluster"]["sds_pkg_name"] == "gluster",
-                msg.format(node["fqdn"], node["detectedcluster"]["sds_pkg_name"]))
+                         msg.format(node["fqdn"], node["detectedcluster"]["sds_pkg_name"]))
             node_fqdns.append(node["fqdn"])
     trusted_pool = storage.get_hosts_from_trusted_pool(node_fqdns[0])
     node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in trusted_pool]
@@ -99,14 +99,19 @@ def test_cluster_import_valid(valid_session_credentials):
 
     integration_id = api.get_job_attribute(
         job_id=job_id,
-        attribute="integration_id",
+        attribute="TendrlContext.integration_id",
         section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
 
+    imported_cluster = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
     pytest.check(
-        [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
+        imported_cluster is not None,
         "Job list integration_id '{}' should be present in cluster list.".format(integration_id))
     # TODO add test case for checking imported machines
+    msg = "In tendrl should be a same machines as from `gluster peer status` command ({})"
+    pytest.check(
+        [x[0]["fqdn"] in trusted_pool for x in imported_cluster["nodes"].items()],
+        msg.format(trusted_pool))
 
 
 """@pylatest api/gluster.cluster_import
@@ -120,6 +125,7 @@ Description
 
 Negative import gluster cluster.
 """
+
 
 @pytest.mark.parametrize("cluster_data,asserts", [
     ({

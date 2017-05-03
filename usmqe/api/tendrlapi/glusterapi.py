@@ -18,7 +18,19 @@ class TendrlApiGluster(TendrlApi):
         Args:
             nodes: node list of cluster which will be imported
         """
-        TendrlApi.import_cluster(nodes, "gluster")
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
+            "reason": 'Accepted',
+            "status": 202}
+        return TendrlApi.import_cluster(
+            nodes,
+            "gluster",
+            asserts_in = asserts_in)
+
+    def get_cluster_list(self):
+        """ Get list of clusters
+>>>>>>> refactor code
 
 
 # TODO: https://github.com/Tendrl/api/issues/78
@@ -70,7 +82,7 @@ class TendrlApiGluster(TendrlApi):
         """ Import gluster cluster defined by json.
 
         Name:        "delete_volume",
-        Method:      "POST",
+        Method:      "DElETE",
         Pattern:     ":cluster_id:/GlusterDeleteVolume",
 
         Args:
