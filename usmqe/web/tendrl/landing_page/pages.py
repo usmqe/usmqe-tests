@@ -34,7 +34,7 @@ def get_landing_page(driver):
             landing_page.LandingPage OR
             clusters.clusterlist.ClustersList
     """
-    if 'cluster' in driver.current_url:
+    if 'dashboard' in driver.current_url:
         return NavMenuBars(driver)
     elif 'home' in driver.current_url:
         return Home(driver)
