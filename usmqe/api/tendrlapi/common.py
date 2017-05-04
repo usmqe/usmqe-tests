@@ -220,8 +220,9 @@ class TendrlApi(ApiBase):
         Pattern:     "ImportCluster",
 
         Args:
-            sds_type: ceph or glusterfs
-            nodes: node list of cluster which will be imported
+            sds_type (str): ceph or glusterfs
+            nodes (list): node list of cluster which will be imported
+            asserts_in (dict): assert values for this call and this method
         """
         asserts_in = asserts_in or {
             "cookies": None,
