@@ -24,6 +24,16 @@ def invalid_cluster_id(request):
 
 
 @pytest.fixture
+def valid_trusted_pool():
+    """
+    Return list of node hostname from created trusted pool.
+    """
+    storage = gluster.GlusterCommon()
+    host = inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]
+    return storage.get_hosts_from_trusted_pool(host)
+
+
+@pytest.fixture
 def valid_volume_id():
     """
     Generate valid id of a created volume.

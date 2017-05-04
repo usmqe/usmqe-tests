@@ -6,7 +6,6 @@ import pytest
 import json
 
 from usmqe.api.tendrlapi import glusterapi
-from usmqe.gluster import gluster
 
 
 LOGGER = pytest.get_logger('cluster_test', module=True)
@@ -33,7 +32,7 @@ Positive import gluster cluster.
 """
 
 
-def test_cluster_import_valid(valid_session_credentials):
+def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -57,7 +56,6 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    storage = gluster.GlusterCommon()
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
 
@@ -87,12 +85,11 @@ def test_cluster_import_valid(valid_session_credentials):
             pytest.check(node["detectedcluster"]["sds_pkg_name"] == "gluster",
                          msg.format(node["fqdn"], node["detectedcluster"]["sds_pkg_name"]))
             node_fqdns.append(node["fqdn"])
-    trusted_pool = storage.get_hosts_from_trusted_pool(node_fqdns[0])
-    node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in trusted_pool]
+    node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in valid_trusted_pool]
     pytest.check(
-        len(trusted_pool) == len(node_ids),
+        len(valid_trusted_pool) == len(node_ids),
         "number of nodes in trusted pool ({}) should correspond \
-        with number of imported nodes ({})".format(len(trusted_pool), len(node_ids)))
+        with number of imported nodes ({})".format(len(valid_trusted_pool), len(node_ids)))
 
     job_id = api.import_cluster(node_ids, "gluster")["job_id"]
 
@@ -116,8 +113,8 @@ def test_cluster_import_valid(valid_session_credentials):
     msg = "In tendrl should be a same machines as from `gluster peer status` command ({})"
     LOGGER.debug("debug imported clusters: %s" % imported_clusters)
     pytest.check(
-        [x["fqdn"] in trusted_pool for x in imported_clusters[0]["nodes"].values()],
-        msg.format(trusted_pool))
+        [x["fqdn"] in valid_trusted_pool for x in imported_clusters[0]["nodes"].values()],
+        msg.format(valid_trusted_pool))
 
 
 """@pylatest api/gluster.cluster_import
