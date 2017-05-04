@@ -54,7 +54,7 @@ def valid_volume_configuration(valid_volume_name):
                     "{}".format(pytest.config.getini("usm_brick_path"))}]
                   for i in range(0, len(inventory.role2hosts(role)), 2)]
     except TypeError as e:
-        print(
+        raise Exception(
             "TypeError({0}): You should probably define usm_brick_path and \
                     usm_gluster_role in usm.ini. {1}".format(
                 e.errno,
