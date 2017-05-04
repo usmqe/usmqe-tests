@@ -42,6 +42,13 @@ def test_create_volume_invalid(
                 Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
                 Where cluster_id is set to predefined value.
 
+                When some attribute is set to None then in request json is set to ``null``.
+                e.g. {
+                    "Volume.replica_count": "2",
+                    "Volume.bricks": null,
+                    "Volume.volname": "Volume_invalid",
+                    "Volume.force": true}
+
         .. test_result:: 1
 
                 Server should return response in JSON format:
