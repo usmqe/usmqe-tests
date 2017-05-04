@@ -108,15 +108,15 @@ def test_cluster_import_valid(valid_session_credentials):
     import time
     time.sleep(30)
 
-    imported_cluster = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
+    imported_clusters = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
     pytest.check(
-        imported_cluster is not None,
+        len(imported_clusters) == 1,
         "Job list integration_id '{}' should be present in cluster list.".format(integration_id))
     # TODO add test case for checking imported machines
     msg = "In tendrl should be a same machines as from `gluster peer status` command ({})"
-    LOGGER.debug("debug imported clusters: %s" % imported_cluster)
+    LOGGER.debug("debug imported clusters: %s" % imported_clusters)
     pytest.check(
-        [x["fqdn"] in trusted_pool for x in imported_cluster[0]["nodes"].values()],
+        [x["fqdn"] in trusted_pool for x in imported_clusters[0]["nodes"].values()],
         msg.format(trusted_pool))
 
 
