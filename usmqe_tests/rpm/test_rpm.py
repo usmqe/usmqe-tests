@@ -63,6 +63,7 @@ def test_rpmlint(rpm_package):
 @pytest.mark.parametrize("check_command", [
     "check-sat",
     "check-conflicts",
+    "check-upgrade",
     ])
 def test_rpmdeplint(rpm_package, check_command, tendrl_repos, centos_repos):
     rpm_name, rpm_path = rpm_package
