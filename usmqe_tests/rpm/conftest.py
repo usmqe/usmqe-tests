@@ -171,24 +171,25 @@ def list_tendrl_deps_packages():
     This helper function returns list of all rpm packages in tendrl deps
     repository.
     """
-    result = [
-        "ansible",
-        "gstatus",
-        "hwinfo",
-        "libx86emu1",
-        "python-etcd",
-        "python-gdeploy",
-        "python-maps",
-        "python-ruamel-yaml",
-        "rubygem-bundler",
-        "rubygem-etcd",
-        "rubygem-minitest",
-        "rubygem-mixlib-log",
-        "rubygem-puma",
-        "rubygem-sinatra",
-        "rubygem-tilt",
+    # try to get baseurl of tendrl-deps repository (calling a fixture directly
+    # like that is a HACK, but it avoids code duplication and the test # case
+    # uses the very same fixture anway, so the consequences should not be that
+    # terrible ...)
+    baseurl = tendrl_repos().get('tendrl-deps')
+    # if tendrl-deps repo is not defined, we don't check deps packages at all
+    if baseurl is None:
+        return []
+    # list all package names from given repo
+    cmd = [
+        "repoquery",
+        "--repofrompath='tendrl-deps,{}'".format(baseurl),
+        "--repoid=tendrl-deps",
+        "--all",
+        "--qf='%{name}'",
         ]
-    return result
+    stdout = subprocess.check_output(cmd)
+    rpm_name_list = stdout.split("\n")
+    return rpm_name_list
 
 
 @pytest.fixture(
