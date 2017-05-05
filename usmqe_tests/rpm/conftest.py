@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 
+import configparser
 import glob
 import os
 import pathlib
@@ -171,24 +172,34 @@ def list_tendrl_deps_packages():
     This helper function returns list of all rpm packages in tendrl deps
     repository.
     """
-    # try to get baseurl of tendrl-deps repository (calling a fixture directly
-    # like that is a HACK, but it avoids code duplication and the test # case
-    # uses the very same fixture anway, so the consequences should not be that
-    # terrible ...)
-    baseurl = tendrl_repos().get('tendrl-deps')
+    # try to get baseurl of tendrl-deps repository directly from config file,
+    # which is even more TERRIBLE HACK, but I can't help it as pytest.config is
+    # not available during of fixture arguments ...
+    # TODO: we may want to reconsider design of usmqe configuration
+    pytest_ini = configparser.ConfigParser()
+    pytest_ini.read_file(open("pytest.ini"))
+    usm_config_path = pytest_ini.get("pytest", "usm_config")
+    usm_config = configparser.ConfigParser()
+    usm_config.read_file(open(usm_config_path))
     # if tendrl-deps repo is not defined, we don't check deps packages at all
-    if baseurl is None:
+    if ("usmqepytest" in usm_config
+            and "usm_deps_baseurl" in usm_config["usmqepytest"]):
+        baseurl = usm_config.get("usmqepytest", "usm_deps_baseurl")
+    else:
         return []
     # list all package names from given repo
     cmd = [
         "repoquery",
-        "--repofrompath='tendrl-deps,{}'".format(baseurl),
+        "--repofrompath=tendrl-deps,{}".format(baseurl),
         "--repoid=tendrl-deps",
         "--all",
         "--qf='%{name}'",
         ]
     stdout = subprocess.check_output(cmd)
-    rpm_name_list = stdout.split("\n")
+    rpm_name_list = stdout.decode('utf-8').replace("'", "").split("\n")
+    # account for edge case of stdout2list conversion
+    if len(rpm_name_list) >= 1 and len(rpm_name_list[-1]) == 0:
+        rpm_name_list.pop()
     return rpm_name_list
 
 
