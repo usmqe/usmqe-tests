@@ -170,6 +170,7 @@ def list_tendrl_deps_packages():
     repository.
     """
     result = [
+        "ansible",
         "gstatus",
         "hwinfo",
         "libx86emu1",
