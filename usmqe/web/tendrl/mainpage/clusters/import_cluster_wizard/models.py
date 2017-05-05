@@ -33,7 +33,7 @@ class ImportClusterSummaryModel(WebstrModel):
     """
     view_task_btn = form.Button(
         By.XPATH,
-        '//button')
+        '//button[contains(@ng-click, "viewTaskProgress()")]')
 
 
 class HostsItemModel(contentviews.ListViewRowModel):
