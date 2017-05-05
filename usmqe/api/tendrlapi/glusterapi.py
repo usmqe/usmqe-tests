@@ -70,7 +70,7 @@ class TendrlApiGluster(TendrlApi):
         """ Import gluster cluster defined by json.
 
         Name:        "delete_volume",
-        Method:      "POST",
+        Method:      "DElETE",
         Pattern:     ":cluster_id:/GlusterDeleteVolume",
 
         Args:

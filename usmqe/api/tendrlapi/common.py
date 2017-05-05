@@ -150,7 +150,7 @@ class TendrlApi(ApiBase):
 
         count = 0
         current_status = ""
-        while current_status != status and count < max_count:
+        while current_status not in (status, "finished", "failed") and count < max_count:
             current_status = self.get_job_attribute(
                 job_id,
                 attribute="status")
@@ -212,7 +212,7 @@ class TendrlApi(ApiBase):
         self.check_response(response)
         return response.json()
 
-    def import_cluster(self, nodes, sds_type=None):
+    def import_cluster(self, nodes, sds_type=None, asserts_in=None):
         """ Import cluster.
 
         Name:        "import_cluster",
@@ -223,6 +223,11 @@ class TendrlApi(ApiBase):
             sds_type: ceph or glusterfs
             nodes: node list of cluster which will be imported
         """
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
+            "reason": 'Accepted',
+            "status": 202}
         pattern = "ImportCluster"
         data = {"node_ids": nodes}
         if sds_type:
@@ -231,12 +236,8 @@ class TendrlApi(ApiBase):
             pytest.config.getini("usm_api_url") + pattern,
             data=json.dumps(data),
             auth=self._auth)
-        asserts = {
-            "reason": 'Accepted',
-            "status": 202,
-        }
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
     def get_cluster_list(self):

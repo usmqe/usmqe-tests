@@ -32,7 +32,7 @@ class ApiBase(object):
         LOGGER.debug("request.body:  {}".format(resp.request.body))
         LOGGER.debug("request.headers:  {}".format(resp.request.headers))
         LOGGER.debug("response.cookies: {}".format(resp.cookies))
-        # LOGGER.debug("response.content: {}".format(resp.content))
+        LOGGER.debug("response.content: {}".format(resp.content))
         LOGGER.debug("response.headers: {}".format(resp.headers))
         # try:
         #     LOGGER.debug(

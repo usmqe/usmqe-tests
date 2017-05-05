@@ -24,6 +24,16 @@ def invalid_cluster_id(request):
 
 
 @pytest.fixture
+def valid_trusted_pool():
+    """
+    Return list of node hostname from created trusted pool.
+    """
+    storage = gluster.GlusterCommon()
+    host = inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]
+    return storage.get_hosts_from_trusted_pool(host)
+
+
+@pytest.fixture
 def valid_volume_id():
     """
     Generate valid id of a created volume.
@@ -41,25 +51,37 @@ def invalid_volume_id(request):
 
 
 @pytest.fixture
-def valid_volume_bricks():
+def valid_volume_configuration(valid_volume_name):
     """
-    Generate valid brick for api in format:
-        hostname:brick_path
+    Generate valid configuration for volume creation with set:
+        "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
     """
     role = pytest.config.getini("usm_gluster_role")
     try:
-        return ["{}:{}".format(x, pytest.config.getini(
-            "usm_brick_path")) for x in inventory.role2hosts(role)]
+        bricks = [[{"{}".format(inventory.role2hosts(role)[i]):
+                    "{}".format(pytest.config.getini("usm_brick_path"))},
+                   {"{}".format(inventory.role2hosts(role)[i+1]):
+                    "{}".format(pytest.config.getini("usm_brick_path"))}]
+                  for i in range(0, len(inventory.role2hosts(role)), 2)]
     except TypeError as e:
-        print(
+        raise Exception(
             "TypeError({0}): You should probably define usm_brick_path and \
                     usm_gluster_role in usm.ini. {1}".format(
                 e.errno,
                 e.strerror))
+    return {
+        "Volume.volname": valid_volume_name,
+        "Volume.bricks": bricks,
+        "Volume.replica_count": "2",
+        "Volume.force": True}
 
 
-@pytest.fixture(params=[None, "0000000000000000"])
-def invalid_volume_bricks(request):
+@pytest.fixture(params=[{
+    "Volume.volname": "Volume_invalid",
+    "Volume.bricks": None,
+    "Volume.replica_count": "2",
+    "Volume.force": True}])
+def invalid_volume_configuration(request):
     """
     Generate invalid bricks.
     """
@@ -74,7 +96,8 @@ def valid_volume_name():
     return pytest.config.getini("usm_volume_name")
 
 
-@pytest.fixture(params=[None, "./,!@##$%^&*()__{}|:';/<*+>)("])
+# TODO(fbalak) as `./,!@##$%^&*()__{}|:';/<*+>)(` as parameter
+@pytest.fixture(params=[None])
 def invalid_volume_name(request):
     """
     Generate invalid volume name.
