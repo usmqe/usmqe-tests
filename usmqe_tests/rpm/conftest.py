@@ -164,21 +164,31 @@ def tendrl_repos():
     return repo_dict
 
 
+def list_tendrl_deps_packages():
+    """
+    This helper function returns list of all rpm packages in tendrl deps
+    repository.
+    """
+    result = [
+        "gstatus",
+        "hwinfo",
+        "libx86emu1",
+        "python-etcd",
+        "python-gdeploy",
+        "python-maps",
+        "python-ruamel-yaml",
+        "rubygem-bundler",
+        "rubygem-etcd",
+        "rubygem-minitest",
+        "rubygem-mixlib-log",
+        "rubygem-puma",
+        "rubygem-sinatra",
+        "rubygem-tilt",
+        ]
+    return result
+
+
 @pytest.fixture(scope="module", params=[
-    "gstatus",
-    "hwinfo",
-    "libx86emu1",
-    "python-etcd",
-    "python-gdeploy",
-    "python-maps",
-    "python-ruamel-yaml",
-    "rubygem-bundler",
-    "rubygem-etcd",
-    "rubygem-minitest",
-    "rubygem-mixlib-log",
-    "rubygem-puma",
-    "rubygem-sinatra",
-    "rubygem-tilt",
     "tendrl-alerting",
     "tendrl-api",
     "tendrl-api-httpd",
@@ -189,7 +199,7 @@ def tendrl_repos():
     "tendrl-node-agent",
     "tendrl-node-monitoring",
     "tendrl-performance-monitoring",
-    ])
+    ] + list_tendrl_deps_packages())
 def rpm_package(request, tendrl_repos):
     """
     Fixture downloads given rpm package from given repository
