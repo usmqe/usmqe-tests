@@ -12,13 +12,14 @@ LOGGER = pytest.get_logger("glusterapi", module=True)
 class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
-    def import_gluster_cluster(self, nodes):
+    def import_cluster(self, nodes, asserts_in=None):
         """ Import Gluster cluster.
 
         Args:
-            nodes: node list of cluster which will be imported
+            nodes (list): node list of cluster which will be imported
+            asserts_in (dict): assert values for this call and this method
         """
-        TendrlApi.import_cluster(nodes, "gluster")
+        super().import_cluster(nodes, "gluster", asserts_in)
 
 
 # TODO: https://github.com/Tendrl/api/issues/78
@@ -51,7 +52,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterCreateVolume".format(cluster)
         response = requests.post(
@@ -75,7 +77,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterDeleteVolume".format(cluster)
         response = requests.delete(
@@ -100,7 +103,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterStartVolume".format(cluster)
         response = requests.post(
@@ -124,7 +128,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterStopVolume".format(cluster)
         response = requests.post(

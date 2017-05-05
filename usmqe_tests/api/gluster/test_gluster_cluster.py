@@ -69,7 +69,8 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
                   "job_id": job_id
                 }
 
-            Return code should be **202** with data ``{"message": "Accepted"}``.
+            Return code should be **202**
+                with data ``{"message": "Accepted"}``.
 
         """
     nodes = api.get_nodes()
@@ -83,15 +84,18 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
     for node in nodes["nodes"]:
         if node["node_id"] in node_ids:
             pytest.check(node["detectedcluster"]["sds_pkg_name"] == "gluster",
-                         msg.format(node["fqdn"], node["detectedcluster"]["sds_pkg_name"]))
+                         msg.format(node["fqdn"],
+                         node["detectedcluster"]["sds_pkg_name"]))
             node_fqdns.append(node["fqdn"])
-    node_ids = [x["node_id"] for x in nodes["nodes"] if x["fqdn"] in valid_trusted_pool]
+    node_ids = [x["node_id"] for x in nodes["nodes"]
+                if x["fqdn"] in valid_trusted_pool]
     pytest.check(
         len(valid_trusted_pool) == len(node_ids),
-        "number of nodes in trusted pool ({}) should correspond \
-        with number of imported nodes ({})".format(len(valid_trusted_pool), len(node_ids)))
+        "number of nodes in trusted pool ({}) should correspond "
+        "with number of imported nodes ({})".format(len(valid_trusted_pool),
+                                                    len(node_ids)))
 
-    job_id = api.import_cluster(node_ids, "gluster")["job_id"]
+    job_id = api.import_cluster(node_ids)["job_id"]
 
     api.wait_for_job_status(job_id)
 
@@ -101,19 +105,24 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
         section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
 
-    # TODO(fbalak) remove this sleep after https://github.com/Tendrl/api/issues/159 is resolved.
+    # TODO(fbalak) remove this sleep after
+    #              https://github.com/Tendrl/api/issues/159 is resolved.
     import time
     time.sleep(30)
 
-    imported_clusters = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
+    imported_clusters = [x for x in api.get_cluster_list()
+                         if x["integration_id"] == integration_id]
     pytest.check(
         len(imported_clusters) == 1,
-        "Job list integration_id '{}' should be present in cluster list.".format(integration_id))
+        "Job list integration_id '{}' should be "
+        "present in cluster list.".format(integration_id))
     # TODO add test case for checking imported machines
-    msg = "In tendrl should be a same machines as from `gluster peer status` command ({})"
+    msg = "In tendrl should be a same machines "\
+          "as from `gluster peer status` command ({})"
     LOGGER.debug("debug imported clusters: %s" % imported_clusters)
     pytest.check(
-        [x["fqdn"] in valid_trusted_pool for x in imported_clusters[0]["nodes"].values()],
+        [x["fqdn"] in valid_trusted_pool
+         for x in imported_clusters[0]["nodes"].values()],
         msg.format(valid_trusted_pool))
 
 
@@ -132,11 +141,12 @@ Negative import gluster cluster.
 
 @pytest.mark.parametrize("node_ids,asserts", [
     (["000000-0000-0000-0000-000000000"], {
-            "json": json.loads('{"errors": "Node 000000-0000-0000-0000-000000000 not found"}'),
-            "cookies": None,
-            "ok": False,
-            "reason": 'Unprocessable Entity',
-            "status": 422,
+        "json": json.loads(
+            '{"errors": "Node 000000-0000-0000-0000-000000000 not found"}'),
+        "cookies": None,
+        "ok": False,
+        "reason": 'Unprocessable Entity',
+        "status": 422,
         })])
 def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
     """@pylatest api/gluster.cluster_import
@@ -173,4 +183,4 @@ def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
             ``asserts`` test parameter.
 
         """
-    api.import_cluster(node_ids, "gluster", asserts_in=asserts)
+    api.import_cluster(node_ids,  asserts_in=asserts)

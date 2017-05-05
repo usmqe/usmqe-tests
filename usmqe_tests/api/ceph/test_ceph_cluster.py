@@ -58,7 +58,8 @@ def test_cluster_import_valid(valid_session_credentials):
         """
     api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
     nodes = api.get_nodes()
-    ceph_nodes = [node["node_id"] for node in nodes["nodes"] if "ceph" in node["tags"]]
+    ceph_nodes = [node["node_id"] for node in nodes["nodes"]
+                  if "ceph" in node["tags"]]
     LOGGER.debug("Nodes for importing: {}".format(ceph_nodes))
 
     """@pylatest api/ceph.cluster_import
@@ -74,11 +75,12 @@ def test_cluster_import_valid(valid_session_credentials):
                   "job_id": job_id
                 }
 
-            Return code should be **202** with data ``{"message": "Accepted"}``.
+            Return code should be **202**
+                with data ``{"message": "Accepted"}``.
 
         """
 
-    job_id = api.import_ceph_cluster(ceph_nodes)["job_id"]
+    job_id = api.import_cluster(ceph_nodes)["job_id"]
 
     """@pylatest api/ceph.cluster_import
         .. test_step:: 3
@@ -111,8 +113,10 @@ def test_cluster_import_valid(valid_session_credentials):
 
     LOGGER.debug("integration_id: %s" % integration_id)
     pytest.check(
-        [x for x in api.get_cluster_list() if x["integration_id"] == integration_id],
-        "Job list integration_id '{}' should be present in cluster list.".format(integration_id),
+        [x for x in api.get_cluster_list()
+         if x["integration_id"] == integration_id],
+        "Job list integration_id '{}' should be "
+        "present in cluster list.".format(integration_id),
         issue="https://github.com/Tendrl/api/issues/154")
 
     # TODO add test case for checking imported machines

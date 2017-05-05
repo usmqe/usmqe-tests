@@ -150,7 +150,8 @@ class TendrlApi(ApiBase):
 
         count = 0
         current_status = ""
-        while current_status not in (status, "finished", "failed") and count < max_count:
+        while current_status not in (status, "finished", "failed") and\
+                count < max_count:
             current_status = self.get_job_attribute(
                 job_id,
                 attribute="status")
@@ -159,7 +160,9 @@ class TendrlApi(ApiBase):
         LOGGER.debug("status: %s" % current_status)
         pytest.check(
             current_status == status,
-            msg="Job status is {} and should be {}".format(current_status, status),
+            msg="Job status is {} and should be {}".format(
+                current_status,
+                status),
             issue=issue)
         return current_status
 
@@ -220,8 +223,9 @@ class TendrlApi(ApiBase):
         Pattern:     "ImportCluster",
 
         Args:
-            sds_type: ceph or glusterfs
-            nodes: node list of cluster which will be imported
+            sds_type (str): ceph or glusterfs
+            nodes (list): node list of cluster which will be imported
+            asserts_in (dict): assert values for this call and this method
         """
         asserts_in = asserts_in or {
             "cookies": None,
