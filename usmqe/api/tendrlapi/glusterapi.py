@@ -52,7 +52,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterCreateVolume".format(cluster)
         response = requests.post(
@@ -76,7 +77,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterDeleteVolume".format(cluster)
         response = requests.delete(
@@ -101,7 +103,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterStartVolume".format(cluster)
         response = requests.post(
@@ -125,7 +128,8 @@ class TendrlApiGluster(TendrlApi):
 
         Args:
             cluster: id of a cluster where will be created volume
-            volume_data: json structure containing data that will be sent to api server
+            volume_data: json structure containing data that will be
+                         sent to api server
         """
         pattern = "{}/GlusterStopVolume".format(cluster)
         response = requests.post(
