@@ -11,6 +11,8 @@ import pytest
 import requests
 import subprocess
 
+from packagelist import tendrl_packages
+
 
 @pytest.fixture(scope="module")
 def chroot_dir(tendrl_repos):
@@ -189,18 +191,9 @@ def list_tendrl_deps_packages():
     return result
 
 
-@pytest.fixture(scope="module", params=[
-    "tendrl-alerting",
-    "tendrl-api",
-    "tendrl-api-httpd",
-    "tendrl-ceph-integration",
-    "tendrl-commons",
-    "tendrl-dashboard",
-    "tendrl-gluster-integration",
-    "tendrl-node-agent",
-    "tendrl-node-monitoring",
-    "tendrl-performance-monitoring",
-    ] + list_tendrl_deps_packages())
+@pytest.fixture(
+    scope="module",
+    params=tendrl_packages + list_tendrl_deps_packages())
 def rpm_package(request, tendrl_repos):
     """
     Fixture downloads given rpm package from given repository
