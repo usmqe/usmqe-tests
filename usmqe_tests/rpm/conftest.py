@@ -168,7 +168,6 @@ def tendrl_repos():
     "gstatus",
     "hwinfo",
     "libx86emu1",
-    "namespaces",
     "python-etcd",
     "python-gdeploy",
     "python-maps",
