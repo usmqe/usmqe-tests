@@ -78,7 +78,7 @@ def test_cluster_import_valid(valid_session_credentials):
 
         """
 
-    job_id = api.import_ceph_cluster(ceph_nodes)["job_id"]
+    job_id = api.import_cluster(ceph_nodes)["job_id"]
 
     """@pylatest api/ceph.cluster_import
         .. test_step:: 3

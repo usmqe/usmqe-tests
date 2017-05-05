@@ -91,7 +91,7 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
         "number of nodes in trusted pool ({}) should correspond \
         with number of imported nodes ({})".format(len(valid_trusted_pool), len(node_ids)))
 
-    job_id = api.import_cluster(node_ids, "gluster")["job_id"]
+    job_id = api.import_cluster(node_ids)["job_id"]
 
     api.wait_for_job_status(job_id)
 
@@ -173,4 +173,4 @@ def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
             ``asserts`` test parameter.
 
         """
-    api.import_cluster(node_ids, "gluster", asserts_in=asserts)
+    api.import_cluster(node_ids,  asserts_in=asserts)
