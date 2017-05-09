@@ -3,13 +3,13 @@
 import pytest
 import subprocess
 
-from packagelist import tendrl_packages
+from packagelist import list_packages
 
 
 LOGGER = pytest.get_logger(__name__, module=True)
 
 
-@pytest.mark.parametrize("rpm_name", tendrl_packages)
+@pytest.mark.parametrize("rpm_name", list_packages('tendrl-core'))
 def test_yum_install(chroot_dir, rpm_name):
     """
     Try to install and uninstall rpm package via yum in CentOS 7 chroot.

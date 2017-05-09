@@ -1,18 +1,18 @@
 # -*- coding: utf8 -*-
 
-import configparser
 import glob
 import os
 import pathlib
+import subprocess
 import tempfile
 import textwrap
 import urllib
 
 import pytest
 import requests
-import subprocess
 
-from packagelist import tendrl_packages
+from packagelist import list_packages
+from packagelist import reponame2gpgkey_confname, reponame2baseurl_confname
 
 
 @pytest.fixture(scope="module")
@@ -31,10 +31,6 @@ def chroot_dir(tendrl_repos):
         os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
         ]
     # download repo gpg key of the product we are testing
-    reponame2gpgkey_confname = {
-        "tendrl-core": "usm_core_gpgkey_url",
-        "tendrl-deps": "usm_deps_gpgkey_url",
-        }
     reponame2gpgkey_url = {}
     for name in tendrl_repos.keys():
         try:
@@ -153,9 +149,10 @@ def tendrl_repos():
     reported during setup so that the test case will end up in ERROR state
     (instead of FAILED if we were checking this during test itself).
     """
-    repo_dict = {'tendrl-core': get_baseurl("usm_core_baseurl")}
+    repo_dict = {
+        'tendrl-core': get_baseurl(reponame2baseurl_confname['tendrl-core'])}
     try:
-        deps_baseurl = get_baseurl("usm_deps_baseurl")
+        deps_baseurl = get_baseurl(reponame2baseurl_confname['tendrl-deps'])
         repo_dict['tendrl-deps'] = deps_baseurl
     except ValueError as ex:
         # usm_deps_baseurl is optional
@@ -167,45 +164,9 @@ def tendrl_repos():
     return repo_dict
 
 
-def list_tendrl_deps_packages():
-    """
-    This helper function returns list of all rpm packages in tendrl deps
-    repository.
-    """
-    # try to get baseurl of tendrl-deps repository directly from config file,
-    # which is even more TERRIBLE HACK, but I can't help it as pytest.config is
-    # not available during of fixture arguments ...
-    # TODO: we may want to reconsider design of usmqe configuration
-    pytest_ini = configparser.ConfigParser()
-    pytest_ini.read_file(open("pytest.ini"))
-    usm_config_path = pytest_ini.get("pytest", "usm_config")
-    usm_config = configparser.ConfigParser()
-    usm_config.read_file(open(usm_config_path))
-    # if tendrl-deps repo is not defined, we don't check deps packages at all
-    if ("usmqepytest" in usm_config
-            and "usm_deps_baseurl" in usm_config["usmqepytest"]):
-        baseurl = usm_config.get("usmqepytest", "usm_deps_baseurl")
-    else:
-        return []
-    # list all package names from given repo
-    cmd = [
-        "repoquery",
-        "--repofrompath=tendrl-deps,{}".format(baseurl),
-        "--repoid=tendrl-deps",
-        "--all",
-        "--qf='%{name}'",
-        ]
-    stdout = subprocess.check_output(cmd)
-    rpm_name_list = stdout.decode('utf-8').replace("'", "").split("\n")
-    # account for edge case of stdout2list conversion
-    if len(rpm_name_list) >= 1 and len(rpm_name_list[-1]) == 0:
-        rpm_name_list.pop()
-    return rpm_name_list
-
-
 @pytest.fixture(
     scope="module",
-    params=tendrl_packages + list_tendrl_deps_packages())
+    params=list_packages('tendrl-core') + list_packages('tendrl-deps'))
 def rpm_package(request, tendrl_repos):
     """
     Fixture downloads given rpm package from given repository
