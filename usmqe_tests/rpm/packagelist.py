@@ -8,6 +8,7 @@ import subprocess
 tendrl_packages = [
     "tendrl-alerting",
     "tendrl-api",
+    "tendrl-api-doc",
     "tendrl-api-httpd",
     "tendrl-ceph-integration",
     "tendrl-commons",
