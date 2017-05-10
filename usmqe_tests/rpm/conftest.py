@@ -3,13 +3,16 @@
 import glob
 import os
 import pathlib
+import subprocess
 import tempfile
 import textwrap
 import urllib
 
 import pytest
 import requests
-import subprocess
+
+from packagelist import list_packages
+from packagelist import reponame2gpgkey_confname, reponame2baseurl_confname
 
 
 @pytest.fixture(scope="module")
@@ -28,10 +31,6 @@ def chroot_dir(tendrl_repos):
         os.path.join(tmpdirname, "etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"),
         ]
     # download repo gpg key of the product we are testing
-    reponame2gpgkey_confname = {
-        "tendrl-core": "usm_core_gpgkey_url",
-        "tendrl-deps": "usm_deps_gpgkey_url",
-        }
     reponame2gpgkey_url = {}
     for name in tendrl_repos.keys():
         try:
@@ -150,9 +149,10 @@ def tendrl_repos():
     reported during setup so that the test case will end up in ERROR state
     (instead of FAILED if we were checking this during test itself).
     """
-    repo_dict = {'tendrl-core': get_baseurl("usm_core_baseurl")}
+    repo_dict = {
+        'tendrl-core': get_baseurl(reponame2baseurl_confname['tendrl-core'])}
     try:
-        deps_baseurl = get_baseurl("usm_deps_baseurl")
+        deps_baseurl = get_baseurl(reponame2baseurl_confname['tendrl-deps'])
         repo_dict['tendrl-deps'] = deps_baseurl
     except ValueError as ex:
         # usm_deps_baseurl is optional
@@ -164,32 +164,9 @@ def tendrl_repos():
     return repo_dict
 
 
-@pytest.fixture(scope="module", params=[
-    "gstatus",
-    "hwinfo",
-    "libx86emu1",
-    "python-etcd",
-    "python-gdeploy",
-    "python-maps",
-    "python-ruamel-yaml",
-    "rubygem-bundler",
-    "rubygem-etcd",
-    "rubygem-minitest",
-    "rubygem-mixlib-log",
-    "rubygem-puma",
-    "rubygem-sinatra",
-    "rubygem-tilt",
-    "tendrl-alerting",
-    "tendrl-api",
-    "tendrl-api-httpd",
-    "tendrl-ceph-integration",
-    "tendrl-commons",
-    "tendrl-dashboard",
-    "tendrl-gluster-integration",
-    "tendrl-node-agent",
-    "tendrl-node-monitoring",
-    "tendrl-performance-monitoring",
-    ])
+@pytest.fixture(
+    scope="module",
+    params=list_packages('tendrl-core') + list_packages('tendrl-deps'))
 def rpm_package(request, tendrl_repos):
     """
     Fixture downloads given rpm package from given repository

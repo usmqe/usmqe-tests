@@ -1,8 +1,11 @@
 # -*- coding: utf8 -*-
 
-import pytest
 import subprocess
 import tempfile
+
+import pytest
+
+from packagelist import list_packages, tendrl_packages
 
 
 LOGGER = pytest.get_logger(__name__, module=True)
@@ -43,6 +46,26 @@ def test_repoclosure(tendrl_repos, centos_repos):
             LOGGER.failed(line.decode())
 
 
+def test_repo_packagelist(tendrl_repos):
+    """
+    Check that tendrl core repository contains all expected tendrl packages and
+    doesn't contain anything else.
+    """
+    LOGGER.info(
+        "expected tendrl-core packages are: " + ",".join(tendrl_packages))
+    # get actual list of packages from tendrl-core repository (via repoquery)
+    packages = list_packages('tendrl-core')
+    for rpm_name in tendrl_packages:
+        msg = "package {} should be present in tendrl-core repo"
+        package_present = rpm_name in packages
+        pytest.check(package_present, msg.format(rpm_name))
+        if package_present:
+            packages.remove(rpm_name)
+    pytest.check(packages == [], msg="there should be no extra packages")
+    for rpm_name in packages:
+        LOGGER.failed("unexpected package in tendrl-core: {}".format(rpm_name))
+
+
 def test_rpmlint(rpm_package):
     rpm_name, rpm_path = rpm_package
     cmd = ["rpmlint", rpm_path]
@@ -63,6 +86,7 @@ def test_rpmlint(rpm_package):
 @pytest.mark.parametrize("check_command", [
     "check-sat",
     "check-conflicts",
+    "check-upgrade",
     ])
 def test_rpmdeplint(rpm_package, check_command, tendrl_repos, centos_repos):
     rpm_name, rpm_path = rpm_package
