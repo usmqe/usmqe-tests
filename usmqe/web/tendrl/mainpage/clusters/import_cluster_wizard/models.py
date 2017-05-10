@@ -20,6 +20,12 @@ class ImportClusterModel(ListMenuModel):
     cluster = form.Select(
         By.XPATH,
         '//select[@data-ng-model="importClusterCntrl.selectedCluster"]')
+    cluster_id = PageElement(
+        By.XPATH,
+        '//div[@class="cluster-detail"]/div[1]/div[2]')
+    storage_service = PageElement(
+        By.XPATH,
+        '//div[@class="cluster-detail"]/div[2]/div[2]')
     refresh_btn = form.Button(
         By.XPATH,
         '//button[contains(text(), "Refresh")]')
@@ -47,6 +53,9 @@ class HostsItemModel(contentviews.ListViewRowModel):
         by=By.XPATH,
         locator=".//div[@class='list-group-item']/div[2]//h5[2]")
     name = name_label
+    role = PageElement(
+        by=By.XPATH,
+        locator=".//div[@class='list-group-item']/div[3]//h5[2]")
 
 
 class HostsListModel(contentviews.ListViewModel):
