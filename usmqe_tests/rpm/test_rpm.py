@@ -46,9 +46,10 @@ def test_repoclosure(tendrl_repos, centos_repos):
             LOGGER.failed(line.decode())
 
 
-def test_repo(tendrl_repos):
+def test_repo_packagelist(tendrl_repos):
     """
-    Check that tendrl core repository contains all tendrl packages as expected.
+    Check that tendrl core repository contains all expected tendrl packages and
+    doesn't contain anything else.
     """
     LOGGER.info(
         "expected tendrl-core packages are: " + ",".join(tendrl_packages))
