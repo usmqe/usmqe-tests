@@ -43,7 +43,8 @@ def get_landing_page(driver, timeout=10):
         time.sleep(1)
         wait_time += 1
     if wait_time > timeout:
-        raise LandingException('There should not remain landing-page in URL')
+        raise LandingException('There should not remain landing-page in URL '
+                               'longer than {} seconds'.format(timeout))
     if 'dashboard' in driver.current_url:
         return NavMenuBars(driver)
     elif 'home' in driver.current_url:
