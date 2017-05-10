@@ -48,14 +48,14 @@ class HostsItemModel(contentviews.ListViewRowModel):
     """
     name_label = PageElement(
         by=By.XPATH,
-        locator=".//div[@class='list-group-item']/div[1]")
+        locator="./div[1]")
     release = PageElement(
         by=By.XPATH,
-        locator=".//div[@class='list-group-item']/div[2]//h5[2]")
+        locator="./div[2]//h5[2]")
     name = name_label
     role = PageElement(
         by=By.XPATH,
-        locator=".//div[@class='list-group-item']/div[3]//h5[2]")
+        locator="./div[3]//h5[2]")
 
 
 class HostsListModel(contentviews.ListViewModel):
