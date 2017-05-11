@@ -50,6 +50,7 @@ class CephCommon(object):
             cluster: cluster name or dict with ``name`` key or
                      :py:class:`CephCommon`/:py:class:`CephCluster` object
             mons: list of ceph cluster monitors
+                  monitor machines hostnames or IP addresses
         """
         if isinstance(cluster, CephCommon):
             self._name = cluster.name
@@ -116,6 +117,7 @@ class CephCluster(CephCommon):
             cluster: cluster name or dict with ``name`` key or
                      :py:class:`CephCommon`/:py:class:`CephCluster` object
             mons: list of ceph cluster monitors
+                  monitor machines hostnames or IP addresses
         """
         super(CephCluster, self).__init__(cluster, mons)
         self._osd = None
