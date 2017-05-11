@@ -35,11 +35,12 @@ def import_cluster_wait(driver, import_task_details):
     # Wait till the cluster is imported
     task_wait(import_task_details, ttl=IMPORT_TIMEOUT)
 
+    NavMenuBars(driver).open_clusters(click_only=True)
+
     # TODO remove following sleep
     # sleep a while because of https://github.com/Tendrl/api/issues/159
     time.sleep(30)
 
-    NavMenuBars(driver).open_clusters(click_only=True)
     cluster_list = ClustersList(driver)
     return cluster_list
 
@@ -82,7 +83,10 @@ def import_cluster(driver, import_page, clusters_nr=0, cluster_name=None,
             present = True
             break
     pytest.check(present,
-                 'The imported cluster is present in the cluster list')
-    page_hosts_list = HostsList(driver)
-    check_hosts(hosts_list, page_hosts_list)
+                 'The imported cluster should be present in the cluster list')
+
+    # check hosts
+    if present:
+        page_hosts_list = HostsList(driver)
+        check_hosts(hosts_list, page_hosts_list)
     return cluster_ident
