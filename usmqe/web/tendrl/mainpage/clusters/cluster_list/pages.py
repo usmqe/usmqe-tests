@@ -26,9 +26,10 @@ def check_hosts(hosts_list, page_hosts_list):
                           {'hostname': <hostname>, 'release': <release>, ...
         page_hosts_list (list): list representing lines in the page hosts list
     """
+    aux_list = copy.deepcopy(hosts_list)
     for host_row in page_hosts_list:
         found = False
-        for host in hosts_list:
+        for host in aux_list:
             if host['hostname'] in host_row.name:
                 found = True
                 pytest.check(
@@ -39,15 +40,15 @@ def check_hosts(hosts_list, page_hosts_list):
                     host['role'] == host_row.role,
                     "Host {} should have '{}' role it has '{}'".format(
                         host_row.name, host['role'], host_row.role))
-                hosts_list.remove(host)
+                aux_list.remove(host)
                 break
         pytest.check(
             found,
             'A host {} should be part of the hosts list'.format(host_row.name))
     pytest.check(
-        hosts_list == [],
+        aux_list == [],
         'All cluster hosts should be listed on page '
-        '(not listed: {})'.format([host['hostname'] for host in hosts_list]))
+        '(not listed: {})'.format([host['hostname'] for host in aux_list]))
 
 
 class ClustersWorkBase(object):
