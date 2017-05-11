@@ -26,26 +26,24 @@ def check_hosts(hosts_list, page_hosts_list):
                           {'hostname': <hostname>, 'release': <release>, ...
         page_hosts_list (list): list representing lines in the page hosts list
     """
-    for host in page_hosts_list:
+    for host_row in page_hosts_list:
         found = False
-        for item_nr in range(len(hosts_list)):
-            if hosts_list[item_nr]['hostname'] in host.name:
+        for host in hosts_list:
+            if host['hostname'] in host_row.name:
                 found = True
                 pytest.check(
-                    hosts_list[item_nr]['release'] == host.release,
+                    host['release'] == host_row.release,
                     "Host {} should have '{}' as release it has '{}'".format(
-                        host.name,
-                        hosts_list[item_nr]['release'],
-                        host.release))
+                        host_row.name, host['release'], host_row.release))
                 pytest.check(
-                    hosts_list[item_nr]['role'] == host.role,
+                    host['role'] == host_row.role,
                     "Host {} should have '{}' role it has '{}'".format(
-                        host.name, hosts_list[item_nr]['role'], host.role))
-                del(hosts_list[item_nr])
+                        host_row.name, host['role'], host_row.role))
+                hosts_list.remove(host)
                 break
         pytest.check(
             found,
-            'A host {} should be part of the hosts list'.format(host.name))
+            'A host {} should be part of the hosts list'.format(host_row.name))
     pytest.check(
         hosts_list == [],
         'All cluster hosts should be listed on page '
