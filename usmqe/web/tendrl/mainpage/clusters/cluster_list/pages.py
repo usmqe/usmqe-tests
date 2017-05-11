@@ -23,7 +23,7 @@ def check_hosts(hosts_list, page_hosts_list):
 
     Parameters:
         hosts_list (list): list of dictionaries
-                          {'hostname': <hostname>, 'release': <release>, ...
+                          {'hostname': <hostname>, 'role': <role>, ...
         page_hosts_list (list): list representing lines in the page hosts list
     """
     aux_list = copy.deepcopy(hosts_list)
@@ -32,10 +32,6 @@ def check_hosts(hosts_list, page_hosts_list):
         for host in aux_list:
             if host['hostname'] in host_row.name:
                 found = True
-                pytest.check(
-                    host['release'] == host_row.release,
-                    "Host {} should have '{}' as release it has '{}'".format(
-                        host_row.name, host['release'], host_row.release))
                 pytest.check(
                     host['role'] == host_row.role,
                     "Host {} should have '{}' role it has '{}'".format(
