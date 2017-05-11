@@ -1,7 +1,10 @@
 """
 Library for direct access to ceph commands.
+NOTE: If user would like to use this module with different key than id_rsa,
+it should be imported inside testcase and not in usual python import section
 
 .. moduleauthor:: dahorak@redhat.com
+.. moduleauthor:: mkudlej@redhat.com
 """
 
 import pytest
@@ -10,6 +13,11 @@ import usmqe.usmssh
 
 
 LOGGER = pytest.get_logger('usmceph.commands', module=True)
+usmqe.usmssh.KEYFILE="~/.ssh/id_rsa"
+try:
+    usmqe.usmssh.KEYFILE=pytest.config.getini("usm_ssh_keyfile")
+except ValueError:
+    pass
 SSH = usmqe.usmssh.get_ssh()
 
 
@@ -33,8 +41,12 @@ class CephCommand(object):
         format_str = "--format {}".format(self._format) if self._format else ""
         timeout_str = "--connect-timeout {}".format(self._timeout) \
                       if self._timeout else ""
-        return "{} {} {} {}".format(
+        cmd = "{} {} {} {}".format(
             self._base_command, timeout_str, format_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        if self._format == 'json':
+            cmd = "{} {}".format(cmd, "; echo ''")
+        return cmd
 
     def run(self, host, command):
         """
@@ -79,6 +91,9 @@ class CephClusterCommand(CephCommand):
         cmd = "{} {} {} {} {} {}".format(
             self._base_command, timeout_str, format_str, cluster_str,
             conf_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        if self._format == 'json':
+            cmd = "{} {}".format(cmd, "; echo ''")
         return cmd
 
 
@@ -107,6 +122,9 @@ class RadosCommand(CephCommand):
 
         cmd = "{} {} {} {} {}".format(
             self._base_command, format_str, cluster_str, conf_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        if self._format == 'json':
+            cmd = "{} {}".format(cmd, "; echo ''")
         return cmd
 
 
@@ -138,6 +156,9 @@ class RBDCommand(CephCommand):
         cmd = "{} {} {} {} {} {}".format(
             self._base_command, format_str, cluster_str,
             conf_str, pool_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        if self._format == 'json':
+            cmd = "{} {}".format(cmd, "; echo ''")
         return cmd
 
 
