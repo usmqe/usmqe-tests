@@ -4,9 +4,9 @@ Description: Simple import cluster auxiliary methods
 Author: ltrilety
 """
 
-import time
 import pytest
 
+from webstr.selenium.ui.support import WebDriverUtils
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import\
     ClustersList, check_hosts
@@ -39,7 +39,7 @@ def import_cluster_wait(driver, import_task_details):
 
     # TODO remove following sleep
     # sleep a while because of https://github.com/Tendrl/api/issues/159
-    time.sleep(30)
+    WebDriverUtils.wait_a_while(90, driver)
 
     cluster_list = ClustersList(driver)
     return cluster_list
