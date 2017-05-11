@@ -78,7 +78,7 @@ def import_cluster(driver, import_page, clusters_nr=0, cluster_name=None,
     # open cluster details for the imported cluster
     present = False
     for cluster in cluster_list:
-        if cluster_ident in cluster.name:
+        if cluster_ident.lower() in cluster.name.lower():
             cluster.open_details()
             present = True
             break

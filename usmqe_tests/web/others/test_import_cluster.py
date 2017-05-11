@@ -52,11 +52,11 @@ def test_initial_import_cluster(valid_credentials):
                  'There should be exactly one cluster in tendrl')
     present = False
     for cluster in clusters_list:
-        if cluster_ident in cluster.name:
+        if cluster_ident.lower() in cluster.name.lower():
             present = True
             break
     pytest.check(present,
-                 'The imported cluster is present in the cluster list')
+                 'The imported cluster should be present in the cluster list')
 
 
 def test_import_cluster(valid_credentials):
