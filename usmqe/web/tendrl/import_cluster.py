@@ -5,7 +5,6 @@ Author: ltrilety
 """
 
 import time
-import datetime
 import pytest
 
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
@@ -13,9 +12,13 @@ from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import\
     ClustersList, check_hosts
 from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
 from usmqe.web.tendrl.mainpage.hosts.pages import HostsList
+from usmqe.web.tendrl.task_wait import task_wait
 
 
-def import_cluster_wait(driver, import_task_details, ttl=3600):
+IMPORT_TIMEOUT = 3600
+
+
+def import_cluster_wait(driver, import_task_details):
     """
     wait till the import cluster task is finished
 
@@ -29,44 +32,8 @@ def import_cluster_wait(driver, import_task_details, ttl=3600):
     Returns:
         list of cluster objects
     """
-    # Wait till the cluster is imported, check task
-    # status_text should be New, later changed to Processing
-    # finally Finished and status icon should have the same state
-    status_str = import_task_details.status_text
-    # No status icon presented till the end
-    # status = import_task_details.status
-    start_time = datetime.datetime.now()
-    # one hour timeout for the job to finish
-    timeout = datetime.timedelta(0, ttl, 0)
-    while status_str != 'Processing' and\
-            datetime.datetime.now() - start_time <= timeout/4:
-        pytest.check(
-            status_str == 'New',
-            'import cluster status should be New, it is {}'.format(status_str))
-        time.sleep(5)
-        status_str = import_task_details.status_text
-    pytest.check(
-        datetime.datetime.now() - start_time <= timeout/4,
-        'Timeout check: The state of import cluster task should not remain in '
-        'New state too long, longer than {} seconds'.format(ttl/4),
-        hard=True)
-    while status_str == 'Processing' and\
-            datetime.datetime.now() - start_time <= timeout:
-        time.sleep(5)
-        status_str = import_task_details.status_text
-    pytest.check(
-        datetime.datetime.now() - start_time <= timeout,
-        'Timeout check: The state of import cluster task should not remain in '
-        'Processing state too long, longer than {} seconds'.format(ttl),
-        hard=True)
-    pytest.check(
-        status_str == 'Finished',
-        'import cluster status should be Finished, '
-        'it is {}'.format(status_str))
-    pytest.check(
-        import_task_details.status == 'finished',
-        'import cluster status icon should be in finished state, '
-        'it is in {} state'.format(import_task_details.status))
+    # Wait till the cluster is imported
+    task_wait(import_task_details, ttl=IMPORT_TIMEOUT)
 
     # TODO remove following sleep
     # sleep a while because of https://github.com/Tendrl/api/issues/159
