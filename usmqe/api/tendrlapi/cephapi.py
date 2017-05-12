@@ -1,7 +1,6 @@
 """
 Tendrl REST API for ceph.
 """
-import json
 import pytest
 import requests
 from usmqe.api.tendrlapi.common import TendrlApi
@@ -67,10 +66,9 @@ class TendrlApiCeph(TendrlApi):
                 pool_data["Pool.quota_max_objects"] = quota_max_objects
             if quota_max_bytes:
                 pool_data["Pool.quota_max_bytes"] = quota_max_bytes
-
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -107,7 +105,7 @@ class TendrlApiCeph(TendrlApi):
             quota_max_objects: Maximum number of object in pool. (Int)
             quota_max_bytes: Maximum number of bytes in pool. (Int)
         """
-        pattern = "{}/CephCreatePool".format(cluster)
+        pattern = "{}/CephUpdatePool".format(cluster)
         pool_data = {"Pool.pool_id": pool_id}
 
         if name:
@@ -127,7 +125,7 @@ class TendrlApiCeph(TendrlApi):
 
         response = requests.put(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -171,7 +169,7 @@ class TendrlApiCeph(TendrlApi):
         pool_data = {"Pool.pool_id": pool_id}
         response = requests.delete(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -201,7 +199,7 @@ class TendrlApiCeph(TendrlApi):
                     }
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -231,7 +229,7 @@ class TendrlApiCeph(TendrlApi):
                     }
         response = requests.put(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -257,7 +255,7 @@ class TendrlApiCeph(TendrlApi):
         pool_data = {"Rbd.pool_id": pool_id, "Rbd.name": name}
         response = requests.delete(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -296,7 +294,7 @@ class TendrlApiCeph(TendrlApi):
                     }
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',
@@ -321,7 +319,7 @@ class TendrlApiCeph(TendrlApi):
         pool_data = {"ECProfile.name": name}
         response = requests.delete(
             pytest.config.getini("usm_api_url") + pattern,
-            json=json.dumps(pool_data),
+            json=pool_data,
             auth=self._auth)
         asserts = {
             "reason": 'Accepted',

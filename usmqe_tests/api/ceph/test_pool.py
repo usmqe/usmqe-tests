@@ -4,7 +4,7 @@ REST API test suite - Ceph pool
 import pytest
 
 from usmqe.api.tendrlapi import cephapi
-from usmqe.ceph import ceph
+from usmqe.ceph import ceph_cluster
 
 LOGGER = pytest.get_logger('test_pool', module=True)
 """@pylatest default
@@ -30,7 +30,7 @@ def test_create_pool_invalid(
         invalid_size,
         valid_session_credentials):
     """@pylatest api/ceph.create_pool_invalid
-        API-ceph: create_volume
+        API-ceph: create_pool
         ******************************
 
         :authors:
@@ -39,6 +39,7 @@ def test_create_pool_invalid(
 
         Description
         ===========
+        Negative Create from CRUD for pools.
 
         .. test_step:: 1
 
@@ -59,12 +60,10 @@ def test_create_pool_invalid(
                              invalid_pool_name,
                              invalid_pg_num,
                              invalid_minsize,
-                             invalid_size)["job_id"]
+                             invalid_size)
+    LOGGER.info("Create pool job_id: {}".format(job_id))
     # TODO check correctly server response or etcd job status
-    api.wait_for_job_status(
-        job_id,
-        status="failed",
-        issue="https://github.com/Tendrl/tendrl-api/issues/33")
+    api.wait_for_job_status(job_id["job_id"], status="failed")
 
 
 def test_create_pool_valid(
@@ -84,6 +83,7 @@ def test_create_pool_valid(
 
         Description
         ===========
+        Positive Create and Read from CRUD for pools.
 
         .. test_step:: 1
 
@@ -100,13 +100,14 @@ def test_create_pool_valid(
 
     api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
 
-    job_id = api.create_volume(valid_cluster_id,
-                               valid_pool_name,
-                               valid_pg_num,
-                               valid_minsize,
-                               valid_size)["job_id"]
+    job_id = api.create_pool(valid_cluster_id,
+                             valid_pool_name,
+                             valid_pg_num,
+                             valid_minsize,
+                             valid_size)["job_id"]
+    LOGGER.info("Create pool job_id: {}".format(job_id))
     api.wait_for_job_status(job_id)
-    """@pylatest api/ceph.create_pool
+    """@pylatest api/ceph.create_pool_valid
         API-ceph: create_pool
         ******************************
 
@@ -122,24 +123,26 @@ def test_create_pool_valid(
         .. test_step:: 2
 
             Connect to ceph monitor machine via ssh and run
-            ``ceph --cluster *clustername* pool status``
+            ``ceph --format json --cluster *clustername* osd pool ls detail``
 
         .. test_result:: 2
 
-            There should be listed ceph pool named ``test_name``.
+            There should be listed ceph pool named ``valid_pool_name``.
 
             """
     #TODO get proper cluster name from configuration
-    storage = ceph.CephCluster("test_name")
-    pools = [pool for pool in storage.mon.pool_ls(detail=True)
-             if pool["poolname"] == valid_pool_name
-            ]
-    pytest.check(len(pools) == 1,
+    storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
+    pools = storage.osd.pool_ls(detail=True)
+    LOGGER.info("List of Ceph pools:{}".format(pools))
+    selected_pools = [pool for pool in pools
+                      if pool["pool_name"] == valid_pool_name
+                     ]
+    pytest.check(len(selected_pools) == 1,
                  "Pool {} should be created in Ceph \
-                 cluster {}.".format(valid_pool_name, "test_name")
+                 cluster {}.".format(valid_pool_name, pytest.config.getini("usm_ceph_cl_name"))
                 )
 
-    """@pylatest api/ceph.create_pool
+    """@pylatest api/ceph.create_pool_valid
         API-ceph: create_pool
         ******************************
 
@@ -159,57 +162,9 @@ def test_create_pool_valid(
 
         .. test_result:: 3
 
-            There should be listed ceph pool named ``test_name``.
+            There should be listed ceph pool named ``valid_pool_name``.
 
             """
-#ceph --format json --cluster test_name osd pool ls detail
-#    "auid":0,
-#    "cache_min_evict_age":0
-#    "cache_min_flush_age":0
-#    "cache_mode":"none"
-#    "cache_target_dirty_high_ratio_micro":0
-#    "cache_target_dirty_ratio_micro":0
-#    "cache_target_full_ratio_micro":0
-#    "crash_replay_interval":0,
-#    "crush_ruleset":0,
-#    "erasure_code_profile":""
-#    "expected_num_objects":0
-#    "fast_read":false
-#    "flags":1,
-#    "flags_names":"hashpspool",
-#    "grade_table":[]
-#    "hit_set_count":0
-#    "hit_set_grade_decay_rate":0
-#    "hit_set_params":{"type":"none"}
-#    "hit_set_period":0
-#    "hit_set_search_last_n":0
-#    "last_change":"1",
-#    "last_force_op_resend":"0",
-#    "min_read_recency_for_promote":0
-#    "min_size":2,
-#    "min_write_recency_for_promote":0
-#    "object_hash":2,
-#    "options":{}
-#    "pg_num":64,
-#    "pg_placement_num":64,
-#    "pool_name":"rbd",
-#    "pool_snaps":[]
-#    "quota_max_bytes":0
-#    "quota_max_objects":0
-#    "read_tier":-1
-#    "removed_snaps":"[]"
-#    "size":3,
-#    "snap_epoch":0
-#    "snap_mode":"selfmanaged",
-#    "snap_seq":0,
-#    "stripe_width":0
-#    "target_max_bytes":0
-#    "target_max_objects":0
-#    "tier_of":-1
-#    "tiers":[]
-#    "type":1,
-#    "use_gmt_hitset":true
-#    "write_tier":-1
 
     if len(pools) == 1:
         pool = pools[0]
@@ -243,291 +198,371 @@ def test_create_pool_valid(
             These should be the same.""".format(
                 pool_tendrl, storage_pool_attributes))
 
-
-#def test_stop_volume_invalid(
-#        valid_cluster_id,
-#        invalid_volume_name,
+## TODO This testcase is useless with current API because there is no 
+## function to get pool according its name or ID
+#def test_read_pool_invalid(valid_cluster_id,
+#        invalid_pool_id,
 #        valid_session_credentials):
-#    """@pylatest api/ceph.stop_volume_invalid
-#        API-ceph: stop_volume
+#    """@pylatest api/ceph.read_pool_invalid
+#        API-ceph: read_pool
 #        ******************************
 #
-#        .. test_metadata:: author fbalak@redhat.com
+#        :authors:
+#            - fbalak@redhat.com
+#            - mkudlej@redhat.com
 #
 #        Description
 #        ===========
+#        Negative Read from CRUD for pools.
 #
-#        Try to stop volume with given name and cluster id via API.
-#
-#        .. test_step:: 1
-#
-#                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStopVolume``
-#                Where cluster_id is set to predefined value.
-#
-#        .. test_result:: 1
-#
-#                Server should return response in JSON format:
-#
-#                Return code should be **202** with data ``{"message": "Accepted"}``.
-#                Job should fail.
-#                """
-#
-#    api = cephapi.TendrlApiGluster(auth=valid_session_credentials)
-#    volume_data = {
-#        "Volume.volname": invalid_volume_name,
-#    }
-#
-#    job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
-#    # TODO check correctly server response or etcd job status
-#    api.wait_for_job_status(
-#            job_id,
-#            status="failed",
-#            issue="https://github.com/Tendrl/tendrl-api/issues/33")
-#
-#
-#def test_stop_volume_valid(
-#        valid_cluster_id,
-#        valid_volume_name,
-#        valid_volume_id,
-#        valid_session_credentials):
-#    """@pylatest api/ceph.stop_volume_valid
-#        API-ceph: stop_volume
-#        ******************************
-#
-#        .. test_metadata:: author fbalak@redhat.com
-#
-#        Description
-#        ===========
-#
-#        Try to stop volume with given name and cluster id via API.
+#        Check if there is not pool in Ceph cluster via API.
 #
 #        .. test_step:: 1
 #
-#                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStopVolume``
-#                Where cluster_id is set to predefined value.
+#            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephPoolList``
+#            Where cluster_id is set to predefined value.
 #
 #        .. test_result:: 1
 #
-#                Server should return response in JSON format:
-#
-#                Return code should be **202** with data ``{"message": "Accepted"}``.
-#                job should finish.
-#                """
-#
-#    api = cephapi.TendrlApiGluster(auth=valid_session_credentials)
-#    volume_data = {
-#        "Volume.volname": valid_volume_name,
-#    }
-#
-#    job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
-#    api.wait_for_job_status(job_id)
-#    volume = ceph.GlusterVolume(valid_volume_name)
-#    volume.check_status("Stopped")
-#    status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
-#    pytest.check(
-#        status == "Stopped",
-#        "Status from API is {}, should be 'Stopped'".format(status),
-#        issue="https://github.com/Tendrl/tendrl-api/issues/56")
-#
-#
-## TODO create negative test case generator
-## http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
-#def test_start_volume_invalid(
-#        valid_cluster_id,
-#        invalid_volume_name,
-#        valid_session_credentials):
-#    """@pylatest api/ceph.start_volume_invalid
-#        API-ceph: start_volume
-#        ******************************
-#
-#        .. test_metadata:: author fbalak@redhat.com
-#
-#        Description
-#        ===========
-#
-#        Try to start volume with given name and cluster id via API.
-#
-#        .. test_step:: 1
-#
-#                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStartVolume``
-#                Where cluster_id is set to predefined value.
-#
-#        .. test_result:: 1
-#
-#                Server should return response in JSON format:
-#
-#                Return code should be **202** with data ``{"message": "Accepted"}``.
-#                job should fail.
-#                """
-#
-#    api = cephapi.TendrlApiGluster(auth=valid_session_credentials)
-#    volume_data = {
-#        "Volume.volname": invalid_volume_name
-#    }
-#
-#    job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
-#    # TODO check correctly server response or etcd job status
-#    api.wait_for_job_status(
-#        job_id,
-#        status="failed",
-#        issue="https://github.com/Tendrl/tendrl-api/issues/33")
-#
-#
-#def test_start_volume_valid(
-#        valid_cluster_id,
-#        valid_volume_name,
-#        valid_volume_id,
-#        valid_session_credentials):
-#    """@pylatest api/ceph.start_volume_valid
-#        API-ceph: start_volume
-#        ******************************
-#
-#        .. test_metadata:: author fbalak@redhat.com
-#
-#        Description
-#        ===========
-#
-#        Try to start volume with given name and cluster id via API.
-#
-#        .. test_step:: 1
-#
-#                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStartVolume``
-#                Where cluster_id is set to predefined value.
-#
-#        .. test_result:: 1
-#
-#                Server should return response in JSON format:
-#
-#                Return code should be **202** with data ``{"message": "Accepted"}``.
-#                job should finish.
-#                """
-#
-#    api = cephapi.TendrlApiGluster(auth=valid_session_credentials)
-#    volume_data = {
-#        "Volume.volname": valid_volume_name,
-#    }
-#
-#    job_id = api.start_volume(valid_cluster_id, volume_data)["job_id"]
-#    api.wait_for_job_status(job_id)
-#    volume = ceph.GlusterVolume(valid_volume_name)
-#    volume.check_status("Started")
-#    status = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["status"]
-#    pytest.check(
-#        status == "Started",
-#        "Status from API is {}, should be 'Started'".format(status),
-#        issue="https://github.com/Tendrl/tendrl-api/issues/55")
-#
-#
-#def test_delete_volume_invalid(
-#        valid_cluster_id,
-#        invalid_volume_id,
-#        valid_session_credentials):
-#    """@pylatest api/ceph.delete_volume
-#        API-ceph: delete_volume
-#        ******************************
-#
-#        .. test_metadata:: author fbalak@redhat.com
-#
-#        Description
-#        ===========
-#
-#        Delete ceph volume ``Vol_test`` via API.
-#
-#        .. test_step:: 1
-#
-#                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
-#                Where cluster_id is set to predefined value.
-#
-#        .. test_result:: 1
-#
-#                Server should return response in JSON format:
-#
-#                Return code should be **202** with data ``{"message": "Accepted"}``.
-#                job should fail.
-#                """
-#
-#    api = cephapi.TendrlApiGluster(auth=valid_session_credentials)
-#    volume_data = {
-#        "Volume.volname": valid_cluster_id,
-#        "Volume.vol_id": invalid_volume_id
-#    }
-#
-#    job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
-#    # TODO check correctly server response or etcd job status
-#    api.wait_for_job_status(
-#            job_id,
-#            status="failed",
-#            issue="https://github.com/Tendrl/tendrl-api/issues/33")
-#
-#
-#def test_delete_volume_valid(
-#        valid_cluster_id,
-#        valid_volume_name,
-#        valid_volume_id,
-#        valid_session_credentials):
-#    """@pylatest api/ceph.delete_volume
-#        API-ceph: delete_volume
-#        ******************************
-#
-#        .. test_metadata:: author fbalak@redhat.com
-#
-#        Description
-#        ===========
-#
-#        Delete ceph volume ``Vol_test`` via API.
-#
-#        .. test_step:: 1
-#
-#                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
-#                Where cluster_id is set to predefined value.
-#
-#        .. test_result:: 1
-#
-#                Server should return response in JSON format:
-#
-#                Return code should be **202** with data ``{"message": "Accepted"}``.
-#                job should finish.
-#                """
-#
-#    api = cephapi.TendrlApiGluster(auth=valid_session_credentials)
-#    volume_data = {
-#        "Volume.volname": valid_volume_name,
-#        "Volume.vol_id": valid_volume_id
-#    }
-#
-#    job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
-#    api.wait_for_job_status(
-#        job_id,
-#        issue="https://github.com/Tendrl/api/issues/33")
-#    """@pylatest api/ceph.create_volume
-#        API-ceph: create_volume
-#        ******************************
-#
-#        .. test_metadata:: author fbalak@redhat.com
-#
-#        Description
-#        ===========
-#
-#        Check if there is created volume on ceph nodes via CLI.
-#
-#        .. test_step:: 1
-#
-#            Connect to ceph node machine via ssh and run
-#            ``ceph volume info command``
-#
-#        .. test_result:: 1
-#
-#            There should be listed ceph volume named ``Vol_test``.
+#            There should not be listed ceph pool named ``invalid_pool_name``.
 #
 #            """
-#    storage = ceph.GlusterCommon()
-#    storage.find_volume_name(valid_volume_name, False)
 #
-#    # There should be either deleted attribute or record should be removed from database
-#    # https://github.com/Tendrl/api/issues/78
-#    #
-#    # deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
-#    # pytest.check(
-#    #     deleted == "True",
-#    #     "deleted attribute should be True, is {}".format(deleted),
-#    #     issue="https://github.com/Tendrl/tendrl-api/issues/33")
+#    pools = api.get_pool_list(valid_cluster_id)
+
+def test_update_pool_invalid(valid_cluster_id,
+                             valid_pool_id,
+                             valid_session_credentials,
+                             invalid_pool_name,
+                             invalid_size,
+                             invalid_minsize,
+                             invalid_pg_num):
+#TODO add quota support
+    """@pylatest api/ceph.update_pool_invalid
+        API-ceph: update_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+        Negative Update from CRUD for pools.
+
+        Update existing pool with invalid data via API.
+
+        .. test_step:: 1
+
+            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephUpdatePool``
+            Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+           Update should be declined.
+            """
+
+    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    job_id = api.update_pool(valid_cluster_id, valid_pool_id,
+                             invalid_pool_name, invalid_size, invalid_minsize,
+                             invalid_pg_num)["job_id"]
+    api.wait_for_job_status(job_id, status="failed")
+
+def test_update_pool_name_valid(valid_cluster_id,
+                                valid_pool_id,
+                                valid_session_credentials,
+                                valid_pool_name):
+    """@pylatest api/ceph.update_pool_name_valid
+        API-ceph: update_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+        Negative Update from CRUD for pools.
+
+        Update existing pool with valid pool name via API.
+
+        .. test_step:: 1
+
+            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephUpdatePool``
+            Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+           Update job should pass.
+            """
+    valid_pool_name = valid_pool_name + "_updated"
+    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    job_id = api.update_pool(valid_cluster_id, valid_pool_id,
+                             valid_pool_name)["job_id"]
+    api.wait_for_job_status(
+        job_id,
+        issue="https://github.com/Tendrl/ceph-integration/issues/225"
+    )
+    """@pylatest api/ceph.update_pool_name_valid
+        API-ceph: update_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        .. test_step:: 2
+
+            Check if changes are made in Ceph pool.
+
+        .. test_result:: 2
+
+           Updates are done in pool.
+            """
+
+    storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
+    pools = storage.osd.pool_ls(detail=True)
+    LOGGER.info("List of Ceph pools:{}".format(pools))
+    selected_pools = [pool for pool in pools
+                      if pool["pool_name"] == valid_pool_name
+                     ]
+    pytest.check(len(selected_pools) == 1,
+                 "Pool {} should be updated in Ceph \
+                 cluster {}.".format(valid_pool_name, pytest.config.getini("usm_ceph_cl_name")),
+                 issue="https://github.com/Tendrl/ceph-integration/issues/225"
+                )
+
+def test_update_pool_valid(valid_cluster_id,
+                           valid_pool_id,
+                           valid_session_credentials,
+                           valid_pool_name,
+                           valid_size,
+                           valid_minsize,
+                           valid_pg_num):
+#TODO add quota support
+    """@pylatest api/ceph.update_pool_valid
+        API-ceph: update_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+        Negative Update from CRUD for pools.
+
+        Update existing pool with valid data via API.
+
+        .. test_step:: 1
+
+            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephUpdatePool``
+            Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+           Update job should pass.
+            """
+    valid_pool_name = valid_pool_name + "_updated"
+    valid_size = valid_size + 1
+    valid_minsize = valid_minsize + 1
+    valid_pg_num = valid_pg_num * 2
+    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    job_id = api.update_pool(valid_cluster_id, valid_pool_id,
+                             size=valid_size, min_size=valid_minsize,
+                             pg_num=valid_pg_num)["job_id"]
+    api.wait_for_job_status(
+        job_id,
+        issue="https://github.com/Tendrl/ceph-integration/issues/225"
+        )
+    """@pylatest api/ceph.update_pool_valid
+        API-ceph: update_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        .. test_step:: 2
+
+            Check if changes are made in Ceph pool.
+
+        .. test_result:: 2
+
+           Updates are done in pool.
+            """
+
+    storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
+    pools = storage.osd.pool_ls(detail=True)
+    LOGGER.info("List of Ceph pools:{}".format(pools))
+    selected_pools = [pool for pool in pools
+                      if pool["pool_name"] == valid_pool_name
+                     ]
+    pytest.check(len(selected_pools) == 1,
+                 "Pool {} should be updated in Ceph \
+                 cluster {}.".format(valid_pool_name, pytest.config.getini("usm_ceph_cl_name")),
+                 issue="https://github.com/Tendrl/ceph-integration/issues/225"
+                )
+
+    """@pylatest api/ceph.update_pool_valid
+        API-ceph: update_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+
+        Check if there is updated pool in ceph cluster via API.
+
+        .. test_step:: 3
+
+            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephPoolList``
+            Where cluster_id is set to predefined value.
+
+        .. test_result:: 3
+
+            There should be listed ceph pool named ``valid_pool_name``.
+
+            """
+
+    if len(pools) == 1:
+        pool = pools[0]
+        storage_pool_attributes = {
+            "erasure_code_profile": pool["erasure_code_profile"],
+            "min_size": pool["min_size"],
+            "percent_used": "0", # newly created pool
+            "pg_num": pool["pg_num"],
+            "pool_id": pool["auid"],
+            "pool_name": pool["pool_name"],
+            "quota_enabled": pool["quota_max_bytes"] == 0 and pool["quota_max_objects"] == 0,
+            "quota_max_bytes": pool["quota_max_bytes"],
+            "quota_max_objects": pool["quota_max_objects"],
+            "size": pool["size"],
+            "type": "replicated" if pool["type"] == 1 else "ecpool", #TODO
+            "used": "0" # newly created pool
+            }
+
+        pool_tendrl = [pool for pool in api.get_pool_list(valid_cluster_id)
+                       if pool["pool_name"] == valid_pool_name
+                      ][0]
+        # remove Tendrl specific keys
+        pool_tendrl.pop("deleted")
+        pool_tendrl.pop("hash")
+        pool_tendrl.pop("updated_at")
+
+        pytest.check(
+            pool_tendrl == storage_pool_attributes,
+            """Storage pool attributes: {}
+            Tendrl pool attributes: {}
+            These should be the same.""".format(
+                pool_tendrl, storage_pool_attributes))
+
+def test_delete_pool_invalid(
+        valid_cluster_id,
+        invalid_pool_id,
+        valid_session_credentials):
+    """@pylatest api/ceph.delete_pool_invalid
+        API-ceph: delete_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+        Negative Delete from CRUD for pools.
+
+        Delete ceph pool ``invalid_pool_id`` via API.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via DELETE request to ``APIURL/:cluster_id/CephDeletePool``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **200** with data ``{"job_id":"_id_"}``.
+                And then joib should fail.
+                """
+
+    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    job_id = api.delete_pool(valid_cluster_id, invalid_pool_id)["job_id"]
+    api.wait_for_job_status(
+        job_id,
+        status="failed")
+
+
+def test_delete_pool_valid(
+        valid_cluster_id,
+        valid_pool_id,
+        valid_pool_name,
+        valid_session_credentials):
+    """@pylatest api/ceph.delete_pool
+        API-ceph: delete_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+        Positive Delete from CRUD for pools.
+
+        Delete ceph pool ``valid_pool_id`` via API.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/CephDeletePool``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **200** with data ``{"job_id":"_id_"}``.
+                And then job should finish.
+                """
+
+    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    job_id = api.delete_pool(valid_cluster_id, valid_pool_id)["job_id"]
+    LOGGER.info("Delete pool job_id: {}".format(job_id))
+    api.wait_for_job_status(job_id)
+    """@pylatest api/ceph.delete_pool
+        API-ceph: delete_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+
+        Check if there is not deleted pool in ceph cluster via CLI.
+
+        .. test_step:: 2
+
+            Connect to ceph monitor machine via ssh and run
+            ``ceph --cluster *clustername* pool status``
+
+        .. test_result:: 2
+
+            There should not be listed ceph pool named ``valid_pool_name``.
+
+            """
+    storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
+
+    pytest.check(not valid_pool_name in storage.osd.pool_ls(),
+                 "Pool {} should not be in Ceph \
+                 cluster {} after deletion.".format(
+                     valid_pool_name,
+                     pytest.config.getini("usm_ceph_cl_name")),
+                 issue="https://github.com/Tendrl/ceph-integration/issues/224"
+                )

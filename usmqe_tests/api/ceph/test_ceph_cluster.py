@@ -2,6 +2,7 @@
 REST API test suite - ceph cluster import
 
 """
+from json.decoder import JSONDecodeError
 import pytest
 
 from usmqe.api.tendrlapi import cephapi
@@ -112,11 +113,16 @@ def test_cluster_import_valid(valid_session_credentials):
         section="parameters")
 
     LOGGER.debug("integration_id: %s" % integration_id)
-    pytest.check(
-        [x for x in api.get_cluster_list()
-         if x["integration_id"] == integration_id],
-        "Job list integration_id '{}' should be "
-        "present in cluster list.".format(integration_id),
-        issue="https://github.com/Tendrl/api/issues/154")
+    try:
+        pytest.check(
+            [x for x in api.get_cluster_list() if x.get("integration_id", "") == integration_id],
+            "Job list integration_id '{}' should be present in cluster \
+                     list.".format(integration_id),
+            issue="https://github.com/Tendrl/api/issues/154")
+    except JSONDecodeError:
+        pytest.check(False,
+                     "Job list integration_id '{}' should be present in cluster \
+                     list.".format(integration_id),
+                     issue="https://github.com/Tendrl/api/issues/166")
 
     # TODO add test case for checking imported machines
