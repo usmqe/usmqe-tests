@@ -180,8 +180,9 @@ def test_create_pool_valid(
             "pg_num": pool["pg_num"],
             "pool_id": pool["auid"],
             "pool_name": pool["pool_name"],
-            "quota_enabled": pool["quota_max_bytes"] == 0 and
-                             pool["quota_max_objects"] == 0,
+            "quota_enabled":
+                pool["quota_max_bytes"] == 0 and
+                pool["quota_max_objects"] == 0,
             "quota_max_bytes": pool["quota_max_bytes"],
             "quota_max_objects": pool["quota_max_objects"],
             "size": pool["size"],
@@ -204,37 +205,37 @@ def test_create_pool_valid(
             These should be the same.""".format(
                 pool_tendrl, storage_pool_attributes))
 
-## TODO This testcase is useless with current API because there is no
-## function to get pool according its name or ID
-#def test_read_pool_invalid(valid_cluster_id,
-#        invalid_pool_id,
-#        valid_session_credentials):
-#    """@pylatest api/ceph.read_pool_invalid
-#        API-ceph: read_pool
-#        ******************************
+# # TODO This testcase is useless with current API because there is no
+# # function to get pool according its name or ID
+# def test_read_pool_invalid(valid_cluster_id,
+#         invalid_pool_id,
+#         valid_session_credentials):
+#     """@pylatest api/ceph.read_pool_invalid
+#         API-ceph: read_pool
+#         ******************************
 #
-#        :authors:
-#            - fbalak@redhat.com
-#            - mkudlej@redhat.com
+#         :authors:
+#             - fbalak@redhat.com
+#             - mkudlej@redhat.com
 #
-#        Description
-#        ===========
-#        Negative Read from CRUD for pools.
+#         Description
+#         ===========
+#         Negative Read from CRUD for pools.
 #
-#        Check if there is not pool in Ceph cluster via API.
+#         Check if there is not pool in Ceph cluster via API.
 #
-#        .. test_step:: 1
+#         .. test_step:: 1
 #
-#            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephPoolList``
-#            Where cluster_id is set to predefined value.
+#             Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephPoolList``
+#             Where cluster_id is set to predefined value.
 #
-#        .. test_result:: 1
+#         .. test_result:: 1
 #
-#            There should not be listed ceph pool named ``invalid_pool_name``.
+#             There should not be listed ceph pool named ``invalid_pool_name``.
 #
-#            """
+#             """
 #
-#    pools = api.get_pool_list(valid_cluster_id)
+#     pools = api.get_pool_list(valid_cluster_id)
 
 
 def test_update_pool_invalid(valid_cluster_id,
@@ -452,8 +453,9 @@ def test_update_pool_valid(valid_cluster_id,
             "pg_num": pool["pg_num"],
             "pool_id": pool["auid"],
             "pool_name": pool["pool_name"],
-            "quota_enabled": pool["quota_max_bytes"] == 0 and
-                             pool["quota_max_objects"] == 0,
+            "quota_enabled":
+                pool["quota_max_bytes"] == 0 and
+                pool["quota_max_objects"] == 0,
             "quota_max_bytes": pool["quota_max_bytes"],
             "quota_max_objects": pool["quota_max_objects"],
             "size": pool["size"],

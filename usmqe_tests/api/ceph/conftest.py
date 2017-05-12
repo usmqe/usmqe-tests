@@ -29,7 +29,7 @@ def valid_pool_id(valid_session_credentials):
     """
     Generate valid id of a created volume.
     """
-#TODO change
+# TODO change
     api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
     cluster_list = [cl for cl in api.get_cluster_list()
                     if cl["sds_name"] == "ceph" and
