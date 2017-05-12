@@ -53,9 +53,6 @@ class TendrlApiGluster(TendrlApi):
             "3.9.1",
             asserts_in)
 
-# TODO: https://github.com/Tendrl/api/issues/78
-# In tendrl api are not correctly shown volumes
-# because after deletion they stay in the list.
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id
 
