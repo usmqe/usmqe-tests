@@ -259,12 +259,13 @@ class TendrlApi(ApiBase):
                 "cluster_id": cluster_id,
                 "public_network": network,
                 "cluster_network": network,
-                "node_identifier": node_identification,
-                "node_configuration":{
-                    x[node_identification]: {
-                        "role": x["role"],
-                        "provisioning_ip": provisioner}
-                    for x in nodes}}
+                "node_identifier": node_identifier,
+            },
+            "node_configuration": {
+                x[node_identifier]: {
+                    "role": x["role"],
+                    "provisioning_ip": provisioner}
+                for x in nodes}
         }
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,

@@ -42,7 +42,7 @@ class TendrlApiGluster(TendrlApi):
             network(str): ip address and mask in prefix format of network with nodes
             asserts_in (dict): assert values for this call and this method
         """
-        super().import_cluster(
+        super().create_cluster(
             name,
             cluster_id,
             nodes,
@@ -50,7 +50,7 @@ class TendrlApiGluster(TendrlApi):
             network,
             "ip",
             "gluster",
-            "3.9.1",
+            pytest.config.getini("usm_gluster_version"),
             asserts_in)
 
     def get_volume_list(self, cluster):
