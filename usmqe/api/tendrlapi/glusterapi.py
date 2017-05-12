@@ -22,6 +22,37 @@ class TendrlApiGluster(TendrlApi):
         super().import_cluster(nodes, "gluster", asserts_in)
 
 
+    def create_cluster(
+            self,
+            name,
+            cluster_id,
+            nodes,
+            provisioner,
+            network,
+            asserts_in=None):
+        """ Create Gluster cluster.
+
+        Args:
+            name(str): name of cluster
+            cluster_id: id of cluster
+            nodes (list): list of dictionaries containing node identification
+                          and node role
+            provisioner(str): node identification of node that contain
+                          provisioning tag
+            network(str): ip address and mask in prefix format of network with nodes
+            asserts_in (dict): assert values for this call and this method
+        """
+        super().import_cluster(
+            name,
+            cluster_id,
+            nodes,
+            provisioner,
+            network,
+            "ip",
+            "gluster",
+            "3.9.1",
+            asserts_in)
+
 # TODO: https://github.com/Tendrl/api/issues/78
 # In tendrl api are not correctly shown volumes
 # because after deletion they stay in the list.

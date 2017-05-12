@@ -215,6 +215,65 @@ class TendrlApi(ApiBase):
         self.check_response(response)
         return response.json()
 
+    def create_cluster(
+            self,
+            name,
+            cluster_id,
+            nodes,
+            provisioner,
+            network,
+            node_identifier="ip",
+            sds_type=None,
+            sds_version=None,
+            asserts_in=None):
+        """ Import cluster.
+
+        Name:        "create_cluster",
+        Method:      "POST",
+        Pattern:     "CreateCluster",
+
+        Args:
+            name(str): name of cluster
+            cluster_id: id of cluster
+            nodes (list): list of dictionaries containing node identification
+                          and node role
+            provisioner(str): node identification of node that contain
+                          provisioning tag
+            network(str): ip address and mask in prefix format of network with nodes
+            node_identifier(str): node identification - id or ip address
+            sds_type (str): ceph or glusterfs
+            sds_version(str): version of sds
+            asserts_in (dict): assert values for this call and this method
+        """
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
+            "reason": 'Accepted',
+            "status": 202}
+        pattern = "CreateCluster"
+        data = {
+            "sds_name": sds_type,
+            "sds_version": sds_version,
+            "sds_parameters": {
+                "name": name,
+                "cluster_id": cluster_id,
+                "public_network": network,
+                "cluster_network": network,
+                "node_identifier": node_identification,
+                "node_configuration":{
+                    x[node_identification]: {
+                        "role": x["role"],
+                        "provisioning_ip": provisioner}
+                    for x in nodes}}
+        }
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            data=json.dumps(data),
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response, asserts_in)
+        return response.json()
+
     def import_cluster(self, nodes, sds_type=None, asserts_in=None):
         """ Import cluster.
 
