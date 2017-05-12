@@ -722,12 +722,12 @@ class CephClusterOsd(CephCommon):
              "options": {}
            }
          ]
- 
         """
         if detail:
             return self.run_on_mon('osd pool ls detail')
         else:
             return self.run_on_mon('osd pool ls')
+
 
 class CephClusterStorage(CephCommon):
     """

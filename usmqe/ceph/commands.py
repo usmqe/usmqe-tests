@@ -13,9 +13,9 @@ import usmqe.usmssh
 
 
 LOGGER = pytest.get_logger('usmceph.commands', module=True)
-usmqe.usmssh.KEYFILE="~/.ssh/id_rsa"
+usmqe.usmssh.KEYFILE = "~/.ssh/id_rsa"
 try:
-    usmqe.usmssh.KEYFILE=pytest.config.getini("usm_ssh_keyfile")
+    usmqe.usmssh.KEYFILE = pytest.config.getini("usm_ssh_keyfile")
 except ValueError:
     pass
 SSH = usmqe.usmssh.get_ssh()

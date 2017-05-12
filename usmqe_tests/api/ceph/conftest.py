@@ -1,6 +1,7 @@
 import pytest
 from usmqe.api.tendrlapi import cephapi
 
+
 @pytest.fixture
 def valid_cluster_id(valid_session_credentials):
     """
@@ -11,7 +12,7 @@ def valid_cluster_id(valid_session_credentials):
     cluster_list = [cl for cl in api.get_cluster_list()
                     if cl["sds_name"] == "ceph" and
                     cl["cluster_name"] == pytest.config.getini("usm_ceph_cl_name")
-                   ]
+                    ]
     return cluster_list[0]["cluster_id"]
 
 
@@ -33,11 +34,12 @@ def valid_pool_id(valid_session_credentials):
     cluster_list = [cl for cl in api.get_cluster_list()
                     if cl["sds_name"] == "ceph" and
                     cl["cluster_name"] == pytest.config.getini("usm_ceph_cl_name")
-                   ]
+                    ]
     pools = cluster_list[0]["pools"]
     return [pool["pool_id"] for pool in pools.values()
             if pool["pool_name"] == pytest.config.getini("usm_pool_name")
-           ][0]
+            ][0]
+
 
 @pytest.fixture(params=[None, "0000000000000000"])
 def invalid_pool_id(request):
@@ -46,12 +48,14 @@ def invalid_pool_id(request):
     """
     return request.param
 
+
 @pytest.fixture(params=[0])
 def invalid_minsize(request):
     """
     Generate invalid min pool size(replicas).
     """
     return request.param
+
 
 @pytest.fixture(params=[0])
 def invalid_pg_num(request):
@@ -60,12 +64,14 @@ def invalid_pg_num(request):
     """
     return request.param
 
+
 @pytest.fixture(params=[" ", "*", "!", "_", "--"])
 def invalid_pool_name(request):
     """
     Generate invalid pool name.
     """
     return request.param
+
 
 @pytest.fixture(params=[0])
 def invalid_size(request):
@@ -74,12 +80,14 @@ def invalid_size(request):
     """
     return request.param
 
+
 @pytest.fixture(params=[2])
 def valid_minsize(request):
     """
     Generate valid min pool size(replicas).
     """
     return request.param
+
 
 @pytest.fixture(params=[128])
 def valid_pg_num(request):
@@ -88,12 +96,14 @@ def valid_pg_num(request):
     """
     return request.param
 
+
 @pytest.fixture
 def valid_pool_name():
     """
     Generate valid pool name.
     """
     return pytest.config.getini("usm_pool_name")
+
 
 @pytest.fixture(params=[3])
 def valid_size(request):

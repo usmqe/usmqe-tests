@@ -19,7 +19,6 @@ Teardown
 """
 
 
-
 # TODO create negative test case generator
 # http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
 def test_create_pool_invalid(
@@ -43,15 +42,17 @@ def test_create_pool_invalid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/CephCreatePool``
+                Connect to Tendrl API via POST request
+                to ``APIURL/:cluster_id/CephCreatePool``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
 
                 Server should return response in JSON format:
 
-                Return code should be **202** with data ``{"message": "Accepted"}``.
-                job should fail.
+                Return code should be **202** with data
+                ``{"message": "Accepted"}``.
+                Job should fail.
                 """
 
     api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
@@ -87,14 +88,16 @@ def test_create_pool_valid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/CephCreatePool``
+                Connect to Tendrl API via POST request
+                to ``APIURL/:cluster_id/CephCreatePool``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
 
                 Server should return response in JSON format:
 
-                Return code should be **202** with data ``{"message": "Accepted"}``.
+                Return code should be **202** with data
+                ``{"message": "Accepted"}``.
                 job should finish.
                 """
 
@@ -130,17 +133,18 @@ def test_create_pool_valid(
             There should be listed ceph pool named ``valid_pool_name``.
 
             """
-    #TODO get proper cluster name from configuration
+# TODO get proper cluster name from configuration
     storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
     pools = storage.osd.pool_ls(detail=True)
     LOGGER.info("List of Ceph pools:{}".format(pools))
     selected_pools = [pool for pool in pools
                       if pool["pool_name"] == valid_pool_name
-                     ]
+                      ]
     pytest.check(len(selected_pools) == 1,
                  "Pool {} should be created in Ceph \
-                 cluster {}.".format(valid_pool_name, pytest.config.getini("usm_ceph_cl_name"))
-                )
+                 cluster {}.".format(valid_pool_name,
+                                     pytest.config.getini("usm_ceph_cl_name"))
+                 )
 
     """@pylatest api/ceph.create_pool_valid
         API-ceph: create_pool
@@ -157,7 +161,8 @@ def test_create_pool_valid(
 
         .. test_step:: 3
 
-            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephPoolList``
+            Connect to Tendrl API via GET request
+            to ``APIURL/:cluster_id/CephPoolList``
             Where cluster_id is set to predefined value.
 
         .. test_result:: 3
@@ -171,21 +176,22 @@ def test_create_pool_valid(
         storage_pool_attributes = {
             "erasure_code_profile": pool["erasure_code_profile"],
             "min_size": pool["min_size"],
-            "percent_used": "0", # newly created pool
+            "percent_used": "0",  # newly created pool
             "pg_num": pool["pg_num"],
             "pool_id": pool["auid"],
             "pool_name": pool["pool_name"],
-            "quota_enabled": pool["quota_max_bytes"] == 0 and pool["quota_max_objects"] == 0,
+            "quota_enabled": pool["quota_max_bytes"] == 0 and
+                             pool["quota_max_objects"] == 0,
             "quota_max_bytes": pool["quota_max_bytes"],
             "quota_max_objects": pool["quota_max_objects"],
             "size": pool["size"],
-            "type": "replicated" if pool["type"] == 1 else "ecpool", #TODO
-            "used": "0" # newly created pool
+            "type": "replicated" if pool["type"] == 1 else "ecpool",  # TODO
+            "used": "0"  # newly created pool
             }
 
-        pool_tendrl = [pool for pool in api.get_pool_list(valid_cluster_id)
-                       if pool["pool_name"] == valid_pool_name
-                      ][0]
+        pool_tendrl = [pool_t for pool_t in api.get_pool_list(valid_cluster_id)
+                       if pool_t["pool_name"] == valid_pool_name
+                       ][0]
         # remove Tendrl specific keys
         pool_tendrl.pop("deleted")
         pool_tendrl.pop("hash")
@@ -198,7 +204,7 @@ def test_create_pool_valid(
             These should be the same.""".format(
                 pool_tendrl, storage_pool_attributes))
 
-## TODO This testcase is useless with current API because there is no 
+## TODO This testcase is useless with current API because there is no
 ## function to get pool according its name or ID
 #def test_read_pool_invalid(valid_cluster_id,
 #        invalid_pool_id,
@@ -230,6 +236,7 @@ def test_create_pool_valid(
 #
 #    pools = api.get_pool_list(valid_cluster_id)
 
+
 def test_update_pool_invalid(valid_cluster_id,
                              valid_pool_id,
                              valid_session_credentials,
@@ -237,7 +244,7 @@ def test_update_pool_invalid(valid_cluster_id,
                              invalid_size,
                              invalid_minsize,
                              invalid_pg_num):
-#TODO add quota support
+    # TODO add quota support
     """@pylatest api/ceph.update_pool_invalid
         API-ceph: update_pool
         ******************************
@@ -254,7 +261,8 @@ def test_update_pool_invalid(valid_cluster_id,
 
         .. test_step:: 1
 
-            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephUpdatePool``
+            Connect to Tendrl API via GET request
+            to ``APIURL/:cluster_id/CephUpdatePool``
             Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -267,6 +275,7 @@ def test_update_pool_invalid(valid_cluster_id,
                              invalid_pool_name, invalid_size, invalid_minsize,
                              invalid_pg_num)["job_id"]
     api.wait_for_job_status(job_id, status="failed")
+
 
 def test_update_pool_name_valid(valid_cluster_id,
                                 valid_pool_id,
@@ -288,7 +297,8 @@ def test_update_pool_name_valid(valid_cluster_id,
 
         .. test_step:: 1
 
-            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephUpdatePool``
+            Connect to Tendrl API via GET request
+            to ``APIURL/:cluster_id/CephUpdatePool``
             Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -325,12 +335,14 @@ def test_update_pool_name_valid(valid_cluster_id,
     LOGGER.info("List of Ceph pools:{}".format(pools))
     selected_pools = [pool for pool in pools
                       if pool["pool_name"] == valid_pool_name
-                     ]
+                      ]
     pytest.check(len(selected_pools) == 1,
                  "Pool {} should be updated in Ceph \
-                 cluster {}.".format(valid_pool_name, pytest.config.getini("usm_ceph_cl_name")),
+                 cluster {}.".format(valid_pool_name,
+                                     pytest.config.getini("usm_ceph_cl_name")),
                  issue="https://github.com/Tendrl/ceph-integration/issues/225"
-                )
+                 )
+
 
 def test_update_pool_valid(valid_cluster_id,
                            valid_pool_id,
@@ -339,7 +351,7 @@ def test_update_pool_valid(valid_cluster_id,
                            valid_size,
                            valid_minsize,
                            valid_pg_num):
-#TODO add quota support
+    # TODO add quota support
     """@pylatest api/ceph.update_pool_valid
         API-ceph: update_pool
         ******************************
@@ -356,7 +368,8 @@ def test_update_pool_valid(valid_cluster_id,
 
         .. test_step:: 1
 
-            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephUpdatePool``
+            Connect to Tendrl API via GET request
+            to ``APIURL/:cluster_id/CephUpdatePool``
             Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -397,12 +410,13 @@ def test_update_pool_valid(valid_cluster_id,
     LOGGER.info("List of Ceph pools:{}".format(pools))
     selected_pools = [pool for pool in pools
                       if pool["pool_name"] == valid_pool_name
-                     ]
+                      ]
     pytest.check(len(selected_pools) == 1,
                  "Pool {} should be updated in Ceph \
-                 cluster {}.".format(valid_pool_name, pytest.config.getini("usm_ceph_cl_name")),
+                 cluster {}.".format(valid_pool_name,
+                                     pytest.config.getini("usm_ceph_cl_name")),
                  issue="https://github.com/Tendrl/ceph-integration/issues/225"
-                )
+                 )
 
     """@pylatest api/ceph.update_pool_valid
         API-ceph: update_pool
@@ -419,7 +433,8 @@ def test_update_pool_valid(valid_cluster_id,
 
         .. test_step:: 3
 
-            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/CephPoolList``
+            Connect to Tendrl API via GET request
+            to ``APIURL/:cluster_id/CephPoolList``
             Where cluster_id is set to predefined value.
 
         .. test_result:: 3
@@ -433,21 +448,22 @@ def test_update_pool_valid(valid_cluster_id,
         storage_pool_attributes = {
             "erasure_code_profile": pool["erasure_code_profile"],
             "min_size": pool["min_size"],
-            "percent_used": "0", # newly created pool
+            "percent_used": "0",  # newly created pool
             "pg_num": pool["pg_num"],
             "pool_id": pool["auid"],
             "pool_name": pool["pool_name"],
-            "quota_enabled": pool["quota_max_bytes"] == 0 and pool["quota_max_objects"] == 0,
+            "quota_enabled": pool["quota_max_bytes"] == 0 and
+                             pool["quota_max_objects"] == 0,
             "quota_max_bytes": pool["quota_max_bytes"],
             "quota_max_objects": pool["quota_max_objects"],
             "size": pool["size"],
-            "type": "replicated" if pool["type"] == 1 else "ecpool", #TODO
-            "used": "0" # newly created pool
+            "type": "replicated" if pool["type"] == 1 else "ecpool",  # TODO
+            "used": "0"  # newly created pool
             }
 
-        pool_tendrl = [pool for pool in api.get_pool_list(valid_cluster_id)
-                       if pool["pool_name"] == valid_pool_name
-                      ][0]
+        pool_tendrl = [pool_t for pool_t in api.get_pool_list(valid_cluster_id)
+                       if pool_t["pool_name"] == valid_pool_name
+                       ][0]
         # remove Tendrl specific keys
         pool_tendrl.pop("deleted")
         pool_tendrl.pop("hash")
@@ -459,6 +475,7 @@ def test_update_pool_valid(valid_cluster_id,
             Tendrl pool attributes: {}
             These should be the same.""".format(
                 pool_tendrl, storage_pool_attributes))
+
 
 def test_delete_pool_invalid(
         valid_cluster_id,
@@ -480,7 +497,8 @@ def test_delete_pool_invalid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via DELETE request to ``APIURL/:cluster_id/CephDeletePool``
+                Connect to Tendrl API via DELETE request
+                to ``APIURL/:cluster_id/CephDeletePool``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -493,9 +511,7 @@ def test_delete_pool_invalid(
 
     api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
     job_id = api.delete_pool(valid_cluster_id, invalid_pool_id)["job_id"]
-    api.wait_for_job_status(
-        job_id,
-        status="failed")
+    api.wait_for_job_status(job_id, status="failed")
 
 
 def test_delete_pool_valid(
@@ -519,7 +535,8 @@ def test_delete_pool_valid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/CephDeletePool``
+                Connect to Tendrl API via POST request
+                to ``APIURL/:cluster_id/CephDeletePool``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -559,10 +576,10 @@ def test_delete_pool_valid(
             """
     storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
 
-    pytest.check(not valid_pool_name in storage.osd.pool_ls(),
+    pytest.check(valid_pool_name not in storage.osd.pool_ls(),
                  "Pool {} should not be in Ceph \
                  cluster {} after deletion.".format(
                      valid_pool_name,
                      pytest.config.getini("usm_ceph_cl_name")),
                  issue="https://github.com/Tendrl/ceph-integration/issues/224"
-                )
+                 )

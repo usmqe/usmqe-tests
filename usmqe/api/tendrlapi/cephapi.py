@@ -41,10 +41,12 @@ class TendrlApiCeph(TendrlApi):
             cluster: Cluster ID (String)
             name: Pool name. (String)
             pg_num: Number of placement groups. (Int)
-            min_size: Minimum number of replicas required for I/O in degraded state (Int)
+            min_size: Minimum number of replicas required for I/O
+                      in degraded state (Int)
             size: Minimum number of replicas required for I/O. (Int)
             pool_type: Type of the Ceph pool(ec or replicated) (String)
-            erasure_code_profile: For erasure pools only.It must be an existing profile. (String)
+            erasure_code_profile: For erasure pools only.It must be
+                                  an existing profile. (String)
             quota_enabled: Enable quota for the pool. (Bool)
             quota_max_objects: Maximum number of object in pool. (Int)
             quota_max_bytes: Maximum number of bytes in pool. (Int)
@@ -99,7 +101,8 @@ class TendrlApiCeph(TendrlApi):
             pool_id: Pool ID (String)
             name: Pool name. (String)
             size: Minimum number of replicas required for I/O. (Int)
-            min_size: Minimum number of replicas required for I/O in degraded state (Int)
+            min_size: Minimum number of replicas required for I/O
+                      in degraded state (Int)
             pg_num: Number of placement groups. (Int)
             quota_enabled: Enable quota for the pool. (Bool)
             quota_max_objects: Maximum number of object in pool. (Int)
@@ -134,7 +137,6 @@ class TendrlApiCeph(TendrlApi):
         self.print_req_info(response)
         self.check_response(response, asserts)
         return response.json()
-
 
     def get_pool_list(self, cluster):
         """ Get pool list for specific Ceph cluster.
@@ -196,7 +198,7 @@ class TendrlApiCeph(TendrlApi):
         pool_data = {"Rbd.pool_id": pool_id,
                      "Rbd.name": name,
                      "Rbd.size": size
-                    }
+                     }
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
@@ -226,7 +228,7 @@ class TendrlApiCeph(TendrlApi):
         pool_data = {"Rbd.pool_id": pool_id,
                      "Rbd.name": name,
                      "Rbd.size": size
-                    }
+                     }
         response = requests.put(
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
@@ -291,7 +293,7 @@ class TendrlApiCeph(TendrlApi):
                      "ECProfile.plugin": plugin,
                      "ECProfile.directory": directory,
                      "ECProfile.ruleset_failure_domain": ruleset_fail_dom,
-                    }
+                     }
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
