@@ -16,13 +16,16 @@ def valid_cluster_id(valid_session_credentials):
 
 
 @pytest.fixture
-def valid_gluster_nodes(valid_session_credentials):
+def valid_nodes(valid_session_credentials):
     """
-    Generate valid host info from GetNodeList api call related to gluster
+    Generate valid host info from GetNodeList api call related to tendrl/nodes
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     cluster_list = api.get_nodes()
-    return [x if "gluster/server" in x["tags"] for x in cluster_list["nodes"]]
+    return [x for x in cluster_list["nodes"]
+        if "tendrl/node" in x["tags"]
+        and "tendrl/server" not in x["tags"]
+        and x["status"] == "UP"]
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
