@@ -45,7 +45,7 @@ def test_cluster_create_valid(valid_session_credentials, valid_nodes):
         """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     pytest.check(
-        len(valid_nodes)>0,
+        len(valid_nodes) > 0,
         "There have to be at least one gluster node."
         "There are {}".format(len(valid_nodes)))
     """@pylatest api/gluster.cluster_import
@@ -104,11 +104,10 @@ def test_cluster_create_valid(valid_session_credentials, valid_nodes):
         "present in cluster list.".format(integration_id))
 
     pytest.check(
-        len(imported_clusters["nodes"]) == len[node_ips],
+        len(imported_clusters["nodes"]) == len(nodes),
         "In cluster should be the same amount of hosts"
-        "(is {})".format(len(imported_clusters["nodes"]))
-        " as is in API call for cluster creation."
-        "(is {})".format(len[node_ips]))
+        "(is {}) as is in API call for cluster creation."
+        "(is {})".format(len(imported_clusters["nodes"]), len(nodes)))
 
 
 """@pylatest api/gluster.cluster_import

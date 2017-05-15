@@ -21,7 +21,6 @@ class TendrlApiGluster(TendrlApi):
         """
         super().import_cluster(nodes, "gluster", asserts_in)
 
-
     def create_cluster(
             self,
             name,
