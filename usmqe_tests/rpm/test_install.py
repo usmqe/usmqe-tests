@@ -22,7 +22,7 @@ def test_yum_install(chroot_dir, rpm_name):
     cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     LOGGER.debug("STDOUT: %s", cp.stdout)
     if len(cp.stderr) > 0:
-        LOGGER.error("STDERR: %s", cp.stderr)
+        LOGGER.warning("STDERR: %s", cp.stderr)
     else:
         LOGGER.debug("STDERR: %s", cp.stderr)
     check_msg = "return code of 'yum install {}' should be 0 indicating no errors"
