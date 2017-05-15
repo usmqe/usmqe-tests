@@ -33,7 +33,7 @@ Positive create gluster cluster.
 """
 
 
-def test_cluster_create_valid(valid_session_credentials, valid_nodes):
+def test_cluster_create_valid(valid_session_credentials, valid_nodes, net_interface="eth0"):
     """@pylatest api/gluster.cluster_create
         .. test_step:: 1
 
@@ -68,7 +68,7 @@ def test_cluster_create_valid(valid_session_credentials, valid_nodes):
     nodes = []
     provisioner_ip = None
     for x in valid_nodes:
-        ips = ast.literal_eval(x["networks"]["eth0"]["ipv4"])
+        ips = ast.literal_eval(x["networks"][net_interface]["ipv4"])
         nodes.append({
             "role": "glusterfs/node",
             "ip": ips[0] if type(ips) == list else ips})
