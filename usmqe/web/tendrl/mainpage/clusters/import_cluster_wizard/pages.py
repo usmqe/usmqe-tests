@@ -57,6 +57,20 @@ class ImportCluster(ListMenu):
         """
         self._model.cancel_btn.click()
 
+    @property
+    def cluster_id(self):
+        """
+        returns cluster id
+        """
+        return self._model.cluster_id.text
+
+    @property
+    def storage_service(self):
+        """
+        returns storage service
+        """
+        return self._model.storage_service.text
+
 
 class ImportClusterSummary(WebstrPage):
     """
@@ -78,7 +92,28 @@ class HostsItem(contentviews.ListViewRow):
     """
     _model = m_wizard.HostsItemModel
     _label = 'clusters import host'
-    _required_elems = ['name']
+    _required_elems = ['name', 'release', 'role']
+
+    @property
+    def name(self):
+        """
+        returns host name
+        """
+        return self._model.name.text
+
+    @property
+    def release(self):
+        """
+        returns installed ceph/gluster release
+        """
+        return self._model.release.text
+
+    @property
+    def role(self):
+        """
+        returns host role
+        """
+        return self._model.role.text
 
 
 class HostsList(contentviews.ListView):
@@ -87,3 +122,4 @@ class HostsList(contentviews.ListView):
     """
     _model = m_wizard.HostsListModel
     _label = 'clusters import hosts list'
+    _row_class = HostsItem

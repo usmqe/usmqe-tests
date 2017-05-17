@@ -20,6 +20,12 @@ class ImportClusterModel(ListMenuModel):
     cluster = form.Select(
         By.XPATH,
         '//select[@data-ng-model="importClusterCntrl.selectedCluster"]')
+    cluster_id = PageElement(
+        By.XPATH,
+        '//div[@class="cluster-detail"]/div[1]/div[2]')
+    storage_service = PageElement(
+        By.XPATH,
+        '//div[@class="cluster-detail"]/div[2]/div[2]')
     refresh_btn = form.Button(
         By.XPATH,
         '//button[contains(text(), "Refresh")]')
@@ -33,7 +39,7 @@ class ImportClusterSummaryModel(WebstrModel):
     """
     view_task_btn = form.Button(
         By.XPATH,
-        '//button')
+        '//button[contains(@ng-click, "viewTaskProgress()")]')
 
 
 class HostsItemModel(contentviews.ListViewRowModel):
@@ -42,11 +48,14 @@ class HostsItemModel(contentviews.ListViewRowModel):
     """
     name_label = PageElement(
         by=By.XPATH,
-        locator=".//div[@class='list-group-item']/div[1]")
+        locator="./div[1]")
     release = PageElement(
         by=By.XPATH,
-        locator=".//div[@class='list-group-item']/div[2]//h5[2]")
+        locator="./div[2]//h5[2]")
     name = name_label
+    role = PageElement(
+        by=By.XPATH,
+        locator="./div[3]//h5[2]")
 
 
 class HostsListModel(contentviews.ListViewModel):

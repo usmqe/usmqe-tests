@@ -42,13 +42,15 @@ class CephCommon(object):
     Class representing ceph cluster.
     """
 
-    def __init__(self, cluster):
+    def __init__(self, cluster, mons=None):
         """
         Initialize CephCommon object.
 
         Args:
             cluster: cluster name or dict with ``name`` key or
                      :py:class:`CephCommon`/:py:class:`CephCluster` object
+            mons: list of ceph cluster monitors
+                  monitor machines hostnames or IP addresses
         """
         if isinstance(cluster, CephCommon):
             self._name = cluster.name
@@ -58,6 +60,7 @@ class CephCommon(object):
             self._name = cluster
 
         self.cmd = CephClusterCommand(cluster=self._name)
+        self._mons = mons
 
     @property
     def name(self):
@@ -73,8 +76,7 @@ class CephCommon(object):
         """
         last_error = None
         output = None
-        if mons is None:
-            mons = usmqe.inventory.role2hosts("ceph_mon")
+        mons = mons or self._mons or usmqe.inventory.role2hosts("ceph_mon")
         if not executor:
             executor = self.cmd
         for mon in mons:
@@ -107,15 +109,17 @@ class CephCluster(CephCommon):
     Class representing ceph cluster.
     """
 
-    def __init__(self, cluster):
+    def __init__(self, cluster, mons=None):
         """
         Initialize CephCluster object.
 
         Args:
             cluster: cluster name or dict with ``name`` key or
                      :py:class:`CephCommon`/:py:class:`CephCluster` object
+            mons: list of ceph cluster monitors
+                  monitor machines hostnames or IP addresses
         """
-        super(CephCluster, self).__init__(cluster)
+        super(CephCluster, self).__init__(cluster, mons)
         self._osd = None
         self._mon = None
         self._rados = None
@@ -126,7 +130,7 @@ class CephCluster(CephCommon):
         Property osd returns initialized :py:class:`CephClusterOsd` object.
         """
         if not self._osd:
-            self._osd = CephClusterOsd(self)
+            self._osd = CephClusterOsd(self, self._mons)
         return self._osd
 
     @property
@@ -135,7 +139,7 @@ class CephCluster(CephCommon):
         Property mon returns initialized :py:class:`CephClusterMon` object.
         """
         if not self._mon:
-            self._mon = CephClusterMon(self)
+            self._mon = CephClusterMon(self, self._mons)
         return self._mon
 
     @property
@@ -145,7 +149,7 @@ class CephCluster(CephCommon):
         :py:class:`CephClusterStorage` object.
         """
         if not self._rados:
-            self._rados = CephClusterStorage(self)
+            self._rados = CephClusterStorage(self, self._mons)
         return self._rados
 
 #  def foo(self):

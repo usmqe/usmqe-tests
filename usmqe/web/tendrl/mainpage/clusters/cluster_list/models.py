@@ -45,6 +45,7 @@ class ClustersRowModel(contentviews.ListViewRowModel):
     name_text = PageElement(
         by=By.XPATH,
         locator='.//div[contains(@class, "cluster-name")]')
+    name = name_text
 
 # TODO
 # Uncomment when fields are present on the page
