@@ -32,10 +32,17 @@ def check_hosts(hosts_list, page_hosts_list):
         for host in aux_list:
             if host['hostname'] in host_row.name:
                 found = True
-                pytest.check(
-                    host['role'] == host_row.role,
-                    "Host {} should have '{}' role it has '{}'".format(
-                        host_row.name, host['role'], host_row.role))
+                if type(host['role']) is list:
+                    for role in host['role']:
+                        pytest.check(
+                            role in host_row.role,
+                            "Host {} should have '{}' role it has '{}'".format(
+                                host_row.name, role, host_row.role))
+                else:
+                    pytest.check(
+                        host['role'] == host_row.role,
+                        "Host {} should have '{}' role it has '{}'".format(
+                            host_row.name, host['role'], host_row.role))
                 aux_list.remove(host)
                 break
         pytest.check(
@@ -112,22 +119,32 @@ class ClustersWorkBase(object):
                     'There has to be a host with Monitor role in ceph cluster')
                 storage = ceph_cluster.CephCluster(cluster_name, monitors)
                 ceph_mons = storage.mon.stat()['mons'].keys()
-                mon_hosts = [
-                    {'hostname': hostname,
-                     'release': release,
-                     'role': 'Monitor'}
-                    for hostname in ceph_mons]
                 ceph_osds = []
                 ceph_all_osds = storage.osd.tree()['nodes']
                 for ceph_osd in ceph_all_osds:
                     if ceph_osd['type'] == 'host':
                         ceph_osds.append(ceph_osd['name'])
+                ceph_mon_osd = set(ceph_mons).intersection(ceph_osds)
+                # remove intersection
+                ceph_mons = set(ceph_mons) - ceph_mon_osd
+                ceph_osds = set(ceph_osds) - ceph_mon_osd
+                # TODO make sure how the role should look like on UI
+                mon_osd_hosts = [
+                    {'hostname': hostname,
+                     'release': release,
+                     'role': ['Monitor', 'OSD Hosts']}
+                    for hostname in ceph_mon_osd]
+                mon_hosts = [
+                    {'hostname': hostname,
+                     'release': release,
+                     'role': 'Monitor'}
+                    for hostname in ceph_mons]
                 osds_hosts = [
                     {'hostname': hostname,
                      'release': release,
                      'role': 'OSD Host'}
                     for hostname in ceph_osds]
-                hosts = mon_hosts + osds_hosts
+                hosts = mon_hosts + osds_hosts + mon_osd_hosts
 
         # check hosts
         check_hosts(hosts, import_page.hosts)
@@ -167,7 +184,7 @@ class ClustersWorkBase(object):
             name (str): name of the cluster
             hosts (list): list of dictionaries
                           {'hostname': <hostname>,
-                           'role': <'Monitor' or 'OSD Host'>, ...
+                           'role': <'Monitor' or/and 'OSD Host'>, ...
         """
         raise NotImplementedError('import_ceph_cluster does not exist yet')
 
@@ -197,7 +214,7 @@ class ClustersWorkBase(object):
                               https://github.com/Tendrl/api/issues/70
             hosts (list): list of dictionaries
                           {'hostname': <hostname>,
-                           'role': <'Monitor' or 'OSD Host'>, ...
+                           'role': <'Monitor' or/and 'OSD Host'>, ...
         """
         raise NotImplementedError('create_ceph_cluster does not exist yet')
 
