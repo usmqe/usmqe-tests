@@ -30,7 +30,8 @@ class TendrlApiCeph(TendrlApi):
                     erasure_code_profile=None,
                     quota_enabled=None,
                     quota_max_objects=None,
-                    quota_max_bytes=None):
+                    quota_max_bytes=None,
+                    asserts_in=None):
         """ Create Ceph pool.
 
         Name:        "create_pool",
@@ -43,13 +44,14 @@ class TendrlApiCeph(TendrlApi):
             pg_num: Number of placement groups. (Int)
             min_size: Minimum number of replicas required for I/O
                       in degraded state (Int)
-            size: Minimum number of replicas required for I/O. (Int)
-            pool_type: Type of the Ceph pool(ec or replicated) (String)
-            erasure_code_profile: For erasure pools only.It must be
+            size: Number of replicas required for I/O. (Int)
+            pool_type: Type of the Ceph pool (ec or replicated) (String)
+            erasure_code_profile: For erasure pools only. It must be
                                   an existing profile. (String)
             quota_enabled: Enable quota for the pool. (Bool)
             quota_max_objects: Maximum number of object in pool. (Int)
             quota_max_bytes: Maximum number of bytes in pool. (Int)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephCreatePool".format(cluster)
         pool_data = {
@@ -62,22 +64,23 @@ class TendrlApiCeph(TendrlApi):
             pool_data["Pool.type"] = pool_type
         if erasure_code_profile:
             pool_data["Pool.erasure_code_profile"] = erasure_code_profile
-        if quota_enabled is not None and (quota_max_objects or quota_max_bytes):
+        if quota_enabled is not None:
             pool_data["Pool.quota_enabled"] = quota_enabled
-            if quota_max_objects:
-                pool_data["Pool.quota_max_objects"] = quota_max_objects
-            if quota_max_bytes:
-                pool_data["Pool.quota_max_bytes"] = quota_max_bytes
+        if quota_max_objects:
+            pool_data["Pool.quota_max_objects"] = quota_max_objects
+        if quota_max_bytes:
+            pool_data["Pool.quota_max_bytes"] = quota_max_bytes
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
     def update_pool(self,
@@ -89,7 +92,8 @@ class TendrlApiCeph(TendrlApi):
                     pg_num=None,
                     quota_enabled=None,
                     quota_max_objects=None,
-                    quota_max_bytes=None):
+                    quota_max_bytes=None,
+                    asserts_in=None):
         """ Update Ceph pool.
 
         Name:        "update_pool",
@@ -100,13 +104,14 @@ class TendrlApiCeph(TendrlApi):
             cluster: Cluster ID (String)
             pool_id: Pool ID (String)
             name: Pool name. (String)
-            size: Minimum number of replicas required for I/O. (Int)
+            size: Number of replicas required for I/O. (Int)
             min_size: Minimum number of replicas required for I/O
                       in degraded state (Int)
             pg_num: Number of placement groups. (Int)
             quota_enabled: Enable quota for the pool. (Bool)
             quota_max_objects: Maximum number of object in pool. (Int)
             quota_max_bytes: Maximum number of bytes in pool. (Int)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephUpdatePool".format(cluster)
         pool_data = {"Pool.pool_id": pool_id}
@@ -119,26 +124,28 @@ class TendrlApiCeph(TendrlApi):
             pool_data["Pool.min_size"] = min_size
         if pg_num:
             pool_data["Pool.pg_num"] = pg_num
-        if quota_enabled is not None and (quota_max_bytes or quota_max_objects):
+        if quota_enabled is not None:
             pool_data["Pool.quota_enabled"] = quota_enabled
-            if quota_max_objects:
-                pool_data["Pool.quota_max_objects"] = quota_max_objects
-            if quota_max_bytes:
-                pool_data["Pool.quota_max_bytes"] = quota_max_bytes
+        if quota_max_objects:
+            pool_data["Pool.quota_max_objects"] = quota_max_objects
+        if quota_max_bytes:
+            pool_data["Pool.quota_max_bytes"] = quota_max_bytes
 
         response = requests.put(
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
+
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
-    def get_pool_list(self, cluster):
+    def get_pool_list(self, cluster, asserts_in=None):
         """ Get pool list for specific Ceph cluster.
 
         Name:        "get_pool_list",
@@ -147,6 +154,7 @@ class TendrlApiCeph(TendrlApi):
 
         Args:
             cluster: Cluster ID. (String)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/GetPoolList".format(cluster)
         response = requests.get(
@@ -156,7 +164,7 @@ class TendrlApiCeph(TendrlApi):
         self.check_response(response)
         return response.json()
 
-    def delete_pool(self, cluster, pool_id):
+    def delete_pool(self, cluster, pool_id, asserts_in=None):
         """ Delete Ceph pool.
 
         Name:        "delete_pool",
@@ -166,6 +174,7 @@ class TendrlApiCeph(TendrlApi):
         Args:
             cluster: Cluster ID (String)
             pool_id: Pool ID (String)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephDeletePool".format(cluster)
         pool_data = {"Pool.pool_id": pool_id}
@@ -173,15 +182,16 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
-    def create_rbd(self, cluster, pool_id, name, size):
+    def create_rbd(self, cluster, pool_id, name, size, asserts_in=None):
         """ Create RBD in Ceph pool.
 
         Name:        "create_rbd",
@@ -193,6 +203,7 @@ class TendrlApiCeph(TendrlApi):
             pool_id: Pool ID (String)
             name: RBD name (String)
             size: RBD size (Int)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephCreateRbd".format(cluster)
         pool_data = {"Rbd.pool_id": pool_id,
@@ -203,15 +214,16 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
-    def update_rbd(self, cluster, pool_id, name, size):
+    def update_rbd(self, cluster, pool_id, name, size, asserts_in=None):
         """ Update RBD in Ceph pool.
 
         Name:        "update_rbd",
@@ -223,6 +235,7 @@ class TendrlApiCeph(TendrlApi):
             pool_id: Pool ID (String)
             name: RBD name (String)
             size: RBD size (Int)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephResizeRbd".format(cluster)
         pool_data = {"Rbd.pool_id": pool_id,
@@ -233,15 +246,16 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
-    def delete_rbd(self, cluster, pool_id, name):
+    def delete_rbd(self, cluster, pool_id, name, asserts_in=None):
         """ Delete RBD in Ceph pool.
 
         Name:        "delete_rbd",
@@ -252,6 +266,7 @@ class TendrlApiCeph(TendrlApi):
             cluster: Cluster ID (String)
             pool_id: Pool ID (String)
             name: RBD name (String)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephDeleteRbd".format(cluster)
         pool_data = {"Rbd.pool_id": pool_id, "Rbd.name": name}
@@ -259,18 +274,20 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
     def create_ecprofile(self, cluster, name, k_ec, m_ec,
                          plugin=None,
                          directory=None,
-                         ruleset_fail_dom=None):
+                         ruleset_fail_dom=None,
+                         asserts_in=None):
         """ Create EC profile.
 
         Name:        "create_ecprofile",
@@ -285,6 +302,7 @@ class TendrlApiCeph(TendrlApi):
             plugin: EC profile plugin (String)
             directory: directory for EC profile (String)
             ruleset_fail_dom: rule set failure domain for EC profile (String)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephCreateECProfile".format(cluster)
         pool_data = {"ECProfile.name": name,
@@ -298,15 +316,16 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()
 
-    def delete_ecprofile(self, cluster, name):
+    def delete_ecprofile(self, cluster, name, asserts_in=None):
         """ Delete EC profile.
 
         Name:        "delete_ecprofile",
@@ -316,6 +335,7 @@ class TendrlApiCeph(TendrlApi):
         Args:
             cluster: Cluster ID (String)
             name: EC profile name (String)
+            asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephDeleteECProfile".format(cluster)
         pool_data = {"ECProfile.name": name}
@@ -323,10 +343,11 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             json=pool_data,
             auth=self._auth)
-        asserts = {
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
             "reason": 'Accepted',
-            "status": 202,
-        }
+            "status": 202}
         self.print_req_info(response)
-        self.check_response(response, asserts)
+        self.check_response(response, asserts_in)
         return response.json()

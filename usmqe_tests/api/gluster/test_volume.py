@@ -35,17 +35,14 @@ def test_create_volume_invalid(
         Description
         ===========
 
-        Get list of attributes needed to use in cluster volume creation
-        with given cluster_id.
+        Get list of attributes needed to use in cluster volume creation with given cluster_id.
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterCreateVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
                 Where cluster_id is set to predefined value.
 
-                When some attribute is set to None then in request json is set
-                to ``null``.
+                When some attribute is set to None then in request json is set to ``null``.
                 e.g. {
                     "Volume.replica_count": "2",
                     "Volume.bricks": null,
@@ -66,9 +63,10 @@ def test_create_volume_invalid(
         valid_cluster_id,
         invalid_volume_configuration)["job_id"]
     # TODO check correctly server response or etcd job status
-    api.wait_for_job_status(job_id,
-                            status="failed",
-                            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+    api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
 def test_create_volume_valid(
@@ -85,13 +83,11 @@ def test_create_volume_valid(
         Description
         ===========
 
-        Get list of attributes needed to use in cluster volume creation
-        with given cluster_id.
+        Get list of attributes needed to use in cluster volume creation with given cluster_id.
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterCreateVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -134,24 +130,26 @@ def test_create_volume_valid(
 
     volume = gluster.GlusterVolume(valid_volume_name)
     volume_id = volume.get_volume_id()
-    storage_volume_attributes = {"name": volume.name,
-                                 "id": volume.id,
-                                 "status": volume.status,
-                                 "stripe_count": volume.stripe_count,
-                                 "replica_count": volume.replica_count,
-                                 "brick_count": volume.brick_count,
-                                 "snapshot_count": volume.snap_count
-                                 }
+    storage_volume_attributes = {
+            "name": volume.name,
+            "id": volume.id,
+            "status": volume.status,
+            "stripe_count": volume.stripe_count,
+            "replica_count": volume.replica_count,
+            "brick_count": volume.brick_count,
+            "snapshot_count": volume.snap_count
+        }
 
     volume_tendrl = api.get_volume_list(valid_cluster_id)[0][volume_id]
-    tendrl_volume_attributes = {"name": volume_tendrl["name"],
-                                "id": volume_tendrl["vol_id"],
-                                "status": volume_tendrl["status"],
-                                "stripe_count": volume_tendrl["stripe_count"],
-                                "replica_count": volume_tendrl["replica_count"],
-                                "brick_count": volume_tendrl["brick_count"],
-                                "snapshot_count": volume_tendrl["snap_count"]
-                                }
+    tendrl_volume_attributes = {
+            "name": volume_tendrl["name"],
+            "id": volume_tendrl["vol_id"],
+            "status": volume_tendrl["status"],
+            "stripe_count": volume_tendrl["stripe_count"],
+            "replica_count": volume_tendrl["replica_count"],
+            "brick_count": volume_tendrl["brick_count"],
+            "snapshot_count": volume_tendrl["snap_count"]
+        }
     pytest.check(
         tendrl_volume_attributes == storage_volume_attributes,
         """Storage volume attributes: {}
@@ -177,8 +175,7 @@ def test_stop_volume_invalid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterStopVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStopVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -196,9 +193,10 @@ def test_stop_volume_invalid(
 
     job_id = api.stop_volume(valid_cluster_id, volume_data)["job_id"]
     # TODO check correctly server response or etcd job status
-    api.wait_for_job_status(job_id,
-                            status="failed",
-                            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+    api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
 def test_stop_volume_valid(
@@ -219,8 +217,7 @@ def test_stop_volume_valid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterStopVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStopVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -268,8 +265,7 @@ def test_start_volume_invalid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterStartVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStartVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -311,8 +307,7 @@ def test_start_volume_valid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterStartVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterStartVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -357,8 +352,7 @@ def test_delete_volume_invalid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterDeleteVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1
@@ -377,9 +371,10 @@ def test_delete_volume_invalid(
 
     job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
     # TODO check correctly server response or etcd job status
-    api.wait_for_job_status(job_id,
-                            status="failed",
-                            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+    api.wait_for_job_status(
+            job_id,
+            status="failed",
+            issue="https://github.com/Tendrl/tendrl-api/issues/33")
 
 
 def test_delete_volume_valid(
@@ -400,8 +395,7 @@ def test_delete_volume_valid(
 
         .. test_step:: 1
 
-                Connect to Tendrl API via POST request
-                to ``APIURL/:cluster_id/GlusterDeleteVolume``
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterDeleteVolume``
                 Where cluster_id is set to predefined value.
 
         .. test_result:: 1

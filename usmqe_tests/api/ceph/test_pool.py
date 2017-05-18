@@ -18,9 +18,10 @@ Teardown
 ========
 """
 
-
 # TODO create negative test case generator
 # http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
+
+
 def test_create_pool_invalid(
         valid_cluster_id,
         invalid_pool_name,
@@ -141,9 +142,9 @@ def test_create_pool_valid(
                       if pool["pool_name"] == valid_pool_name
                       ]
     pytest.check(len(selected_pools) == 1,
-                 "Pool {} should be created in Ceph \
-                 cluster {}.".format(valid_pool_name,
-                                     pytest.config.getini("usm_ceph_cl_name"))
+                 "Pool {} should be created in Ceph cluster {}.".format(
+                    valid_pool_name,
+                    pytest.config.getini("usm_ceph_cl_name"))
                  )
 
     """@pylatest api/ceph.create_pool_valid
@@ -171,8 +172,8 @@ def test_create_pool_valid(
 
             """
 
-    if len(pools) == 1:
-        pool = pools[0]
+    if len(selected_pools) == 1:
+        pool = selected_pools[0]
         storage_pool_attributes = {
             "erasure_code_profile": pool["erasure_code_profile"],
             "min_size": pool["min_size"],
@@ -338,9 +339,9 @@ def test_update_pool_name_valid(valid_cluster_id,
                       if pool["pool_name"] == valid_pool_name
                       ]
     pytest.check(len(selected_pools) == 1,
-                 "Pool {} should be updated in Ceph \
-                 cluster {}.".format(valid_pool_name,
-                                     pytest.config.getini("usm_ceph_cl_name")),
+                 "Pool {} should be updated in Ceph cluster {}.".format(
+                    valid_pool_name,
+                    pytest.config.getini("usm_ceph_cl_name")),
                  issue="https://github.com/Tendrl/ceph-integration/issues/225"
                  )
 
@@ -403,7 +404,7 @@ def test_update_pool_valid(valid_cluster_id,
 
         .. test_result:: 2
 
-           Updates are done in pool.
+           Pool is updated.
             """
 
     storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
@@ -413,9 +414,9 @@ def test_update_pool_valid(valid_cluster_id,
                       if pool["pool_name"] == valid_pool_name
                       ]
     pytest.check(len(selected_pools) == 1,
-                 "Pool {} should be updated in Ceph \
-                 cluster {}.".format(valid_pool_name,
-                                     pytest.config.getini("usm_ceph_cl_name")),
+                 "Pool {} should be updated in Ceph cluster {}.".format(
+                    valid_pool_name,
+                    pytest.config.getini("usm_ceph_cl_name")),
                  issue="https://github.com/Tendrl/ceph-integration/issues/225"
                  )
 
@@ -444,8 +445,8 @@ def test_update_pool_valid(valid_cluster_id,
 
             """
 
-    if len(pools) == 1:
-        pool = pools[0]
+    if len(selected_pools) == 1:
+        pool = selected_pools[0]
         storage_pool_attributes = {
             "erasure_code_profile": pool["erasure_code_profile"],
             "min_size": pool["min_size"],
@@ -519,8 +520,38 @@ def test_delete_pool_invalid(
 def test_delete_pool_valid(
         valid_cluster_id,
         valid_pool_id,
-        valid_pool_name,
         valid_session_credentials):
+
+    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
+    """@pylatest api/ceph.delete_pool
+        API-ceph: delete_pool
+        ******************************
+
+        :authors:
+            - fbalak@redhat.com
+            - mkudlej@redhat.com
+
+        Description
+        ===========
+
+        Get pool name from API because it was changed in *update* test.
+
+        .. test_step:: 1
+
+            Connect to Tendrl API via GET request
+            to ``APIURL/:cluster_id/CephPoolList``
+            Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+            There should be listed ceph pool with id == ``valid_pool_id``.
+
+            """
+
+    api_pool_name = [list(pool_t.values())[0]["pool_name"]
+                     for pool_t in api.get_pool_list(valid_cluster_id)
+                     if "1" in pool_t.keys()
+                     ][0]
     """@pylatest api/ceph.delete_pool
         API-ceph: delete_pool
         ******************************
@@ -535,13 +566,13 @@ def test_delete_pool_valid(
 
         Delete ceph pool ``valid_pool_id`` via API.
 
-        .. test_step:: 1
+        .. test_step:: 2
 
                 Connect to Tendrl API via POST request
                 to ``APIURL/:cluster_id/CephDeletePool``
                 Where cluster_id is set to predefined value.
 
-        .. test_result:: 1
+        .. test_result:: 2
 
                 Server should return response in JSON format:
 
@@ -549,10 +580,9 @@ def test_delete_pool_valid(
                 And then job should finish.
                 """
 
-    api = cephapi.TendrlApiCeph(auth=valid_session_credentials)
     job_id = api.delete_pool(valid_cluster_id, valid_pool_id)["job_id"]
     LOGGER.info("Delete pool job_id: {}".format(job_id))
-    api.wait_for_job_status(job_id)
+    api.wait_for_job_status(job_id, issue="https://github.com/Tendrl/ceph-integration/issues/224")
     """@pylatest api/ceph.delete_pool
         API-ceph: delete_pool
         ******************************
@@ -566,22 +596,21 @@ def test_delete_pool_valid(
 
         Check if there is not deleted pool in ceph cluster via CLI.
 
-        .. test_step:: 2
+        .. test_step:: 3
 
             Connect to ceph monitor machine via ssh and run
             ``ceph --cluster *clustername* pool status``
 
-        .. test_result:: 2
+        .. test_result:: 3
 
-            There should not be listed ceph pool named ``valid_pool_name``.
+            There should not be listed ceph pool named ``api_pool_name``.
 
             """
     storage = ceph_cluster.CephCluster(pytest.config.getini("usm_ceph_cl_name"))
-
-    pytest.check(valid_pool_name not in storage.osd.pool_ls(),
+    pytest.check(api_pool_name not in storage.osd.pool_ls(),
                  "Pool {} should not be in Ceph \
                  cluster {} after deletion.".format(
-                     valid_pool_name,
+                     api_pool_name,
                      pytest.config.getini("usm_ceph_cl_name")),
                  issue="https://github.com/Tendrl/ceph-integration/issues/224"
                  )

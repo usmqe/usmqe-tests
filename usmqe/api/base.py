@@ -88,8 +88,8 @@ class ApiBase(object):
             "Data should contains keys: {}".format(expected_keys))
         for key in keys:
             pytest.check(key in expected_keys,
-                         "Unknown key '{}' with value '{}' (type: '{}').\
-                         ".format(key, data[key], type(data[key])))
+                         "Unknown key '{}' with value '{}' (type: '{}').".format(
+                             key, data[key], type(data[key])))
             if key in expected_keys:
                 pytest.check(
                     isinstance(data[key], schema[key]),

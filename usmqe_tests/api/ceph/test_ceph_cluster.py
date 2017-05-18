@@ -116,13 +116,13 @@ def test_cluster_import_valid(valid_session_credentials):
     try:
         pytest.check(
             [x for x in api.get_cluster_list() if x.get("integration_id", "") == integration_id],
-            "Job list integration_id '{}' should be present in cluster \
-                     list.".format(integration_id),
+            "Job list integration_id '{}' should be present in cluster list.".format(
+                integration_id),
             issue="https://github.com/Tendrl/api/issues/154")
     except JSONDecodeError:
         pytest.check(False,
-                     "Job list integration_id '{}' should be present in cluster \
-                     list.".format(integration_id),
+                     "Job list integration_id '{}' should be present in cluster list.".format(
+                        integration_id),
                      issue="https://github.com/Tendrl/api/issues/166")
 
     # TODO add test case for checking imported machines

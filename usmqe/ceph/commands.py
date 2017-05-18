@@ -13,11 +13,6 @@ import usmqe.usmssh
 
 
 LOGGER = pytest.get_logger('usmceph.commands', module=True)
-usmqe.usmssh.KEYFILE = "~/.ssh/id_rsa"
-try:
-    usmqe.usmssh.KEYFILE = pytest.config.getini("usm_ssh_keyfile")
-except ValueError:
-    pass
 SSH = usmqe.usmssh.get_ssh()
 
 
@@ -44,8 +39,8 @@ class CephCommand(object):
         cmd = "{} {} {} {}".format(
             self._base_command, timeout_str, format_str, command)
         # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
-        if self._format == 'json':
-            cmd = "{} {}".format(cmd, "; echo ''")
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
     def run(self, host, command):
@@ -92,8 +87,8 @@ class CephClusterCommand(CephCommand):
             self._base_command, timeout_str, format_str, cluster_str,
             conf_str, command)
         # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
-        if self._format == 'json':
-            cmd = "{} {}".format(cmd, "; echo ''")
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
 
@@ -123,8 +118,8 @@ class RadosCommand(CephCommand):
         cmd = "{} {} {} {} {}".format(
             self._base_command, format_str, cluster_str, conf_str, command)
         # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
-        if self._format == 'json':
-            cmd = "{} {}".format(cmd, "; echo ''")
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
 
@@ -157,8 +152,8 @@ class RBDCommand(CephCommand):
             self._base_command, format_str, cluster_str,
             conf_str, pool_str, command)
         # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
-        if self._format == 'json':
-            cmd = "{} {}".format(cmd, "; echo ''")
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
 
