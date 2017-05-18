@@ -74,7 +74,7 @@ def test_cluster_create_valid(
     for x in valid_nodes:
         if "tendrl/server" in x["tags"]:
             network = "{}/22".format(
-                    ast.literal_eval(x["networks"][net_interface]["ipv4"])[0])
+                ast.literal_eval(x["networks"][net_interface]["ipv4"])[0])
             continue
         ips = ast.literal_eval(x["networks"][net_interface]["ipv4"])
         nodes.append({
@@ -85,11 +85,11 @@ def test_cluster_create_valid(
     LOGGER.debug("node_ips: %s" % nodes)
     LOGGER.debug("provisioner: %s" % provisioner_ip)
     job_id = api.create_cluster(
-            "MyCluster",
-            "4654ac00-e67b-4b74-86a3-e740b1b8cee5",
-            nodes,
-            provisioner_ip,
-            network)["job_id"]
+        "MyCluster",
+        "4654ac00-e67b-4b74-86a3-e740b1b8cee5",
+        nodes,
+        provisioner_ip,
+        network)["job_id"]
 
     api.wait_for_job_status(job_id)
 

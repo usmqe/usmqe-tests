@@ -34,6 +34,7 @@ def network_interface(request):
     """
     return request.param
 
+
 @pytest.fixture(params=[None, "0000000000000000"])
 def invalid_cluster_id(request):
     """

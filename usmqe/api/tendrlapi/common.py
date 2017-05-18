@@ -222,11 +222,11 @@ class TendrlApi(ApiBase):
             nodes,
             provisioner,
             network,
-            node_identifier="ip",
-            sds_type=None,
-            sds_version=None,
+            node_identifier,
+            sds_type,
+            sds_version,
             asserts_in=None):
-        """ Import cluster.
+        """Create cluster.
 
         Name:        "create_cluster",
         Method:      "POST",
@@ -235,15 +235,15 @@ class TendrlApi(ApiBase):
         Args:
             name(str): name of cluster
             cluster_id: id of cluster
-            nodes (list): list of dictionaries containing node identification
+            nodes(list): list of dictionaries containing node identification
                           and node role
             provisioner(str): node identification of node that contain
                           provisioning tag
             network(str): ip address and mask in prefix format of network with nodes
             node_identifier(str): node identification - id or ip address
-            sds_type (str): ceph or glusterfs
+            sds_type(str): ceph or glusterfs
             sds_version(str): version of sds
-            asserts_in (dict): assert values for this call and this method
+            asserts_in(dict): assert values for this call and this method
         """
         asserts_in = asserts_in or {
             "cookies": None,
