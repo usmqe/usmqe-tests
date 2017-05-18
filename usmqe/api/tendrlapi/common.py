@@ -221,7 +221,8 @@ class TendrlApi(ApiBase):
             cluster_id,
             nodes,
             provisioner,
-            network,
+            public_network,
+            cluster_network,
             node_identifier,
             sds_type,
             sds_version,
@@ -236,10 +237,13 @@ class TendrlApi(ApiBase):
             name(str): name of cluster
             cluster_id: id of cluster
             nodes(list): list of dictionaries containing node identification
-                          and node role
+                        and node role
             provisioner(str): node identification of node that contain
-                          provisioning tag
-            network(str): ip address and mask in prefix format of network with nodes
+                        provisioning tag
+            public_network(str): ip address and mask in prefix format
+                        of network with nodes
+            cluster_network(str): ip address and mask in prefix format
+                        of network with nodes
             node_identifier(str): node identification - id or ip address
             sds_type(str): ceph or glusterfs
             sds_version(str): version of sds
@@ -258,8 +262,8 @@ class TendrlApi(ApiBase):
             "sds_parameters": {
                 "name": name,
                 "cluster_id": cluster_id,
-                "public_network": network,
-                "cluster_network": network,
+                "public_network": public_network,
+                "cluster_network": cluster_network,
             },
             "node_configuration": {
                 x[node_identifier]: {

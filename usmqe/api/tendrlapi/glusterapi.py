@@ -34,18 +34,19 @@ class TendrlApiGluster(TendrlApi):
         Args:
             name(str): name of cluster
             cluster_id: id of cluster
-            nodes (list): list of dictionaries containing node identification
+            nodes(list): list of dictionaries containing node identification
                           and node role
             provisioner(str): node identification of node that contain
                           provisioning tag
             network(str): ip address and mask in prefix format of network with nodes
-            asserts_in (dict): assert values for this call and this method
+            asserts_in(dict): assert values for this call and this method
         """
         return super().create_cluster(
             name,
             cluster_id,
             nodes,
             provisioner,
+            network,
             network,
             "ip",
             "gluster",
