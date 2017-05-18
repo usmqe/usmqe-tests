@@ -234,20 +234,20 @@ class TendrlApi(ApiBase):
         Pattern:     "CreateCluster",
 
         Args:
-            name(str): name of cluster
-            cluster_id: id of cluster
-            nodes(list): list of dictionaries containing node identification
+            name (str): name of cluster
+            cluster_id (str): id of cluster
+            nodes (list): list of dictionaries containing node identification
                         and node role
-            provisioner(str): node identification of node that contain
+            provisioner (str): node identification of node that contain
                         provisioning tag
-            public_network(str): ip address and mask in prefix format
+            public_network (str): ip address and mask in prefix format
                         of network with nodes
-            cluster_network(str): ip address and mask in prefix format
+            cluster_network (str): ip address and mask in prefix format
                         of network with nodes
-            node_identifier(str): node identification - id or ip address
-            sds_type(str): ceph or glusterfs
-            sds_version(str): version of sds
-            asserts_in(dict): assert values for this call and this method
+            node_identifier (str): node identification - id or ip address
+            sds_type (str): ceph or glusterfs
+            sds_version (str): version of sds
+            asserts_in (dict): assert values for this call and this method
         """
         asserts_in = asserts_in or {
             "cookies": None,
