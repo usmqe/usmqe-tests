@@ -254,12 +254,12 @@ class TendrlApi(ApiBase):
         data = {
             "sds_name": sds_type,
             "sds_version": sds_version,
+            "node_identifier": node_identifier,
             "sds_parameters": {
                 "name": name,
                 "cluster_id": cluster_id,
                 "public_network": network,
                 "cluster_network": network,
-                "node_identifier": node_identifier,
             },
             "node_configuration": {
                 x[node_identifier]: {

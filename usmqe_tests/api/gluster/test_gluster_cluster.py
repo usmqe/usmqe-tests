@@ -33,7 +33,10 @@ Positive create gluster cluster.
 """
 
 
-def test_cluster_create_valid(valid_session_credentials, valid_nodes, net_interface="eth0"):
+def test_cluster_create_valid(
+        valid_session_credentials,
+        valid_nodes,
+        net_interface="eth0"):
     """@pylatest api/gluster.cluster_create
         .. test_step:: 1
 
@@ -67,7 +70,12 @@ def test_cluster_create_valid(valid_session_credentials, valid_nodes, net_interf
         """
     nodes = []
     provisioner_ip = None
+    network = None
     for x in valid_nodes:
+        if "tendrl/server" in x["tags"]:
+            network = "{}/22".format(
+                    ast.literal_eval(x["networks"][net_interface]["ipv4"])[0])
+            continue
         ips = ast.literal_eval(x["networks"][net_interface]["ipv4"])
         nodes.append({
             "role": "glusterfs/node",
@@ -81,7 +89,7 @@ def test_cluster_create_valid(valid_session_credentials, valid_nodes, net_interf
             "4654ac00-e67b-4b74-86a3-e740b1b8cee5",
             nodes,
             provisioner_ip,
-            "{}/22".format(provisioner_ip))["job_id"]
+            network)["job_id"]
 
     api.wait_for_job_status(job_id)
 

@@ -24,9 +24,15 @@ def valid_nodes(valid_session_credentials):
     cluster_list = api.get_nodes()
     return [x for x in cluster_list["nodes"]
             if "tendrl/node" in x["tags"]
-            and "tendrl/server" not in x["tags"]
             and x["status"] == "UP"]
 
+
+@pytest.fixture(params=["eth0"])
+def network_interface(request):
+    """
+    Generate network interface name.
+    """
+    return request.param
 
 @pytest.fixture(params=[None, "0000000000000000"])
 def invalid_cluster_id(request):
