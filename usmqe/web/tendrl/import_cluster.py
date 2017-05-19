@@ -11,7 +11,7 @@ from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import\
     ClustersList, check_hosts
 from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
-from usmqe.web.tendrl.mainpage.hosts.pages import HostsList
+from usmqe.web.tendrl.mainpage.clusters.cluster.pages import ClusterMenu
 from usmqe.web.tendrl.task_wait import task_wait
 
 
@@ -87,6 +87,6 @@ def import_cluster(driver, import_page, clusters_nr=0, cluster_name=None,
 
     # check hosts
     if present:
-        page_hosts_list = HostsList(driver)
+        page_hosts_list = ClusterMenu(driver).open_hosts()
         check_hosts(hosts_list, page_hosts_list)
     return cluster_ident
