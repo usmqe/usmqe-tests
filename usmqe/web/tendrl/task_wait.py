@@ -83,10 +83,3 @@ def task_wait(task_details, desired_state='Finished', ttl=600):
         status_str == desired_state,
         "Task status should be '{}', it is '{}'".format(
             desired_state, status_str))
-
-    # finally status icon should have the same state
-    pytest.check(
-        task_details.status == desired_state.lower(),
-        "task status icon should be in '{}' state, "
-        "it is in '{}' state".format(
-            desired_state.lower(), task_details.status))
