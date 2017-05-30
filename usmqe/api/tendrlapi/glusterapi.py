@@ -42,16 +42,16 @@ class TendrlApiGluster(TendrlApi):
             asserts_in (dict): assert values for this call and this method
         """
         return super().create_cluster(
-            name,
-            cluster_id,
-            nodes,
-            provisioner,
-            network,
-            network,
-            "ip",
-            "gluster",
-            pytest.config.getini("usm_gluster_version"),
-            asserts_in)
+            name=name,
+            cluster_id=cluster_id,
+            nodes=nodes,
+            provisioner=provisioner,
+            public_network=network,
+            cluster_network=network,
+            node_identifier="ip",
+            sds_type="gluster",
+            sds_version=pytest.config.getini("usm_gluster_version"),
+            asserts_in=asserts_in)
 
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id

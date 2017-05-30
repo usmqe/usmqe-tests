@@ -244,7 +244,8 @@ class TendrlApi(ApiBase):
                         of network with nodes
             cluster_network (str): ip address and mask in prefix format
                         of network with nodes
-            node_identifier (str): node identification - id or ip address
+            node_identifier (str): type of node identification that is used for
+                        specifying node. Values: `id` or `ip`
             sds_type (str): ceph or glusterfs
             sds_version (str): version of sds
             asserts_in (dict): assert values for this call and this method
