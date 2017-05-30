@@ -27,7 +27,7 @@ def valid_nodes(valid_session_credentials):
             and x["status"] == "UP"]
 
 
-@pytest.fixture(params=["eth0"])
+@pytest.fixture(params=["ens3"])
 def network_interface(request):
     """
     Generate network interface name.
