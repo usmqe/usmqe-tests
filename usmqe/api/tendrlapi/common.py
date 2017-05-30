@@ -134,10 +134,10 @@ class TendrlApi(ApiBase):
     def wait_for_job_status(
             self,
             job_id,
-            max_count=42,
+            max_count=360,
             status="finished",
             issue=None,
-            sleep_time=5):
+            sleep_time=10):
         """ Repeatedly check if status of job with provided id is in required state.
 
         Args:
