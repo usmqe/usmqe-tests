@@ -37,26 +37,13 @@ def test_cluster_create_valid(
         valid_session_credentials,
         valid_nodes,
         net_interface="eth0"):
-    """@pylatest api/gluster.cluster_create
-        .. test_step:: 1
-
-        Check if there is at least one gluster node for cluster creation.
-
-        .. test_result:: 1
-
-        Test passes if there is at least one gluster node.
-        """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    pytest.check(
-        len(valid_nodes) > 0,
-        "There have to be at least one gluster node."
-        "There are {}".format(len(valid_nodes)))
     """@pylatest api/gluster.cluster_import
-        .. test_step:: 2
+        .. test_step:: 1
 
             Send POST request to Tendrl API ``APIURL/GlusterCreateCluster
 
-        .. test_result:: 2
+        .. test_result:: 1
 
             Server should return response in JSON format:
 
@@ -71,6 +58,7 @@ def test_cluster_create_valid(
     nodes = []
     provisioner_ip = None
     network = None
+    node_ids = []
     for x in valid_nodes:
         if "tendrl/server" in x["tags"]:
             network = "{}/22".format(
@@ -80,10 +68,25 @@ def test_cluster_create_valid(
         nodes.append({
             "role": "glusterfs/node",
             "ip": ips[0] if type(ips) == list else ips})
+        node_ids.append(x["node_id"])
         if "provisioner/gluster" in x["tags"]:
             provisioner_ip = ips[0] if type(ips) == list else ips
     LOGGER.debug("node_ips: %s" % nodes)
     LOGGER.debug("provisioner: %s" % provisioner_ip)
+    """@pylatest api/gluster.cluster_create
+        .. test_step:: 2
+
+        Check if there is at least one gluster node for cluster creation.
+
+        .. test_result:: 2
+
+        Test passes if there is at least one gluster node.
+        """
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    pytest.check(
+        len(nodes) > 0,
+        "There have to be at least one gluster node."
+        "There are {}".format(len(valid_nodes)))
     job_id = api.create_cluster(
         "MyCluster",
         "4654ac00-e67b-4b74-86a3-e740b1b8cee5",
@@ -112,10 +115,14 @@ def test_cluster_create_valid(
         "present in cluster list.".format(integration_id))
 
     pytest.check(
-        len(imported_clusters["nodes"]) == len(nodes),
+        len(imported_clusters[0]["nodes"]) == len(nodes),
         "In cluster should be the same amount of hosts"
         "(is {}) as is in API call for cluster creation."
         "(is {})".format(len(imported_clusters["nodes"]), len(nodes)))
+
+    pytest.check(
+        [set(node_ids) == set(imported_clusters[0]["nodes"].keys())],
+        "There should be imported these nodes: {}".format(node_ids))
 
 
 """@pylatest api/gluster.cluster_import
