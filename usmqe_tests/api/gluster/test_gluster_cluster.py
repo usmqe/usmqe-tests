@@ -4,7 +4,6 @@ REST API test suite - gluster cluster
 """
 import pytest
 import json
-import ast
 
 from usmqe.api.tendrlapi import glusterapi
 
@@ -62,9 +61,9 @@ def test_cluster_create_valid(
     for x in valid_nodes:
         if "tendrl/server" in x["tags"]:
             network = "{}/22".format(
-                ast.literal_eval(x["networks"][network_interface]["ipv4"])[0])
+                x["networks"][network_interface]["ipv4"][0])
             continue
-        ips = ast.literal_eval(x["networks"][network_interface]["ipv4"])
+        ips = x["networks"][network_interface]["ipv4"]
         nodes.append({
             "role": "glusterfs/node",
             "ip": ips[0] if type(ips) == list else ips})
@@ -102,6 +101,7 @@ def test_cluster_create_valid(
         section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
 
+    api.get_cluster_list()
     # TODO(fbalak) remove this sleep after
     #              https://github.com/Tendrl/api/issues/159 is resolved.
     import time
