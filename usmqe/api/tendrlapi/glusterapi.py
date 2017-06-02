@@ -52,7 +52,7 @@ class TendrlApiGluster(TendrlApi):
             public_network=network,
             cluster_network=network,
             node_identifier="ip",
-            conf_overrides,
+            conf_overrides=conf_overrides,
             sds_type="gluster",
             sds_version=pytest.config.getini("usm_gluster_version"),
             asserts_in=asserts_in)

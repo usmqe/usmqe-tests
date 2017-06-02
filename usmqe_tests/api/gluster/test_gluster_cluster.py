@@ -36,7 +36,7 @@ Positive create gluster cluster.
 def test_cluster_create_valid(
         valid_session_credentials,
         valid_nodes,
-        network_interface
+        network_interface,
         cluster_name):
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """@pylatest api/gluster.cluster_import
