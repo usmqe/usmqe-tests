@@ -18,4 +18,4 @@ class TendrlApiCeph(TendrlApi):
             nodes (list): node list of cluster which will be imported
             asserts_in (dict): assert values for this call and this method
         """
-        return super().import_cluster(nodes, "ceph", asserts_in)
+        super().import_cluster(nodes, "ceph", asserts_in)
