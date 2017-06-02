@@ -61,18 +61,20 @@ def test_cluster_create_valid(
     provisioner_ip = None
     network = None
     node_ids = []
+    first = True
     for x in valid_nodes:
-        if "tendrl/server" in x["tags"]:
-            network = "{}/22".format(
-                x["networks"][network_interface]["ipv4"][0])
-            continue
-        ips = x["networks"][network_interface]["ipv4"]
-        nodes.append({
-            "role": "glusterfs/node",
-            "ip": ips[0] if type(ips) == list else ips})
-        node_ids.append(x["node_id"])
-        if "provisioner/gluster" in x["tags"]:
-            provisioner_ip = ips[0] if type(ips) == list else ips
+        if "tendrl/server" not in x["tags"]:
+            if first:
+                network = "{}/22".format(
+                    x["networks"][network_interface]["ipv4"][0])
+                first = False
+            ips = x["networks"][network_interface]["ipv4"]
+            nodes.append({
+                "role": "glusterfs/node",
+                "ip": ips[0] if type(ips) == list else ips})
+            node_ids.append(x["node_id"])
+            if "provisioner/gluster" in x["tags"]:
+                provisioner_ip = ips[0] if type(ips) == list else ips
     LOGGER.debug("node_ips: %s" % nodes)
     LOGGER.debug("provisioner: %s" % provisioner_ip)
     """@pylatest api/gluster.cluster_create
