@@ -39,18 +39,18 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/CephCreatePool",
 
         Args:
-            cluster: Cluster ID (String)
-            name: Pool name. (String)
-            pg_num: Number of placement groups. (Int)
-            min_size: Minimum number of replicas required for I/O
-                      in degraded state (Int)
-            size: Number of replicas required for I/O. (Int)
-            pool_type: Type of the Ceph pool (ec or replicated) (String)
-            erasure_code_profile: For erasure pools only. It must be
-                                  an existing profile. (String)
-            quota_enabled: Enable quota for the pool. (Bool)
-            quota_max_objects: Maximum number of object in pool. (Int)
-            quota_max_bytes: Maximum number of bytes in pool. (Int)
+            cluster (str): Cluster ID
+            name (str): Pool name.
+            pg_num (int): Number of placement groups.
+            min_size (int): Minimum number of replicas required for I/O
+                      in degraded state
+            size (int): Number of replicas required for I/O.
+            pool_type (str): Type of the Ceph pool (ec or replicated)
+            erasure_code_profile (str): For erasure pools only. It must be
+                                  an existing profile.
+            quota_enabled (bool): Enable quota for the pool.
+            quota_max_objects (int): Maximum number of object in pool.
+            quota_max_bytes (int): Maximum number of bytes in pool.
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephCreatePool".format(cluster)
@@ -101,16 +101,16 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/CephUpdatePool",
 
         Args:
-            cluster: Cluster ID (String)
-            pool_id: Pool ID (String)
-            name: Pool name. (String)
-            size: Number of replicas required for I/O. (Int)
-            min_size: Minimum number of replicas required for I/O
-                      in degraded state (Int)
-            pg_num: Number of placement groups. (Int)
-            quota_enabled: Enable quota for the pool. (Bool)
-            quota_max_objects: Maximum number of object in pool. (Int)
-            quota_max_bytes: Maximum number of bytes in pool. (Int)
+            cluster (str): Cluster ID
+            pool_id (str): Pool ID
+            name (str): Pool name.
+            size (int): Number of replicas required for I/O.
+            min_size (int): Minimum number of replicas required for I/O
+                      in degraded state
+            pg_num (int): Number of placement groups.
+            quota_enabled (bool): Enable quota for the pool.
+            quota_max_objects (int): Maximum number of object in pool.
+            quota_max_bytes (int): Maximum number of bytes in pool.
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephUpdatePool".format(cluster)
@@ -153,7 +153,7 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/GetPoolList",
 
         Args:
-            cluster: Cluster ID. (String)
+            cluster (str): Cluster ID.
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/GetPoolList".format(cluster)
@@ -161,7 +161,7 @@ class TendrlApiCeph(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth)
         self.print_req_info(response)
-        self.check_response(response)
+        self.check_response(response, asserts_in)
         return response.json()
 
     def delete_pool(self, cluster, pool_id, asserts_in=None):
@@ -172,8 +172,8 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/CephDeletePool",
 
         Args:
-            cluster: Cluster ID (String)
-            pool_id: Pool ID (String)
+            cluster (str): Cluster ID
+            pool_id (str): Pool ID
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephDeletePool".format(cluster)
@@ -199,10 +199,10 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/CephCreateRbd",
 
         Args:
-            cluster: Cluster ID (String)
-            pool_id: Pool ID (String)
-            name: RBD name (String)
-            size: RBD size (Int)
+            cluster (str): Cluster ID
+            pool_id (str): Pool ID
+            name (str): RBD name
+            size (int): RBD size
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephCreateRbd".format(cluster)
@@ -231,10 +231,10 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/CephResizeRbd",
 
         Args:
-            cluster: Cluster ID (String)
-            pool_id: Pool ID (String)
-            name: RBD name (String)
-            size: RBD size (Int)
+            cluster (str): Cluster ID
+            pool_id (str): Pool ID
+            name (str): RBD name
+            size (int): RBD size
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephResizeRbd".format(cluster)
@@ -260,12 +260,12 @@ class TendrlApiCeph(TendrlApi):
 
         Name:        "delete_rbd",
         Method:      "DELETE",
-        Pattern:     ":cluster_id:/CephRbd",
+        Pattern:     ":cluster_id:/CephiDeleteRbd",
 
         Args:
-            cluster: Cluster ID (String)
-            pool_id: Pool ID (String)
-            name: RBD name (String)
+            cluster (str): Cluster ID
+            pool_id (str): Pool ID
+            name (str): RBD name
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephDeleteRbd".format(cluster)
@@ -295,13 +295,13 @@ class TendrlApiCeph(TendrlApi):
         Pattern:     ":cluster_id:/CephCreateECProfile",
 
         Args:
-            cluster: Cluster ID (String)
-            name: EC profile name (String)
-            k_ec: k value for ec profile (Int)
-            m_ec: m value for ec profile (Int)
-            plugin: EC profile plugin (String)
-            directory: directory for EC profile (String)
-            ruleset_fail_dom: rule set failure domain for EC profile (String)
+            cluster (str): Cluster ID
+            name (str): EC profile name
+            k_ec (int): k value for ec profile
+            m_ec (int): m value for ec profile
+            plugin (str): EC profile plugin
+            directory (str): directory for EC profile
+            ruleset_fail_dom (str): rule set failure domain for EC profile
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephCreateECProfile".format(cluster)
@@ -330,11 +330,11 @@ class TendrlApiCeph(TendrlApi):
 
         Name:        "delete_ecprofile",
         Method:      "DELETE",
-        Pattern:     ":cluster_id:/CephCreateECProfile",
+        Pattern:     ":cluster_id:/CephDeleteECProfile",
 
         Args:
-            cluster: Cluster ID (String)
-            name: EC profile name (String)
+            cluster (str): Cluster ID
+            name (str): EC profile name
             asserts_in (dict): assert values for this call and this method
         """
         pattern = "{}/CephDeleteECProfile".format(cluster)

@@ -201,9 +201,9 @@ def test_create_pool_valid(
 
         pytest.check(
             pool_tendrl == storage_pool_attributes,
-            """Storage pool attributes: {}
-            Tendrl pool attributes: {}
-            These should be the same.""".format(
+            "Storage pool attributes: {}"
+            "Tendrl pool attributes: {}"
+            "These should be the same.".format(
                 pool_tendrl, storage_pool_attributes))
 
 # # TODO This testcase is useless with current API because there is no

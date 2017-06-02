@@ -1,7 +1,5 @@
 """
 Library for direct access to ceph commands.
-NOTE: If user would like to use this module with different key than id_rsa,
-it should be imported inside testcase and not in usual python import section
 
 .. moduleauthor:: dahorak@redhat.com
 .. moduleauthor:: mkudlej@redhat.com
