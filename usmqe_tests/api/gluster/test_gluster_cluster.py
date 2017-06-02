@@ -124,8 +124,9 @@ def test_cluster_create_valid(
         "(is {})".format(len(imported_clusters["nodes"]), len(nodes)))
 
     pytest.check(
-        [set(node_ids) == set(imported_clusters[0]["nodes"].keys())],
-        "There should be imported these nodes: {}".format(node_ids))
+        set(node_ids) == set(imported_clusters[0]["nodes"].keys()),
+        "There should be imported these nodes: {}"
+        "There are: {}".format(node_ids, imported_clusters[0]["nodes"].keys()))
 
 
 """@pylatest api/gluster.cluster_import
