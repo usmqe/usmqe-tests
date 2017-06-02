@@ -4,6 +4,7 @@ REST API test suite - gluster cluster
 """
 import pytest
 import json
+import uuid
 
 from usmqe.api.tendrlapi import glusterapi
 
@@ -90,7 +91,7 @@ def test_cluster_create_valid(
         "There are {}".format(len(valid_nodes)))
     job_id = api.create_cluster(
         cluster_name,
-        "4654ac00-e67b-4b74-86a3-e740b1b8cee5",
+        str(uuid.uuid4()),
         nodes,
         provisioner_ip,
         network)["job_id"]
