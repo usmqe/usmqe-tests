@@ -28,6 +28,7 @@ class TendrlApiGluster(TendrlApi):
             nodes,
             provisioner,
             network,
+            conf_overrides=None,
             asserts_in=None):
         """ Create Gluster cluster.
 
@@ -39,6 +40,8 @@ class TendrlApiGluster(TendrlApi):
             provisioner (str): node identification of node that contain
                           provisioning tag
             network (str): ip address and mask in prefix format of network with nodes
+            conf_overrides (dict): dictionary containing special settings related
+                        to specific sds type.
             asserts_in (dict): assert values for this call and this method
         """
         return super().create_cluster(
@@ -49,6 +52,7 @@ class TendrlApiGluster(TendrlApi):
             public_network=network,
             cluster_network=network,
             node_identifier="ip",
+            conf_overrides,
             sds_type="gluster",
             sds_version=pytest.config.getini("usm_gluster_version"),
             asserts_in=asserts_in)

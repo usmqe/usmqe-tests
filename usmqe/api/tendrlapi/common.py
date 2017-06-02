@@ -224,6 +224,7 @@ class TendrlApi(ApiBase):
             public_network,
             cluster_network,
             node_identifier,
+            conf_overrides,
             sds_type,
             sds_version,
             asserts_in=None):
@@ -246,6 +247,11 @@ class TendrlApi(ApiBase):
                         of network with nodes
             node_identifier (str): type of node identification that is used for
                         specifying node. Values: `id` or `ip`
+            conf_overrides (dict): dictionary containing special settings related
+                        to specific sds type.
+                        For example (ceph):
+                            {"global": {"osd_pool_default_pg_num": 128,
+                            "pool_default_pgp_num": 1}}
             sds_type (str): ceph or glusterfs
             sds_version (str): version of sds
             asserts_in (dict): assert values for this call and this method
@@ -265,6 +271,7 @@ class TendrlApi(ApiBase):
                 "cluster_id": cluster_id,
                 "public_network": public_network,
                 "cluster_network": cluster_network,
+                "conf_overrides": conf_overrides
             },
             "node_configuration": {
                 x[node_identifier]: {
