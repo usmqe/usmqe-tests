@@ -32,10 +32,12 @@ Positive create gluster cluster.
 """
 
 
+@pytest.mark.parametrize("cluster_name", ["ClusterName"])
 def test_cluster_create_valid(
         valid_session_credentials,
         valid_nodes,
-        network_interface):
+        network_interface
+        cluster_name):
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
@@ -87,7 +89,7 @@ def test_cluster_create_valid(
         "There have to be at least one gluster node."
         "There are {}".format(len(valid_nodes)))
     job_id = api.create_cluster(
-        "MyCluster",
+        cluster_name,
         "4654ac00-e67b-4b74-86a3-e740b1b8cee5",
         nodes,
         provisioner_ip,
