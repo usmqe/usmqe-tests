@@ -109,7 +109,7 @@ class TendrlApi(ApiBase):
         self._auth = auth
 
     def get_job_attribute(self, job_id, attribute="status", section=None):
-        """ Get attrubute from job specified by job_id.
+        """ Get attribute from job specified by job_id.
 
         Name:       "get_job_attribute",
         Method:     "GET",
@@ -130,6 +130,24 @@ class TendrlApi(ApiBase):
             return response.json()[section][attribute]
         else:
             return response.json()[attribute]
+
+    def get_job_messages(self, job_id):
+        """ Get messages from job specified by job_id.
+
+        Name:       "get_job_messages",
+        Method:     "GET",
+        Pattern     "jobs/:job_id:/messages",
+
+        Args:
+            job_id:     id of job
+        """
+        pattern = "jobs/{}/messages".format(job_id)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
 
     def wait_for_job_status(
             self,
