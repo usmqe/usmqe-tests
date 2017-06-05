@@ -157,10 +157,12 @@ class TendrlApi(ApiBase):
             issue=None,
             sleep_time=10):
         """ Repeatedly check if status of job with provided id is in required state.
+        If new job message appears then counter for ``max_count`` parameter is reset.
 
         Args:
             job_id: id provided by api request
             max_count: maximum of iterations
+                (counter resets if there is a new job message)
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
             sleep_time: time in seconds between 2 job status function calls
@@ -168,6 +170,7 @@ class TendrlApi(ApiBase):
 
         count = 0
         current_status = ""
+        messages_count = 0
         while current_status not in (status, "finished", "failed") and\
                 count < max_count:
             current_status = self.get_job_attribute(
@@ -175,7 +178,10 @@ class TendrlApi(ApiBase):
                 attribute="status")
             count += 1
             time.sleep(sleep_time)
-        LOGGER.debug("status: %s" % current_status)
+            messages = self.get_job_messages(job_id)
+            if len(messages) > messages_count:
+                count = 0
+                messages_count = len(messages)
         pytest.check(
             current_status == status,
             msg="Job status is {} and should be {}".format(
