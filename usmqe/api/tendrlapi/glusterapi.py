@@ -19,7 +19,7 @@ class TendrlApiGluster(TendrlApi):
             nodes (list): node list of cluster which will be imported
             asserts_in (dict): assert values for this call and this method
         """
-        super().import_cluster(nodes, "gluster", asserts_in)
+        return super().import_cluster(nodes, "gluster", asserts_in)
 
 
 # TODO: https://github.com/Tendrl/api/issues/78
