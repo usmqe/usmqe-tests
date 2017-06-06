@@ -242,9 +242,7 @@ class TendrlApi(ApiBase):
             provisioner (str): node identification of node that contain
                         provisioning tag
             public_network (str): ip address and mask in prefix format
-                        of network with nodes
             cluster_network (str): ip address and mask in prefix format
-                        of network with nodes
             node_identifier (str): type of node identification that is used for
                         specifying node. Values: `id` or `ip`
             conf_overrides (dict): dictionary containing special settings related
