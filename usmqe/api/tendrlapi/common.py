@@ -2,6 +2,7 @@
 
 import json
 import time
+import datetime
 
 import pytest
 import requests
@@ -152,35 +153,38 @@ class TendrlApi(ApiBase):
     def wait_for_job_status(
             self,
             job_id,
-            max_count=100,
+            job_time=10000,
+            update_time=1000,
             status="finished",
             issue=None,
             sleep_time=10):
         """ Repeatedly check if status of job with provided id is in required state.
-        If new job message appears then counter for ``max_count`` parameter is reset.
+        It is time bounded by job_time and each event is time bounded by update_time
 
         Args:
             job_id: id provided by api request
-            max_count: maximum of iterations
-                (counter resets if there is a new job message)
+            job_time: number of seconds in which the task must be in required state
+            update_time: number of seconds in which the event of the task must be done
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
             sleep_time: time in seconds between 2 job status function calls
         """
 
-        count = 0
+        start_time = datetime.datetime.now()
+        job_timeout = datetime.timedelta(0, job_time, 0)
+        update_timeout = datetime.timedelta(0, update_time, 0)
         current_status = ""
         messages_count = 0
         while current_status not in (status, "finished", "failed") and\
-                count < max_count:
+            datetime.datetime.now() - start_time <= job_timeout and\
+                datetime.datetime.now() - start_time <= update_timeout:
             current_status = self.get_job_attribute(
                 job_id,
                 attribute="status")
-            count += 1
             time.sleep(sleep_time)
             messages = self.get_job_messages(job_id)
             if len(messages) > messages_count:
-                count = 0
+                update_timeout = datetime.timedelta(0, update_time, 0)
                 messages_count = len(messages)
         pytest.check(
             current_status == status,
