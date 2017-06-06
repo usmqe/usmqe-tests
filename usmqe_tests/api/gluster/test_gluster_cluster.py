@@ -70,12 +70,18 @@ def test_cluster_create_valid(
                 x["networks"][network_interface]["ipv4"][0])
             first = False
         ips = x["networks"][network_interface]["ipv4"]
+        pytest.check(type(ips) == list,
+            "type of ip addresses returned from api have to be list,"
+            " it is: {}".format(type(ips)))
+        pytest.check(len(ips == 1,
+            "length of ipv4 addresses list have to be 1, otherwise it is not valid"
+            " configuration for this test, it is: {}".format(len(ips)))
         nodes.append({
             "role": "glusterfs/node",
-            "ip": ips[0] if type(ips) == list else ips})
+            "ip": ips[0]})
         node_ids.append(x["node_id"])
         if "provisioner/gluster" in x["tags"]:
-            provisioner_ip = ips[0] if type(ips) == list else ips
+            provisioner_ip = ips[0]
     LOGGER.debug("node_ips: %s" % nodes)
     LOGGER.debug("provisioner: %s" % provisioner_ip)
     """@pylatest api/gluster.cluster_create
