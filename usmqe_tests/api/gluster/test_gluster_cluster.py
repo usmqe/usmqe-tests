@@ -37,7 +37,6 @@ Positive create gluster cluster.
 def test_cluster_create_valid(
         valid_session_credentials,
         valid_nodes,
-        network_interface,
         cluster_name):
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """@pylatest api/gluster.cluster_import
@@ -59,17 +58,16 @@ def test_cluster_create_valid(
         """
     nodes = []
     provisioner_ip = None
-    network = None
+    network = pytest.config.getini("usm_network_subnet")
     node_ids = []
-    first = True
+    ips = None
     for x in valid_nodes:
         if "tendrl/server" in x["tags"]:
             continue
-        if first:
-            network = "{}/22".format(
-                x["networks"][network_interface]["ipv4"][0])
-            first = False
-        ips = x["networks"][network_interface]["ipv4"]
+        for y in x["networks"]:
+            if y["subnet"] == network:
+                ips = y["ipv4"]
+                break
         pytest.check(type(ips) == list,
             "type of ip addresses returned from api have to be list,"
             " it is: {}".format(type(ips)))
