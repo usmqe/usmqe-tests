@@ -27,14 +27,6 @@ def valid_nodes(valid_session_credentials):
             and x["status"] == "UP"]
 
 
-@pytest.fixture(params=["ens3"])
-def network_interface(request):
-    """
-    Generate network interface name.
-    """
-    return request.param
-
-
 @pytest.fixture(params=[None, "0000000000000000"])
 def invalid_cluster_id(request):
     """
