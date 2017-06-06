@@ -63,18 +63,19 @@ def test_cluster_create_valid(
     node_ids = []
     first = True
     for x in valid_nodes:
-        if "tendrl/server" not in x["tags"]:
-            if first:
-                network = "{}/22".format(
-                    x["networks"][network_interface]["ipv4"][0])
-                first = False
-            ips = x["networks"][network_interface]["ipv4"]
-            nodes.append({
-                "role": "glusterfs/node",
-                "ip": ips[0] if type(ips) == list else ips})
-            node_ids.append(x["node_id"])
-            if "provisioner/gluster" in x["tags"]:
-                provisioner_ip = ips[0] if type(ips) == list else ips
+        if "tendrl/server" in x["tags"]:
+            continue
+        if first:
+            network = "{}/22".format(
+                x["networks"][network_interface]["ipv4"][0])
+            first = False
+        ips = x["networks"][network_interface]["ipv4"]
+        nodes.append({
+            "role": "glusterfs/node",
+            "ip": ips[0] if type(ips) == list else ips})
+        node_ids.append(x["node_id"])
+        if "provisioner/gluster" in x["tags"]:
+            provisioner_ip = ips[0] if type(ips) == list else ips
     LOGGER.debug("node_ips: %s" % nodes)
     LOGGER.debug("provisioner: %s" % provisioner_ip)
     """@pylatest api/gluster.cluster_create
@@ -119,16 +120,17 @@ def test_cluster_create_valid(
         "Job list integration_id '{}' should be "
         "present in cluster list.".format(integration_id))
 
+    imported_nodes = imported_clusters[0]["nodes"]
     pytest.check(
-        len(imported_clusters[0]["nodes"]) == len(nodes),
+        len(imported_nodes) == len(nodes),
         "In cluster should be the same amount of hosts"
         "(is {}) as is in API call for cluster creation."
-        "(is {})".format(len(imported_clusters["nodes"]), len(nodes)))
+        "(is {})".format(len(imported_nodes), len(nodes)))
 
     pytest.check(
-        set(node_ids) == set(imported_clusters[0]["nodes"].keys()),
+        set(node_ids) == set(imported_nodes.keys()),
         "There should be imported these nodes: {}"
-        "There are: {}".format(node_ids, imported_clusters[0]["nodes"].keys()))
+        "There are: {}".format(node_ids, imported_nodes.keys()))
 
 
 """@pylatest api/gluster.cluster_import
