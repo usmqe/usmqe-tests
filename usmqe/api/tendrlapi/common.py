@@ -163,8 +163,8 @@ class TendrlApi(ApiBase):
 
         Args:
             job_id: id provided by api request
-            job_time: number of seconds in which the task must be in required state
-            update_time: number of seconds in which the event of the task must be done
+            job_time: job should achieve status in ``job_time`` seconds
+            update_time: event should be done in ``update_time`` seconds
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
             sleep_time: time in seconds between 2 job status function calls
