@@ -171,7 +171,7 @@ class TendrlApi(ApiBase):
         """
 
         start_time = datetime.datetime.now()
-        last_update = datetime.datetime.now()
+        last_update = start_time
         job_timeout = datetime.timedelta(0, job_time, 0)
         update_timeout = datetime.timedelta(0, update_time, 0)
         current_status = ""
@@ -187,6 +187,15 @@ class TendrlApi(ApiBase):
             if len(messages) > messages_count:
                 last_update = datetime.datetime.now()
                 messages_count = len(messages)
+        now = datetime.datetime.now()
+        pytest.check(
+            now - start_time <= job_timeout,
+            msg="Job shouldn't take longer then {},"
+            "it took: {}".format(job_timeout, now - start_time))
+        pytest.check(
+            now - start_time <= job_timeout,
+            msg="Job event shouldn't take longer then {},"
+            "last event took: {}".format(job_timeout, now - last_update))
         pytest.check(
             current_status == status,
             msg="Job status is {} and should be {}".format(
