@@ -153,13 +153,16 @@ class TendrlApi(ApiBase):
     def wait_for_job_status(
             self,
             job_id,
-            job_time=10000,
-            update_time=1000,
+            job_time=10800,
+            update_time=2700,
             status="finished",
             issue=None,
             sleep_time=10):
         """ Repeatedly check if status of job with provided id is in required state.
-        It is time bounded by job_time and each event is time bounded by update_time
+        It is time bounded by job_time and each event is time bounded by update_time.
+        According to default value for job_time the job is supposed to achieve desired
+        state in 3 hours (10800 seconds) and each event should not take more than
+        45 minutes (2700 seconds).
 
         Args:
             job_id: id provided by api request
