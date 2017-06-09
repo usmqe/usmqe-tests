@@ -26,7 +26,6 @@ class TendrlApiGluster(TendrlApi):
             name,
             cluster_id,
             nodes,
-            provisioner,
             network,
             conf_overrides=None,
             asserts_in=None):
@@ -37,8 +36,6 @@ class TendrlApiGluster(TendrlApi):
             cluster_id (str): id of cluster
             nodes (list): list of dictionaries containing node identification
                           and node role
-            provisioner (str): node identification of node that contain
-                          provisioning tag
             network (str): ip address and mask in prefix format of network with nodes
             conf_overrides (dict): dictionary containing special settings related
                         to specific sds type.
@@ -48,7 +45,6 @@ class TendrlApiGluster(TendrlApi):
             name=name,
             cluster_id=cluster_id,
             nodes=nodes,
-            provisioner=provisioner,
             public_network=network,
             cluster_network=network,
             node_identifier="ip",

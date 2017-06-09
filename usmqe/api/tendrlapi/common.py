@@ -220,7 +220,6 @@ class TendrlApi(ApiBase):
             name,
             cluster_id,
             nodes,
-            provisioner,
             public_network,
             cluster_network,
             node_identifier,
@@ -239,8 +238,6 @@ class TendrlApi(ApiBase):
             cluster_id (str): id of cluster
             nodes (list): list of dictionaries containing node identification
                         and node role
-            provisioner (str): node identification of node that contain
-                        provisioning tag
             public_network (str): ip address and mask in prefix format
             cluster_network (str): ip address and mask in prefix format
             node_identifier (str): type of node identification that is used for
@@ -274,7 +271,7 @@ class TendrlApi(ApiBase):
             "node_configuration": {
                 x[node_identifier]: {
                     "role": x["role"],
-                    "provisioning_ip": provisioner}
+                    "provisioning_ip": x[node_identifier]}
                 for x in nodes}
         }
         response = requests.post(
