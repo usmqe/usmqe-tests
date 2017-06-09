@@ -260,7 +260,7 @@ class TendrlApiCeph(TendrlApi):
 
         Name:        "delete_rbd",
         Method:      "DELETE",
-        Pattern:     ":cluster_id:/CephiDeleteRbd",
+        Pattern:     ":cluster_id:/CephDeleteRbd",
 
         Args:
             cluster (str): Cluster ID
