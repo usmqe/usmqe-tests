@@ -2,6 +2,7 @@
 
 import json
 import time
+import datetime
 
 import pytest
 import requests
@@ -109,7 +110,7 @@ class TendrlApi(ApiBase):
         self._auth = auth
 
     def get_job_attribute(self, job_id, attribute="status", section=None):
-        """ Get attrubute from job specified by job_id.
+        """ Get attribute from job specified by job_id.
 
         Name:       "get_job_attribute",
         Method:     "GET",
@@ -131,33 +132,75 @@ class TendrlApi(ApiBase):
         else:
             return response.json()[attribute]
 
+    def get_job_messages(self, job_id):
+        """ Get messages from job specified by job_id.
+
+        Name:       "get_job_messages",
+        Method:     "GET",
+        Pattern     "jobs/:job_id:/messages",
+
+        Args:
+            job_id:     id of job
+        """
+        pattern = "jobs/{}/messages".format(job_id)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
+
     def wait_for_job_status(
             self,
             job_id,
-            max_count=42,
+            job_time=10800,
+            update_time=2700,
             status="finished",
             issue=None,
-            sleep_time=5):
+            sleep_time=10):
         """ Repeatedly check if status of job with provided id is in required state.
+        It is time bounded by job_time and each event is time bounded by update_time.
+        According to default value for job_time the job is supposed to achieve desired
+        state in 3 hours (10800 seconds) and each event should not take more than
+        45 minutes (2700 seconds).
 
         Args:
             job_id: id provided by api request
-            max_count: maximum of iterations
+            job_time: job should achieve status in ``job_time`` seconds
+            update_time: event should be done in ``update_time`` seconds
             status: expected status of job that is checked
             issue: pytest issue message (usually github issue link)
             sleep_time: time in seconds between 2 job status function calls
         """
 
-        count = 0
+        start_time = datetime.datetime.now()
+        last_update = start_time
+        job_timeout = datetime.timedelta(seconds=job_time)
+        update_timeout = datetime.timedelta(seconds=update_time)
         current_status = ""
+        messages_count = 0
+        now = datetime.datetime.now()
         while current_status not in (status, "finished", "failed") and\
-                count < max_count:
+                now - start_time <= job_timeout and\
+                now - last_update <= update_timeout:
             current_status = self.get_job_attribute(
                 job_id,
                 attribute="status")
-            count += 1
             time.sleep(sleep_time)
-        LOGGER.debug("status: %s" % current_status)
+            now = datetime.datetime.now()
+            LOGGER.debug("status: %s" % current_status)
+            messages = self.get_job_messages(job_id)
+            if len(messages) > messages_count:
+                last_update = datetime.datetime.now()
+                messages_count = len(messages)
+        pytest.check(
+            now - start_time <= job_timeout,
+            msg="Job shouldn't take longer then {},"
+            "it took: {}".format(job_timeout, now - start_time))
+        pytest.check(
+            now - last_update <= job_timeout,
+            msg="Job event shouldn't take longer then {},"
+            "last event took: {}".format(job_timeout, now - last_update))
         pytest.check(
             current_status == status,
             msg="Job status is {} and should be {}".format(
