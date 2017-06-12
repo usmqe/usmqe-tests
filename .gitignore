@@ -10,5 +10,6 @@ dist
 *.html
 .cache
 *.ini
+*.hosts
 
 logs

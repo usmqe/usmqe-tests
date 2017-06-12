@@ -70,10 +70,9 @@ We assume that:
 
 Now, you need to:
 
-* Check that ``usmqe`` user has a private ssh key in ``~/.ssh/id_rsa`` file 
-  (this is default location of ssh key specified in ``usm_keyfile`` option of
-  ``pytest.ini``) and has it's public ssh key deployed on all machines of test
-  cluster.
+* Check that ``usmqe`` user can ssh to all nodes with his ssh key stored 
+  in ``~/.ssh``. This can be configured in ``~/.ssh/config``.
+  Public ssh key is deployed on all machines of test cluster.
 
 * Store *host inventory file* in ``conf/clustername.hosts`` and specify this
   path in ``usm_inventory`` option of ``pytest.ini``.

@@ -2,6 +2,7 @@
 Library for direct access to ceph commands.
 
 .. moduleauthor:: dahorak@redhat.com
+.. moduleauthor:: mkudlej@redhat.com
 """
 
 import pytest
@@ -33,8 +34,12 @@ class CephCommand(object):
         format_str = "--format {}".format(self._format) if self._format else ""
         timeout_str = "--connect-timeout {}".format(self._timeout) \
                       if self._timeout else ""
-        return "{} {} {} {}".format(
+        cmd = "{} {} {} {}".format(
             self._base_command, timeout_str, format_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
+        return cmd
 
     def run(self, host, command):
         """
@@ -79,6 +84,9 @@ class CephClusterCommand(CephCommand):
         cmd = "{} {} {} {} {} {}".format(
             self._base_command, timeout_str, format_str, cluster_str,
             conf_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
 
@@ -107,6 +115,9 @@ class RadosCommand(CephCommand):
 
         cmd = "{} {} {} {} {}".format(
             self._base_command, format_str, cluster_str, conf_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
 
@@ -138,6 +149,9 @@ class RBDCommand(CephCommand):
         cmd = "{} {} {} {} {} {}".format(
             self._base_command, format_str, cluster_str,
             conf_str, pool_str, command)
+        # TODO EOL workaround because of https://bugzilla.redhat.com/show_bug.cgi?id=1448057
+        # and for https://github.com/tomerfiliba/plumbum/issues/275
+        cmd = "{} {}".format(cmd, "&& echo || (echo; false)")
         return cmd
 
 

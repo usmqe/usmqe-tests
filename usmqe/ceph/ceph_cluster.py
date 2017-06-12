@@ -194,9 +194,7 @@ class CephCluster(CephCommon):
 
             {'fsid': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'}
         """
-        # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        # return self.run_on_mon('fsid')
-        return self.run_on_mon('fsid && echo || (echo; false)')
+        return self.run_on_mon('fsid')
 
     def health(self):
         """
@@ -294,9 +292,7 @@ class CephCluster(CephCommon):
               'timestamp': '2016-04-12 15:49:13.060559',
               'version': '0.94.5-9.el7cp',}
         """
-        # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        # return self.run_on_mon('report')
-        return self.run_on_mon('report && echo || (echo; false)')
+        return self.run_on_mon('report')
 
     def status(self):
         """
@@ -491,10 +487,7 @@ class CephClusterOsd(CephCommon):
               'ip': '172.16.180.1:6804/28484',
               'osd': 1,}
         """
-        # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        # return self.run_on_mon('osd find {}'.format(osd_id))
-        return self.run_on_mon('osd find {} && echo || (echo; false)'.
-                               format(osd_id))
+        return self.run_on_mon('osd find {}'.format(osd_id))
 
     # pylint - allow short method name
     def ls(self, epoch=None):  # pylint: disable=C0103
@@ -563,10 +556,7 @@ class CephClusterOsd(CephCommon):
               'osd_journal': '/var/lib/ceph/osd/TestClusterA-0/journal',
               'osd_objectstore': 'filestore',}
         """
-        # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        # return self.run_on_mon('osd metadata {}'.format(osd_id))
-        return self.run_on_mon(
-            'osd metadata {} && echo || (echo; false)'.format(osd_id))
+        return self.run_on_mon('osd metadata {}'.format(osd_id))
 
     def perf(self):
         """
@@ -606,9 +596,7 @@ class CephClusterOsd(CephCommon):
               'num_remapped_pgs': 0,
               'num_up_osds': 8}
         """
-        # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        # return self.run_on_mon('osd stat')
-        return self.run_on_mon('osd stat && echo || (echo; false)')
+        return self.run_on_mon('osd stat')
 
     def tree(self):
         """
@@ -652,6 +640,85 @@ class CephClusterOsd(CephCommon):
               'stray': []}
         """
         return self.run_on_mon('osd tree')
+
+    def pool_ls(self, detail=False):
+        """
+        Run ceph command: ``osd pool ls {detail}``
+
+        Args:
+            detail: If it equals to True function call output
+                    contains pool details
+
+        Returns:
+            dictionary: parsed json from
+                        ``ceph --format json --cluster CLUSTERNAME osd pool ls {detail}``
+                        command
+
+        Example output (only root elements)::
+        [
+            "rbd"
+        ]
+
+        and with detail=True
+
+        [
+          {
+             "pool_name": "rbd",
+             "flags": 1,
+             "flags_names": "hashpspool",
+             "type": 1,
+             "size": 3,
+             "min_size": 2,
+             "crush_ruleset": 0,
+             "object_hash": 2,
+             "pg_num": 64,
+             "pg_placement_num": 64,
+             "crash_replay_interval": 0,
+             "last_change": "1",
+             "last_force_op_resend": "0",
+             "auid": 0,
+             "snap_mode": "selfmanaged",
+             "snap_seq": 0,
+             "snap_epoch": 0,
+             "pool_snaps": [],
+             "removed_snaps": "[]",
+             "quota_max_bytes": 0,
+             "quota_max_objects": 0,
+             "tiers": [],
+             "tier_of": -1,
+             "read_tier": -1,
+             "write_tier": -1,
+             "cache_mode": "none",
+             "target_max_bytes": 0,
+             "target_max_objects": 0,
+             "cache_target_dirty_ratio_micro": 0,
+             "cache_target_dirty_high_ratio_micro": 0,
+             "cache_target_full_ratio_micro": 0,
+             "cache_min_flush_age": 0,
+             "cache_min_evict_age": 0,
+             "erasure_code_profile": "",
+             "hit_set_params": {
+               "type": "none"
+             },
+             "hit_set_period": 0,
+             "hit_set_count": 0,
+             "use_gmt_hitset": true,
+             "min_read_recency_for_promote": 0,
+             "min_write_recency_for_promote": 0,
+             "hit_set_grade_decay_rate": 0,
+             "hit_set_search_last_n": 0,
+             "grade_table": [],
+             "stripe_width": 0,
+             "expected_num_objects": 0,
+             "fast_read": false,
+             "options": {}
+           }
+         ]
+        """
+        if detail:
+            return self.run_on_mon('osd pool ls detail')
+        else:
+            return self.run_on_mon('osd pool ls')
 
 
 class CephClusterStorage(CephCommon):
@@ -701,7 +768,4 @@ class CephClusterStorage(CephCommon):
               'total_used': '280276',}
         """
         pool_str = "--pool {}".format(pool) if pool else ""
-        # WORKAROUND for https://github.com/tomerfiliba/plumbum/issues/275
-        # return self.run_on_mon('df')
-        return self.run_on_mon('df {} && echo || (echo; false)'.
-                               format(pool_str))
+        return self.run_on_mon('df {}'.format(pool_str))

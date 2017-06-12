@@ -3,8 +3,8 @@
 Basic REST API.
 """
 
-import pytest
 import json
+import pytest
 
 LOGGER = pytest.get_logger("api_base", module=True)
 
@@ -60,7 +60,10 @@ class ApiBase(object):
         try:
             json.dumps(resp.json(encoding='unicode'))
         except ValueError as err:
-            pytest.check(False, "Bad response json format: {}".format(err))
+            pytest.check(
+                False,
+                "Bad response '{}' json format: '{}'".format(resp, err)
+                )
         pytest.check(
             resp.ok == asserts["ok"],
             "There should be ok == {}".format(str(asserts["ok"])))
@@ -80,7 +83,7 @@ class ApiBase(object):
                   {'name': str, 'size': int, 'tasks': dict}
         """
         LOGGER.debug("check_dict - data: {}".format(data))
-        LOGGER.debug("check_dict - schema: []".format(schema))
+        LOGGER.debug("check_dict - schema: {}".format(schema))
         expected_keys = sorted(schema.keys())
         keys = sorted(data.keys())
         pytest.check(
@@ -93,4 +96,5 @@ class ApiBase(object):
             if key in expected_keys:
                 pytest.check(
                     isinstance(data[key], schema[key]),
-                    "{} should be instance of {}".format(data[key], schema[key]))
+                    "{} should be instance of {}".format(data[key],
+                                                         schema[key]))
