@@ -117,7 +117,7 @@ def test_cluster_import_valid(valid_session_credentials):
         cl_list_id = [x for x in api.get_cluster_list()
                       if x.get("integration_id", "") == integration_id]
         pytest.check(
-            "There should be only on integration_id '{}'".format(integration_id),
+            "There should be only one integration_id '{}'".format(integration_id),
             len(cl_list_id) == 1)
         pytest.check(
             "Job list integration_id '{}' should be present in cluster list.".format(
