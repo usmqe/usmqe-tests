@@ -434,11 +434,3 @@ def test_delete_volume_valid(
             """
     storage = gluster.GlusterCommon()
     storage.find_volume_name(valid_volume_name, False)
-
-    # There should be either deleted attribute or record should be removed from database
-    # https://github.com/Tendrl/api/issues/78
-    #
-    # deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
-    # pytest.check(
-    #     deleted == "True",
-    #     "deleted attribute should be True, is {}".format(deleted))
