@@ -10,7 +10,6 @@ from webstr.selenium.ui.support import WebDriverUtils
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import\
     ClustersList, check_hosts
-from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
 from usmqe.web.tendrl.mainpage.clusters.cluster.pages import ClusterMenu
 from usmqe.web.tendrl.task_wait import task_wait
 
@@ -18,14 +17,13 @@ from usmqe.web.tendrl.task_wait import task_wait
 IMPORT_TIMEOUT = 3600
 
 
-def import_cluster_wait(driver, import_task_details):
+def import_cluster_wait(driver):
     """
     wait till the import cluster task is finished
+    NOTE: it has to be on the page with task details
 
     Parameters:
         driver: selenium driver
-        import_task_details: webstr page object with import_cluster method
-                       landing_page-HomePage or cluster_list-ClustersMenu
         ttl (int): how long it waits till the tasks is finished
                    in seconds
 
@@ -33,7 +31,7 @@ def import_cluster_wait(driver, import_task_details):
         list of cluster objects
     """
     # Wait till the cluster is imported
-    task_wait(import_task_details, ttl=IMPORT_TIMEOUT)
+    task_wait(driver, ttl=IMPORT_TIMEOUT)
 
     NavMenuBars(driver).open_clusters(click_only=True)
 
@@ -68,9 +66,8 @@ def import_cluster(driver, import_page, clusters_nr=0, cluster_name=None,
 # TODO: Import specific cluster
     (cluster_ident, hosts_list) = import_page.import_cluster(
         cluster_ident=cluster_ident, name=cluster_name, hosts=hosts)
-    import_task_details = TaskDetails(driver)
 
-    cluster_list = import_cluster_wait(driver, import_task_details)
+    cluster_list = import_cluster_wait(driver)
 
     # Check that cluster is present in the list
     pytest.check(len(cluster_list) == clusters_nr + 1,
