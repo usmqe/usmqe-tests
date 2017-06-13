@@ -14,8 +14,7 @@ import time
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 import usmqe.web.tendrl.landing_page.models as m_landing_page
 from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages\
-    import ClustersWorkBase
+from usmqe.web.tendrl.clusters import ClustersWorkBase
 
 
 class LandingException(Exception):
