@@ -69,13 +69,12 @@ class ClustersWorkBase(object):
         """
         self._model.create_btn.click()
 
-    def import_cluster(self, cluster_ident=None, name=None, hosts=None):
+    def import_cluster(self, import_page, name=None, hosts=None):
         """
-        import cluster
+        import SELECTED cluster
 
         Parameters:
-            cluster_ident: cluster identificator for choosing a cluster
-                           which should be imported
+            import_page: ImportCluster instance
             name (str): name of the cluster
                         TODO: Not used for now
                               https://github.com/Tendrl/api/issues/70
@@ -86,17 +85,15 @@ class ClustersWorkBase(object):
         Returns:
             tuple (cluster name or id, hosts list)
         """
-# TODO: Choose which cluster should be imported
 # TODO: Change cluster name
         cluster_name = name
 #       https://github.com/Tendrl/api/issues/70
-        self.start_import_cluster()
+
         import time
-        import_page = ImportCluster(self.driver)
         cluster_id = import_page.cluster_id
         if hosts is None:
             release = import_page.storage_service
-            if 'Gluster' in release:
+            if 'gluster' in release.lower():
                 # get gluster hosts
                 host = next(iter(import_page.hosts)).name
                 storage = gluster.GlusterCommon()
@@ -155,14 +152,39 @@ class ClustersWorkBase(object):
         final_import_page.view_import_task()
         return (cluster_name or cluster_id, hosts)
 
-# TODO
-# both ceph and gluster are imported the same way as of now
-# use import_cluster method instead
-    def import_gluster_cluster(self, name=None, hosts=None):
+    def import_generic_cluster(self, cluster_ident=None, name=None,
+                               hosts=None):
+        """
+        import cluster
+
+        Parameters:
+            cluster_ident: cluster identificator for choosing a cluster
+                           which should be imported
+            name (str): name of the cluster
+                        TODO: Not used for now
+                              https://github.com/Tendrl/api/issues/70
+            hosts (list): list of dictionaries
+                          {'hostname': <hostname>, 'release': <release>, ...
+                          for check only
+
+        Returns:
+            tuple (cluster name or id, hosts list)
+        """
+        self.start_import_cluster()
+
+# TODO: Choose which cluster should be imported
+        import_page = ImportCluster(self.driver)
+
+        return self.import_cluster(import_page, name=name, hosts=hosts)
+
+    def import_gluster_cluster(self, cluster_ident=None, name=None,
+                               hosts=None):
         """
         import gluster cluster
 
         Parameters:
+            cluster_ident: cluster identificator for choosing a cluster
+                           which should be imported
             name (str): name of the cluster
                         TODO: Not used for now
                               https://github.com/Tendrl/api/issues/70
@@ -170,22 +192,52 @@ class ClustersWorkBase(object):
                           {'hostname': <hostname>, 'release': <release>, ...
                           for check only
         """
-        raise NotImplementedError('import_gluster_cluster does not exist yet')
+        self.start_import_cluster()
+# TODO: Choose which cluster should be imported
 
-# TODO
-# both ceph and gluster are imported the same way as of now
-# use import_cluster method instead
-    def import_ceph_cluster(self, name=None, hosts=None):
+        # Select first gluster cluster in the list of available clusters
+        import_page = ImportCluster(self.driver)
+        for cluster in import_page.avail_clusters:
+            import_page.cluster = cluster
+            release = import_page.storage_service.lower()
+            if 'gluster' in release:
+                break
+        pytest.check('gluster' in release,
+                     'There should be some gluster cluster available',
+                     hard=True)
+
+        return self.import_cluster(import_page, name=name, hosts=hosts)
+
+    def import_ceph_cluster(self, cluster_ident=None, name=None,
+                            hosts=None):
         """
         import ceph cluster
 
         Parameters:
+            cluster_ident: cluster identificator for choosing a cluster
+                           which should be imported
             name (str): name of the cluster
+                        TODO: Not used for now
+                              https://github.com/Tendrl/api/issues/70
             hosts (list): list of dictionaries
-                          {'hostname': <hostname>,
-                           'role': <'Monitor' or/and 'OSD Host'>, ...
+                          {'hostname': <hostname>, 'release': <release>, ...
+                          for check only
         """
-        raise NotImplementedError('import_ceph_cluster does not exist yet')
+        self.start_import_cluster()
+# TODO: Choose which cluster should be imported
+
+        # Select first ceph cluster in the list of available clusters
+        import_page = ImportCluster(self.driver)
+        for cluster in import_page.avail_clusters:
+            import_page.cluster = cluster
+            release = import_page.storage_service.lower()
+            if 'ceph' in release:
+                break
+        pytest.check('ceph' in release,
+                     'There should be some ceph cluster available',
+                     hard=True)
+
+        return self.import_cluster(import_page, name=name, hosts=hosts)
 
 # TODO
     def create_gluster_cluster(self, name=None, hosts=None):

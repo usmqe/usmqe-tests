@@ -32,12 +32,26 @@ class ImportCluster(ListMenu):
         """
         return HostsList(self.driver)
 
-# TODO ... not ready yet, not sure what selector should be
-    def choose_cluster(self, selector):
+    @property
+    def avail_clusters(self):
+        """
+        returns list of available clusters
+        """
+        return [cluster.text for cluster in self._model.cluster.options]
+
+    @property
+    def cluster(self):
+        """
+        returns selected cluster
+        """
+        self._model.cluster.value
+
+    @cluster.setter
+    def cluster(self, selector):
         """
         choose the cluster to be imported
         """
-        pass
+        self._model.cluster.value = selector
 
     def refresh_hosts(self):
         """
