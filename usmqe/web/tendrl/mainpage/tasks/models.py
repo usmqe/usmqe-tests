@@ -3,7 +3,8 @@ Common page model for tasks.
 """
 
 
-from webstr.core import By, WebstrModel, PageElement, BaseWebElementHelper
+from webstr.core import By, WebstrModel, PageElement, BaseWebElementHelper,\
+    DynamicWebstrModel, RootPageElement, NameRootPageElement
 import webstr.patternfly.contentviews.models as contentviews
 import webstr.common.form.models as form
 
@@ -114,3 +115,42 @@ class TaskDetailsModel(WebstrModel):
         locator="//label[text()='Status:']/following-sibling::label/i")
     # TODO
     # messages, not working for now
+
+
+class TaskEventModel(DynamicWebstrModel):
+    """
+    An item (row) in a Tasks list.
+    """
+    _root = NameRootPageElement(
+        by=By.ID,
+        locator='log-list-group-item-%d')
+
+# Design: https://redhat.invisionapp.com/share/8N93NO7Q4
+    # missing status icon
+    # status_icon = StatusIcon(
+    #     by=By.XPATH,
+    #     locator="./div/i")
+    status_text = PageElement(
+        by=By.XPATH,
+        locator="./div[2]")
+    message = PageElement(
+        by=By.XPATH,
+        locator="./div[3]")
+    time = PageElement(
+        by=By.XPATH,
+        locator="./div[4]")
+
+
+class TaskEventsModel(WebstrModel):
+    """
+    Page model for list of tasks.
+    """
+    LIST_XPATH = '//*[contains(concat(" ", @class, " "), '\
+                 '" div-with-scroll-logs ")]'
+    _root = RootPageElement(By.XPATH, LIST_XPATH)
+    # header is a row too
+    rows = PageElement(
+        by=By.XPATH,
+        locator=LIST_XPATH + "//*[contains(concat(' ', @class, ' '),"
+        " ' list-group-item ')]",
+        as_list=True)
