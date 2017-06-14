@@ -45,13 +45,14 @@ class ApiBase(object):
         LOGGER.debug("response.text:    {}".format(resp.text))
 
     @staticmethod
-    def check_response(resp, asserts_in=None):
+    def check_response(resp, asserts_in=None, issue=None):
         """ Check default asserts.
 
         It checks: *ok*, *status*, *reason*.
         Args:
             resp: response to check
             asserts_in: asserts that are compared with response
+            issue: known issue, log WAIVE
         """
 
         asserts = ApiBase.default_asserts.copy()
@@ -66,21 +67,24 @@ class ApiBase(object):
                 )
         pytest.check(
             resp.ok == asserts["ok"],
-            "There should be ok == {}".format(str(asserts["ok"])))
+            "There should be ok == {}".format(str(asserts["ok"])),
+            issue=issue)
         pytest.check(resp.status_code == asserts["status"],
-                     "Status code should equal to {}".format(asserts["status"]))
+                     "Status code should equal to {}".format(asserts["status"]),
+                     issue=issue)
         pytest.check(resp.reason == asserts["reason"],
-                     "Reason should equal to {}".format(asserts["reason"]))
+                     "Reason should equal to {}".format(asserts["reason"]),
+                     issue=issue)
 
     @staticmethod
-    def check_dict(data, schema):
-        """
-        Check dictionary schema (keys, value types).
+    def check_dict(data, schema, issue=None):
+        """Check dictionary schema (keys, value types).
 
-        Parameters:
-          data - dictionary to check
-          schema - dictionary with keys and value types, e.g.:
+        Args:
+            data: dictionary to check
+            schema: dictionary with keys and value types, e.g.:
                   {'name': str, 'size': int, 'tasks': dict}
+            issue: known issue, log WAIVE
         """
         LOGGER.debug("check_dict - data: {}".format(data))
         LOGGER.debug("check_dict - schema: {}".format(schema))
@@ -92,9 +96,11 @@ class ApiBase(object):
         for key in keys:
             pytest.check(key in expected_keys,
                          "Unknown key '{}' with value '{}' (type: '{}').".format(
-                             key, data[key], type(data[key])))
+                             key, data[key], type(data[key])),
+                         issue=issue)
             if key in expected_keys:
                 pytest.check(
                     isinstance(data[key], schema[key]),
                     "{} should be instance of {}".format(data[key],
-                                                         schema[key]))
+                                                         schema[key]),
+                    issue=issue)
