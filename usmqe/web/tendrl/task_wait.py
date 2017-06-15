@@ -44,10 +44,8 @@ def task_wait(driver, desired_state='Finished', ttl=600,
     # state of any task: New -> Processing -> Finished/Failed
     if desired_state == 'New':
         # initial task state, no need to wait for it
-        return
-    if desired_state != 'Processing' and\
-            desired_state != 'Finished' and\
-            desired_state != 'Failed':
+        raise TaskWaitException("Waiting for New doesn't make sense")
+    if desired_state not in ('Processing', 'Finished', 'Failed'):
         raise TaskWaitException('Unknown desired task state - {}'.format(
             desired_state))
 
