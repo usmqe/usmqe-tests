@@ -65,8 +65,7 @@ def test_create_volume_invalid(
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
-            status="failed",
-            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+            status="failed")
 
 
 def test_create_volume_valid(
@@ -195,8 +194,7 @@ def test_stop_volume_invalid(
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
-            status="failed",
-            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+            status="failed")
 
 
 def test_stop_volume_valid(
@@ -285,8 +283,7 @@ def test_start_volume_invalid(
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
         job_id,
-        status="failed",
-        issue="https://github.com/Tendrl/tendrl-api/issues/33")
+        status="failed")
 
 
 def test_start_volume_valid(
@@ -373,8 +370,7 @@ def test_delete_volume_invalid(
     # TODO check correctly server response or etcd job status
     api.wait_for_job_status(
             job_id,
-            status="failed",
-            issue="https://github.com/Tendrl/tendrl-api/issues/33")
+            status="failed")
 
 
 def test_delete_volume_valid(
@@ -414,8 +410,7 @@ def test_delete_volume_valid(
 
     job_id = api.delete_volume(valid_cluster_id, volume_data)["job_id"]
     api.wait_for_job_status(
-        job_id,
-        issue="https://github.com/Tendrl/api/issues/33")
+        job_id)
     """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
@@ -439,12 +434,3 @@ def test_delete_volume_valid(
             """
     storage = gluster.GlusterCommon()
     storage.find_volume_name(valid_volume_name, False)
-
-    # There should be either deleted attribute or record should be removed from database
-    # https://github.com/Tendrl/api/issues/78
-    #
-    # deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
-    # pytest.check(
-    #     deleted == "True",
-    #     "deleted attribute should be True, is {}".format(deleted),
-    #     issue="https://github.com/Tendrl/tendrl-api/issues/33")
