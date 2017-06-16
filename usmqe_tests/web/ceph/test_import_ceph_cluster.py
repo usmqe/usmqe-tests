@@ -38,3 +38,19 @@ def test_import_ceph_cluster(valid_credentials):
         valid_credentials.driver,
         valid_credentials.init_object,
         cluster_type='ceph')
+
+
+@pytest.mark.cluster_x
+@pytest.mark.ceph
+def test_import_ceph_cluster_x(valid_credentials):
+    """
+    positive import ceph cluster test
+
+    NOTE: There has to be at least one ceph cluster which could be imported
+    """
+# TODO: Choose specific cluster
+    cluster_work.import_cluster(
+        valid_credentials.driver,
+        valid_credentials.init_object,
+        valid_credentials.loginpage,
+        cluster_type='ceph')

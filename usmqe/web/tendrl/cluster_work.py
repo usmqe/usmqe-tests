@@ -226,5 +226,25 @@ def import_cluster(driver, init_object, cluster_type=None):
     import_selected_cluster(driver, import_page, clusters_nr)
 
 
+def import_cluster_x(driver, init_object, login_page, cluster_type=None):
+    """
+    positive import cluster test
+
+    NOTE: There has to be at least one cluster which could be imported
+
+    Parameters:
+        driver: selenium driver
+        init_object: WebstrPage instance of page which is loaded after log in
+        login_page: LoginPage instance
+        cluster_type (str): which type of cluster should be imported
+                                'ceph' or 'gluster'
+                            None means that cluster type doesn't matter
+    """
+    if init_object._label == 'home page':
+        initial_import_cluster(driver, init_object, login_page, cluster_type)
+    else:
+        import_cluster(driver, init_object, cluster_type)
+
+
 # TODO create
 #   def create_cluster(...
