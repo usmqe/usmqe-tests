@@ -2,6 +2,7 @@
 Tendrl REST API for gluster.
 """
 
+import os
 import requests
 import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
@@ -69,6 +70,33 @@ class TendrlApiGluster(TendrlApi):
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
+        return response.json()
+
+    def create_bricks(self, cluster, nodes, brick_path, asserts_in=None):
+        """Create volume bricks on given nodes with specified path.
+
+        Name:        "create_bricks",
+        Method:      "POST",
+        Pattern:     ":cluster_id:/GlusterCreateBrick",
+
+        Args:
+            clsuter (str): id of a cluster with nodes
+            nodes (list): ids of nodes where should be bricks
+            brick_path (str): path to brick
+        """
+        pattern = "{}/GlusterCreateBrick".format(cluster)
+        path, brick = brick_path.rsplit(os.sep, 1)
+        data = {x: {path: {"brick_name": brick}} for x in nodes}
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=data,
+            auth=self._auth)
+        asserts = asserts_in or {
+            "reason": 'Accepted',
+            "status": 202,
+        }
+        self.print_req_info(response)
+        self.check_response(response, asserts)
         return response.json()
 
     def create_volume(self, cluster, volume_data):
