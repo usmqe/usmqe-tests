@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 
 from webstr.core import WebstrPage
 from webstr.patternfly.contentviews import pages as contentviews
+import webstr.common.containers.pages as containers
 
 import usmqe.web.tendrl.mainpage.tasks.models as m_tasks
 
@@ -163,3 +164,59 @@ class TaskDetails(WebstrPage):
 
     # TODO
     # work with messages
+
+
+class TaskEvent(containers.ContainerRowBase):
+    """
+    An item (row) in a Tasks list.
+    """
+    _model = m_tasks.TaskEventModel
+    _label = 'tasks event'
+    _required_elems = [
+        'status_text',
+        'message',
+        'time']
+
+    @property
+    def status_text(self):
+        """
+        find status
+
+        Returns:
+            status text
+        """
+        return self._model.status_text.text
+
+    @property
+    def message(self):
+        """
+        Returns:
+            event message
+        """
+        return self._model.message.text
+
+    @property
+    def time(self):
+        """
+        Returns:
+            event time
+        """
+        return self._model.time.text
+
+
+class TaskEvents(containers.ContainerBase):
+    """
+    Base page object for List of task events.
+    """
+    _model = m_tasks.TaskEventsModel
+    _label = 'task events'
+    _row_class = TasksItem
+    _required_elems = ['_root']
+
+    @property
+    def events_nr(self):
+        """
+        Returns:
+            number of events
+        """
+        return len(self._model.rows)
