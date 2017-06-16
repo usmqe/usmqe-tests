@@ -1,5 +1,5 @@
 """
-Description: Simple cluster auxiliary methods and classes
+Description: Simple cluster auxiliary methods
 
 Author: ltrilety
 """

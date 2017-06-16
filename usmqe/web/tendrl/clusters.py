@@ -1,5 +1,7 @@
 """
-Description: Simple cluster auxiliary methods and classes
+Description: Simple cluster auxiliary classes providing
+             those methods and variables which are in common for
+             several existing cluster classes on different pages
 
 Author: ltrilety
 """
