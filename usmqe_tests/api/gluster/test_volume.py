@@ -19,6 +19,18 @@ Teardown
 """
 
 
+def test_create_brick_valid(
+        valid_cluster_id,
+        valid_brick_path,
+        valid_session_credentials):
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+
+    job_id = api.create_brick(
+        valid_cluster_id,
+        valid_brick_path)
+    api.wait_for_job_status(job_id)["job_id"]
+
+
 # TODO create negative test case generator
 # http://doc.pytest.org/en/latest/parametrize.html#basic-pytest-generate-tests-example
 def test_create_volume_invalid(
