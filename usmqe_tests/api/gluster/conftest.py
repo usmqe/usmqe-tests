@@ -62,8 +62,16 @@ def invalid_volume_id(request):
     return request.param
 
 
+@pytest.fixture(params=[pytest.config.getini("usm_brick_path")])
+def valid_brick_path(request):
+    """
+    Generate valid brick path.
+    """
+    return request.param
+
+
 @pytest.fixture
-def valid_volume_configuration(valid_volume_name):
+def valid_volume_configuration(valid_volume_name, valid_brick_path):
     """
     Generate valid configuration for volume creation with set:
         "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
@@ -71,9 +79,9 @@ def valid_volume_configuration(valid_volume_name):
     role = pytest.config.getini("usm_gluster_role")
     try:
         bricks = [[{"{}".format(inventory.role2hosts(role)[i]):
-                    "{}".format(pytest.config.getini("usm_brick_path"))},
+                    "{}".format(valid_brick_path)},
                    {"{}".format(inventory.role2hosts(role)[i+1]):
-                    "{}".format(pytest.config.getini("usm_brick_path"))}]
+                    "{}".format(valid_brick_path)}]
                   for i in range(0, len(inventory.role2hosts(role)), 2)]
     except TypeError as e:
         raise Exception(
