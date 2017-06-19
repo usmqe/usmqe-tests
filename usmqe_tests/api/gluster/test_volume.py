@@ -70,28 +70,54 @@ def test_create_brick_valid(
 
         Check if the bricks were created on hosts of cluster with ``valid_cluster_id``.
 
-        .. test_step:: 1
+        .. test_step:: 2
 
                 Via ssh check on cluster nodes that there exists
                 directory with ``valid_brick_path``:
                     [ -d ``valid_brick_path`` ] && echo "exists"
 
-        .. test_result:: 1
+        .. test_result:: 2
 
                 There should be string ``exists`` in output of ssh.
                 """
-        SSH = usmssh.get_ssh()
-        pytest.check(len(nodes)>0,
-            "In cluster have to be at least one node. There are {}".format(len(nodes)))
-        cmd = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
-        for x in nodes:
-            output = SSH[x["fqdn"]].run(cmd)
-            pytest.check(
-                output == "exists",
-                "Output of command {} should be `exists`. Output is:{}".format(
-                    cmd, output))
+    SSH = usmssh.get_ssh()
+    pytest.check(
+        len(nodes) > 0,
+        "In cluster have to be at least one node. There are {}".format(len(nodes)))
+    cmd_exists = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
+    cmd_fs = "df -T {} | awk '{print [}' | tail -n1]".format(valid_brick_path)
+    for x in nodes:
+        output = SSH[x["fqdn"]].run(cmd_exists)
+        pytest.check(
+            output == "exists",
+            "Output of command {} should be `exists`. Output is: `{}`".format(
+                cmd_exists, output))
 
+        """@pylatest api/gluster.create_brick_valid
+            API-gluster: create_brick
+            ******************************
 
+            .. test_metadata:: author fbalak@redhat.com
+
+            Description
+            ===========
+
+            Check if the bricks have ``xfs`` filesystem.
+
+            .. test_step:: 3
+
+                    Via ssh check filesystem of directory with ``valid_brick_path``:
+                        df -T ``valid_brick_path`` | awk '{print [}' | tail -n1]
+
+            .. test_result:: 3
+
+                    There should be string ``xfs`` in output of ssh.
+                    """
+        output = SSH[x["fqdn"]].run(cmd_fs)
+        pytest.check(
+            output == "xfs",
+            "Output of command {} should be `xfs`. Output is: `{}`".format(
+                cmd_fs, output))
 
 
 # TODO create negative test case generator
