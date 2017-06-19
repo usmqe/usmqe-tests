@@ -25,6 +25,9 @@ class ClustersMenuModel(ListMenuModel):
     import_btn = form.Button(
         By.XPATH,
         '//button[@ng-click="clusterCntrl.importCluster()"]')
+    create_btn = form.Button(
+        By.XPATH,
+        '//button[@ng-click="clusterCntrl.createCluster()"]')
 
 
 class ClustersListModel(contentviews.ListViewModel):
