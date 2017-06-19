@@ -5,6 +5,7 @@ import pytest
 
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
+import usmssh
 
 
 LOGGER = pytest.get_logger('volume_test', module=True)
@@ -23,12 +24,74 @@ def test_create_brick_valid(
         valid_cluster_id,
         valid_brick_path,
         valid_session_credentials):
+    """@pylatest api/gluster.create_brick_valid
+        API-gluster: create_brick
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Create ``GlusterCreateBrick`` job with a ``valid_brick_path`` with nodes from cluster
+        with ``valid_cluster_id``
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via POST request to ``APIURL/:cluster_id/GlusterCreateBrick``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **202** with data ``{"message": "Accepted"}``.
+                job should finish.
+                """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+
+    cluster_info = [x for x in api.get_cluster_list()
+                    if x["integration_id"] == valid_cluster_id]
+    nodes = cluster_info[0]["nodes"]
 
     job_id = api.create_brick(
         valid_cluster_id,
+        nodes,
         valid_brick_path)
     api.wait_for_job_status(job_id)["job_id"]
+    """@pylatest api/gluster.create_brick_valid
+        API-gluster: create_brick
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Check if the bricks were created on hosts of cluster with ``valid_cluster_id``.
+
+        .. test_step:: 1
+
+                Via ssh check on cluster nodes that there exists
+                directory with ``valid_brick_path``:
+                    [ -d ``valid_brick_path`` ] && echo "exists"
+
+        .. test_result:: 1
+
+                There should be string ``exists`` in output of ssh.
+                """
+        SSH = usmssh.get_ssh()
+        pytest.check(len(nodes)>0,
+            "In cluster have to be at least one node. There are {}".format(len(nodes)))
+        cmd = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
+        for x in nodes:
+            output = SSH[x["fqdn"]].run(cmd)
+            pytest.check(
+                output == "exists",
+                "Output of command {} should be `exists`. Output is:{}".format(
+                    cmd, output))
+
+
 
 
 # TODO create negative test case generator
