@@ -115,9 +115,9 @@ Files with tests example:
   for one storage type. These tests are run before any other tests because
   they create or import cluster which is used during further testing.
   Cluster identification is stored in configuration so it can be used in other tests.
-  For example Ceph cluster is identified by its name and Gluster cluster is identified
-  by one of its machines. This will change once Tendrl can internally identify clusters
-  by their names.
+  Cluster is identified by one of its machine during import process. Once it is imported
+  or created it is identified by ``cluster id``. This will change once Tendrl can
+  internally identify clusters by their names.
 
 Test uses fixtures for getting ``cluster`` object:
 
