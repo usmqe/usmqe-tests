@@ -21,10 +21,38 @@ class TendrlApiGluster(TendrlApi):
         """
         return super().import_cluster(nodes, "gluster", asserts_in)
 
+    def create_cluster(
+            self,
+            name,
+            cluster_id,
+            nodes,
+            network,
+            conf_overrides=None,
+            asserts_in=None):
+        """ Create Gluster cluster.
 
-# TODO: https://github.com/Tendrl/api/issues/78
-# In tendrl api are not correctly shown volumes
-# because after deletion they stay in the list.
+        Args:
+            name (str): name of cluster
+            cluster_id (str): id of cluster
+            nodes (list): list of dictionaries containing node identification
+                          and node role
+            network (str): ip address and mask in prefix format of network with nodes
+            conf_overrides (dict): dictionary containing special settings related
+                        to specific sds type.
+            asserts_in (dict): assert values for this call and this method
+        """
+        return super().create_cluster(
+            name=name,
+            cluster_id=cluster_id,
+            nodes=nodes,
+            public_network=network,
+            cluster_network=network,
+            node_identifier="ip",
+            conf_overrides=conf_overrides,
+            sds_type="gluster",
+            sds_version=pytest.config.getini("usm_gluster_version"),
+            asserts_in=asserts_in)
+
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id
 

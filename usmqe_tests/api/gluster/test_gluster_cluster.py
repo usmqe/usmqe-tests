@@ -4,6 +4,7 @@ REST API test suite - gluster cluster
 """
 import pytest
 import json
+import uuid
 
 from usmqe.api.tendrlapi import glusterapi
 
@@ -18,6 +19,125 @@ Setup
 Teardown
 ========
 """
+
+"""@pylatest api/gluster.cluster_create
+API-gluster: cluster_create
+***************************
+
+.. test_metadata:: author fbalak@redhat.com
+
+Description
+===========
+
+Positive create gluster cluster.
+"""
+
+
+@pytest.mark.parametrize("cluster_name", ["ClusterName"])
+def test_cluster_create_valid(
+        valid_session_credentials,
+        valid_nodes,
+        cluster_name):
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    """@pylatest api/gluster.cluster_import
+        .. test_step:: 1
+
+            Send POST request to Tendrl API ``APIURL/GlusterCreateCluster
+
+        .. test_result:: 1
+
+            Server should return response in JSON format:
+
+                {
+                  "job_id": job_id
+                }
+
+            Return code should be **202**
+                with data ``{"message": "Accepted"}``.
+
+        """
+    nodes = []
+    provisioner_ip = None
+    network = pytest.config.getini("usm_network_subnet")
+    node_ids = []
+    ips = None
+    for x in valid_nodes:
+        if "tendrl/server" in x["tags"]:
+            continue
+        for y in x["networks"]:
+            if y["subnet"] == network:
+                ips = y["ipv4"]
+                break
+        pytest.check(
+            type(ips) == list,
+            "type of ip addresses returned from api have to be list,"
+            " it is: {}".format(type(ips)))
+        pytest.check(
+            len(ips) == 1,
+            "length of ipv4 addresses list have to be 1, otherwise it is not valid"
+            " configuration for this test, it is: {}".format(len(ips)))
+        nodes.append({
+            "role": "glusterfs/node",
+            "ip": ips[0]})
+        node_ids.append(x["node_id"])
+        if "provisioner/gluster" in x["tags"]:
+            provisioner_ip = ips[0]
+    LOGGER.debug("node_ips: %s" % nodes)
+    LOGGER.debug("provisioner: %s" % provisioner_ip)
+    """@pylatest api/gluster.cluster_create
+        .. test_step:: 2
+
+        Check if there is at least one gluster node for cluster creation.
+
+        .. test_result:: 2
+
+        Test passes if there is at least one gluster node.
+        """
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    pytest.check(
+        len(nodes) > 0,
+        "There have to be at least one gluster node."
+        "There are {}".format(len(valid_nodes)))
+    job_id = api.create_cluster(
+        cluster_name,
+        str(uuid.uuid4()),
+        nodes,
+        provisioner_ip,
+        network)["job_id"]
+
+    api.wait_for_job_status(job_id)
+
+    integration_id = api.get_job_attribute(
+        job_id=job_id,
+        attribute="TendrlContext.integration_id",
+        section="parameters")
+    LOGGER.debug("integration_id: %s" % integration_id)
+
+    api.get_cluster_list()
+    # TODO(fbalak) remove this sleep after
+    #              https://github.com/Tendrl/api/issues/159 is resolved.
+    import time
+    time.sleep(30)
+
+    imported_clusters = [x for x in api.get_cluster_list()
+                         if x["integration_id"] == integration_id]
+    pytest.check(
+        len(imported_clusters) == 1,
+        "Job list integration_id '{}' should be "
+        "present in cluster list.".format(integration_id))
+
+    imported_nodes = imported_clusters[0]["nodes"]
+    pytest.check(
+        len(imported_nodes) == len(nodes),
+        "In cluster should be the same amount of hosts"
+        "(is {}) as is in API call for cluster creation."
+        "(is {})".format(len(imported_nodes), len(nodes)))
+
+    pytest.check(
+        set(node_ids) == set(imported_nodes.keys()),
+        "There should be imported these nodes: {}"
+        "There are: {}".format(node_ids, imported_nodes.keys()))
+
 
 """@pylatest api/gluster.cluster_import
 API-gluster: cluster_import
@@ -104,11 +224,6 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
         attribute="TendrlContext.integration_id",
         section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
-
-    # TODO(fbalak) remove this sleep after
-    #              https://github.com/Tendrl/api/issues/159 is resolved.
-    import time
-    time.sleep(30)
 
     imported_clusters = [x for x in api.get_cluster_list()
                          if x["integration_id"] == integration_id]

@@ -258,6 +258,73 @@ class TendrlApi(ApiBase):
         self.check_response(response)
         return response.json()
 
+    def create_cluster(
+            self,
+            name,
+            cluster_id,
+            nodes,
+            public_network,
+            cluster_network,
+            node_identifier,
+            conf_overrides,
+            sds_type,
+            sds_version,
+            asserts_in=None):
+        """Create cluster.
+
+        Name:        "create_cluster",
+        Method:      "POST",
+        Pattern:     "CreateCluster",
+
+        Args:
+            name (str): name of cluster
+            cluster_id (str): id of cluster
+            nodes (list): list of dictionaries containing node identification
+                        and node role
+            public_network (str): ip address and mask in prefix format
+            cluster_network (str): ip address and mask in prefix format
+            node_identifier (str): type of node identification that is used for
+                        specifying node. Values: `id` or `ip`
+            conf_overrides (dict): dictionary containing special settings related
+                        to specific sds type.
+                        For example (ceph):
+                            {"global": {"osd_pool_default_pg_num": 128,
+                            "pool_default_pgp_num": 1}}
+            sds_type (str): ceph or glusterfs
+            sds_version (str): version of sds
+            asserts_in (dict): assert values for this call and this method
+        """
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
+            "reason": 'Accepted',
+            "status": 202}
+        pattern = "CreateCluster"
+        data = {
+            "sds_name": sds_type,
+            "sds_version": sds_version,
+            "node_identifier": node_identifier,
+            "sds_parameters": {
+                "name": name,
+                "cluster_id": cluster_id,
+                "public_network": public_network,
+                "cluster_network": cluster_network,
+                "conf_overrides": conf_overrides
+            },
+            "node_configuration": {
+                x[node_identifier]: {
+                    "role": x["role"],
+                    "provisioning_ip": x[node_identifier]}
+                for x in nodes}
+        }
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            data=json.dumps(data),
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response, asserts_in)
+        return response.json()
+
     def import_cluster(self, nodes, sds_type=None, asserts_in=None):
         """ Import cluster.
 
