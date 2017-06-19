@@ -5,7 +5,7 @@ import pytest
 
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
-import usmssh
+import usmqe.usmssh as usmssh
 
 
 LOGGER = pytest.get_logger('volume_test', module=True)
@@ -54,11 +54,11 @@ def test_create_brick_valid(
                     if x["integration_id"] == valid_cluster_id]
     nodes = cluster_info[0]["nodes"]
 
-    job_id = api.create_brick(
+    job_id = api.create_bricks(
         valid_cluster_id,
         nodes,
-        valid_brick_path)
-    api.wait_for_job_status(job_id)["job_id"]
+        valid_brick_path)["job_id"]
+    api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_brick_valid
         API-gluster: create_brick
         ******************************
@@ -85,7 +85,7 @@ def test_create_brick_valid(
         len(nodes) > 0,
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
     cmd_exists = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
-    cmd_fs = "df -T {} | awk '{print [}' | tail -n1]".format(valid_brick_path)
+    cmd_fs = "df -T \"{}\" | awk '{print $2}' | tail -n1]".format(valid_brick_path)
     for x in nodes:
         output = SSH[x["fqdn"]].run(cmd_exists)
         pytest.check(
