@@ -62,12 +62,12 @@ def invalid_volume_id(request):
     return request.param
 
 
-@pytest.fixture(params=[pytest.config.getini("usm_brick_path")])
-def valid_brick_path(request):
+@pytest.fixture
+def valid_brick_path():
     """
     Generate valid brick path.
     """
-    return request.param
+    return pytest.config.getini("usm_brick_path")
 
 
 @pytest.fixture
