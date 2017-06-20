@@ -9,6 +9,8 @@ import pytest
 from usmqe.web.tendrl import cluster_work
 
 
+@pytest.mark.skipif(pytest.config.getini('skip_invalid'),
+                    reason='not valid for ci testing')
 @pytest.mark.other
 def test_initial_import_cluster(valid_credentials):
     """
@@ -24,6 +26,8 @@ def test_initial_import_cluster(valid_credentials):
         valid_credentials.loginpage)
 
 
+@pytest.mark.skipif(pytest.config.getini('skip_invalid'),
+                    reason='not valid for ci testing')
 @pytest.mark.other
 def test_import_cluster(valid_credentials):
     """
@@ -38,7 +42,8 @@ def test_import_cluster(valid_credentials):
         valid_credentials.init_object)
 
 
-@pytest.mark.cluster_x
+@pytest.mark.skipif(pytest.config.getini('skip_invalid'),
+                    reason='not valid for ci testing')
 @pytest.mark.other
 def test_import_cluster_x(valid_credentials):
     """

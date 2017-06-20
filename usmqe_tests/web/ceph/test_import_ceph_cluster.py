@@ -9,6 +9,8 @@ import pytest
 from usmqe.web.tendrl import cluster_work
 
 
+@pytest.mark.skipif(pytest.config.getini('skip_invalid'),
+                    reason='not valid for ci testing')
 @pytest.mark.ceph
 def test_initial_import_ceph_cluster(valid_credentials):
     """
@@ -25,6 +27,8 @@ def test_initial_import_ceph_cluster(valid_credentials):
         cluster_type='ceph')
 
 
+@pytest.mark.skipif(pytest.config.getini('skip_invalid'),
+                    reason='not valid for ci testing')
 @pytest.mark.ceph
 def test_import_ceph_cluster(valid_credentials):
     """
@@ -40,7 +44,6 @@ def test_import_ceph_cluster(valid_credentials):
         cluster_type='ceph')
 
 
-@pytest.mark.cluster_x
 @pytest.mark.ceph
 def test_import_ceph_cluster_x(valid_credentials):
     """
