@@ -20,6 +20,10 @@ def pytest_addoption(parser):
     # defaults are specified in root pytest.ini file
     parser.addini('usm_config', 'USM configuration')
     parser.addini('usm_inventory', 'USM host configuration')
+    parser.addini(
+        'skip_invalid',
+        'Tells if not valid tests should be skipped, default True',
+        'bool', default=True)
 
 
 @pytest.fixture(autouse=True, scope="session")
