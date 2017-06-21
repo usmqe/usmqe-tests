@@ -21,34 +21,13 @@ repository`_. You need to deploy test machines using playbooks from there.
 Ansible Roles for Tendrl Setup
 ==============================
 
-Right now, we maintain ansible roles and playbook which automates production
-like installation of all Tendrl components. `Tendrl project wide
-documentation`_ is followed, but most details are based on documentation or
-README files of each component.
-
-For each Tendrl component, there is a role in `usmqe-setup repository`_. For
-example, there are:
-
-* `tendrl-node-agent`_
-* `tendrl-api`_
-
-Note: the list presented doesn't include all roles. You would need to check
-``roles`` directory in the repository to see current full list of roles.
-
-Every ansible role of particular tendrl component has the following tasks
-structure::
-
-    tasks/
-    └── main.ym
-
-Moreover, related Tendrl documentation (or README files) used to write the role
-should be referenced in the README file of the role or in the yaml file with
-tasks directly.
+For installation of Tendrl and preparation for tests serve `ci_default.yml`
+and `ci_default_import.yml` playbooks which use official roles from 
+`tendrl-ansible`_ project and contain post installation setup (eg. creation of
+`admin` user).
 
 
 .. _`qe_server.yml`: https://github.com/Tendrl/usmqe-setup/blob/master/qe_server.yml
 .. _`usmqe-setup repository`: https://github.com/Tendrl/usmqe-setup
-.. _`tendrl-node-agent`: https://github.com/Tendrl/usmqe-setup/tree/master/roles/tendrl-node-agent
-.. _`tendrl-api`: https://github.com/Tendrl/usmqe-setup/tree/master/roles/tendrl-api
-.. _`added a task to install systemd unit files`: https://github.com/Tendrl/usmqe-setup/commit/75f489d850ea753582cfa8532957c2a9d153d186
 .. _`Tendrl project wide documentation`: https://github.com/Tendrl/documentation/blob/master/deployment.adoc
+.. _`tendrl-ansible`: https://github.com/Tendrl/tendrl-ansible
