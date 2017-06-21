@@ -109,9 +109,7 @@ class ApiUser(TendrlApi):
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth)
         self.print_req_info(request)
-        self.check_response(request, asserts_in,
-                            issue="https://bugzilla.redhat.com/show_bug.cgi?id=1457220,"
-                            "https://github.com/Tendrl/api/issues/140")
+        self.check_response(request, asserts_in)
 
         return request.json(encoding='unicode')
 
