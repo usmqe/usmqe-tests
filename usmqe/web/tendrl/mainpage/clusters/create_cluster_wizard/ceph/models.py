@@ -129,16 +129,10 @@ class RolesHostsListModel(contentviews.ListViewModel):
     """
 
 
-class StepJournalConfModel(StepButtonsModel):
+class StepJournalConfModel(ListMenuModel, StepButtonsModel):
     """
     model for create ceph cluster - "Journal Configuration" step
     """
-    # filter
-    # Note: ListMenuModel cannot be used, different filter is here
-    filter_by = form.Select(
-        By.XPATH,
-        '//select[contains(@ng-model, "FilterBy")]')
-    filter_input = form.TextInput(By.ID, 'filter')
 
 
 class JournalHostsItemModel(DynamicWebstrModel):
