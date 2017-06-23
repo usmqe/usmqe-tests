@@ -15,7 +15,7 @@ class ListMenuModel(WebstrModel):
     """
     filter_by = form.Select(
         By.XPATH,
-        '//select[contains(@ng-model, "filterBy")]')
+        '//select[contains(translate(@ng-model, "F", "f"), "filterBy")]')
     filter_input = form.TextInput(By.ID, 'filter')
     order_by = form.TextInput(
         By.XPATH,
