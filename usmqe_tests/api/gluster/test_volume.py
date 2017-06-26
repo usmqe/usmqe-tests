@@ -85,9 +85,10 @@ def test_create_brick_valid(
         len(nodes) > 0,
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
     cmd_exists = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
-    cmd_fs = "df -T \"{}\" | awk '{print $2}' | tail -n1]".format(valid_brick_path)
+    cmd_fs = 'df -T "{}" | awk \'{{print $2}}\' | tail -n1'.format(valid_brick_path)
     for x in nodes:
-        output = SSH[x["fqdn"]].run(cmd_exists)
+        _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_exists)
+        output = str(output).strip("'b\\n")
         pytest.check(
             output == "exists",
             "Output of command {} should be `exists`. Output is: `{}`".format(
@@ -113,7 +114,8 @@ def test_create_brick_valid(
 
                     There should be string ``xfs`` in output of ssh.
                     """
-        output = SSH[x["fqdn"]].run(cmd_fs)
+        _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_fs)
+        output = str(output).strip("'b\\n")
         pytest.check(
             output == "xfs",
             "Output of command {} should be `xfs`. Output is: `{}`".format(
