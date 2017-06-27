@@ -2,7 +2,7 @@
 REST API test suite - gluster volume
 """
 import pytest
-
+import os.path
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 import usmqe.usmssh as usmssh
@@ -80,19 +80,18 @@ def test_create_brick_valid(
 
                 There should be string ``exists`` in output of ssh.
                 """
+    device, brick = os.path.split(valid_brick_path)
     SSH = usmssh.get_ssh()
     pytest.check(
         len(nodes) > 0,
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
-    cmd_exists = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
-    cmd_fs = 'df -T "{}" | awk \'{{print $2}}\' | tail -n1'.format(valid_brick_path)
+    cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(valid_brick_path)
+    expected_output = '{} type xfs (rw,relatime,seclabel,attr2,inode64,noquota)'.format(device)
     for x in nodes:
-        _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_exists)
-        output = str(output).strip("'b\\n")
         pytest.check(
-            output == "exists",
-            "Output of command {} should be `exists`. Output is: `{}`".format(
-                cmd_exists, output))
+            os.path.isdir(valid_brick_path),
+            "{} should be a directory.".format(
+                valid_brick_path))
 
         """@pylatest api/gluster.create_brick_valid
             API-gluster: create_brick
@@ -103,23 +102,25 @@ def test_create_brick_valid(
             Description
             ===========
 
-            Check if the bricks have ``xfs`` filesystem.
+            Check if the bricks have ``xfs`` filesystem and set correct device.
 
             .. test_step:: 3
 
-                    Via ssh check filesystem of directory with ``valid_brick_path``:
-                        df -T ``valid_brick_path`` | awk '{print [}' | tail -n1]
+                    Via ssh check filesystem and deviceof directory with
+                    ``valid_brick_path``:
+                        mount | grep $(df  --output=source ``valid_brick_path`` | tail -1)
 
             .. test_result:: 3
 
-                    There should be string ``xfs`` in output of ssh.
+                    Output of the command should be:
+                        ``device`` type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
                     """
         _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_fs)
         output = str(output).strip("'b\\n")
         pytest.check(
-            output == "xfs",
-            "Output of command {} should be `xfs`. Output is: `{}`".format(
-                cmd_fs, output))
+            output == expected_output,
+            "Output of command {} should be `{}`. Output is: `{}`".format(
+                cmd_fs, expected_output, output))
 
 
 # TODO create negative test case generator
