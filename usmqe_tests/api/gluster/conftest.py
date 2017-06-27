@@ -6,17 +6,6 @@ import usmqe.inventory as inventory
 
 
 @pytest.fixture
-def valid_cluster_id(valid_session_credentials):
-    """
-    Generate valid id of imported cluster.
-    """
-    # TODO change
-    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    cluster_list = api.get_cluster_list()
-    return cluster_list[0]["cluster_id"]
-
-
-@pytest.fixture
 def valid_nodes(valid_session_credentials):
     """
     Generate valid host info from GetNodeList api call related to tendrl/nodes
@@ -44,15 +33,6 @@ def valid_trusted_pool():
     storage = gluster.GlusterCommon()
     host = inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]
     return storage.get_hosts_from_trusted_pool(host)
-
-
-@pytest.fixture
-def valid_volume_id():
-    """
-    Generate valid id of a created volume.
-    """
-    volume = gluster.GlusterVolume(pytest.config.getini("usm_volume_name"))
-    return volume.get_volume_id()
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
@@ -119,26 +99,25 @@ def valid_devices(valid_session_credentials, count=1):
 
 
 @pytest.fixture
-def valid_volume_configuration(valid_volume_name, valid_brick_path):
+def volume_conf_2rep(valid_brick_path):
     """
     Generate valid configuration for volume creation with set:
         "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
+    Node list for brick list is created from list of nodes in cluster.
+    Cluster is identified by one node from cluster.
+    *Volume name should be defined for each test!*
     """
-    role = pytest.config.getini("usm_gluster_role")
-    try:
-        bricks = [[{"{}".format(inventory.role2hosts(role)[i]):
-                    "{}".format(valid_brick_path)},
-                   {"{}".format(inventory.role2hosts(role)[i+1]):
-                    "{}".format(valid_brick_path)}]
-                  for i in range(0, len(inventory.role2hosts(role)), 2)]
-    except TypeError as err:
-        raise Exception(
-            "TypeError({0}): You should probably define usm_brick_path and \
-                    usm_gluster_role in usm.ini. {1}".format(
-                err.errno,
-                err.strerror))
+    id_host = pytest.config.getini("usm_id_fqdn")
+    hosts = gluster.GlusterCommon().get_hosts_from_trusted_pool(id_host)
+
+    bricks = [[{"{}".format(hosts[i]):
+                "{}".format(valid_brick_path)},
+               {"{}".format(hosts[i+1]):
+                "{}".format(valid_brick_path)}]
+              for i in range(0, len(hosts), 2)]
+
     return {
-        "Volume.volname": valid_volume_name,
+        "Volume.volname": "{}",
         "Volume.bricks": bricks,
         "Volume.replica_count": "2",
         "Volume.force": True}
@@ -154,14 +133,6 @@ def invalid_volume_configuration(request):
     Generate invalid bricks.
     """
     return request.param
-
-
-@pytest.fixture
-def valid_volume_name():
-    """
-    Generate valid volume name defined in usm.ini.
-    """
-    return pytest.config.getini("usm_volume_name")
 
 
 # TODO(fbalak) as `./,!@##$%^&*()__{}|:';/<*+>)(` as parameter
