@@ -28,22 +28,16 @@ class CreateCluster(modal.ModalWindow):
         """
         self._model.cancel_btn.click()
 
-    def choose_ceph_creation(self, return_inst=True):
+    def choose_ceph_creation(self):
         """
         choose ceph and click on next button
-
-        Parameters:
-            return_inst (bool): returns nothing if False
         """
         self._model.ceph_line.click()
         self._model.next_btn.click()
 
-    def choose_gluster_creation(self, return_inst=True):
+    def choose_gluster_creation(self):
         """
         choose gluster and click on next button
-
-        Parameters:
-            return_inst (bool): returns nothing if False
         """
         self._model.gluster_line.click()
         self._model.next_btn.click()
