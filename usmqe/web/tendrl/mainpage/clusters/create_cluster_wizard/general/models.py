@@ -25,7 +25,7 @@ class CreateClusterModel(modal.ModalWindowModel):
     next_btn = form.Button(
         By.XPATH,
         '//button[contains(text(), "Next")]')
-    
+
 
 class StepButtonsModel(WebstrModel):
     """

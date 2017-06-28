@@ -4,15 +4,12 @@ Import Cluster wizard module.
 
 
 import copy
-import pytest
 
-from webstr.core import WebstrPage
 import webstr.patternfly.contentviews.pages as contentviews
 
 import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
     gluster.models as m_gluster
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
-from usmqe.gluster import gluster
 from usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
     general.pages import StepButtons
 

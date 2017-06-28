@@ -4,9 +4,8 @@ Import Cluster wizard module.
 
 
 import copy
-import pytest
 
-from webstr.core import WebstrPage
+from webstr.core import WebstrPage, DynamicWebstrPage
 import webstr.patternfly.contentviews.pages as contentviews
 import webstr.common.containers.pages as containers
 
@@ -15,8 +14,6 @@ import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
 from usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
     general.pages import StepButtons
-from usmqe.ceph import ceph_cluster
-from usmqe.gluster import gluster
 
 
 class StepGeneral(StepButtons):
@@ -147,7 +144,7 @@ class CreateHostsList(contentviews.ListView):
     """
     Page object for list of nodes/hosts.
     """
-    _model = m_gluster.CreateHostsListModel
+    _model = m_ceph.CreateHostsListModel
     _label = 'create ceph cluster hosts'
     _row_class = CreateHostsItem
 
@@ -178,7 +175,7 @@ class RolesHostsItem(contentviews.ListViewRow):
     """
     An item (row) in a Hosts list.
     """
-    _model = m_ceph.ImportClusterModel
+    _model = m_ceph.RolesHostsItemModel
     _label = 'Roles step hosts row'
     _required_elems = [
         'name',
@@ -268,7 +265,7 @@ class JournalHostsItem(containers.ContainerRowBase):
             JournalHostsItemTC or JournalHostsItemTD instance in regards
               to current journal configuration
         """
-        if is_active(self._model.expand_symbol):
+        if JournalHostsItem.is_active(self._model.expand_symbol):
             self._model.expand_symbol.click()
         if self.journal_conf == 'dedicated':
             JournalHostsItemTD(self.driver, self._name)
@@ -279,7 +276,7 @@ class JournalHostsItem(containers.ContainerRowBase):
         """
         hide disk devices list if possible
         """
-        if is_active(self._model.hide_symbol):
+        if JournalHostsItem.is_active(self._model.hide_symbol):
             self._model.hide_symbol.click()
 
     @property
@@ -365,7 +362,9 @@ class HostsItemTIterator(containers.ContainerIterator):
         Return current item element.
         """
         # this code expects that the table row doesn't disappear
-        table_row = self._row_class(self._driver, (self._row_id, next(self._id_iter)))
+        table_row = self._row_class(
+            self._driver,
+            (self._row_id, next(self._id_iter)))
         return table_row
 
 
@@ -374,17 +373,17 @@ class HostsItemT(DynamicWebstrPage):
     Available devices configuration table
     """
     _model = m_ceph.JournalHostsItemTModel
-    _iter_class = JournalHostsItemTIterator
+    _iter_class = HostsItemTIterator
     _required_elems = ['_root']
 
     def __iter__(self):
         """
         Create new iterator object for this table.
         """
-        row_element_list =  self._model.rows
+        row_element_list = self._model.rows
         return self._iter_class(
             self.driver, row_element_list,
-            row_class=self._row_class, self._name)
+            self._row_class, self._name)
 
     def __len__(self):
         """
@@ -497,7 +496,7 @@ class OSDSumItem(containers.ContainerRowBase):
         'journal_size']
 
 
-class OSDSumItemTDRow(DynamicWebstrModel):
+class OSDSumItemTDRow(DynamicWebstrPage):
     """
     Devices OSD Summary table row - dedicated journal
 
@@ -518,7 +517,7 @@ class OSDSumItemTD(HostsItemT):
     _row_class = OSDSumItemTDRow
 
 
-class OSDSumItemTCRow(DynamicWebstrModel):
+class OSDSumItemTCRow(DynamicWebstrPage):
     """
     Devices OSD Summary table row - colocated journal
 

@@ -3,7 +3,7 @@ Create Cluster wizard module.
 """
 
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import By, PageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
@@ -93,7 +93,6 @@ class StepReviewModel(StepButtonsModel):
     host_nr = '{}/h3'.format(STEP_SUMMARY_PATH)
 
     create_cluster_btn = StepButtonsModel.next_btn
-
 
 
 class HostsSumItemModel(contentviews.ListViewRowModel):

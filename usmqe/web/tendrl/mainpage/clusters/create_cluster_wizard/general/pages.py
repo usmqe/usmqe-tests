@@ -3,24 +3,18 @@ Import Cluster wizard module.
 """
 
 
-import pytest
+# import pytest
 
 from webstr.core import WebstrPage
-import webstr.patternfly.contentviews.pages as contentviews
 import webstr.patternfly.modal.pages as modal
 
 import usmqe.web.tendrl.mainpage.clusters.\
     create_cluster_wizard.general.models as m_general
-import usmqe.web.tendrl.mainpage.clusters.\
-    create_cluster_wizard.ceph.pages as ceph_create
-import usmqe.web.tendrl.mainpage.clusters.\
-    create_cluster_wizard.gluster.pages as gluster_create
-from usmqe.web.tendrl.auxiliary.pages import ListMenu
-from usmqe.ceph import ceph_cluster
-from usmqe.gluster import gluster
+# from usmqe.ceph import ceph_cluster
+# from usmqe.gluster import gluster
 
 
-class CreateCluster(modal.ModalWindowModel):
+class CreateCluster(modal.ModalWindow):
     """
     model for Create Cluster
     """
@@ -40,13 +34,9 @@ class CreateCluster(modal.ModalWindowModel):
 
         Parameters:
             return_inst (bool): returns nothing if False
-
-        Returns:
-            ceph StepGeneral instance
         """
         self._model.ceph_line.click()
         self._model.next_btn.click()
-        return ceph_create.StepGeneral(self.driver)
 
     def choose_gluster_creation(self, return_inst=True):
         """
@@ -54,17 +44,12 @@ class CreateCluster(modal.ModalWindowModel):
 
         Parameters:
             return_inst (bool): returns nothing if False
-
-        Returns:
-            gluster StepGeneral instance
         """
         self._model.gluster_line.click()
         self._model.next_btn.click()
-        return gluster_create.StepGeneral(self.driver)
-        
 
 
-class StepButtons(WebstrModel):
+class StepButtons(WebstrPage):
     """
     model with common buttons for the whole create cluster workflow
     """

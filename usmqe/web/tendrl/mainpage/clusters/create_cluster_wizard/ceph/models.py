@@ -3,7 +3,8 @@ Create Cluster wizard module.
 """
 
 
-from webstr.core import WebstrModel, By, PageElement, RootPageElement
+from webstr.core import WebstrModel, By, PageElement, RootPageElement,\
+    NameRootPageElement, DynamicWebstrModel, DynamicPageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
@@ -81,7 +82,7 @@ class StepRolesModel(ListMenuModel, StepButtonsModel):
     def __init__(self, driver):
         """ init """
         super().__init__(driver)
-        self.hosts_summary = CreateCephRolesSummary(self.driver)
+        self.hosts_summary = RolesSummaryModel(self.driver)
 
 
 class RolesSummaryModel(WebstrModel):
@@ -181,7 +182,7 @@ class JournalHostsItemTModel(DynamicWebstrModel):
         as_list=True)
 
 
-class JournalHostsItemTCRowModel(DynamicWebstrModel):
+class JournalHostsItemTDRowModel(DynamicWebstrModel):
     """
     Available devices configuration table row - dedicated journal
 
@@ -193,11 +194,11 @@ class JournalHostsItemTCRowModel(DynamicWebstrModel):
         By.XPATH,
         '{}//table/tr[%d]'.format(JournalHostsItemModel.ITEM_PATH))
     device = PageElement(by=By.XPATH, locator='./td[1]/div[1]')
-    device_type = PageElement(by=By.XPATH, locator='./td[1]/div[2]') 
+    device_type = PageElement(by=By.XPATH, locator='./td[1]/div[2]')
     journal = PageElement(by=By.XPATH, locator='./td[2]')
 
 
-class OSDSumItemTDRowModel(DynamicWebstrModel):
+class JournalHostsItemTCRowModel(DynamicWebstrModel):
     """
     Available devices configuration table row - colocated journal
 
@@ -285,8 +286,8 @@ class OSDSumItemModel(DynamicWebstrModel):
     """
     An item (row) in a Hosts list.
     """
-    ITEM_PATH = '(//{}/*[contains(concat(" ", @class, " "), " list-view-pf ")])'\
-        '[%d]'.format(StepReviewModel.STEP_SUMMARY_PATH)
+    ITEM_PATH = '(//{}/*[contains(concat(" ", @class, " "), '\
+        '" list-view-pf ")])[%d]'.format(StepReviewModel.STEP_SUMMARY_PATH)
     _root = NameRootPageElement(By.XPATH, ITEM_PATH)
     # Note: inactive symbol has ng-hide in class
     expand_symbol = PageElement(
@@ -370,6 +371,6 @@ class OSDSumListModel(WebstrModel):
         '{}/div[4]'.format(StepReviewModel.STEP_SUMMARY_PATH))
     rows = PageElement(
         by=By.XPATH,
-        locator='//{}/*[contains(concat(" ", @class, " "), '\
-            '" list-view-pf ")]'.format(StepReviewModel.STEP_SUMMARY_PATH),
+        locator='//{}/*[contains(concat(" ", @class, " "), '
+        '" list-view-pf ")]'.format(StepReviewModel.STEP_SUMMARY_PATH),
         as_list=True)
