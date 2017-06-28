@@ -22,9 +22,9 @@ from usmqe.web.tendrl.clusters import check_hosts
 IMPORT_TIMEOUT = 3600
 
 
-def import_cluster_wait(driver):
+def cluster_job_wait(driver):
     """
-    wait till the import cluster task is finished
+    wait till the import/create cluster task is finished
 
     Parameters:
         driver: selenium driver
@@ -34,7 +34,7 @@ def import_cluster_wait(driver):
     Returns:
         list of cluster objects
     """
-    # Wait till the cluster is imported
+    # Wait till the cluster is imported/created
     task_wait(ttl=IMPORT_TIMEOUT)
 
     NavMenuBars(driver).open_clusters(click_only=True)
@@ -69,7 +69,7 @@ def import_selected_cluster(driver, import_page, clusters_nr=0,
     (cluster_ident, hosts_list) = import_page.import_cluster(
         name=cluster_name, hosts=hosts)
 
-    cluster_list = import_cluster_wait(driver)
+    cluster_list = cluster_job_wait(driver)
 
     # Check that cluster is present in the list
     pytest.check(len(cluster_list) == clusters_nr + 1,
