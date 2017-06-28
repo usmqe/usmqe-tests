@@ -63,11 +63,36 @@ def invalid_volume_id(request):
 
 
 @pytest.fixture
-def valid_brick_path():
+def valid_brick_name():
     """
-    Generate valid brick path.
+    Generate valid brick name.
     """
-    return pytest.config.getini("usm_brick_path")
+    return pytest.config.getini("usm_brick_name")
+
+
+@pytest.fixture
+def valid_devices(count=1, valid_session_credentials):
+    """
+    Generate device paths.
+
+    Args:
+        count (int): How many device paths should be generated.
+                     There have to be enough devices.
+    """
+
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    device_info = [x["blockdevices"]["all"] for x in api.get_nodes()]
+    devices = [x["device_kernel_name"] for x in device_info]
+
+    try:
+        return devices[0:count]
+    except IndexError as e:
+        raise Exception(
+                "TypeError({0}): There are not enough devices. There are: {1}. {2}"
+                .format(
+                    e.errno,
+                    devices,
+                    e.strerror))
 
 
 @pytest.fixture

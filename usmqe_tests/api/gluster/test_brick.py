@@ -21,7 +21,8 @@ Teardown
 
 def test_create_brick_valid(
         valid_cluster_id,
-        valid_brick_path,
+        valid_brick_name,
+        valid_device
         valid_session_credentials):
     """@pylatest api/gluster.create_brick_valid
         API-gluster: create_brick
@@ -32,8 +33,8 @@ def test_create_brick_valid(
         Description
         ===========
 
-        Create ``GlusterCreateBrick`` job with a ``valid_brick_path`` with nodes from cluster
-        with ``valid_cluster_id``
+        Create ``GlusterCreateBrick`` job with a ``valid_brick_name`` on specified
+        ``valid_device`` with nodes from cluster with ``valid_cluster_id``
 
         .. test_step:: 1
 
@@ -56,7 +57,8 @@ def test_create_brick_valid(
     job_id = api.create_bricks(
         valid_cluster_id,
         nodes,
-        valid_brick_path)["job_id"]
+        valid_brick_name,
+        valid_device)["job_id"]
     api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_brick_valid
         API-gluster: create_brick
@@ -71,26 +73,26 @@ def test_create_brick_valid(
 
         .. test_step:: 2
 
-                Via ssh check on cluster nodes that there exists
-                directory with ``valid_brick_path``:
-                    [ -d ``valid_brick_path`` ] && echo "exists"
+                Via ssh check on cluster nodes that there exists directory with called
+                ``valid_brick_name`` in `/tendrl_gluster_bricks/brick_mount`:
+                    [ -d /tendrl_gluster_bricks/brick_mount/``valid_brick_name`` ] && echo "exists"
 
         .. test_result:: 2
 
                 There should be string ``exists`` in output of ssh.
                 """
-    device, brick = os.path.split(valid_brick_path)
+    brick_path = "/tendrl_gluster_bricks/brick_mount/{}".format(valid_brick_name)
     SSH = usmssh.get_ssh()
     pytest.check(
         len(nodes) > 0,
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
-    cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(valid_brick_path)
-    expected_output = '{} type xfs (rw,relatime,seclabel,attr2,inode64,noquota)'.format(device)
+    cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(brick_path)
+    expected_output = '{} type xfs (rw,relatime,seclabel,attr2,inode64,noquota)'.format(brick_path)
     for x in nodes:
         pytest.check(
-            os.path.isdir(valid_brick_path),
+            os.path.isdir(brick_path),
             "{} should be a directory.".format(
-                valid_brick_path))
+                brick_path))
 
         """@pylatest api/gluster.create_brick_valid
             API-gluster: create_brick
