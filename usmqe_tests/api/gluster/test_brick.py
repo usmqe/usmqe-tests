@@ -22,7 +22,7 @@ Teardown
 def test_create_brick_valid(
         valid_cluster_id,
         valid_brick_name,
-        valid_device
+        valid_devices,
         valid_session_credentials):
     """@pylatest api/gluster.create_brick_valid
         API-gluster: create_brick
@@ -57,8 +57,9 @@ def test_create_brick_valid(
     job_id = api.create_bricks(
         valid_cluster_id,
         nodes,
-        valid_brick_name,
-        valid_device)["job_id"]
+        valid_devices,
+        valid_brick_name
+        )["job_id"]
     api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_brick_valid
         API-gluster: create_brick

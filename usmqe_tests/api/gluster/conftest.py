@@ -71,7 +71,7 @@ def valid_brick_name():
 
 
 @pytest.fixture
-def valid_devices(count=1, valid_session_credentials):
+def valid_devices(valid_session_credentials, count=1):
     """
     Generate device paths.
 
@@ -81,7 +81,11 @@ def valid_devices(count=1, valid_session_credentials):
     """
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    device_info = [x["blockdevices"]["all"] for x in api.get_nodes()]
+    device_info = [list(x["localstorage"]["blockdevices"]["all"].values())[0]
+                   if x["localstorage"]["blockdevices"]["all"] is not None
+                   else None for x in api.get_nodes()["nodes"]]
+    device_info = [x for x in device_info if x is not None]
+    print(device_info)
     devices = [x["device_kernel_name"] for x in device_info]
 
     try:
