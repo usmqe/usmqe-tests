@@ -459,4 +459,3 @@ def test_delete_volume_valid(
         valid_volume_id not in list(volumes),
         "volume id {} should not be among volume ids in tendrl: {}".format(
             valid_volume_id, list(volumes)))
-
