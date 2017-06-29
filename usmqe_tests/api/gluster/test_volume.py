@@ -460,11 +460,3 @@ def test_delete_volume_valid(
         "volume id {} should not be among volume ids in tendrl: {}".format(
             valid_volume_id, list(volumes)))
 
-    # There should be either deleted attribute or record should be removed from database
-    # https://github.com/Tendrl/api/issues/78
-    #
-    # deleted = api.get_volume_list(valid_cluster_id)[0][valid_volume_id]["deleted"]
-    # pytest.check(
-    #     deleted == "True",
-    #     "deleted attribute should be True, is {}".format(deleted),
-    #     issue="https://github.com/Tendrl/tendrl-api/issues/33")
