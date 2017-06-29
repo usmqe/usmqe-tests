@@ -2,7 +2,6 @@
 REST API test suite - gluster brick
 """
 import pytest
-import os.path
 from usmqe.api.tendrlapi import glusterapi
 import usmqe.usmssh as usmssh
 
@@ -82,18 +81,23 @@ def test_create_brick_valid(
 
                 There should be string ``exists`` in output of ssh.
                 """
-    brick_path = "/tendrl_gluster_bricks/brick_mount/{}".format(valid_brick_name)
+    brick_path = "/tendrl_gluster_bricks/{}_mount".format(valid_brick_name)
     SSH = usmssh.get_ssh()
     pytest.check(
         len(nodes) > 0,
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
+    cmd_exists = "[ -d {} ] && echo 'exists'".format(brick_path)
     cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(brick_path)
-    expected_output = '{} type xfs (rw,relatime,seclabel,attr2,inode64,noquota)'.format(brick_path)
+    expected_output = '/dev/mapper/tendrl{0}_vg-tendrl{0}_lv on {1} type xfs \
+(rw,noatime,nodiratime,seclabel,attr2,inode64,\
+logbsize=256k,sunit=512,swidth=512,noquota)'.format(valid_brick_name, brick_path)
     for x in nodes:
+        _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_exists)
+        output = str(output).strip("'b\\n")
         pytest.check(
-            os.path.isdir(brick_path),
-            "{} should be a directory.".format(
-                brick_path))
+            output == "exists",
+            "Output of command `{}` should be `exists`. Output is: `{}`".format(
+                cmd_exists, output))
 
         """@pylatest api/gluster.create_brick_valid
             API-gluster: create_brick

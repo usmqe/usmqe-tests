@@ -2,7 +2,6 @@
 Tendrl REST API for gluster.
 """
 
-import os
 import requests
 import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
