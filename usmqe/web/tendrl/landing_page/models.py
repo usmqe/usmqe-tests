@@ -22,9 +22,6 @@ class HomeModel(UpperMenuModel):
     import_btn = form.Button(
         by=By.XPATH,
         locator='//button[contains(text(), "Import Cluster")]')
-# Coming soon...
-# TODO
-# https://tendrl.atlassian.net/browse/TEN-187
-# https://tendrl.atlassian.net/browse/TEN-190
-#   create_btn = form.Button(by=By.XPATH,
-#                            locator='//*[@class="navbar-toggle"]')
+    create_btn = form.Button(
+        by=By.XPATH,
+        locator='//button[contains(text(), "Create Cluster")]')

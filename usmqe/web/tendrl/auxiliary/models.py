@@ -2,9 +2,11 @@
 Some usefull model classes for common work with tendrl web
 """
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import WebstrModel, By, PageElement, RootPageElement
 from webstr.common.form import models as form
 import webstr.patternfly.dropdown.models as dropdown
+
+from usmqe.web.utils import StatusIcon
 
 
 class ListMenuModel(WebstrModel):
@@ -13,7 +15,7 @@ class ListMenuModel(WebstrModel):
     """
     filter_by = form.Select(
         By.XPATH,
-        '//select[contains(@ng-model, "filterBy")]')
+        '//select[contains(translate(@ng-model, "F", "f"), "filterBy")]')
     filter_input = form.TextInput(By.ID, 'filter')
     order_by = form.TextInput(
         By.XPATH,
@@ -40,3 +42,13 @@ class UserMenuModel(dropdown.DropDownMenuModel):
     Common page model for main page - user page
     """
     logout = PageElement(by=By.LINK_TEXT, locator="Logout")
+
+
+class AlertModel(WebstrModel):
+    """
+    model for any alert/notice message
+    """
+    _root = RootPageElement(By.XPATH, '//div[contains(@class, "alert")]')
+    priority = StatusIcon(By.XPATH, './span')
+    message = PageElement(By.XPATH, './strong')
+    close_btn = form.Button(By.XPATH, './button')

@@ -95,3 +95,26 @@ class UserMenu(dropdown.DropDownMenu):
     def logout(self):
         """ log out current user - click on logout """
         self._model.logout.click()
+
+
+class Alert(WebstrPage):
+    """
+    page object for alert/notice message
+    """
+    _model = m_auxiliary.AlertModel
+    _label = 'alert/notice message'
+    _required_elems = ['message, close_btn']
+
+    @property
+    def message(self):
+        """
+        returns message text
+        """
+        return self._model.message.text
+
+    def close(self):
+        """
+        close the alert/notice
+        click on close button - X symbol
+        """
+        self._model.close_btn.click()
