@@ -130,6 +130,8 @@ class StepReview(StepButtons):
         'cluster_network',
         'host_nr'])
 
+    create_cluster = StepButtons.click_next
+
 
 class HostsSumItem(contentviews.ListViewRow):
     """

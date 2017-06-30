@@ -460,6 +460,8 @@ class StepReview(StepButtons):
         'mon_nr',
         'osd_nr'])
 
+    create_cluster = StepButtons.click_next
+
 
 class MonSummaryRow(containers.ContainerRowBase):
     """
