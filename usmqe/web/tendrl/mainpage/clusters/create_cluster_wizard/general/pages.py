@@ -57,13 +57,13 @@ class StepButtons(WebstrPage):
         """
         self._model.cancel_btn.click()
 
-    def next(self):
+    def click_next(self):
         """
         click on Next button
         """
         self._model.next_btn.click()
 
-    def back(self):
+    def click_back(self):
         """
         click on Back button
         """
