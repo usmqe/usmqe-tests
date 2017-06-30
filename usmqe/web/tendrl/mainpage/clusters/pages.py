@@ -9,6 +9,10 @@ Author: ltrilety
 import copy
 import pytest
 
+from webstr.core import WebstrPage
+
+import usmqe.web.tendrl.mainpage.clusters.models as m_clusters
+
 
 IMPORT_TIMEOUT = 3600
 
@@ -65,3 +69,17 @@ class ClustersWorkBase(object):
         auxiliary method for clicking on proper create button
         """
         self._model.create_btn.click()
+
+
+class ViewTaskPage(WebstrPage):
+    """
+    Page with view task button
+    """
+    _model = m_clusters.ViewTaskPageModel
+    _label = 'clusters view task page'
+    _required_elems = ['view_task_btn']
+
+    def view_task(self):
+        """ click on View Task Progress button
+        """
+        self._model.view_task_btn.click()

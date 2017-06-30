@@ -16,7 +16,7 @@ from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
     import ImportCluster
 from usmqe.web.tendrl.mainpage.clusters.cluster.pages import ClusterMenu
 from usmqe.web.tendrl.task_wait import task_wait
-from usmqe.web.tendrl.clusters import check_hosts
+from usmqe.web.tendrl.mainpage.clusters.pages import check_hosts
 
 
 IMPORT_TIMEOUT = 3600
@@ -140,9 +140,9 @@ def choose_cluster(driver, cluster_type=None):
 def initial_import_cluster(driver, init_object, login_page,
                            cluster_type=None):
     """
-    positive import cluster test
+    positive import cluster workflow
 
-    NOTE: 1. No cluster has to be imported
+    NOTE: 1. There has to be no cluster in tendrl
           2. There has to be at least one cluster which could be imported
 
     Parameters:
@@ -195,7 +195,7 @@ def initial_import_cluster(driver, init_object, login_page,
 
 def import_cluster(driver, init_object, cluster_type=None):
     """
-    positive import cluster test
+    positive import cluster workflow
 
     NOTE: 1. Some cluster has to be already present in the list
           2. There has to be at least one cluster which could be imported
@@ -223,7 +223,7 @@ def import_cluster(driver, init_object, cluster_type=None):
 
 def import_cluster_x(driver, init_object, login_page, cluster_type=None):
     """
-    positive import cluster test
+    positive import cluster workflow
 
     NOTE: There has to be at least one cluster which could be imported
 

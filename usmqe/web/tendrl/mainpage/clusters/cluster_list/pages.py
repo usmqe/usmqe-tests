@@ -10,7 +10,7 @@ import webstr.patternfly.dropdown.pages as dropdown
 
 import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
-from usmqe.web.tendrl.clusters import ClustersWorkBase
+from usmqe.web.tendrl.mainpage.clusters.pages import ClustersWorkBase
 
 
 class ClustersMenu(ListMenu, ClustersWorkBase):

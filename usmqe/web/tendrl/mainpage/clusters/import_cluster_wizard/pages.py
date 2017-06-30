@@ -5,13 +5,12 @@ Import Cluster wizard module.
 
 import pytest
 
-from webstr.core import WebstrPage
 import webstr.patternfly.contentviews.pages as contentviews
 
 import usmqe.web.tendrl.mainpage.clusters.\
     import_cluster_wizard.models as m_wizard
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
-from usmqe.web.tendrl.clusters import check_hosts
+from usmqe.web.tendrl.mainpage.clusters.pages import ViewTaskPage, check_hosts
 from usmqe.ceph import ceph_cluster
 from usmqe.gluster import gluster
 
@@ -155,22 +154,16 @@ class ImportCluster(ListMenu):
         # the page is not loaded completely, better to wait a little
         time.sleep(1)
         final_import_page = ImportClusterSummary(self.driver)
-        final_import_page.view_import_task()
+        final_import_page.view_task()
         return (cluster_name or cluster_id, hosts)
 
 
-class ImportClusterSummary(WebstrPage):
+class ImportClusterSummary(ViewTaskPage):
     """
     Import Cluster - Review Summary page
     """
     _model = m_wizard.ImportClusterSummaryModel
     _label = 'clusters import Summary page'
-    _required_elems = ['view_task_btn']
-
-    def view_import_task(self):
-        """ click on View Task Progress button
-        """
-        self._model.view_task_btn.click()
 
 
 class HostsItem(contentviews.ListViewRow):
