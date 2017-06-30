@@ -15,8 +15,15 @@ from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
     import ImportCluster
 from usmqe.web.tendrl.mainpage.clusters.cluster.pages import ClusterMenu
+from usmqe.web.tendrl.mainpage.clusters.pages import ViewTaskPage
 from usmqe.web.tendrl.task_wait import task_wait
 from usmqe.web.tendrl.mainpage.clusters.pages import check_hosts
+from usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
+    general.pages import CreateCluster
+import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
+    gluster.pages as gluster
+# import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
+#     gluster.ceph as ceph
 
 
 IMPORT_TIMEOUT = 3600
@@ -241,5 +248,198 @@ def import_cluster_x(driver, init_object, login_page, cluster_type=None):
         import_cluster(driver, init_object, cluster_type)
 
 
-# TODO create
-#   def create_cluster(...
+def create_gluster_cluster_x(driver, init_object, login_page, hosts, network):
+    """
+    positive import cluster workflow
+
+    NOTE: There has to be at least one cluster which could be imported
+
+    Parameters:
+        driver: selenium driver
+        init_object: WebstrPage instance of page which is loaded after log in
+        login_page: LoginPage instance
+        hosts (list): list of hostnames
+                      nodes which should be part of cluster
+                      Note: list is enough however it could change to
+                            dictionary later with some nodes parameters
+        network (string): cluster network
+                          Note: It could be part of nodes parameters later
+    """
+    if init_object._label == 'home page':
+        initial_create_gluster_cluster(
+            driver, init_object, login_page, hosts, network)
+    else:
+        next_create_gluster_cluster(driver, init_object, hosts, network)
+
+
+def initial_create_gluster_cluster(
+        driver, init_object, login_page, hosts, network):
+    """
+    create gluster cluster workflow
+
+    NOTE: There has to be no cluster in tendrl
+
+    Parameters:
+        driver: selenium driver
+        init_object: WebstrPage instance of page which is loaded after log in
+        login_page: LoginPage instance
+        hosts (list): list of hostnames
+                      nodes which should be part of cluster
+                      Note: list is enough however it could change to
+                            dictionary later with some nodes parameters
+        network (string): cluster network
+                          Note: It could be part of nodes parameters later
+    """
+    pytest.check(init_object._label == 'home page',
+                 'Tendrl should route to home page'
+                 ' if there is no cluster present',
+                 hard=True)
+
+    init_object.start_create_cluster()
+
+    cluster_ident = create_gluster_cluster(driver, hosts, network)
+
+    # log out and log in again
+    upper_menu = UpperMenu(driver)
+    upper_menu.open_user_menu().logout()
+    login_page.login_user(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    # or just go to the default URL
+    # driver.get(pytest.config.getini("usm_web_url"))
+    home_page = get_landing_page(driver)
+
+    pytest.check(home_page._label == 'main page - menu bar',
+                 'Tendrl should not route to home page any more',
+                 hard=True)
+
+    # Check that cluster is present in the list
+    NavMenuBars(driver).open_clusters(click_only=True)
+    clusters_list = ClustersList(driver)
+
+    pytest.check(len(clusters_list) == 1,
+                 'There should be exactly one cluster in tendrl')
+    present = False
+    for cluster in clusters_list:
+        if cluster_ident.lower() in cluster.name.lower():
+            present = True
+            break
+    pytest.check(present,
+                 'The imported cluster should be present in the cluster list')
+
+
+def next_create_gluster_cluster(driver, init_object, hosts, network):
+    """
+    positive create gluster cluster workflow
+
+    NOTE: Some cluster has to be already present in the list
+
+    Parameters:
+        driver: selenium driver
+        init_object: WebstrPage instance of page which is loaded after log in
+        hosts (list): list of hostnames
+                      nodes which should be part of cluster
+                      Note: list is enough however it could change to
+                            dictionary later with some nodes parameters
+        network (string): cluster network
+                          Note: It could be part of nodes parameters later
+    """
+    pytest.check(init_object._label == 'main page - menu bar',
+                 'Tendrl should route to dashboard page',
+                 hard=True)
+    clusters_list = init_object.open_clusters()
+    clusters_nr = len(clusters_list)
+    cluster_menu = ClustersMenu(driver)
+
+    cluster_menu.start_create_cluster()
+
+    create_gluster_cluster(driver, hosts, network, clusters_nr)
+
+
+def create_gluster_cluster(driver, hosts, network, clusters_nr=0):
+    """
+    Create gluster cluster
+
+    Parameters:
+        driver: selenium driver
+        hosts (list): list of hostnames
+                      nodes which should be part of cluster
+                      Note: list is enough however it could change to
+                            dictionary later with some nodes parameters
+        network (string): cluster network
+                          Note: It could be part of nodes parameters later
+        clusters_nr (int): number of clusters in clusters list
+
+    Returns:
+        tendrl cluster id
+    """
+    # choose to create gluster cluster
+    initial_page = CreateCluster(driver)
+    initial_page.choose_gluster_creation()
+
+    step = gluster.StepGeneral(driver)
+    # check service
+    pytest.check(step.service == 'Gluster', "We chose to create a gluster "
+                 "cluster, hence the 'Storage Service' should be 'Gluster', "
+                 "it is {}".format(step.service))
+    # click on next as change of name have no impact
+    step.click_next()
+
+    step = gluster.StepNetworkAndHosts(driver)
+    # choose network
+    step.cluster_network.value = network
+    pytest.check(
+        step.cluster_network.value == network,
+        "Cluster networ should be {}, it is {}".format(
+            network, step.cluster_network.value))
+    # TODO: check select_all, deselect_all links functionality
+    #       check filter fields functionality
+    # select proper nodes
+    available_hosts = gluster.CreateHostsList(driver)
+    for host in available_hosts:
+        if host.name in hosts:
+            host.select()
+            # TODO: check host parameters
+    # click on next
+    step.click_next()
+
+    step = gluster.StepReview(driver)
+    # TODO: check cluster summary
+    # check nodes
+    page_hosts_list = gluster.HostsSumList(driver)
+    check_hosts(hosts, page_hosts_list)
+    # TODO: check nodes parameters
+    # start the job
+    step.create_cluster()
+
+    # wait till it finishes
+    task_page = ViewTaskPage(driver)
+    task_page.view_task()
+    cluster_list = cluster_job_wait(driver)
+
+    # TODO: Get cluster id
+
+    # Check that cluster is present in the list
+    pytest.check(len(cluster_list) == clusters_nr + 1,
+                 'There should be one additional cluster in tendrl')
+# TODO: Missing cluster id
+#    # open cluster details for the imported cluster
+#    present = False
+#    for cluster in cluster_list:
+#        if cluster_ident.lower() in cluster.name.lower():
+#            cluster.open_details()
+#            present = True
+#            break
+#    pytest.check(present,
+#                 'The imported cluster should be present in the cluster list')
+#
+#    # check hosts
+#    if present:
+#        page_hosts_list = ClusterMenu(driver).open_hosts()
+#        check_hosts(hosts_list, page_hosts_list)
+#
+#    return cluster_ident
+
+
+# TODO
+#   def create_ceph_cluster(...
