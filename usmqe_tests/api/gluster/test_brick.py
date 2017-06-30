@@ -2,6 +2,7 @@
 REST API test suite - gluster brick
 """
 import pytest
+import os.path
 from usmqe.api.tendrlapi import glusterapi
 import usmqe.usmssh as usmssh
 
@@ -20,7 +21,7 @@ Teardown
 
 def test_create_brick_valid(
         valid_cluster_id,
-        valid_brick_name,
+        valid_brick_path,
         valid_devices,
         valid_session_credentials):
     """@pylatest api/gluster.create_brick_valid
@@ -32,7 +33,7 @@ def test_create_brick_valid(
         Description
         ===========
 
-        Create ``GlusterCreateBrick`` job with a ``valid_brick_name`` on specified
+        Create ``GlusterCreateBrick`` job with a ``brick_name`` on specified
         ``valid_device`` with nodes from cluster with ``valid_cluster_id``
 
         .. test_step:: 1
@@ -48,6 +49,7 @@ def test_create_brick_valid(
                 job should finish.
                 """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    brick_name = os.path.split(valid_brick_path)[0]
 
     cluster_info = [x for x in api.get_cluster_list()
                     if x["integration_id"] == valid_cluster_id]
@@ -57,7 +59,7 @@ def test_create_brick_valid(
         valid_cluster_id,
         nodes,
         valid_devices,
-        valid_brick_name
+        brick_name
         )["job_id"]
     api.wait_for_job_status(job_id)
     """@pylatest api/gluster.create_brick_valid
@@ -74,23 +76,22 @@ def test_create_brick_valid(
         .. test_step:: 2
 
                 Via ssh check on cluster nodes that there exists directory with called
-                ``valid_brick_name`` in `/tendrl_gluster_bricks/brick_mount`:
-                    [ -d /tendrl_gluster_bricks/brick_mount/``valid_brick_name`` ] && echo "exists"
+                ``brick_name`` in `/tendrl_gluster_bricks/brick_mount`:
+                    [ -d /tendrl_gluster_bricks/brick_mount/``brick_name`` ] && echo "exists"
 
         .. test_result:: 2
 
                 There should be string ``exists`` in output of ssh.
                 """
-    brick_path = "/tendrl_gluster_bricks/{}_mount".format(valid_brick_name)
     SSH = usmssh.get_ssh()
     pytest.check(
         len(nodes) > 0,
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
-    cmd_exists = "[ -d {} ] && echo 'exists'".format(brick_path)
-    cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(brick_path)
+    cmd_exists = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
+    cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(valid_brick_path)
     expected_output = '/dev/mapper/tendrl{0}_vg-tendrl{0}_lv on {1} type xfs \
 (rw,noatime,nodiratime,seclabel,attr2,inode64,\
-logbsize=256k,sunit=512,swidth=512,noquota)'.format(valid_brick_name, brick_path)
+logbsize=256k,sunit=512,swidth=512,noquota)'.format(brick_name, valid_brick_path)
     for x in nodes:
         _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_exists)
         output = str(output).strip("'b\\n")

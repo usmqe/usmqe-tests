@@ -1,4 +1,5 @@
 import pytest
+import os.path
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 import usmqe.inventory as inventory
@@ -68,6 +69,19 @@ def valid_brick_name():
     Generate valid brick name.
     """
     return pytest.config.getini("usm_brick_name")
+
+
+@pytest.fixture
+def valid_brick_path(valid_brick_name):
+    """
+    Generate valid brick path. Bricks are generated in directory:
+    ``/tendrl_gluster_bricks/<brick_name>_mount``
+
+    as described in https://github.com/Tendrl/gluster-integration/issues/320
+    and in https://github.com/nnDarshan/documentation/blob/415c3e9fd50d1a6e38ce6cc84abbde8db31475c4/gluster_brick_provisioning.adoc
+    """
+    return os.path.join(os.path.sep, "tendrl_gluster_bricks", "{}_mount".format(
+        valid_brick_name))
 
 
 @pytest.fixture
