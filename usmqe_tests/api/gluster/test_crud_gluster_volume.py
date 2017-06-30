@@ -18,14 +18,15 @@ Teardown
 ========
 """
 
-VOLUME_NAME = "CrudTestVolume"
+VOLUME_NAME = "CrudTestVolume2"
 
 
 @pytest.mark.gluster_volume_crud
 def test_create_volume_valid(
         cluster_reuse,
         volume_conf_2rep,
-        valid_session_credentials):
+        valid_session_credentials,
+        valid_bricks_for_crud_volume):
     """@pylatest api/gluster.create_volume_valid
         API-gluster: create_volume
         ******************************
@@ -55,59 +56,59 @@ def test_create_volume_valid(
     job_id = api.create_volume(
         cluster_reuse["cluster_id"],
         volume_conf_2rep)["job_id"]
-    api.wait_for_job_status(job_id)
-    """@pylatest api/gluster.create_volume
-        API-gluster: create_volume
-        ******************************
+    if api.wait_for_job_status(job_id) == "finished":
+        """@pylatest api/gluster.create_volume
+            API-gluster: create_volume
+            ******************************
 
-        .. test_metadata:: author fbalak@redhat.com
+            .. test_metadata:: author fbalak@redhat.com
 
-        Description
-        ===========
+            Description
+            ===========
 
-        Check if there is created volume on gluster nodes via CLI.
+            Check if there is created volume on gluster nodes via CLI.
 
-        .. test_step:: 2
+            .. test_step:: 2
 
-            Connect to gluster node machine via ssh and run
-            ``gluster volume info command``
+                Connect to gluster node machine via ssh and run
+                ``gluster volume info command``
 
-        .. test_result:: 2
+            .. test_result:: 2
 
-            There should be listed gluster volume named ``Vol_test``.
+                There should be listed gluster volume named ``Vol_test``.
 
-            """
-    storage = gluster.GlusterCommon()
-    storage.find_volume_name(VOLUME_NAME)
+                """
+        storage = gluster.GlusterCommon()
+        storage.find_volume_name(VOLUME_NAME)
 
-    volume = gluster.GlusterVolume(VOLUME_NAME)
-    volume_id = volume.get_volume_id()
-    storage_volume_attributes = {
-            "name": volume.name,
-            "id": volume.id,
-            "status": volume.status,
-            "stripe_count": volume.stripe_count,
-            "replica_count": volume.replica_count,
-            "brick_count": volume.brick_count,
-            "snapshot_count": volume.snap_count
-        }
+        volume = gluster.GlusterVolume(VOLUME_NAME)
+        volume_id = volume.get_volume_id()
+        storage_volume_attributes = {
+                "name": volume.name,
+                "id": volume.id,
+                "status": volume.status,
+                "stripe_count": volume.stripe_count,
+                "replica_count": volume.replica_count,
+                "brick_count": volume.brick_count,
+                "snapshot_count": volume.snap_count
+            }
 
-    volume_tendrl = api.get_volume_list(cluster_reuse["cluster_id"])[0][volume_id]
-    tendrl_volume_attributes = {
-            "name": volume_tendrl["name"],
-            "id": volume_tendrl["vol_id"],
-            "status": volume_tendrl["status"],
-            "stripe_count": volume_tendrl["stripe_count"],
-            "replica_count": volume_tendrl["replica_count"],
-            "brick_count": volume_tendrl["brick_count"],
-            "snapshot_count": volume_tendrl["snap_count"]
-        }
-    pytest.check(
-        tendrl_volume_attributes == storage_volume_attributes,
-        """Storage volume attributes: {}
-        Tendrl volume attributes: {}
-        These should be the same.""".format(
-            tendrl_volume_attributes, storage_volume_attributes))
+        volume_tendrl = api.get_volume_list(cluster_reuse["cluster_id"])[0][volume_id]
+        tendrl_volume_attributes = {
+                "name": volume_tendrl["name"],
+                "id": volume_tendrl["vol_id"],
+                "status": volume_tendrl["status"],
+                "stripe_count": volume_tendrl["stripe_count"],
+                "replica_count": volume_tendrl["replica_count"],
+                "brick_count": volume_tendrl["brick_count"],
+                "snapshot_count": volume_tendrl["snap_count"]
+            }
+        pytest.check(
+            tendrl_volume_attributes == storage_volume_attributes,
+            """Storage volume attributes: {}
+            Tendrl volume attributes: {}
+            These should be the same.""".format(
+                tendrl_volume_attributes, storage_volume_attributes))
 
 
 #@pytest.mark.gluster_volume_crud
@@ -264,7 +265,7 @@ def test_delete_volume_valid(
             """
     storage = gluster.GlusterCommon()
     storage.find_volume_name(VOLUME_NAME, False)
-   """@pylatest api/gluster.create_volume
+    """@pylatest api/gluster.create_volume
         API-gluster: create_volume
         ******************************
 
@@ -285,9 +286,9 @@ def test_delete_volume_valid(
             In response should not be listed gluster volume with ``valid_volume_id``
 
             """
-    volumes = api.get_volume_list(valid_cluster_id)
+    volumes = api.get_volume_list(cluster_reuse["cluster_id"])
     pytest.check(
-        valid_volume_id not in list(volumes),
+        volume_id not in list(volumes),
         "volume id {} should not be among volume ids in tendrl: {}".format(
-            valid_volume_id, list(volumes)))
+            volume_id, list(volumes)))
 

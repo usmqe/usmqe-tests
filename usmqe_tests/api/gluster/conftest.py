@@ -97,7 +97,7 @@ def valid_devices(valid_session_credentials, count=1):
                     nodes_free_kern_name,
                     err.strerror))
 
-
+# TODO change to use bricks mapping
 @pytest.fixture
 def volume_conf_2rep(valid_brick_path):
     """
@@ -106,6 +106,7 @@ def volume_conf_2rep(valid_brick_path):
     Node list for brick list is created from list of nodes in cluster.
     Cluster is identified by one node from cluster.
     *Volume name should be defined for each test!*
+    *Configuration is made for replica count == 2.*
     """
     id_host = pytest.config.getini("usm_id_fqdn")
     hosts = gluster.GlusterCommon().get_hosts_from_trusted_pool(id_host)
@@ -142,3 +143,20 @@ def invalid_volume_name(request):
     Generate invalid volume name.
     """
     return request.param
+
+@pytest.fixture
+def valid_bricks_for_crud_volume(
+    valid_session_credentials,
+    cluster_reuse,
+    valid_brick_path):
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+
+    nodes = cluster_reuse["nodes"]
+
+    job_id = api.create_bricks(
+        cluster_reuse["cluster_id"],
+        cluster_reuse["nodes"],
+        valid_brick_path)["job_id"]
+    api.wait_for_job_status(job_id)
+    import time
+    time.sleep(400)
