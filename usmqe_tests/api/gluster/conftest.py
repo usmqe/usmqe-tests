@@ -78,7 +78,8 @@ def valid_brick_path(valid_brick_name):
     ``/tendrl_gluster_bricks/<brick_name>_mount``
 
     as described in https://github.com/Tendrl/gluster-integration/issues/320
-    and in https://github.com/nnDarshan/documentation/blob/415c3e9fd50d1a6e38ce6cc84abbde8db31475c4/gluster_brick_provisioning.adoc
+    and in https://github.com/nnDarshan/documentation/blob/415c3e9fd50d1a6e38ce6cc84abbde8db31475c4/
+                   gluster_brick_provisioning.adoc
     """
     return os.path.join(os.path.sep, "tendrl_gluster_bricks", "{}_mount".format(
         valid_brick_name))

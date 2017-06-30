@@ -3,6 +3,7 @@ REST API test suite - gluster brick
 """
 import pytest
 import os.path
+import re
 from usmqe.api.tendrlapi import glusterapi
 import usmqe.usmssh as usmssh
 
@@ -49,7 +50,7 @@ def test_create_brick_valid(
                 job should finish.
                 """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    brick_name = os.path.split(valid_brick_path)[0]
+    brick_name = re.search("(.*)_mount", os.path.split(valid_brick_path)[1]).group(1)
 
     cluster_info = [x for x in api.get_cluster_list()
                     if x["integration_id"] == valid_cluster_id]
@@ -89,9 +90,8 @@ def test_create_brick_valid(
         "In cluster have to be at least one node. There are {}".format(len(nodes)))
     cmd_exists = "[ -d {} ] && echo 'exists'".format(valid_brick_path)
     cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(valid_brick_path)
-    expected_output = '/dev/mapper/tendrl{0}_vg-tendrl{0}_lv on {1} type xfs \
-(rw,noatime,nodiratime,seclabel,attr2,inode64,\
-logbsize=256k,sunit=512,swidth=512,noquota)'.format(brick_name, valid_brick_path)
+    expected_output = '/dev/mapper/tendrl{0}_vg-tendrl{0}_lv on {1} type xfs'\
+        .format(brick_name, valid_brick_path)
     for x in nodes:
         _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_exists)
         output = str(output).strip("'b\\n")
@@ -120,10 +120,11 @@ logbsize=256k,sunit=512,swidth=512,noquota)'.format(brick_name, valid_brick_path
             .. test_result:: 3
 
                     Output of the command should be:
-                        ``device`` type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+                ``/dev/mapper/tendrl`brick_name`_vg-tendrl`brick_name`_lv on `brick_path` type xfs``
                     """
         _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_fs)
         output = str(output).strip("'b\\n")
+        output = re.sub("\s*\(.*\)$", "", output)
         pytest.check(
             output == expected_output,
             "Output of command {} should be `{}`. Output is: `{}`".format(
