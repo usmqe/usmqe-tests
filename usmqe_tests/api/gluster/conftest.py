@@ -100,18 +100,17 @@ def valid_devices(valid_session_credentials, count=1):
                    if x["localstorage"]["blockdevices"]["all"] is not None
                    else None for x in api.get_nodes()["nodes"]]
     device_info = [x for x in device_info if x is not None]
-    print(device_info)
     devices = [x["device_kernel_name"] for x in device_info]
 
     try:
         return devices[0:count]
-    except IndexError as e:
+    except IndexError as err:
         raise Exception(
                 "TypeError({0}): There are not enough devices. There are: {1}. {2}"
                 .format(
-                    e.errno,
+                    err.errno,
                     devices,
-                    e.strerror))
+                    err.strerror))
 
 
 @pytest.fixture
@@ -127,12 +126,12 @@ def valid_volume_configuration(valid_volume_name, valid_brick_path):
                    {"{}".format(inventory.role2hosts(role)[i+1]):
                     "{}".format(valid_brick_path)}]
                   for i in range(0, len(inventory.role2hosts(role)), 2)]
-    except TypeError as e:
+    except TypeError as err:
         raise Exception(
             "TypeError({0}): You should probably define usm_brick_path and \
                     usm_gluster_role in usm.ini. {1}".format(
-                e.errno,
-                e.strerror))
+                err.errno,
+                err.strerror))
     return {
         "Volume.volname": valid_volume_name,
         "Volume.bricks": bricks,
