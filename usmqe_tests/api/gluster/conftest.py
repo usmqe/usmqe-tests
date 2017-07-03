@@ -8,7 +8,7 @@ import usmqe.inventory as inventory
 @pytest.fixture
 def valid_nodes(valid_session_credentials):
     """
-    Generate valid host info from GetNodeList api call related to tendrl/nodes
+    Generate valid host info from GetClusterList api call related to tendrl/nodes
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     cluster_list = api.get_nodes()
@@ -99,22 +99,21 @@ def valid_devices(valid_session_credentials, count=1):
 
 # TODO change to use bricks mapping
 @pytest.fixture
-def volume_conf_2rep(valid_brick_path):
+def volume_conf_2rep(cluster_reuse):
     """
     Generate valid configuration for volume creation with set:
         "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
     Node list for brick list is created from list of nodes in cluster.
+    Always is used first(alphabetic order) free brick on node.
     Cluster is identified by one node from cluster.
     *Volume name should be defined for each test!*
     *Configuration is made for replica count == 2.*
     """
-    id_host = pytest.config.getini("usm_id_fqdn")
-    hosts = gluster.GlusterCommon().get_hosts_from_trusted_pool(id_host)
-
-    bricks = [[{"{}".format(hosts[i]):
-                "{}".format(valid_brick_path)},
-               {"{}".format(hosts[i+1]):
-                "{}".format(valid_brick_path)}]
+    hosts = cluster_reuse["nodes"]
+    bricks = [[{"{}".format(hosts[i]["fqdn"]):
+                "{}".format(sorted(hosts[i]["bricks"]["free"])[0])},
+               {"{}".format(hosts[i+1]["fqdn"]):
+                "{}".format(sorted(hosts[i+1]["bricks"]["free"])[0])}]
               for i in range(0, len(hosts), 2)]
 
     return {
@@ -148,7 +147,7 @@ def invalid_volume_name(request):
 def valid_bricks_for_crud_volume(
     valid_session_credentials,
     cluster_reuse,
-    valid_brick_path):
+    valid_brick_name):
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     nodes = cluster_reuse["nodes"]
@@ -156,7 +155,8 @@ def valid_bricks_for_crud_volume(
     job_id = api.create_bricks(
         cluster_reuse["cluster_id"],
         cluster_reuse["nodes"],
-        valid_brick_path)["job_id"]
+        valid_devices,
+        valid_brick_name)["job_id"]
     api.wait_for_job_status(job_id)
     import time
     time.sleep(400)
