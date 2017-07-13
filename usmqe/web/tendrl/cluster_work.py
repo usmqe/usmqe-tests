@@ -16,6 +16,7 @@ from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
     import ImportCluster
 from usmqe.web.tendrl.mainpage.clusters.cluster.pages import ClusterMenu
 from usmqe.web.tendrl.mainpage.clusters.pages import ViewTaskPage
+from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
 from usmqe.web.tendrl.task_wait import task_wait
 from usmqe.web.tendrl.mainpage.clusters.pages import check_hosts
 from usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
@@ -39,11 +40,59 @@ def cluster_job_wait(driver):
                    in seconds
 
     Returns:
-        list of cluster objects
+        task id
     """
     # Wait till the cluster is imported/created
+    task_details = TaskDetails(driver)
+    task_id = task_details.name_id.split(':')[1].lstrip()
+
     task_wait(ttl=IMPORT_TIMEOUT)
 
+    return task_id
+
+
+def initial_pre_check(init_object):
+    """
+    initial cluster workflow pre-check
+
+    NOTE: There has to be no cluster in tendrl
+
+    Parameters:
+        init_object: WebstrPage instance of page which is loaded after log in
+    """
+    pytest.check(init_object._label == 'home page',
+                 'Tendrl should route to home page'
+                 ' if there is no cluster present',
+                 hard=True)
+
+
+def next_pre_check(init_object):
+    """
+    next cluster workflow pre-check
+
+    NOTE: Some cluster has to be already present in the list
+
+    Parameters:
+        init_object: WebstrPage instance of page which is loaded after log in
+    """
+    pytest.check(init_object._label == 'main page - menu bar',
+                 'Tendrl should route to dashboard page',
+                 hard=True)
+
+
+def post_check(driver, cluster_name, hosts, clusters_nr, login_page=None):
+    """
+    cluster workflow post-check
+
+    Parameters:
+        driver: selenium driver
+        cluster_name (str): cluster name
+        hosts (list): list of dictionaries
+                      {'hostname': <hostname>, 'release': <release>, ...
+                      for check only
+        clusters_nr (int): previous number of clusters in clusters list
+        login_page: LoginPage instance
+    """
     NavMenuBars(driver).open_clusters(click_only=True)
 
     # TODO remove following sleep
@@ -52,32 +101,6 @@ def cluster_job_wait(driver):
 
     cluster_list = ClustersList(driver)
     return cluster_list
-
-
-def import_selected_cluster(driver, import_page, clusters_nr=0,
-                            cluster_name=None, hosts=None):
-    """
-    import SELECTED cluster
-
-    Parameters:
-        driver: selenium driver
-        import_page: instance of ImportCluster
-        clusters_nr (int): number of clusters in clusters list
-        cluster_name (str): name of the cluster
-                            TODO: Not used for now
-                                  https://github.com/Tendrl/api/issues/70
-        hosts (list): list of dictionaries
-                      {'hostname': <hostname>, 'release': <release>, ...
-                      for check only
-
-    Returns:
-        cluster name or id
-    """
-    (cluster_ident, hosts_list) = import_page.import_cluster(
-        name=cluster_name, hosts=hosts)
-
-    cluster_list = cluster_job_wait(driver)
-
     # Check that cluster is present in the list
     pytest.check(len(cluster_list) == clusters_nr + 1,
                  'There should be one additional cluster in tendrl')
@@ -95,7 +118,37 @@ def import_selected_cluster(driver, import_page, clusters_nr=0,
     if present:
         page_hosts_list = ClusterMenu(driver).open_hosts()
         check_hosts(hosts_list, page_hosts_list)
-    return cluster_ident
+
+    # Note next steps are done only for initial import/create
+    if login_page:
+        # log out and log in again
+        upper_menu = UpperMenu(driver)
+        upper_menu.open_user_menu().logout()
+        login_page.login_user(
+            pytest.config.getini("usm_username"),
+            pytest.config.getini("usm_password"))
+        # or just go to the default URL
+        # driver.get(pytest.config.getini("usm_web_url"))
+        home_page = get_landing_page(driver)
+    
+        pytest.check(home_page._label == 'main page - menu bar',
+                     'Tendrl should not route to home page any more',
+                     hard=True)
+    
+        # Check that cluster is present in the list
+        NavMenuBars(driver).open_clusters(click_only=True)
+        clusters_list = ClustersList(driver)
+    
+        pytest.check(len(clusters_list) == 1,
+                     'There should be exactly one cluster in tendrl')
+        present = False
+        for cluster in clusters_list:
+            if cluster_name.lower() in cluster.name.lower():
+                present = True
+                break
+        pytest.check(present,
+                     "The cluster '{}' should be present in the "
+                     "cluster list".format(cluster_name))
 
 
 def choose_cluster(driver, cluster_type=None):
@@ -160,44 +213,17 @@ def initial_import_cluster(driver, init_object, login_page,
                                 'ceph' or 'gluster'
                             None means that cluster type doesn't matter
     """
-    pytest.check(init_object._label == 'home page',
-                 'Tendrl should route to home page'
-                 ' if there is no cluster present',
-                 hard=True)
+    initial_pre_check(init_object)
 
     init_object.start_import_cluster()
 
     import_page = choose_cluster(driver, cluster_type)
 
-    cluster_ident = import_selected_cluster(driver, import_page)
+    (cluster_ident, hosts_list) = import_page.import_cluster()
 
-    # log out and log in again
-    upper_menu = UpperMenu(driver)
-    upper_menu.open_user_menu().logout()
-    login_page.login_user(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
-    # or just go to the default URL
-    # driver.get(pytest.config.getini("usm_web_url"))
-    home_page = get_landing_page(driver)
+    cluster_job_wait(driver)
 
-    pytest.check(home_page._label == 'main page - menu bar',
-                 'Tendrl should not route to home page any more',
-                 hard=True)
-
-    # Check that cluster is present in the list
-    NavMenuBars(driver).open_clusters(click_only=True)
-    clusters_list = ClustersList(driver)
-
-    pytest.check(len(clusters_list) == 1,
-                 'There should be exactly one cluster in tendrl')
-    present = False
-    for cluster in clusters_list:
-        if cluster_ident.lower() in cluster.name.lower():
-            present = True
-            break
-    pytest.check(present,
-                 'The imported cluster should be present in the cluster list')
+    post_check(driver, cluster_ident, hosts_list, 0, login_page)
 
 
 def next_import_cluster(driver, init_object, cluster_type=None):
@@ -214,9 +240,8 @@ def next_import_cluster(driver, init_object, cluster_type=None):
                                 'ceph' or 'gluster'
                             None means that cluster type doesn't matter
     """
-    pytest.check(init_object._label == 'main page - menu bar',
-                 'Tendrl should route to dashboard page',
-                 hard=True)
+    next_pre_check(init_object)
+
     clusters_list = init_object.open_clusters()
     clusters_nr = len(clusters_list)
     cluster_menu = ClustersMenu(driver)
@@ -225,7 +250,11 @@ def next_import_cluster(driver, init_object, cluster_type=None):
 
     import_page = choose_cluster(driver, cluster_type)
 
-    import_selected_cluster(driver, import_page, clusters_nr)
+    (cluster_ident, hosts_list) = import_page.import_cluster()
+
+    cluster_job_wait(driver)
+
+    post_check(driver, cluster_ident, hosts_list, clusters_nr)
 
 
 def import_cluster(driver, init_object, login_page, cluster_type=None):
@@ -248,7 +277,7 @@ def import_cluster(driver, init_object, login_page, cluster_type=None):
         next_import_cluster(driver, init_object, cluster_type)
 
 
-def create_gluster_cluster_x(driver, init_object, login_page, hosts, network):
+def create_gluster_cluster(driver, init_object, login_page, hosts, network):
     """
     positive import cluster workflow
 
@@ -290,42 +319,13 @@ def initial_create_gluster_cluster(
         network (string): cluster network
                           Note: It could be part of nodes parameters later
     """
-    pytest.check(init_object._label == 'home page',
-                 'Tendrl should route to home page'
-                 ' if there is no cluster present',
-                 hard=True)
+    initial_pre_check(init_object)
 
     init_object.start_create_cluster()
 
     cluster_ident = create_gluster_cluster(driver, hosts, network)
 
-    # log out and log in again
-    upper_menu = UpperMenu(driver)
-    upper_menu.open_user_menu().logout()
-    login_page.login_user(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
-    # or just go to the default URL
-    # driver.get(pytest.config.getini("usm_web_url"))
-    home_page = get_landing_page(driver)
-
-    pytest.check(home_page._label == 'main page - menu bar',
-                 'Tendrl should not route to home page any more',
-                 hard=True)
-
-    # Check that cluster is present in the list
-    NavMenuBars(driver).open_clusters(click_only=True)
-    clusters_list = ClustersList(driver)
-
-    pytest.check(len(clusters_list) == 1,
-                 'There should be exactly one cluster in tendrl')
-    present = False
-    for cluster in clusters_list:
-        if cluster_ident.lower() in cluster.name.lower():
-            present = True
-            break
-    pytest.check(present,
-                 'The imported cluster should be present in the cluster list')
+    post_check(driver, cluster_ident, hosts, 0, login_page)
 
 
 def next_create_gluster_cluster(driver, init_object, hosts, network):
@@ -344,19 +344,20 @@ def next_create_gluster_cluster(driver, init_object, hosts, network):
         network (string): cluster network
                           Note: It could be part of nodes parameters later
     """
-    pytest.check(init_object._label == 'main page - menu bar',
-                 'Tendrl should route to dashboard page',
-                 hard=True)
+    next_pre_check(init_object)
+
     clusters_list = init_object.open_clusters()
     clusters_nr = len(clusters_list)
     cluster_menu = ClustersMenu(driver)
 
     cluster_menu.start_create_cluster()
 
-    create_gluster_cluster(driver, hosts, network, clusters_nr)
+    cluster_ident = create_gluster_cluster(driver, hosts, network)
+
+    post_check(driver, cluster_ident, hosts, clusters_nr)
 
 
-def create_gluster_cluster(driver, hosts, network, clusters_nr=0):
+def create_gluster_cluster(driver, hosts, network):
     """
     Create gluster cluster
 
@@ -368,10 +369,9 @@ def create_gluster_cluster(driver, hosts, network, clusters_nr=0):
                             dictionary later with some nodes parameters
         network (string): cluster network
                           Note: It could be part of nodes parameters later
-        clusters_nr (int): number of clusters in clusters list
 
     Returns:
-        tendrl cluster id
+        tendrl cluster name
     """
     # choose to create gluster cluster
     initial_page = CreateCluster(driver)
@@ -415,30 +415,44 @@ def create_gluster_cluster(driver, hosts, network, clusters_nr=0):
     # wait till it finishes
     task_page = ViewTaskPage(driver)
     task_page.view_task()
-    cluster_list = cluster_job_wait(driver)
+    # Get task id
+    task_id = cluster_job_wait(driver)
 
-    # TODO: Get cluster id
+    # TODO: Get cluster name
+    # use API
+#    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+#    pytest.check(
+#        len(nodes) > 0,
+#        "There have to be at least one gluster node."
+#        "There are {}".format(len(valid_nodes)))
+#    job_id = api.create_cluster(
+#        cluster_name,
+#        str(uuid.uuid4()),
+#        nodes,
+#        provisioner_ip,
+#        network)["job_id"]
+#
+#    integration_id = api.get_job_attribute(
+#        job_id=job_id,
+#        attribute="TendrlContext.integration_id",
+#        section="parameters")
+#    LOGGER.debug("integration_id: %s" % integration_id)
+#
+#    api.get_cluster_list()
+#    # TODO(fbalak) remove this sleep after
+#    #              https://github.com/Tendrl/api/issues/159 is resolved.
+#    import time
+#    time.sleep(30)
+#
+#    imported_clusters = [x for x in api.get_cluster_list()
+#                         if x["integration_id"] == integration_id]
+#
+#    
+#    cluster_name = imported_clusters[0]["cluster_name"]
+#    LOGGER.debug("cluster_name: %s" % cluster_name)
 
-    # Check that cluster is present in the list
-    pytest.check(len(cluster_list) == clusters_nr + 1,
-                 'There should be one additional cluster in tendrl')
 # TODO: Missing cluster id
-#    # open cluster details for the imported cluster
-#    present = False
-#    for cluster in cluster_list:
-#        if cluster_ident.lower() in cluster.name.lower():
-#            cluster.open_details()
-#            present = True
-#            break
-#    pytest.check(present,
-#                 'The imported cluster should be present in the cluster list')
-#
-#    # check hosts
-#    if present:
-#        page_hosts_list = ClusterMenu(driver).open_hosts()
-#        check_hosts(hosts_list, page_hosts_list)
-#
-#    return cluster_ident
+#    return cluster_name
 
 
 # TODO
