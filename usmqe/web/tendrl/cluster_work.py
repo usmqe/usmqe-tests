@@ -200,7 +200,7 @@ def initial_import_cluster(driver, init_object, login_page,
                  'The imported cluster should be present in the cluster list')
 
 
-def import_cluster(driver, init_object, cluster_type=None):
+def next_import_cluster(driver, init_object, cluster_type=None):
     """
     positive import cluster workflow
 
@@ -228,7 +228,7 @@ def import_cluster(driver, init_object, cluster_type=None):
     import_selected_cluster(driver, import_page, clusters_nr)
 
 
-def import_cluster_x(driver, init_object, login_page, cluster_type=None):
+def import_cluster(driver, init_object, login_page, cluster_type=None):
     """
     positive import cluster workflow
 
@@ -245,7 +245,7 @@ def import_cluster_x(driver, init_object, login_page, cluster_type=None):
     if init_object._label == 'home page':
         initial_import_cluster(driver, init_object, login_page, cluster_type)
     else:
-        import_cluster(driver, init_object, cluster_type)
+        next_import_cluster(driver, init_object, cluster_type)
 
 
 def create_gluster_cluster_x(driver, init_object, login_page, hosts, network):
