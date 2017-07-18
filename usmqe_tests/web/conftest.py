@@ -11,6 +11,7 @@ from webstr.core import test
 from usmqe.web.tendrl.loginpage import pages as loginpage
 from usmqe.web.tendrl.landing_page.pages import get_landing_page
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
+from usmqe.api.tendrlapi.common import login, logout
 
 
 class CommonTestCase(test.UITestCase):
@@ -86,3 +87,17 @@ def valid_credentials(log_in, log_out):
           user is logged in at the test begin and log out when the test ends
     """
     yield log_in
+
+
+@pytest.fixture(scope="function")
+def api_valid_credentials():
+    """
+    During setup phase, login default usmqe user account (username and password
+    comes from usm.ini config file) and return requests auth object.
+    Then during teardown logout the user to close the session.
+    """
+    auth = login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    yield auth
+    logout(auth=auth)

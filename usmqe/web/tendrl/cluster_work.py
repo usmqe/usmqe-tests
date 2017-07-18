@@ -25,7 +25,7 @@ import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
     gluster.pages as gluster
 # import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
 #     gluster.ceph as ceph
-
+from usmqe.api.tendrlapi import glusterapi
 
 IMPORT_TIMEOUT = 3600
 
@@ -107,7 +107,7 @@ def post_check(driver, cluster_name, hosts, clusters_nr, login_page=None):
     # open cluster details for the imported cluster
     present = False
     for cluster in cluster_list:
-        if cluster_ident.lower() in cluster.name.lower():
+        if cluster_name.lower() in cluster.name.lower():
             cluster.open_details()
             present = True
             break
@@ -117,7 +117,7 @@ def post_check(driver, cluster_name, hosts, clusters_nr, login_page=None):
     # check hosts
     if present:
         page_hosts_list = ClusterMenu(driver).open_hosts()
-        check_hosts(hosts_list, page_hosts_list)
+        check_hosts(hosts, page_hosts_list)
 
     # Note next steps are done only for initial import/create
     if login_page:
@@ -130,15 +130,15 @@ def post_check(driver, cluster_name, hosts, clusters_nr, login_page=None):
         # or just go to the default URL
         # driver.get(pytest.config.getini("usm_web_url"))
         home_page = get_landing_page(driver)
-    
+
         pytest.check(home_page._label == 'main page - menu bar',
                      'Tendrl should not route to home page any more',
                      hard=True)
-    
+
         # Check that cluster is present in the list
         NavMenuBars(driver).open_clusters(click_only=True)
         clusters_list = ClustersList(driver)
-    
+
         pytest.check(len(clusters_list) == 1,
                      'There should be exactly one cluster in tendrl')
         present = False
@@ -277,7 +277,8 @@ def import_cluster(driver, init_object, login_page, cluster_type=None):
         next_import_cluster(driver, init_object, cluster_type)
 
 
-def create_gluster_cluster(driver, init_object, login_page, hosts, network):
+def create_gluster_cluster(driver, init_object, login_page, hosts,
+                           api_valid_credentials, network=None):
     """
     positive import cluster workflow
 
@@ -291,18 +292,24 @@ def create_gluster_cluster(driver, init_object, login_page, hosts, network):
                       nodes which should be part of cluster
                       Note: list is enough however it could change to
                             dictionary later with some nodes parameters
+        api_valid_credentials: TendrlAuth object (defines bearer token header),
+                               when auth is None, requests are send without
+                               athentication header
         network (string): cluster network
                           Note: It could be part of nodes parameters later
     """
     if init_object._label == 'home page':
         initial_create_gluster_cluster(
-            driver, init_object, login_page, hosts, network)
+            driver, init_object, login_page, hosts,
+            api_valid_credentials, network)
     else:
-        next_create_gluster_cluster(driver, init_object, hosts, network)
+        next_create_gluster_cluster(
+            driver, init_object, hosts, api_valid_credentials, network)
 
 
 def initial_create_gluster_cluster(
-        driver, init_object, login_page, hosts, network):
+        driver, init_object, login_page, hosts,
+        api_valid_credentials, network=None):
     """
     create gluster cluster workflow
 
@@ -316,6 +323,9 @@ def initial_create_gluster_cluster(
                       nodes which should be part of cluster
                       Note: list is enough however it could change to
                             dictionary later with some nodes parameters
+        api_valid_credentials: TendrlAuth object (defines bearer token header),
+                               when auth is None, requests are send without
+                               athentication header
         network (string): cluster network
                           Note: It could be part of nodes parameters later
     """
@@ -323,12 +333,14 @@ def initial_create_gluster_cluster(
 
     init_object.start_create_cluster()
 
-    cluster_ident = create_gluster_cluster(driver, hosts, network)
+    cluster_ident = aux_create_gluster_cluster(
+        driver, hosts, api_valid_credentials, network)
 
     post_check(driver, cluster_ident, hosts, 0, login_page)
 
 
-def next_create_gluster_cluster(driver, init_object, hosts, network):
+def next_create_gluster_cluster(driver, init_object, hosts,
+                                api_valid_credentials, network=None):
     """
     positive create gluster cluster workflow
 
@@ -341,6 +353,9 @@ def next_create_gluster_cluster(driver, init_object, hosts, network):
                       nodes which should be part of cluster
                       Note: list is enough however it could change to
                             dictionary later with some nodes parameters
+        api_valid_credentials: TendrlAuth object (defines bearer token header),
+                               when auth is None, requests are send without
+                               athentication header
         network (string): cluster network
                           Note: It could be part of nodes parameters later
     """
@@ -352,12 +367,14 @@ def next_create_gluster_cluster(driver, init_object, hosts, network):
 
     cluster_menu.start_create_cluster()
 
-    cluster_ident = create_gluster_cluster(driver, hosts, network)
+    cluster_ident = aux_create_gluster_cluster(
+        driver, hosts, api_valid_credentials, network)
 
     post_check(driver, cluster_ident, hosts, clusters_nr)
 
 
-def create_gluster_cluster(driver, hosts, network):
+def aux_create_gluster_cluster(driver, hosts, api_valid_credentials,
+                               network=None):
     """
     Create gluster cluster
 
@@ -367,6 +384,9 @@ def create_gluster_cluster(driver, hosts, network):
                       nodes which should be part of cluster
                       Note: list is enough however it could change to
                             dictionary later with some nodes parameters
+        api_valid_credentials: TendrlAuth object (defines bearer token header),
+                               when auth is None, requests are send without
+                               athentication header
         network (string): cluster network
                           Note: It could be part of nodes parameters later
 
@@ -386,12 +406,14 @@ def create_gluster_cluster(driver, hosts, network):
     step.click_next()
 
     step = gluster.StepNetworkAndHosts(driver)
+
     # choose network
-    step.cluster_network.value = network
-    pytest.check(
-        step.cluster_network.value == network,
-        "Cluster networ should be {}, it is {}".format(
-            network, step.cluster_network.value))
+    if network is not None:
+        step.cluster_network.value = network
+        pytest.check(
+            step.cluster_network.value == network,
+            "Cluster networ should be {}, it is {}".format(
+                network, step.cluster_network.value))
     # TODO: check select_all, deselect_all links functionality
     #       check filter fields functionality
     # select proper nodes
@@ -418,41 +440,27 @@ def create_gluster_cluster(driver, hosts, network):
     # Get task id
     task_id = cluster_job_wait(driver)
 
-    # TODO: Get cluster name
+    # Get cluster name
     # use API
-#    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-#    pytest.check(
-#        len(nodes) > 0,
-#        "There have to be at least one gluster node."
-#        "There are {}".format(len(valid_nodes)))
-#    job_id = api.create_cluster(
-#        cluster_name,
-#        str(uuid.uuid4()),
-#        nodes,
-#        provisioner_ip,
-#        network)["job_id"]
-#
-#    integration_id = api.get_job_attribute(
-#        job_id=job_id,
-#        attribute="TendrlContext.integration_id",
-#        section="parameters")
-#    LOGGER.debug("integration_id: %s" % integration_id)
-#
-#    api.get_cluster_list()
-#    # TODO(fbalak) remove this sleep after
-#    #              https://github.com/Tendrl/api/issues/159 is resolved.
-#    import time
-#    time.sleep(30)
-#
-#    imported_clusters = [x for x in api.get_cluster_list()
-#                         if x["integration_id"] == integration_id]
-#
-#    
-#    cluster_name = imported_clusters[0]["cluster_name"]
-#    LOGGER.debug("cluster_name: %s" % cluster_name)
+    api = glusterapi.TendrlApiGluster(auth=api_valid_credentials)
 
-# TODO: Missing cluster id
-#    return cluster_name
+    integration_id = api.get_job_attribute(
+        job_id=task_id,
+        attribute="TendrlContext.integration_id",
+        section="parameters")
+
+    api.get_cluster_list()
+    # TODO(fbalak) remove this sleep after
+    #              https://github.com/Tendrl/api/issues/159 is resolved.
+    import time
+    time.sleep(30)
+
+    imported_clusters = [x for x in api.get_cluster_list()
+                         if x["integration_id"] == integration_id]
+
+    cluster_name = imported_clusters[0]["cluster_name"]
+
+    return cluster_name
 
 
 # TODO
