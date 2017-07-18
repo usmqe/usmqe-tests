@@ -409,11 +409,11 @@ def aux_create_gluster_cluster(driver, hosts, api_valid_credentials,
 
     # choose network
     if network is not None:
-        step.cluster_network.value = network
+        step.cluster_network = network
         pytest.check(
-            step.cluster_network.value == network,
+            network in step.cluster_network,
             "Cluster networ should be {}, it is {}".format(
-                network, step.cluster_network.value))
+                network, step.cluster_network[0]))
     # TODO: check select_all, deselect_all links functionality
     #       check filter fields functionality
     # select proper nodes
