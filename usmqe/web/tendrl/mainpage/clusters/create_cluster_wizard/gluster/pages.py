@@ -145,6 +145,11 @@ class HostsSumItem(contentviews.ListViewRow):
         'interface',
         'address']
 
+    @property
+    def name(self):
+        """ returns host name """
+        return self._model.name.text
+
 
 class HostsSumList(contentviews.ListView):
     """

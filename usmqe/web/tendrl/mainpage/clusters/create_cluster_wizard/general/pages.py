@@ -19,7 +19,7 @@ class CreateCluster(modal.ModalWindow):
     model for Create Cluster
     """
     _model = m_general.CreateClusterModel
-    _label = 'clusters import page'
+    _label = 'clusters create page'
     _required_elems = ['ceph_line', 'gluster_line', 'cancel_btn', 'next_btn']
 
     def cancel(self):

@@ -17,8 +17,8 @@ class CreateClusterModel(modal.ModalWindowModel):
     # NOTE: part of patternfly - custom modal
     _root = RootPageElement(by=By.XPATH,
                             locator="//div[@class='custom-modal']")
-    ceph_line = PageElement(By.XPATH, locator='//li[text(),"Ceph"]')
-    gluster_line = PageElement(By.XPATH, locator='//li[text(),"Gluster"]')
+    ceph_line = PageElement(By.XPATH, locator='//li[text()="Ceph"]')
+    gluster_line = PageElement(By.XPATH, locator='//li[text()="Gluster"]')
     cancel_btn = form.Button(
         By.XPATH,
         '//button[contains(text(), "Cancel")]')
@@ -33,7 +33,7 @@ class StepButtonsModel(WebstrModel):
     """
     cancel_btn = form.Button(
         By.XPATH,
-        '//button[contains(@class, "btn-cancel")]')
+        '//a[contains(@class, "btn-cancel")]')
     back_btn = form.Button(
         By.XPATH,
         '//button[contains(@class, "wizard-pf-back")]')

@@ -3,7 +3,8 @@ Create Cluster wizard module.
 """
 
 
-from webstr.core import By, PageElement
+from webstr.core import By, PageElement, WebstrModel, DynamicWebstrModel,\
+    NameRootPageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
@@ -38,10 +39,27 @@ class StepNetworkAndHostsModel(ListMenuModel, StepButtonsModel):
         '//select[contains(@ng-model, "ClusterNetwork")]')
 
 
-class CreateHostsItemModel(contentviews.ListViewRowModel):
+class CreateHostsListModel(WebstrModel):
+    """
+    Page model for list of nodes/hosts.
+    """
+    LIST_XPATH = '//*[contains(concat(" ", @class, " "), " list-view-pf ")]'\
+                 '[contains(@ng-repeat, "host in")]'
+    rows = PageElement(
+      by=By.XPATH,
+      locator=LIST_XPATH + "//*[contains(concat(' ', @class, ' '),"
+      " ' list-group-item ')]",
+      as_list=True)
+
+
+class CreateHostsItemModel(DynamicWebstrModel):
     """
     An item (row) in a Hosts list.
     """
+    _root = NameRootPageElement(
+      by=By.XPATH,
+      locator='(' + CreateHostsListModel.LIST_XPATH +
+      '//*[contains(concat(" ", @class, " "), " list-group-item ")])[%d]')
     check = form.Checkbox(
         By.XPATH,
         './div[1]/input')
@@ -63,19 +81,13 @@ class CreateHostsItemModel(contentviews.ListViewRowModel):
         locator="./div[5]/div/div[2]")
 
 
-class CreateHostsListModel(contentviews.ListViewModel):
-    """
-    Page model for list of nodes/hosts.
-    """
-
-
 class StepReviewModel(StepButtonsModel):
     """
     model for create gluster cluster - "Review" step
     """
     STEP_SUMMARY_PATH = '//div[contains(@ng-if, "selectedStep")]'
     # cluster summary
-    CLUSTER_SUM_PATH = '{}/div[contains(concat(" ", @class, " "),'\
+    CLUSTER_SUM_PATH = '{}//div[contains(concat(" ", @class, " "),'\
         '" single-create-cluster-summary ")]'.format(STEP_SUMMARY_PATH)
     name = PageElement(
         by=By.XPATH,
@@ -101,17 +113,17 @@ class HostsSumItemModel(contentviews.ListViewRowModel):
     """
     name_label = PageElement(
         by=By.XPATH,
-        locator="./div/div/div[2]//strong")
+        locator="./div/div[1]//strong")
     name = name_label
     settings = PageElement(
         by=By.XPATH,
-        locator="./div/div/div[2]//h5")
+        locator="./div/div[1]//h5")
     interface = PageElement(
         by=By.XPATH,
-        locator="./div/div/div[3]//strong")
+        locator="./div/div[2]//strong")
     address = PageElement(
         by=By.XPATH,
-        locator="./div/div/div[3]/div/div")
+        locator="./div/div[2]/div/div")
 
 
 class HostsSumListModel(contentviews.ListViewModel):
