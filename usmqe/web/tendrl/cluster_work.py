@@ -46,7 +46,7 @@ def cluster_job_wait(driver):
     task_details = TaskDetails(driver)
     task_id = task_details.name_id.split(':')[1].lstrip()
 
-    task_wait(ttl=IMPORT_TIMEOUT)
+    task_wait(driver, ttl=IMPORT_TIMEOUT)
 
     return task_id
 
