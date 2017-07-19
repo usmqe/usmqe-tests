@@ -143,7 +143,7 @@ class TaskDetails(WebstrPage):
         returns task name plus id
         e.g.  'ImportCluster: 98dc6483-3cbc-42c6-a835-4e179316937d'
         """
-        self._model.status.text
+        return self._model.name_id.text
 
     @property
     def status(self):
