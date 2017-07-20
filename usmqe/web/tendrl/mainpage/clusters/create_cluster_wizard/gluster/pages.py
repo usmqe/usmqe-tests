@@ -22,6 +22,7 @@ class StepGeneral(StepButtons):
     _label = 'create gluster cluster - General step'
     _required_elems = copy.deepcopy(StepButtons._required_elems)
     _required_elems.extend(['service', 'name'])
+    _timeout = 60
 
     def set_name(self, value):
         """
