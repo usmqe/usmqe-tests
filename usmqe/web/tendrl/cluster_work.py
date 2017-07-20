@@ -152,10 +152,16 @@ def post_check(driver, cluster_name, hosts, clusters_nr, login_page=None):
         for cluster in clusters_list:
             if cluster_name.lower() in cluster.name.lower():
                 present = True
+                cluster.open_details()
                 break
         pytest.check(present,
                      "The cluster '{}' should be present in the "
                      "cluster list".format(cluster_name))
+
+        # check hosts
+        if present:
+            page_hosts_list = ClusterMenu(driver).open_hosts()
+            check_hosts(hosts, page_hosts_list)
 
 
 def choose_cluster(driver, cluster_type=None):
