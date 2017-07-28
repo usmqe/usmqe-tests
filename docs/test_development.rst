@@ -2,8 +2,8 @@
  Test Development
 ==================
 
-.. image:: https://travis-ci.org/Tendrl/usmqe-tests.svg?branch=master
-    :target: https://travis-ci.org/Tendrl/usmqe-tests
+.. image:: https://travis-ci.org/usmqe/usmqe-tests.svg?branch=master
+    :target: https://travis-ci.org/usmqe/usmqe-tests
 
 TODO: include all the details
 
@@ -142,4 +142,4 @@ fixture.
 .. _`usmqe/unit_tests`: https://github.com/usmqe/usmqe-tests/tree/master/usmqe/unit_tests
 .. _`tox.ini`: https://github.com/usmqe/usmqe-tests/blob/master/tox.ini
 .. _`.travis.yml`: https://github.com/usmqe/usmqe-tests/blob/master/.travis.yml
-.. _`each new pull request via Travis CI`: https://travis-ci.org/Tendrl/usmqe-tests/pull_requests
+.. _`each new pull request via Travis CI`: https://travis-ci.org/usmqe/usmqe-tests/pull_requests
