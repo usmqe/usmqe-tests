@@ -72,7 +72,7 @@ Indices and tables
 * :ref:`search`
 
 .. _`Tendrl project`: http://tendrl.org/
-.. _`usmqe-tests`: https://github.com/Tendrl/usmqe-tests
+.. _`usmqe-tests`: https://github.com/usmqe/usmqe-tests
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
 .. _`Python 3.5`: https://docs.python.org/3/whatsnew/3.5.html
