@@ -49,4 +49,4 @@ usmqe-tests is free and open source software.
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`Tendrl project`: http://tendrl.org/
 .. _`usm qe documentation`: https://usmqe-tests.readthedocs.io/en/latest/
-.. _`Setup of QE Server role`: https://github.com/Tendrl/usmqe-tests/blob/master/docs/qe_server_setup.rst
+.. _`Setup of QE Server role`: https://github.com/usmqe/usmqe-tests/blob/master/docs/qe_server_setup.rst
