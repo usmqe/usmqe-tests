@@ -36,4 +36,4 @@ Moreover one can also use local mirror via ``file://`` protocol for base url::
 When ``usm_deps_baseurl`` is not specified, test code expects that all tendrl
 pacakges are available in single ``tendrl-core`` repo (as it used to work before
 introduction of new repo scheme in upstream tendrl copr, see
-https://github.com/Tendrl/usmqe-tests/issues/68).
+https://github.com/usmqe/usmqe-tests/issues/68).
