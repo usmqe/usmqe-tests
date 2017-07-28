@@ -129,5 +129,5 @@ For full description and examples how to run integration tests, see
 
 .. _`virt-builder`: http://libguestfs.org/virt-builder.1.html
 .. _`import the new image into libvirt`: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/sect-Guest_virtual_machine_installation_overview-Creating_guests_with_virt_install.html
-.. _`qe_server.yml`: https://github.com/Tendrl/usmqe-setup/blob/master/qe_server.yml
-.. _`usmqe-setup repository`: https://github.com/Tendrl/usmqe-setup
+.. _`qe_server.yml`: https://github.com/usmqe/usmqe-setup/blob/master/qe_server.yml
+.. _`usmqe-setup repository`: https://github.com/usmqe/usmqe-setup
