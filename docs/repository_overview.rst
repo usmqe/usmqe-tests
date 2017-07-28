@@ -8,7 +8,7 @@ repositories.
 usmqe-tests
 ===========
 
-Upstream: https://github.com/Tendrl/usmqe-tests
+Upstream: https://github.com/usmqe/usmqe-tests
 
 This repository is most important, because it contains python code of automated
 integration test cases. There are the following top level directories:
@@ -30,7 +30,7 @@ In the root dir of the repository, there are also:
 usmqe-setup
 ===========
 
-Upstream: https://github.com/Tendrl/usmqe-setup
+Upstream: https://github.com/usmqe/usmqe-setup
 
 This repository contains ansible setup automation.
 
