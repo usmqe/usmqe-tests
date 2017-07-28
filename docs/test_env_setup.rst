@@ -27,7 +27,7 @@ and `ci_default_import.yml` playbooks which use official roles from
 `admin` user).
 
 
-.. _`qe_server.yml`: https://github.com/Tendrl/usmqe-setup/blob/master/qe_server.yml
-.. _`usmqe-setup repository`: https://github.com/Tendrl/usmqe-setup
+.. _`qe_server.yml`: https://github.com/usmqe/usmqe-setup/blob/master/qe_server.yml
+.. _`usmqe-setup repository`: https://github.com/usmqe/usmqe-setup
 .. _`Tendrl project wide documentation`: https://github.com/Tendrl/documentation/blob/master/deployment.adoc
 .. _`tendrl-ansible`: https://github.com/Tendrl/tendrl-ansible

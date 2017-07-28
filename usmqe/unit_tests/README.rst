@@ -2,8 +2,8 @@
  Unit Tests of usmqe module
 ============================
 
-.. image:: https://travis-ci.org/Tendrl/usmqe-tests.svg?branch=master
-    :target: https://travis-ci.org/Tendrl/usmqe-tests
+.. image:: https://travis-ci.org/usmqe/usmqe-tests.svg?branch=master
+    :target: https://travis-ci.org/usmqe/usmqe-tests
 
 This directory is not a python module. It contains unittests (written in pytest
 framework) of some parts of ``usmqe`` module itself.

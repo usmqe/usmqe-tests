@@ -96,5 +96,5 @@ Now, you need to:
 
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
-.. _`pytest.ini`: https://github.com/Tendrl/usmqe-tests/blob/master/pytest.ini
-.. _`conf/example_usm.ini`: https://github.com/Tendrl/usmqe-tests/blob/master/conf/example_usm.ini
+.. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
+.. _`conf/example_usm.ini`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.ini
