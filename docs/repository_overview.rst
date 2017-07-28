@@ -37,6 +37,6 @@ This repository contains ansible setup automation.
 usmqe-centos-ci
 ===============
 
-Upstream: https://github.com/mkudlej/usmqe-centos-ci
+Upstream: https://github.com/usmqe/usmqe-centos-ci
 
 Machine deployment for Tendrl project in CentOS CI.
