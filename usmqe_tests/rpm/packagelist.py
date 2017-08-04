@@ -12,7 +12,7 @@ tendrl_packages = [
     "tendrl-api-httpd",
     "tendrl-ceph-integration",
     "tendrl-commons",
-    "tendrl-dashboard",
+    "tendrl-ui",
     "tendrl-gluster-integration",
     "tendrl-node-agent",
     "tendrl-node-monitoring",
