@@ -4,6 +4,8 @@ from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 import usmqe.inventory as inventory
 
+LOGGER = pytest.get_logger('gluster_conftest', module=True)
+
 
 @pytest.fixture
 def valid_nodes(valid_session_credentials):
@@ -97,6 +99,7 @@ def valid_devices(valid_session_credentials, count=1):
                     nodes_free_kern_name,
                     err.strerror))
 
+
 # TODO change to use bricks mapping
 @pytest.fixture
 def volume_conf_2rep(cluster_reuse):
@@ -110,11 +113,13 @@ def volume_conf_2rep(cluster_reuse):
     *Configuration is made for replica count == 2.*
     """
     hosts = cluster_reuse["nodes"]
-    bricks = [[{"{}".format(hosts[i]["fqdn"]):
-                "{}".format(sorted(hosts[i]["bricks"]["free"])[0])},
-               {"{}".format(hosts[i+1]["fqdn"]):
-                "{}".format(sorted(hosts[i+1]["bricks"]["free"])[0])}]
-              for i in range(0, len(hosts), 2)]
+    LOGGER.debug("nodes: {}".format(hosts))
+    keys = list(hosts.keys())
+    bricks = [[{"{}".format(hosts[keys[i]]["fqdn"]):
+                "{}".format(sorted(hosts[keys[i]]["bricks"]["free"])[0])},
+               {"{}".format(hosts[keys[i+1]]["fqdn"]):
+                "{}".format(sorted(hosts[keys[i+1]]["bricks"]["free"])[0])}]
+              for i in range(0, len(keys), 2)]
 
     return {
         "Volume.volname": "{}",
@@ -143,20 +148,23 @@ def invalid_volume_name(request):
     """
     return request.param
 
+
 @pytest.fixture
-def valid_bricks_for_crud_volume(
-    valid_session_credentials,
-    cluster_reuse,
-    valid_brick_name):
+def valid_bricks_for_crud_volume(valid_session_credentials, cluster_reuse,
+                                 valid_brick_name, valid_devices):
+
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
-    nodes = cluster_reuse["nodes"]
+    nodes = list(cluster_reuse["nodes"].values())
+
+    LOGGER.debug("nodes: {}".format(nodes))
+    LOGGER.debug("devices: {}".format(valid_devices))
 
     job_id = api.create_bricks(
         cluster_reuse["cluster_id"],
-        cluster_reuse["nodes"],
+        nodes,
         valid_devices,
         valid_brick_name)["job_id"]
     api.wait_for_job_status(job_id)
     import time
-    time.sleep(400)
+    time.sleep(60)

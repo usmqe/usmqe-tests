@@ -86,7 +86,11 @@ class TendrlApiGluster(TendrlApi):
         """
         pattern = "{}/GlusterCreateBrick".format(cluster)
         data = {"Cluster.node_configuration": {
-            x: {device: {"brick_name": brick_name} for device in devices} for x in nodes}}
+            node["node_id"]: {
+                device: {"brick_name": brick_name}
+                for device in devices[node["node_id"]]
+            } for node in nodes}
+        }
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             json=data,
