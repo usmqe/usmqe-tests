@@ -86,6 +86,35 @@ def chroot_dir(tendrl_repos):
             "sudo",
             "rpm", "--root", tmpdirname, "-iv", "--nodeps", rpm_path]
         subprocess.run(rpm_cmd, cwd=tmpdirname, check=True)
+    # HACK/WORKAROUND: download grafana repo gpg keys
+    grafana_gpgkey_urls = [
+        "https://packagecloud.io/gpg.key",
+        "https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana",
+        ]
+    for gpgkey_url in grafana_gpgkey_urls:
+        req = requests.get(gpgkey_url)
+        name = os.path.basename(gpgkey_url)
+        assert req.status_code == 200
+        gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
+        repo_keys.append(gpgkey_path)
+        with open(gpgkey_path, "w") as keyfile:
+            keyfile.write(req.content.decode())
+    # HACK/WORKAROUND: install grafana repo (upstream Tendrl dependency)
+    # based on http://docs.grafana.org/installation/rpm/
+    grafana_repofile_path = os.path.join(tmpdirname, "etc/yum.repos.d/grafana.repo")
+    grafana_repofile_content = textwrap.dedent("""\
+    [grafana]
+    name=grafana
+    baseurl=https://packagecloud.io/grafana/stable/el/6/$basearch
+    repo_gpgcheck=1
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    sslverify=1
+    sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+    """)
+    with open(grafana_repofile_path, "w") as repofile:
+        repofile.write(grafana_repofile_content)
     # import the gpg keys for all yum repositories
     for key in repo_keys:
         cmd = ["rpm", "--root", tmpdirname, "--import", key]
