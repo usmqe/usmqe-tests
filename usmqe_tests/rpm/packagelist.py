@@ -6,17 +6,14 @@ import subprocess
 
 # list of all tendrl packages
 tendrl_packages = [
-    "tendrl-alerting",
     "tendrl-api",
     "tendrl-api-doc",
     "tendrl-api-httpd",
-    "tendrl-ceph-integration",
     "tendrl-commons",
-    "tendrl-ui",
     "tendrl-gluster-integration",
+    "tendrl-monitoring-integration",
     "tendrl-node-agent",
-    "tendrl-node-monitoring",
-    "tendrl-performance-monitoring",
+    "tendrl-ui",
     ]
 
 
