@@ -106,9 +106,16 @@ def test_rpmdeplint(rpm_package, check_command, tendrl_repos, centos_repos):
     cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     LOGGER.debug("STDOUT: %s", cp.stdout)
     LOGGER.debug("STDERR: %s", cp.stderr)
-    check_msg = "rpmdeplint return code should be 0 indicating no errors"
-    pytest.check(cp.returncode == 0, msg=check_msg)
+    LOGGER.debug("RCODE: %s", cp.returncode)
     # when the check fails, report the error in readable way
     if cp.returncode != 0:
         for line in cp.stderr.splitlines():
-            LOGGER.failed(line.decode())
+            line_str = line.decode()
+            if "Undeclared file conflicts:" == line_str:
+                LOGGER.debug(line_str)
+                continue
+            if "provides /etc/grafana/grafana.ini which is also provided by " \
+                    "grafana-4.1.2-1486989747.x86_64" in line_str:
+                LOGGER.debug("IGNORING (old grafana packages): %s", line_str)
+                continue
+            LOGGER.failed(line_str)
