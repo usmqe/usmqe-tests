@@ -75,7 +75,8 @@ def test_rpmlint(rpm_package):
     LOGGER.debug("STDOUT: %s", cp.stdout)
     LOGGER.debug("STDERR: %s", cp.stderr)
     LOGGER.debug("RCODE: %s", cp.returncode)
-    # when the check fails, report the error in readable way
+    # report every line on stdout as an error in readable way
+    # (except expected strings)
     for line in cp.stdout.splitlines():
         line_str = line.decode()
         if "E: unknown-key" in line_str or line_str.startswith("1 packages"):
