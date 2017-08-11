@@ -74,13 +74,14 @@ def test_rpmlint(rpm_package):
     cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     LOGGER.debug("STDOUT: %s", cp.stdout)
     LOGGER.debug("STDERR: %s", cp.stderr)
-    # when the check fails, report the error in readable way
-    if cp.returncode != 0:
-        for line in cp.stdout.splitlines():
-            line_str = line.decode()
-            if "E: unknown-key" in line_str or line_str.startswith("1 packages"):
-                continue
-            LOGGER.failed(line_str)
+    LOGGER.debug("RCODE: %s", cp.returncode)
+    # report every line on stdout as an error in readable way
+    # (except expected strings)
+    for line in cp.stdout.splitlines():
+        line_str = line.decode()
+        if "E: unknown-key" in line_str or line_str.startswith("1 packages"):
+            continue
+        LOGGER.failed(line_str)
 
 
 @pytest.mark.parametrize("check_command", [
