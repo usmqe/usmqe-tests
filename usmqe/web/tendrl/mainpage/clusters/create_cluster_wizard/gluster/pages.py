@@ -22,6 +22,7 @@ class StepGeneral(StepButtons):
     _label = 'create gluster cluster - General step'
     _required_elems = copy.deepcopy(StepButtons._required_elems)
     _required_elems.extend(['service', 'name'])
+    _timeout = 60
 
     def set_name(self, value):
         """
@@ -130,6 +131,8 @@ class StepReview(StepButtons):
         'cluster_network',
         'host_nr'])
 
+    create_cluster = StepButtons.click_next
+
 
 class HostsSumItem(contentviews.ListViewRow):
     """
@@ -142,6 +145,11 @@ class HostsSumItem(contentviews.ListViewRow):
         'settings',
         'interface',
         'address']
+
+    @property
+    def name(self):
+        """ returns host name """
+        return self._model.name.text
 
 
 class HostsSumList(contentviews.ListView):

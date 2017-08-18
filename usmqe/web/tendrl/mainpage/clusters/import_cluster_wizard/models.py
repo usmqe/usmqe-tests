@@ -3,11 +3,12 @@ Import Cluster wizard module.
 """
 
 
-from webstr.core import WebstrModel, By, PageElement
+from webstr.core import By, PageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
 from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+from usmqe.web.tendrl.mainpage.clusters.models import ViewTaskPageModel
 
 location = '/#/import-cluster'
 
@@ -33,13 +34,10 @@ class ImportClusterModel(ListMenuModel):
     cancel_btn = form.Button(By.XPATH, '//button[contains(text(), "Cancel")]')
 
 
-class ImportClusterSummaryModel(WebstrModel):
+class ImportClusterSummaryModel(ViewTaskPageModel):
     """
     model for Import Cluster - Summary page
     """
-    view_task_btn = form.Button(
-        By.XPATH,
-        '//button[contains(@ng-click, "viewTaskProgress()")]')
 
 
 class HostsItemModel(contentviews.ListViewRowModel):

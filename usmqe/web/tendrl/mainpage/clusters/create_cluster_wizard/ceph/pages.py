@@ -25,6 +25,7 @@ class StepGeneral(StepButtons):
     _required_elems = copy.deepcopy(StepButtons._required_elems)
     _required_elems.extend([
         'service', 'name', 'production_use', 'demo_use'])
+    _timeout = 60
 
     def set_name(self, value):
         """
@@ -459,6 +460,8 @@ class StepReview(StepButtons):
         'public_network',
         'mon_nr',
         'osd_nr'])
+
+    create_cluster = StepButtons.click_next
 
 
 class MonSummaryRow(containers.ContainerRowBase):

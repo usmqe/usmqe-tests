@@ -29,7 +29,7 @@ def test_initial_import_cluster(valid_credentials):
 @pytest.mark.skipif(pytest.config.getini('skip_invalid'),
                     reason='not valid for ci testing')
 @pytest.mark.other
-def test_import_cluster(valid_credentials):
+def test_next_import_cluster(valid_credentials):
     """
     positive import cluster test
 
@@ -37,7 +37,7 @@ def test_import_cluster(valid_credentials):
           2. There has to be at least one cluster which could be imported
     """
 # TODO: Choose specific cluster
-    cluster_work.import_cluster(
+    cluster_work.next_import_cluster(
         valid_credentials.driver,
         valid_credentials.init_object)
 
@@ -45,7 +45,7 @@ def test_import_cluster(valid_credentials):
 @pytest.mark.skipif(pytest.config.getini('skip_invalid'),
                     reason='not valid for ci testing')
 @pytest.mark.other
-def test_import_cluster_x(valid_credentials):
+def test_import_cluster(valid_credentials):
     """
     positive import cluster test
 
