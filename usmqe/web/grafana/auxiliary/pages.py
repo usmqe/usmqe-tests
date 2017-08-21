@@ -79,3 +79,19 @@ class ExportDialog(OkCancelDlg):
         set time_format
         """
         self._model.time_format.value = value
+
+
+class SingleStat(WebstrPage):
+    """
+    auxiliary class for Single Stat panels
+    """
+    _model = m_auxiliary.SingleStatModel
+    _label = 'single stat'
+    _required_elems = ['header', 'value']
+
+    @property
+    def value(self):
+        """
+        returns value in the panel
+        """
+        return self._model.value.text
