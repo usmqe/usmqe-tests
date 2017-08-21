@@ -2,7 +2,6 @@
 REST API test suite - gluster volume
 """
 import pytest
-
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 
@@ -422,15 +421,41 @@ def test_delete_volume_valid(
 
         Check if there is created volume on gluster nodes via CLI.
 
-        .. test_step:: 1
+        .. test_step:: 2
 
             Connect to gluster node machine via ssh and run
             ``gluster volume info command``
 
-        .. test_result:: 1
+        .. test_result:: 2
 
-            There should be listed gluster volume named ``Vol_test``.
+            There shouldn't be listed gluster volume named ``Vol_test``.
 
             """
     storage = gluster.GlusterCommon()
     storage.find_volume_name(valid_volume_name, False)
+    """@pylatest api/gluster.create_volume
+        API-gluster: create_volume
+        ******************************
+
+        .. test_metadata:: author fbalak@redhat.com
+
+        Description
+        ===========
+
+        Check if there is created volume on gluster nodes via CLI.
+
+        .. test_step:: 3
+
+            Get response from ``hostname/api/1.0/:cluster_id:/GetVolumeList``
+            API call.
+
+        .. test_result:: 3
+
+            In response should not be listed gluster volume with ``valid_volume_id``
+
+            """
+    volumes = api.get_volume_list(valid_cluster_id)
+    pytest.check(
+        valid_volume_id not in list(volumes),
+        "volume id {} should not be among volume ids in tendrl: {}".format(
+            valid_volume_id, list(volumes)))

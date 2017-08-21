@@ -71,6 +71,34 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response)
         return response.json()
 
+    def create_bricks(self, cluster, nodes, devices, brick_name, asserts_in=None):
+        """Create volume bricks on given nodes with specified path.
+
+        Name:        "create_bricks",
+        Method:      "POST",
+        Pattern:     ":cluster_id:/GlusterCreateBrick",
+
+        Args:
+            cluster (str): id of a cluster with nodes
+            nodes (list): ids of nodes where should be bricks
+            devices (list): pathes to device where should be created bricks
+            brick_name (str): name of brick directory
+        """
+        pattern = "{}/GlusterCreateBrick".format(cluster)
+        data = {"Cluster.node_configuration": {
+            x: {device: {"brick_name": brick_name} for device in devices} for x in nodes}}
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            json=data,
+            auth=self._auth)
+        asserts = asserts_in or {
+            "reason": 'Accepted',
+            "status": 202,
+        }
+        self.print_req_info(response)
+        self.check_response(response, asserts)
+        return response.json()
+
     def create_volume(self, cluster, volume_data):
         """ Import gluster cluster defined by json.
 
