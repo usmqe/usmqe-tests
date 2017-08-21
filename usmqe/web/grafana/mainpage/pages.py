@@ -4,24 +4,24 @@ Main Grafana page abstraction
 
 from webstr.core import WebstrPage
 
-from usmqe.web.grafana.auxiliary.pages import SingleStat, GenericChart
+from usmqe.web.grafana.auxiliary.pages import SingleStat, GenericChart, \
+    GenericDropDownList
 import usmqe.web.grafana.mainpage.models as m_mainpage
 from usmqe.web.grafana.exceptions import ValueNotFoundError
 
 location = ':3000/dashboard/db/tendrl-gluster-at-a-glance'
 
 
-class ClusterList(WebstrPage)
+class ClusterList(GenericDropDownList)
     """
     DropDown list of clusters
     """
     _model = m_mainpage.ClusterListModel
     _label = 'Cluster select list'
-    _required_elems = ['_root']
 
     def selected_cluster(self):
         """ returns selected cluster """
-        return self._model._root.text
+        return self.value
 
     def choose_cluster(self, cluster_id):
         """
@@ -30,15 +30,7 @@ class ClusterList(WebstrPage)
         Parameters:
             cluster_id (string): cluster id
         """
-        self._model._root.click()
-        found = False
-        for cluster in self._model.rows:
-            if cluster.text == cluster_id:
-                found = True
-                cluster.click()
-                break
-        if not found:
-            raise ValueNotFoundError('Cluster {} not found'.format(cluster_id))
+        self.value = cluster_id
 
 
 class Status(SingleStat)

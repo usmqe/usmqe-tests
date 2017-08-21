@@ -2,9 +2,32 @@
 Some usefull model classes for common work with grafana web
 """
 
-from webstr.core import DynamicWebstrModel
+from webstr.core import WebstrModel
 from webstr.common.dialogs.models import OkCancelDlgModel
 from webstr.common.form import models as form
+
+
+class GenericDropDownListModel(WebstrModel)
+    """
+    Grafana DropDown list
+    """
+    _title = None
+    _root = NameRootPageElement(
+        By.XPATH,
+        '//label[text()="%s"]/following::value-select-dropdown')
+    rows = PageElement(By.XPATH,
+                       './/a[contains(@class, "variable-option")]',
+                       as_list=True)
+
+    def __init__(self, driver):
+        """
+        Save the webdriver instance to attribute.
+
+        Parameters:
+            driver: webdriver instance
+        """
+        self._name = self._title
+        super().__init__(driver)
 
 
 class GenericStatPanelModel(WebstrModel):

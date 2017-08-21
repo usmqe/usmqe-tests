@@ -3,13 +3,46 @@ Some usefull methods and classes for common work with Grafana
 """
 
 
-from webstr.core import DynamicWebstrPage
+from webstr.core import WebstrPage
 from webstr.common.dialogs.pages import OkCancelDlg
 
 import usmqe.web.grafana.auxiliary.models as m_auxiliary
+from usmqe.web.grafana.exceptions import ValueNotFoundError
 
 
-class GenericChart(DynamicWebstrPage):
+class GenericDropDownList(WebstrPage):
+    """
+    auxiliary class for Charts
+    """
+    _model = m_auxiliary.GenericDropDownListModel
+    _label = 'drop down list'
+    _required_elems = ['_root']
+
+    @property
+    def value(self):
+        """ returns selected value """
+        return self._model._root.text
+
+    @value.setter
+    def value(self, required_value):
+        """
+        Select value in the list
+
+        Parameters:
+            required_value (string): value in the dropdown list
+        """
+        self._model._root.click()
+        found = False
+        for row in self._model.rows:
+            if row.text == required_value:
+                found = True
+                row.click()
+                break
+        if not found:
+            raise ValueNotFoundError('Cluster {} not found'.format(cluster_id))
+
+
+class GenericChart(WebstrPage):
     """
     auxiliary class for Charts
     """

@@ -5,16 +5,15 @@ Common page model for Grafana main page
 
 from webstr.core import WebstrModel, By
 
-from usmqe.web.grafana.auxiliary.models import SingleStatModel, GenericChartModel
+from usmqe.web.grafana.auxiliary.models import SingleStatModel, \
+    GenericChartModel, GenericDropDownListModel
 
 
-class ClusterListModel(WebstrModel)
+class ClusterListModel(GenericDropDownListModel):
     """
     DropDown list of clusters
     """
-    locator = '//label[text()="Cluster Id"]/following::value-select-dropdown'
-    _root = RootPageElement(By.XPATH, ClusterListModel.locator)
-    rows = PageElement(By.XPATH, './/a[contains(@class, "variable-option")]', as_list=True)
+    _title = "Cluster Id"
 
 
 class StatusModel(SingleStatModel):
