@@ -8,6 +8,8 @@ from usmqe.web.grafana.auxiliary.pages import SingleStat, GenericChart
 import usmqe.web.grafana.mainpage.models as m_mainpage
 from usmqe.web.grafana.exceptions import ValueNotFoundError
 
+location = ':3000/dashboard/db/tendrl-gluster-at-a-glance'
+
 
 class ClusterList(WebstrPage)
     """
