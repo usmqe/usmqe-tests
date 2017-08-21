@@ -92,8 +92,8 @@ def test_create_brick_valid(
     cmd_fs = 'mount | grep $(df  --output=source {} | tail -1)'.format(valid_brick_path)
     expected_output = '/dev/mapper/tendrl{0}_vg-tendrl{0}_lv on {1} type xfs'\
         .format(brick_name, valid_brick_path)
-    for x in nodes:
-        _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_exists)
+    for node in nodes:
+        _, output, _ = SSH[nodes[node]["fqdn"]].run(cmd_exists)
         output = str(output).strip("'b\\n")
         pytest.check(
             output == "exists",
@@ -122,7 +122,7 @@ def test_create_brick_valid(
                     Output of the command should be:
                 ``/dev/mapper/tendrl`brick_name`_vg-tendrl`brick_name`_lv on `brick_path` type xfs``
                     """
-        _, output, _ = SSH[nodes[x]["fqdn"]].run(cmd_fs)
+        _, output, _ = SSH[nodes[node]["fqdn"]].run(cmd_fs)
         output = str(output).strip("'b\\n")
         output = re.sub("\s*\(.*\)$", "", output)
         pytest.check(

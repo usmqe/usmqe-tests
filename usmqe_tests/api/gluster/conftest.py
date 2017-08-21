@@ -109,13 +109,13 @@ def valid_devices(valid_session_credentials, count=1):
     try:
         return {node_id: sorted(nodes_free_kern_name[node_id])[0:count]
                 for node_id in nodes_free_kern_name}
-    except IndexError as e:
+    except IndexError as err:
         raise Exception(
                 "TypeError({0}): There are not enough devices. There are: {1}. {2}"
                 .format(
-                    e.errno,
+                    err.errno,
                     nodes_free_kern_name,
-                    e.strerror))
+                    err.strerror))
 
 
 @pytest.fixture
