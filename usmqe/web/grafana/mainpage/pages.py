@@ -2,9 +2,41 @@
 Main Grafana page abstraction
 """
 
+from webstr.core import WebstrPage
 
 from usmqe.web.grafana.auxiliary.pages import SingleStat, GenericChart
 import usmqe.web.grafana.mainpage.models as m_mainpage
+from usmqe.web.grafana.exceptions import ValueNotFoundError
+
+
+class ClusterList(WebstrPage)
+    """
+    DropDown list of clusters
+    """
+    _model = m_mainpage.ClusterListModel
+    _label = 'Cluster select list'
+    _required_elems = ['_root']
+
+    def selected_cluster(self):
+        """ returns selected cluster """
+        return self._model._root.text
+
+    def choose_cluster(self, cluster_id):
+        """
+        Select cluster
+
+        Parameters:
+            cluster_id (string): cluster id
+        """
+        self._model._root.click()
+        found = False
+        for cluster in self._model.rows:
+            if cluster.text == cluster_id:
+                found = True
+                cluster.click()
+                break
+        if not found:
+            raise ValueNotFoundError('Cluster {} not found'.format(cluster_id))
 
 
 class Status(SingleStat)
