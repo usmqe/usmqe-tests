@@ -2,7 +2,7 @@
 Some usefull model classes for common work with grafana web
 """
 
-from webstr.core import WebstrModel
+from webstr.core import WebstrModel, NameRootPageElement, PageElement, By
 from webstr.common.dialogs.models import OkCancelDlgModel
 from webstr.common.form import models as form
 
