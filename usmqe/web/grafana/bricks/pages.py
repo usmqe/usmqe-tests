@@ -11,7 +11,7 @@ import usmqe.web.grafana.bricks.models as m_bricks
 location = ':3000/dashboard/db/tendrl-gluster-bricks'
 
 
-class ClusterList(GenericDropDownList)
+class ClusterList(GenericDropDownList):
     """
     DropDown list of clusters
     """
@@ -32,7 +32,7 @@ class ClusterList(GenericDropDownList)
         self.value = cluster_id
 
 
-class BrickList(GenericDropDownList)
+class BrickList(GenericDropDownList):
     """
     DropDown list of bricks
     """
@@ -53,7 +53,7 @@ class BrickList(GenericDropDownList)
         self.value = brick_name
 
 
-class BricksUtilization(GenericChart)
+class BricksUtilization(GenericChart):
     """
     page object for Bricks Utilization panel
     """
@@ -61,7 +61,7 @@ class BricksUtilization(GenericChart)
     _label = 'Bricks Utilization panel'
 
 
-class InodeUtilization(GenericChart)
+class InodeUtilization(GenericChart):
     """
     page object for Inode Utilization panel
     """

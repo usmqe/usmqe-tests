@@ -9,14 +9,14 @@ from usmqe.web.grafana.auxiliary.models import GenericChartModel, \
     SingleStatModel, GenericDropDownListModel
 
 
-class ClusterListModel(GenericDropDownListModel)
+class ClusterListModel(GenericDropDownListModel):
     """
     DropDown list of clusters
     """
     _title = "Cluster Id"
 
 
-class VolumeListModel(GenericDropDownListModel)
+class VolumeListModel(GenericDropDownListModel):
     """
     DropDown list of volumes
     """

@@ -11,7 +11,7 @@ import usmqe.web.grafana.hosts.models as m_hosts
 location = ':3000/dashboard/db/tendrl-gluster-hosts'
 
 
-class ClusterList(GenericDropDownList)
+class ClusterList(GenericDropDownList):
     """
     DropDown list of clusters
     """
@@ -32,7 +32,7 @@ class ClusterList(GenericDropDownList)
         self.value = cluster_id
 
 
-class HostList(GenericDropDownList)
+class HostList(GenericDropDownList):
     """
     DropDown list of hosts
     """
@@ -53,7 +53,7 @@ class HostList(GenericDropDownList)
         self.value = host_name
 
 
-class MemoryFree(SingleStat)
+class MemoryFree(SingleStat):
     """
     page object for Memory Free panel
     """
@@ -61,7 +61,7 @@ class MemoryFree(SingleStat)
     _label = 'Memory Free panel'
 
 
-class MemoryUsed(SingleStat)
+class MemoryUsed(SingleStat):
     """
     page object for Memory Used panel
     """
@@ -85,7 +85,7 @@ class StorageUsed(SingleStat):
     _label = 'Storage Used panel'
 
 
-class Memory(GenericChart)
+class Memory(GenericChart):
     """
     page object for Memory panel
     """
@@ -93,7 +93,7 @@ class Memory(GenericChart)
     _label = 'Memory panel'
 
 
-class Storage(GenericChart)
+class Storage(GenericChart):
     """
     page object for Storage panel
     """
@@ -101,7 +101,7 @@ class Storage(GenericChart)
     _label = 'Storage panel'
 
 
-class Swap(GenericChart)
+class Swap(GenericChart):
     """
     page object for Swap panel
     """
@@ -109,7 +109,7 @@ class Swap(GenericChart)
     _label = 'Swap panel'
 
 
-class CPU(GenericChart)
+class CPU(GenericChart):
     """
     page object for CPU panel
     """
@@ -117,7 +117,7 @@ class CPU(GenericChart)
     _label = 'CPU panel'
 
 
-class ThroughputClusterNetwork(GenericChart)
+class ThroughputClusterNetwork(GenericChart):
     """
     page object for Throughput - Cluster Network panel
     """

@@ -7,7 +7,7 @@ from webstr.common.dialogs.models import OkCancelDlgModel
 from webstr.common.form import models as form
 
 
-class GenericDropDownListModel(WebstrModel)
+class GenericDropDownListModel(WebstrModel):
     """
     Grafana DropDown list
     """

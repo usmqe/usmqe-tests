@@ -11,7 +11,7 @@ import usmqe.web.grafana.volumes.models as m_volumes
 location = ':3000/dashboard/db/tendrl-gluster-volumes'
 
 
-class ClusterList(GenericDropDownList)
+class ClusterList(GenericDropDownList):
     """
     DropDown list of clusters
     """
@@ -32,7 +32,7 @@ class ClusterList(GenericDropDownList)
         self.value = cluster_id
 
 
-class VolumeList(GenericDropDownList)
+class VolumeList(GenericDropDownList):
     """
     DropDown list of volumes
     """
@@ -53,7 +53,7 @@ class VolumeList(GenericDropDownList)
         self.value = volume_name
 
 
-class VolumeStatus(SingleStat)
+class VolumeStatus(SingleStat):
     """
     page object for Volume Status panel
     """
@@ -61,7 +61,7 @@ class VolumeStatus(SingleStat)
     _label = 'Volume Status panel'
 
 
-class BrickCount(SingleStat)
+class BrickCount(SingleStat):
     """
     page object for Brick Count panel
     """
@@ -69,7 +69,7 @@ class BrickCount(SingleStat)
     _label = 'Brick Count panel'
 
 
-class ConnectionCount(SingleStat)
+class ConnectionCount(SingleStat):
     """
     page object for Connection Count panel
     """
@@ -77,7 +77,7 @@ class ConnectionCount(SingleStat)
     _label = 'Connection Count panel'
 
 
-class VolumeUtilization(GenericChart)
+class VolumeUtilization(GenericChart):
     """
     page object for Volume Utilization panel
     """

@@ -12,7 +12,7 @@ from usmqe.web.grafana.exceptions import ValueNotFoundError
 location = ':3000/dashboard/db/tendrl-gluster-at-a-glance'
 
 
-class ClusterList(GenericDropDownList)
+class ClusterList(GenericDropDownList):
     """
     DropDown list of clusters
     """
@@ -33,7 +33,7 @@ class ClusterList(GenericDropDownList)
         self.value = cluster_id
 
 
-class Status(SingleStat)
+class Status(SingleStat):
     """
     page object for Status panel
     """
@@ -41,7 +41,7 @@ class Status(SingleStat)
     _label = 'Status panel'
 
 
-class QuorumStatus(SingleStat)
+class QuorumStatus(SingleStat):
     """
     page object for Quorum Status panel
     """
@@ -49,7 +49,7 @@ class QuorumStatus(SingleStat)
     _label = 'Quorum Status panel'
 
 
-class Hosts(SingleStat)
+class Hosts(SingleStat):
     """
     page object for Hosts panel
     """
@@ -57,7 +57,7 @@ class Hosts(SingleStat)
     _label = 'Hosts panel'
 
 
-class Volumes(SingleStat)
+class Volumes(SingleStat):
     """
     page object for Volumes panel
     """
@@ -65,7 +65,7 @@ class Volumes(SingleStat)
     _label = 'Volumes panel'
 
 
-class Bricks(SingleStat)
+class Bricks(SingleStat):
     """
     page object for Bricks panel
     """
@@ -73,7 +73,7 @@ class Bricks(SingleStat)
     _label = 'Bricks panel'
 
 
-class ClusterUtilization(GenericChart)
+class ClusterUtilization(GenericChart):
     """
     page object for Cluster Utilization panel
     """
@@ -81,7 +81,7 @@ class ClusterUtilization(GenericChart)
     _label = 'Cluster Utilization panel'
 
 
-class HostsUp(SingleStat)
+class HostsUp(SingleStat):
     """
     page object for Hosts Up panel
     """
@@ -89,7 +89,7 @@ class HostsUp(SingleStat)
     _label = 'Hosts Up panel'
 
 
-class HostsDown(SingleStat)
+class HostsDown(SingleStat):
     """
     page object for Hosts Down panel
     """
@@ -97,7 +97,7 @@ class HostsDown(SingleStat)
     _label = 'Hosts Down panel'
 
 
-class VolumesUp(SingleStat)
+class VolumesUp(SingleStat):
     """
     page object for Volumes Up panel
     """
@@ -105,7 +105,7 @@ class VolumesUp(SingleStat)
     _label = 'Volumes Up panel'
 
 
-class VolumesDown(SingleStat)
+class VolumesDown(SingleStat):
     """
     page object for Volumes Down panel
     """
@@ -113,7 +113,7 @@ class VolumesDown(SingleStat)
     _label = 'Volumes Down panel'
 
 
-class BricksUp(SingleStat)
+class BricksUp(SingleStat):
     """
     page object for Bricks Up panel
     """
@@ -121,7 +121,7 @@ class BricksUp(SingleStat)
     _label = 'Bricks Up panel'
 
 
-class BricksDown(SingleStat)
+class BricksDown(SingleStat):
     """
     page object for Bricks Down panel
     """
@@ -129,7 +129,7 @@ class BricksDown(SingleStat)
     _label = 'Bricks Down panel'
 
 
-class IOPSReads(GenericChart)
+class IOPSReads(GenericChart):
     """
     page object for IOPS Reads panel
     """
@@ -137,7 +137,7 @@ class IOPSReads(GenericChart)
     _label = 'IOPS Reads panel'
 
 
-class IOPSWrites(GenericChart)
+class IOPSWrites(GenericChart):
     """
     page object for IOPS Writes panel
     """
@@ -145,7 +145,7 @@ class IOPSWrites(GenericChart)
     _label = 'IOPS Writes panel'
 
 
-class InodeUtilization(GenericChart)
+class InodeUtilization(GenericChart):
     """
     page object for Inode Utilization panel
     """
