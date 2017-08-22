@@ -3,8 +3,6 @@ Common page model for Grafana main page
 """
 
 
-from webstr.core import WebstrModel, By
-
 from usmqe.web.grafana.auxiliary.models import SingleStatModel, \
     GenericChartModel, GenericDropDownListModel
 

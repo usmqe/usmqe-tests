@@ -3,8 +3,6 @@ Common page model for Grafana volumes page
 """
 
 
-from webstr.core import WebstrModel, By
-
 from usmqe.web.grafana.auxiliary.models import GenericChartModel, \
     SingleStatModel, GenericDropDownListModel
 

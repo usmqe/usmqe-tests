@@ -39,7 +39,8 @@ class GenericDropDownList(WebstrPage):
                 row.click()
                 break
         if not found:
-            raise ValueNotFoundError('Cluster {} not found'.format(cluster_id))
+            raise ValueNotFoundError(
+                'Cluster {} not found'.format(required_value))
 
 
 class GenericChart(WebstrPage):
@@ -58,7 +59,7 @@ class GenericChart(WebstrPage):
         self._model.extended_menu.click()
         self._model.export_csv.click()
 
-    def export_csv(as_rows=True, time_format=None):
+    def export_csv(self, as_rows=True, time_format=None):
         """
         export grafana chart data to csv file
 

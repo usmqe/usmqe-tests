@@ -2,9 +2,7 @@
 Grafana Bricks page abstraction
 """
 
-from webstr.core import WebstrPage
-
-from usmqe.web.grafana.auxiliary.pages import SingleStat, GenericChart, \
+from usmqe.web.grafana.auxiliary.pages import GenericChart, \
     GenericDropDownList
 import usmqe.web.grafana.bricks.models as m_bricks
 
