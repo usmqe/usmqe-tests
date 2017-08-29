@@ -21,15 +21,14 @@ class NavMenuBarsModel(UpperMenuModel):
     """
 # TODO
 # Coming soon...
-# Waiting for functional upper navbar
 #    # right part of upper navbar
 
     # left navbar
     # dashboard_link = PageElement(by=By.LINK_TEXT, locator="Dashboard")
     clusters_link = PageElement(by=By.LINK_TEXT, locator="Clusters")
     nodes_link = PageElement(by=By.LINK_TEXT, locator="Hosts")
-    file_shares_link = PageElement(by=By.LINK_TEXT, locator="File Shares")
-    pools_link = PageElement(by=By.LINK_TEXT, locator="Pools")
+    alerts_link = PageElement(by=By.LINK_TEXT, locator="Alerts")
     admin_link = PageElement(by=By.LINK_TEXT, locator="Admin")
     # Admin sub-menu links
     tasks_link = PageElement(by=By.LINK_TEXT, locator='Tasks')
+    tasks_link = PageElement(by=By.LINK_TEXT, locator='Users')
