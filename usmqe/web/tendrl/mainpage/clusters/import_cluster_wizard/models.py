@@ -17,19 +17,8 @@ class ImportClusterModel(ListMenuModel):
     """
     model for Import Cluster - Configure Cluster page
     """
-    label = PageElement(By.XPATH, '//h2/label')
-    cluster = form.Select(
-        By.XPATH,
-        '//select[@data-ng-model="importClusterCntrl.selectedCluster"]')
-    cluster_id = PageElement(
-        By.XPATH,
-        '//div[@class="cluster-detail"]/div[1]/div[2]')
-    storage_service = PageElement(
-        By.XPATH,
-        '//div[@class="cluster-detail"]/div[2]/div[2]')
-    refresh_btn = form.Button(
-        By.XPATH,
-        '//button[contains(text(), "Refresh")]')
+    label = PageElement(By.XPATH, '//h1')
+    profile_check = form.Checkbox(By.NAME, "volumeProfile")
     import_btn = form.Button(By.XPATH, '//button[contains(text(), "Import")]')
     cancel_btn = form.Button(By.XPATH, '//button[contains(text(), "Cancel")]')
 
