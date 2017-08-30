@@ -21,13 +21,6 @@ from usmqe.web.tendrl.mainpage.clusters.pages import ViewTaskPage
 from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
 from usmqe.web.tendrl.task_wait import task_wait
 from usmqe.web.tendrl.mainpage.clusters.pages import check_hosts
-from usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
-    general.pages import CreateCluster
-import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
-    gluster.pages as gluster
-# import usmqe.web.tendrl.mainpage.clusters.create_cluster_wizard.\
-#     gluster.ceph as ceph
-from usmqe.api.tendrlapi import glusterapi
 
 IMPORT_TIMEOUT = 3600
 
@@ -253,228 +246,19 @@ def next_import_cluster(driver, init_object, cluster_type=None):
                                 'ceph' or 'gluster'
                             None means that cluster type doesn't matter
     """
-    next_pre_check(init_object)
+    pre_check(init_object)
 
     clusters_list = init_object.open_clusters()
-    clusters_nr = len(clusters_list)
     cluster_menu = ClustersMenu(driver)
 
-    cluster_menu.start_import_cluster()
+    # TODO
+    #cluster_menu.start_import_cluster()
 
-    import_page = choose_cluster(driver, cluster_type)
+    cluster_ident = choose_cluster(driver, cluster_type)
 
-    (cluster_ident, hosts_list) = import_page.import_cluster()
+    # TODO
+    hosts_list = import_page.import_cluster()
 
     cluster_job_wait(driver)
 
-    post_check(driver, cluster_ident, hosts_list, clusters_nr)
-
-
-def import_cluster(driver, init_object, login_page, cluster_type=None):
-    """
-    positive import cluster workflow
-
-    NOTE: There has to be at least one cluster which could be imported
-
-    Parameters:
-        driver: selenium driver
-        init_object: WebstrPage instance of page which is loaded after log in
-        login_page: LoginPage instance
-        cluster_type (str): which type of cluster should be imported
-                                'ceph' or 'gluster'
-                            None means that cluster type doesn't matter
-    """
-    if init_object._label == 'home page':
-        initial_import_cluster(driver, init_object, login_page, cluster_type)
-    else:
-        next_import_cluster(driver, init_object, cluster_type)
-
-
-def create_gluster_cluster(driver, init_object, login_page, hosts,
-                           api_valid_credentials, network=None):
-    """
-    positive import cluster workflow
-
-    NOTE: There has to be at least one cluster which could be imported
-
-    Parameters:
-        driver: selenium driver
-        init_object: WebstrPage instance of page which is loaded after log in
-        login_page: LoginPage instance
-        hosts (list): list of hostnames
-                      nodes which should be part of cluster
-                      Note: list is enough however it could change to
-                            dictionary later with some nodes parameters
-        api_valid_credentials: TendrlAuth object (defines bearer token header),
-                               when auth is None, requests are send without
-                               athentication header
-        network (string): cluster network
-                          Note: It could be part of nodes parameters later
-    """
-    if init_object._label == 'home page':
-        initial_create_gluster_cluster(
-            driver, init_object, login_page, hosts,
-            api_valid_credentials, network)
-    else:
-        next_create_gluster_cluster(
-            driver, init_object, hosts, api_valid_credentials, network)
-
-
-def initial_create_gluster_cluster(
-        driver, init_object, login_page, hosts,
-        api_valid_credentials, network=None):
-    """
-    create gluster cluster workflow
-
-    NOTE: There has to be no cluster in tendrl
-
-    Parameters:
-        driver: selenium driver
-        init_object: WebstrPage instance of page which is loaded after log in
-        login_page: LoginPage instance
-        hosts (list): list of hostnames
-                      nodes which should be part of cluster
-                      Note: list is enough however it could change to
-                            dictionary later with some nodes parameters
-        api_valid_credentials: TendrlAuth object (defines bearer token header),
-                               when auth is None, requests are send without
-                               athentication header
-        network (string): cluster network
-                          Note: It could be part of nodes parameters later
-    """
-    initial_pre_check(init_object)
-
-    init_object.start_create_cluster()
-
-    cluster_ident = aux_create_gluster_cluster(
-        driver, hosts, api_valid_credentials, network)
-
-    post_check(driver, cluster_ident, hosts, 0, login_page)
-
-
-def next_create_gluster_cluster(driver, init_object, hosts,
-                                api_valid_credentials, network=None):
-    """
-    positive create gluster cluster workflow
-
-    NOTE: Some cluster has to be already present in the list
-
-    Parameters:
-        driver: selenium driver
-        init_object: WebstrPage instance of page which is loaded after log in
-        hosts (list): list of hostnames
-                      nodes which should be part of cluster
-                      Note: list is enough however it could change to
-                            dictionary later with some nodes parameters
-        api_valid_credentials: TendrlAuth object (defines bearer token header),
-                               when auth is None, requests are send without
-                               athentication header
-        network (string): cluster network
-                          Note: It could be part of nodes parameters later
-    """
-    next_pre_check(init_object)
-
-    clusters_list = init_object.open_clusters()
-    clusters_nr = len(clusters_list)
-    cluster_menu = ClustersMenu(driver)
-
-    cluster_menu.start_create_cluster()
-
-    cluster_ident = aux_create_gluster_cluster(
-        driver, hosts, api_valid_credentials, network)
-
-    post_check(driver, cluster_ident, hosts, clusters_nr)
-
-
-def aux_create_gluster_cluster(driver, hosts, api_valid_credentials,
-                               network=None):
-    """
-    Create gluster cluster
-
-    Parameters:
-        driver: selenium driver
-        hosts (list): list of hostnames
-                      nodes which should be part of cluster
-                      Note: list is enough however it could change to
-                            dictionary later with some nodes parameters
-        api_valid_credentials: TendrlAuth object (defines bearer token header),
-                               when auth is None, requests are send without
-                               athentication header
-        network (string): cluster network
-                          Note: It could be part of nodes parameters later
-
-    Returns:
-        tendrl cluster name
-    """
-    # choose to create gluster cluster
-    initial_page = CreateCluster(driver)
-    initial_page.choose_gluster_creation()
-
-    step = gluster.StepGeneral(driver)
-    # check service
-    pytest.check(step.service == 'Gluster', "We chose to create a gluster "
-                 "cluster, hence the 'Storage Service' should be 'Gluster', "
-                 "it is {}".format(step.service))
-    # click on next as change of name have no impact
-    step.click_next()
-
-    step = gluster.StepNetworkAndHosts(driver)
-
-    # choose network
-    if network is not None:
-        step.cluster_network = network
-        pytest.check(
-            network in step.cluster_network,
-            "Cluster networ should be {}, it is {}".format(
-                network, step.cluster_network[0]))
-    # TODO: check select_all, deselect_all links functionality
-    #       check filter fields functionality
-    # select proper nodes
-    available_hosts = gluster.CreateHostsList(driver)
-    for host in available_hosts:
-        if host.name in hosts:
-            host.select()
-            # TODO: check host parameters
-    # click on next
-    step.click_next()
-
-    step = gluster.StepReview(driver)
-    # TODO: check cluster summary
-    # check nodes
-    page_hosts_list = gluster.HostsSumList(driver)
-    check_hosts(hosts, page_hosts_list)
-    # TODO: check nodes parameters
-    # start the job
-    step.create_cluster()
-
-    # wait till it finishes
-    task_page = ViewTaskPage(driver)
-    task_page.view_task()
-    # Get task id
-    task_id = cluster_job_wait(driver)
-
-    # Get cluster name
-    # use API
-    api = glusterapi.TendrlApiGluster(auth=api_valid_credentials)
-
-    integration_id = api.get_job_attribute(
-        job_id=task_id,
-        attribute="TendrlContext.integration_id",
-        section="parameters")
-
-    api.get_cluster_list()
-    # TODO(fbalak) remove this sleep after
-    #              https://github.com/Tendrl/api/issues/159 is resolved.
-    import time
-    time.sleep(30)
-
-    imported_clusters = [x for x in api.get_cluster_list()
-                         if x["integration_id"] == integration_id]
-
-    cluster_name = imported_clusters[0]["cluster_name"]
-
-    return cluster_name
-
-
-# TODO
-#   def create_ceph_cluster(...
+    post_check(driver, cluster_ident, hosts_list)
