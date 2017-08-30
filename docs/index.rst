@@ -10,9 +10,12 @@
 USM QE tests are concerned with automated integration testing of `Tendrl
 project`_.
 
-This documentation provides all details needed for setting up and running the
-integration tests, as well as instruction for development of automated test
-cases.
+This documentation provides all details needed for setting up and running
+automated integration tests, as well as instruction for test automation
+development.
+
+For a description of testing strategy and test cases itself, see `Tendrl Tests
+Documentation`_ instead.
 
 
 Contents
@@ -51,11 +54,6 @@ USM QE tests are:
 * expected to be executed from Red Hat (or CentOS) 7 machine
 * maintained by :ref:`usmqe-team-label`
 
-There are 2 kind of test cases:
-
-* `api tests` for `Tendrl REST API`_ (via `requests`_)
-* `web ui tests` for *Tendrl Web Interface* (via `selenium`_)
-
 
 License
 =======
@@ -72,6 +70,7 @@ Indices and tables
 * :ref:`search`
 
 .. _`Tendrl project`: http://tendrl.org/
+.. _`Tendrl Tests Documentation`: https://usmqe-testdoc.readthedocs.io/en/latest/
 .. _`usmqe-tests`: https://github.com/usmqe/usmqe-tests
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
