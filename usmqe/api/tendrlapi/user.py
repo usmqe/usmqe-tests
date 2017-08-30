@@ -8,7 +8,7 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
 
 LOGGER = pytest.get_logger("tendrlapi.user", module=True)
-USERDATA_KEYS = {'email', 'name', 'role', 'username'}
+USERDATA_KEYS = {'email', 'name', 'role', 'username', 'email_notifications'}
 
 
 class ApiUser(TendrlApi):
