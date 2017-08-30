@@ -90,6 +90,15 @@ class ApiUser(TendrlApi):
         pytest.check(
             sent_user == stored_user,
             """Information sent: {}, information stored in database: {},
+            These should match""".format(sent_user, stored_user),
+            issue="https://github.com/Tendrl/api/issues/251")
+        # TODO(fbalak): remove following workaround check after
+        # https://github.com/Tendrl/api/issues/251 is resolved
+        stored_user["email_notifications"] = True if\
+            stored_user["email_notifications"] == "true" else False
+        pytest.check(
+            sent_user == stored_user,
+            """Information sent: {}, information stored in database: {},
             These should match""".format(sent_user, stored_user))
         return stored_user
 
@@ -125,7 +134,16 @@ class ApiUser(TendrlApi):
         msg = "Json of stored user: {0}\n\tAnd of checked one: {1}\n\tShould be equal."
         pytest.check(
             stored_data == sent_data,
-            msg.format(stored_data, sent_data))
+            msg.format(stored_data, sent_data),
+            issue="https://github.com/Tendrl/api/issues/251")
+        # TODO(fbalak): remove following workaround check after
+        # https://github.com/Tendrl/api/issues/251 is resolved
+        stored_data["email_notifications"] = True if\
+            stored_data["email_notifications"] == "true" else False
+        pytest.check(
+            stored_data == sent_data,
+            msg.format(stored_data, sent_data),
+            issue="https://github.com/Tendrl/api/issues/251")
 
     def del_user(self, username, asserts_in=None):
         """ Delete user.
