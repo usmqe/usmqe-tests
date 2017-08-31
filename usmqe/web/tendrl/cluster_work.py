@@ -157,7 +157,15 @@ def import_cluster(driver, init_object, cluster_type=None):
     cluster = choose_cluster(driver, cluster_type)
 
     cluster_ident = cluster.name
-    cluster.click_on_import()
+
+# TODO
+# workaround for https://github.com/Tendrl/ui/issues/536
+# button is not clickable, we use a javascript instead
+#    cluster.click_on_import()
+    driver.execute_script(
+        'document.querySelector(\''
+        'button[ng-click^="clusterCntrl.goToImportFlow(cluster)"]'
+        '\').click()')
 
     import_page = ImportCluster(driver)
 
