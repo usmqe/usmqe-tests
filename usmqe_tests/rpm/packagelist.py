@@ -6,14 +6,20 @@ import subprocess
 
 # list of all tendrl packages
 tendrl_packages = [
+    "carbon-selinux",
     "tendrl-api",
     "tendrl-api-doc",
     "tendrl-api-httpd",
+    "tendrl-collectd-selinux",
     "tendrl-commons",
     "tendrl-gluster-integration",
+    "tendrl-grafana-plugins",
+    "tendrl-grafana-selinux",
     "tendrl-monitoring-integration",
     "tendrl-node-agent",
+    "tendrl-node-selinux",
     "tendrl-notifier",
+    "tendrl-server-selinux",
     "tendrl-ui",
     ]
 
