@@ -34,6 +34,7 @@ class UpperMenuModel(WebstrModel):
 #    node_discovery_link
 #    tasks_link
 #    about_link
+#    notifications_link
     user_link = PageElement(By.ID, locator="usermenu")
 
 

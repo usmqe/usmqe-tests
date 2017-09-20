@@ -31,7 +31,7 @@ def check_hosts(hosts_list, page_hosts_list):
     aux_list = copy.deepcopy(hosts_list)
     for host_row in page_hosts_list:
         found = False
-        if aux_list and type(aux_list[0]) == 'dict':
+        if aux_list and isinstance(aux_list[0], dict):
             for host in aux_list:
                 if host['hostname'] in host_row.name:
                     found = True

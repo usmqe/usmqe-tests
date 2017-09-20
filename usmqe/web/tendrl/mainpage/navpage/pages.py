@@ -17,8 +17,6 @@ from usmqe.web.tendrl.mainpage.navpage import models as m_navpage
 # from usmqe.web.tendrl.mainpage.dashboard.pages import Dashboard
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
 from usmqe.web.tendrl.mainpage.hosts.pages import HostsList
-from usmqe.web.tendrl.mainpage.file_shares.pages import FileSharesList
-from usmqe.web.tendrl.mainpage.pools.pages import PoolsList
 # TODO
 # not available yet
 # from usmqe.web.tendrl.mainpage.admin.tasks.pages import TasksList
@@ -44,8 +42,8 @@ class NavMenuBars(UpperMenu):
         # 'dashboard_link',
         'clusters_link',
         'nodes_link',
-        'file_shares_link',
-        'pools_link'
+        'alerts_link',
+        'admin_link'
     ])
 
 # TODO
@@ -97,37 +95,23 @@ class NavMenuBars(UpperMenu):
             return None
         return HostsList(self.driver)
 
-    def open_file_shares(self, click_only=False):
+    def open_alerts(self, click_only=False):
         """
-        Opens file shares page.
+        Opens alerts page.
 
         Parameters:
             click_only (bool): just click on the link and return None
 
         Returns:
-            Instance of FileSharesList if click_only is False
+            Instance of AlertsList if click_only is False
             None otherwise
         """
         self._model.file_shares_link.click()
         if click_only:
             return None
-        return FileSharesList(self.driver)
-
-    def open_pools(self, click_only=False):
-        """
-        Opens pools page.
-
-        Parameters:
-            click_only (bool): just click on the link and return None
-
-        Returns:
-            Instance of PoolsList if click_only is False
-            None otherwise
-        """
-        self._model.pools_link.click()
-        if click_only:
-            return None
-        return PoolsList(self.driver)
+# TODO
+# alerts not yet implemented
+#        return AlertsList(self.driver)
 
     def open_admin_submenu(self):
         """
@@ -154,3 +138,23 @@ class NavMenuBars(UpperMenu):
 #        if click_only:
 #            return None
 #        return TasksList(self.driver)
+
+    # Users sub-menu links
+    def open_users(self, click_only=False):
+        """
+        Opens users page.
+
+        Parameters:
+            click_only (bool): just click on the link and return None
+
+        Returns:
+            Instance of UsersList if click_only is False
+            None otherwise
+        """
+        self.open_admin_submenu()
+        self._model.users_link.click()
+# TODO
+# uncomment when Users page will be working
+#        if click_only:
+#            return None
+#        return UsersList(self.driver)

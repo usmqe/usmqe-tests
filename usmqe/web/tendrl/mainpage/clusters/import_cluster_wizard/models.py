@@ -3,7 +3,7 @@ Import Cluster wizard module.
 """
 
 
-from webstr.core import By, PageElement
+from webstr.core import By, PageElement, NameRootPageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
@@ -17,19 +17,8 @@ class ImportClusterModel(ListMenuModel):
     """
     model for Import Cluster - Configure Cluster page
     """
-    label = PageElement(By.XPATH, '//h2/label')
-    cluster = form.Select(
-        By.XPATH,
-        '//select[@data-ng-model="importClusterCntrl.selectedCluster"]')
-    cluster_id = PageElement(
-        By.XPATH,
-        '//div[@class="cluster-detail"]/div[1]/div[2]')
-    storage_service = PageElement(
-        By.XPATH,
-        '//div[@class="cluster-detail"]/div[2]/div[2]')
-    refresh_btn = form.Button(
-        By.XPATH,
-        '//button[contains(text(), "Refresh")]')
+    label = PageElement(By.XPATH, '//h1')
+    profile_check = form.Checkbox(By.NAME, "volumeProfile")
     import_btn = form.Button(By.XPATH, '//button[contains(text(), "Import")]')
     cancel_btn = form.Button(By.XPATH, '//button[contains(text(), "Cancel")]')
 
@@ -46,17 +35,28 @@ class HostsItemModel(contentviews.ListViewRowModel):
     """
     name_label = PageElement(
         by=By.XPATH,
-        locator="./div[1]")
+        locator=".//div[contains(@class, 'host-name')]")
     release = PageElement(
         by=By.XPATH,
-        locator="./div[2]//h5[2]")
+        locator=".//div[contains(@class, 'host-release')]")
     name = name_label
     role = PageElement(
+        By.XPATH,
+        ".//div[contains(@class, 'list-view-pf-additional-info')]/div[2]")
+    _root = NameRootPageElement(
         by=By.XPATH,
-        locator="./div[3]//h5[2]")
+        locator='({}//*[contains(concat(" ", @class, " "),'
+        ' " list-group-item ")][@ng-repeat])[%d]'.format(
+            contentviews.ListViewModel.LIST_XPATH))
 
 
 class HostsListModel(contentviews.ListViewModel):
     """
     Page model for list of nodes/hosts.
     """
+    rows = PageElement(
+        by=By.XPATH,
+        locator="{}//*[contains(concat(' ', @class, ' '),"
+        " ' list-group-item ')][@ng-repeat]".format(
+            contentviews.ListViewModel.LIST_XPATH),
+        as_list=True)
