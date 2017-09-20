@@ -4,16 +4,7 @@ from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
 import usmqe.inventory as inventory
 
-
-@pytest.fixture
-def valid_cluster_id(valid_session_credentials):
-    """
-    Generate valid id of imported cluster.
-    """
-    # TODO change
-    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    cluster_list = api.get_cluster_list()
-    return cluster_list[0]["cluster_id"]
+LOGGER = pytest.get_logger('gluster_conftest', module=True)
 
 
 @pytest.fixture
@@ -44,15 +35,6 @@ def valid_trusted_pool():
     storage = gluster.GlusterCommon()
     host = inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]
     return storage.get_hosts_from_trusted_pool(host)
-
-
-@pytest.fixture
-def valid_volume_id():
-    """
-    Generate valid id of a created volume.
-    """
-    volume = gluster.GlusterVolume(pytest.config.getini("usm_volume_name"))
-    return volume.get_volume_id()
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
@@ -111,34 +93,49 @@ def valid_devices(valid_session_credentials, count=1):
                 for node_id in nodes_free_kern_name}
     except IndexError as err:
         raise Exception(
-                "TypeError({0}): There are not enough devices. There are: {1}. {2}"
-                .format(
-                    err.errno,
-                    nodes_free_kern_name,
-                    err.strerror))
+            "TypeError({0}): There are not enough devices. There are: {1}. {2}"
+            .format(
+                err.errno,
+                nodes_free_kern_name,
+                err.strerror))
 
 
+# TODO change to use bricks mapping
 @pytest.fixture
-def valid_volume_configuration(valid_volume_name, valid_brick_path):
+def volume_conf_2rep(cluster_reuse):
     """
     Generate valid configuration for volume creation with set:
         "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
+    Node list for brick list is created from list of nodes in cluster.
+    Always is used first(alphabetic order) free brick on node.
+    Cluster is identified by one node from cluster.
+    *Volume name should be defined for each test!*
+    *Configuration is made for replica count == 2.*
     """
-    role = pytest.config.getini("usm_gluster_role")
-    try:
-        bricks = [[{"{}".format(inventory.role2hosts(role)[i]):
-                    "{}".format(valid_brick_path)},
-                   {"{}".format(inventory.role2hosts(role)[i+1]):
-                    "{}".format(valid_brick_path)}]
-                  for i in range(0, len(inventory.role2hosts(role)), 2)]
-    except TypeError as err:
-        raise Exception(
-            "TypeError({0}): You should probably define usm_brick_path and \
-                    usm_gluster_role in usm.ini. {1}".format(
-                err.errno,
-                err.strerror))
+    hosts = cluster_reuse["nodes"]
+    LOGGER.debug("nodes: {}".format(hosts))
+
+    avail_bricks = {}
+
+    keys = sorted(list(hosts.keys()))
+    for node in keys:
+        avail_bricks[node] = sorted(
+                                [brick for brick in cluster_reuse["bricks"]["all"].values()
+                                    if brick["node_id"] == node],
+                                key=lambda brick1: brick1['brick_path'])
+
+    bricks = [[{"{}".format(avail_bricks[keys[i]][0]["brick_path"])},
+               {"{}".format(avail_bricks[keys[i+1]][0]["brick_path"])}]
+              for i in range(0, len(keys), 2)]
+
+    # suggestion for common code
+    # bricks = [[{"{}".format(hosts[keys[index]]["fqdn"]):
+    #        "{}".format(sorted(hosts[keys[index]]["bricks"]["free"])[0])}
+    #       for index in range(base_index, base_index + replica_count)]
+    #      for base_index in range(0, len(keys), replica_count)]
+
     return {
-        "Volume.volname": valid_volume_name,
+        "Volume.volname": "{}",
         "Volume.bricks": bricks,
         "Volume.replica_count": "2",
         "Volume.force": True}
@@ -156,14 +153,6 @@ def invalid_volume_configuration(request):
     return request.param
 
 
-@pytest.fixture
-def valid_volume_name():
-    """
-    Generate valid volume name defined in usm.ini.
-    """
-    return pytest.config.getini("usm_volume_name")
-
-
 # TODO(fbalak) as `./,!@##$%^&*()__{}|:';/<*+>)(` as parameter
 @pytest.fixture(params=[None])
 def invalid_volume_name(request):
@@ -171,3 +160,27 @@ def invalid_volume_name(request):
     Generate invalid volume name.
     """
     return request.param
+
+
+@pytest.fixture
+def valid_bricks_for_crud_volume(valid_session_credentials, cluster_reuse,
+                                 valid_brick_name, valid_devices):
+    """
+    Creates bricks for CRUD volume tests.
+    """
+
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+
+    nodes = list(cluster_reuse["nodes"].values())
+
+    LOGGER.debug("nodes: {}".format(nodes))
+    LOGGER.debug("devices: {}".format(valid_devices))
+
+    job_id = api.create_bricks(
+        cluster_reuse["cluster_id"],
+        nodes,
+        valid_devices,
+        valid_brick_name)["job_id"]
+    api.wait_for_job_status(job_id)
+    import time
+    time.sleep(60)

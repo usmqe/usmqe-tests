@@ -34,6 +34,7 @@ Positive create gluster cluster.
 
 
 @pytest.mark.parametrize("cluster_name", ["ClusterName"])
+@pytest.mark.cluster_create_gluster
 def test_cluster_create_valid(
         valid_session_credentials,
         valid_nodes,
@@ -152,6 +153,7 @@ Positive import gluster cluster.
 """
 
 
+@pytest.mark.cluster_import_gluster
 def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
@@ -263,6 +265,7 @@ Negative import gluster cluster.
         "reason": 'Unprocessable Entity',
         "status": 422,
         })])
+@pytest.mark.gluster
 def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
@@ -298,4 +301,4 @@ def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
             ``asserts`` test parameter.
 
         """
-    api.import_cluster(node_ids,  asserts_in=asserts)
+    api.import_cluster(node_ids, asserts_in=asserts)
