@@ -32,6 +32,7 @@ def test_create_volume_valid(
         ******************************
 
         .. test_metadata:: author fbalak@redhat.com
+        .. test_metadata:: author mkudlej@redhat.com
 
         Description
         ===========
@@ -62,6 +63,7 @@ def test_create_volume_valid(
             ******************************
 
             .. test_metadata:: author fbalak@redhat.com
+            .. test_metadata:: author mkudlej@redhat.com
 
             Description
             ===========
@@ -83,15 +85,6 @@ def test_create_volume_valid(
 
         volume = gluster.GlusterVolume(VOLUME_NAME)
         volume_id = volume.get_volume_id()
-        storage_volume_attributes = {
-                "name": volume.name,
-                "id": volume.id,
-                "status": volume.status,
-                "stripe_count": volume.stripe_count,
-                "replica_count": volume.replica_count,
-                "brick_count": volume.brick_count,
-                "snapshot_count": volume.snap_count
-            }
         volumes = api.get_volume_list(cluster_reuse["cluster_id"])
         volume_tendrl = [volume_t[volume_id] for volume_t in volumes
                          if volume_id in volume_t]
@@ -99,23 +92,20 @@ def test_create_volume_valid(
             len(volume_tendrl) == 1,
             """There should be only one volume
             with id == {}""".format(volume_id))
+
         if len(volume_tendrl) == 1:
             volume_tendrl = volume_tendrl[0]
-            tendrl_volume_attributes = {
-                    "name": volume_tendrl["name"],
-                    "id": volume_tendrl["vol_id"],
-                    "status": volume_tendrl["status"],
-                    "stripe_count": volume_tendrl["stripe_count"],
-                    "replica_count": volume_tendrl["replica_count"],
-                    "brick_count": volume_tendrl["brick_count"],
-                    "snapshot_count": volume_tendrl["snap_count"]
-                }
-            pytest.check(
-                tendrl_volume_attributes == storage_volume_attributes,
-                """Storage volume attributes: {}
-                Tendrl volume attributes: {}
-                These should be the same.""".format(
-                    tendrl_volume_attributes, storage_volume_attributes))
+            for (x, y, z) in [
+                 ("name", volume.name, volume_tendrl["name"]),
+                 ("id", volume.id, volume_tendrl["vol_id"]),
+                 ("status", volume.status, volume_tendrl["status"]),
+                 ("stripe_count", volume.stripe_count, volume_tendrl["stripe_count"]),
+                 ("replica_count", volume.replica_count, volume_tendrl["replica_count"]),
+                 ("brick_count", volume.brick_count, volume_tendrl["brick_count"]),
+                 ("snapshot_count", volume.snap_count, volume_tendrl["snap_count"])]:
+                pytest.check(
+                    y == z,
+                    """Volume {} in storage {} and in Tendrl {} are the same.""".format(x, y, z))
 
 
 # @pytest.mark.gluster_volume_crud
@@ -259,7 +249,7 @@ def test_delete_volume_valid(
         Description
         ===========
 
-        Check if there is created volume on gluster nodes via CLI.
+        Check if there is deleted volume on gluster nodes via CLI.
 
         .. test_step:: 1
 
@@ -268,7 +258,7 @@ def test_delete_volume_valid(
 
         .. test_result:: 1
 
-            There should be listed gluster volume named ``Vol_test``.
+            There should not be listed gluster volume named ``Vol_test``.
 
             """
     storage = gluster.GlusterCommon()
@@ -282,7 +272,7 @@ def test_delete_volume_valid(
         Description
         ===========
 
-        Check if there is created volume on gluster nodes via CLI.
+        Check if there is not deleted volume on gluster nodes via CLI.
 
         .. test_step:: 3
 

@@ -10,7 +10,7 @@ LOGGER = pytest.get_logger('gluster_conftest', module=True)
 @pytest.fixture
 def valid_nodes(valid_session_credentials):
     """
-    Generate valid host info from GetClusterList api call related to tendrl/nodes
+    Generate valid host info from GetNodeList api call related to tendrl/nodes
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     cluster_list = api.get_nodes()
@@ -93,11 +93,11 @@ def valid_devices(valid_session_credentials, count=1):
                 for node_id in nodes_free_kern_name}
     except IndexError as err:
         raise Exception(
-                "TypeError({0}): There are not enough devices. There are: {1}. {2}"
-                .format(
-                    err.errno,
-                    nodes_free_kern_name,
-                    err.strerror))
+            "TypeError({0}): There are not enough devices. There are: {1}. {2}"
+            .format(
+                err.errno,
+                nodes_free_kern_name,
+                err.strerror))
 
 
 # TODO change to use bricks mapping
@@ -114,12 +114,25 @@ def volume_conf_2rep(cluster_reuse):
     """
     hosts = cluster_reuse["nodes"]
     LOGGER.debug("nodes: {}".format(hosts))
-    keys = list(hosts.keys())
-    bricks = [[{"{}".format(hosts[keys[i]]["fqdn"]):
-                "{}".format(sorted(hosts[keys[i]]["bricks"]["free"])[0])},
-               {"{}".format(hosts[keys[i+1]]["fqdn"]):
-                "{}".format(sorted(hosts[keys[i+1]]["bricks"]["free"])[0])}]
+
+    avail_bricks = {}
+
+    keys = sorted(list(hosts.keys()))
+    for node in keys:
+        avail_bricks[node] = sorted(
+                                [brick for brick in cluster_reuse["bricks"]["all"].values()
+                                    if brick["node_id"] == node],
+                                key=lambda brick1: brick1['brick_path'])
+
+    bricks = [[{"{}".format(avail_bricks[keys[i]][0]["brick_path"])},
+               {"{}".format(avail_bricks[keys[i+1]][0]["brick_path"])}]
               for i in range(0, len(keys), 2)]
+
+    # suggestion for common code
+    # bricks = [[{"{}".format(hosts[keys[index]]["fqdn"]):
+    #        "{}".format(sorted(hosts[keys[index]]["bricks"]["free"])[0])}
+    #       for index in range(base_index, base_index + replica_count)]
+    #      for base_index in range(0, len(keys), replica_count)]
 
     return {
         "Volume.volname": "{}",
@@ -152,6 +165,9 @@ def invalid_volume_name(request):
 @pytest.fixture
 def valid_bricks_for_crud_volume(valid_session_credentials, cluster_reuse,
                                  valid_brick_name, valid_devices):
+    """
+    Creates bricks for CRUD volume tests.
+    """
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
