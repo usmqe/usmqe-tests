@@ -13,6 +13,7 @@ tendrl_packages = [
     "tendrl-gluster-integration",
     "tendrl-monitoring-integration",
     "tendrl-node-agent",
+    "tendrl-notifier",
     "tendrl-ui",
     ]
 
