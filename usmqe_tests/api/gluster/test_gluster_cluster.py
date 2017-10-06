@@ -195,29 +195,18 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
                 with data ``{"message": "Accepted"}``.
 
         """
-    nodes = api.get_nodes()
-    node_ids = None
-    for cluster in nodes["clusters"]:
-        if cluster["sds_name"] == "gluster":
-            node_ids = cluster["node_ids"]
-            break
-    node_fqdns = []
-    msg = "`sds_pkg_name` of node {} should be `gluster`, it is {}"
-    for node in nodes["nodes"]:
-        if node["node_id"] in node_ids:
-            pytest.check(node["detectedcluster"]["sds_pkg_name"] == "gluster",
-                         msg.format(node["fqdn"],
-                         node["detectedcluster"]["sds_pkg_name"]))
-            node_fqdns.append(node["fqdn"])
-    node_ids = [x["node_id"] for x in nodes["nodes"]
-                if x["fqdn"] in valid_trusted_pool]
+    clusters = api.get_cluster_list()
+    cluster_id = clusters[0]["cluster_id"]
+    nodes = clusters[0]["nodes"]
+    node_ids = [x["node_id"] for x in nodes]
+    node_fqdns = [x["fqdn"] for x in nodes]
     pytest.check(
         len(valid_trusted_pool) == len(node_ids),
         "number of nodes in trusted pool ({}) should correspond "
         "with number of imported nodes ({})".format(len(valid_trusted_pool),
                                                     len(node_ids)))
 
-    job_id = api.import_cluster(node_ids)["job_id"]
+    job_id = api.import_cluster(cluster_id)["job_id"]
 
     api.wait_for_job_status(job_id)
 
@@ -239,7 +228,7 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
     LOGGER.debug("debug imported clusters: %s" % imported_clusters)
     pytest.check(
         [x["fqdn"] in valid_trusted_pool
-         for x in imported_clusters[0]["nodes"].values()],
+         for x in imported_clusters[0]["nodes"]],
         msg.format(valid_trusted_pool))
 
 
