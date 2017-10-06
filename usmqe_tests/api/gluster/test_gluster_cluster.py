@@ -3,7 +3,6 @@
 REST API test suite - gluster cluster
 """
 import pytest
-import json
 import uuid
 
 from usmqe.api.tendrlapi import glusterapi
@@ -199,7 +198,6 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
     cluster_id = clusters[0]["cluster_id"]
     nodes = clusters[0]["nodes"]
     node_ids = [x["node_id"] for x in nodes]
-    node_fqdns = [x["fqdn"] for x in nodes]
     pytest.check(
         len(valid_trusted_pool) == len(node_ids),
         "number of nodes in trusted pool ({}) should correspond "
@@ -245,49 +243,19 @@ Negative import gluster cluster.
 """
 
 
-@pytest.mark.parametrize("node_ids,asserts", [
-    (["000000-0000-0000-0000-000000000"], {
-        "json": json.loads(
-            '{"errors": "Node 000000-0000-0000-0000-000000000 not found"}'),
-        "cookies": None,
-        "ok": False,
-        "reason": 'Unprocessable Entity',
-        "status": 422,
-        })])
+@pytest.mark.parametrize("cluster_id", [
+    ("000000-0000-0000-0000-000000000")])
 @pytest.mark.gluster
-def test_cluster_import_invalid(valid_session_credentials, node_ids, asserts):
+def test_cluster_import_invalid(valid_session_credentials, cluster_id):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
-        Get list of ids of availible nodes.
+            Create import cluster job via API with invalid cluster id.
 
         .. test_result:: 1
 
-                Server should return response in JSON format:
-
-                        {
-                ...
-                  {
-                  "fqdn": hostname,
-                  "machine_id": some_id,
-                  "node_id": node_id
-                  },
-                ...
-                        }
-
-                Return code should be **200** with data ``{"message": "OK"}``.
-
+            Job should fail.
         """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    """@pylatest api/gluster.cluster_import
-        .. test_step:: 2
-
-            Send POST request to Tendrl API ``APIURL/GlusterImportCluster
-
-        .. test_result:: 2
-
-            Server should return response in JSON format with message set in
-            ``asserts`` test parameter.
-
-        """
-    api.import_cluster(node_ids, asserts_in=asserts)
+    job_id = api.import_cluster(cluster_id)["job_id"]
+    api.wait_for_job_status(job_id, status="failed")
