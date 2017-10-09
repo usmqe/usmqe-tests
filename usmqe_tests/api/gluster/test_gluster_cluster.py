@@ -195,8 +195,19 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
 
         """
     clusters = api.get_cluster_list()
-    cluster_id = clusters[0]["cluster_id"]
-    nodes = clusters[0]["nodes"]
+    cluster_id = None
+    pytest.check(
+        len(clusters) > 0,
+        "There should be more than 0 clusters. There is {}.".format(len(clusters)))
+    for cluster in clusters:
+        nodes = []
+        if cluster["sds_name"] == "gluster":
+            nodes = cluster["nodes"]
+            if [x["fqdn"] in valid_trusted_pool for x in nodes]:
+                cluster_id = cluster["cluster_id"]
+    pytest.check(
+        cluster_id is not None,
+        "Cluster id is: {}".format(cluster_id))
     node_ids = [x["node_id"] for x in nodes]
     pytest.check(
         len(valid_trusted_pool) == len(node_ids),
