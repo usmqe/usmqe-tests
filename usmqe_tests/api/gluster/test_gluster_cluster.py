@@ -153,34 +153,36 @@ Positive import gluster cluster.
 
 
 @pytest.mark.cluster_import_gluster
-def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool_reuse):
+def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
-        Get list of ids of availible nodes.
+            Check that fqdns of nodes in tendrl correspond with fqdns
+            from ``gluster`` command.
 
         .. test_result:: 1
 
-                Server should return response in JSON format:
-
-                        {
-                ...
-                  {
-                  "fqdn": hostname,
-                  "machine_id": some_id,
-                  "node_id": node_id
-                  },
-                ...
-                        }
-
-                Return code should be **200** with data ``{"message": "OK"}``.
+            Sets of fqdns of nodes in tendrl and from ``gluster`` command
+            should be the same.
 
         """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    cluster_id = cluster_reuse["cluster_id"]
+    nodes = cluster_reuse["nodes"]
+    pytest.check(
+        cluster_id is not None,
+        "Cluster id is: {}".format(cluster_id))
+    node_fqdns = [x["fqdn"] for x in nodes]
+    pytest.check(
+        set(valid_trusted_pool_reuse) == set(node_fqdns),
+        "fqdns get from gluster trusted pool ({}) should correspond "
+        "with fqdns of nodes in tendrl ({})".format(valid_trusted_pool_reuse,
+                                                    node_fqdns))
+
     """@pylatest api/gluster.cluster_import
         .. test_step:: 2
 
-            Send POST request to Tendrl API ``APIURL/GlusterImportCluster
+            Send POST request to Tendrl API ``APIURL/clusters/:cluster_id/import``
 
         .. test_result:: 2
 
@@ -194,27 +196,6 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool_reus
                 with data ``{"message": "Accepted"}``.
 
         """
-    clusters = api.get_cluster_list()
-    cluster_id = None
-    pytest.check(
-        len(clusters) > 0,
-        "There should be more than 0 clusters. There is {}.".format(len(clusters)))
-    for cluster in clusters:
-        nodes = []
-        if cluster["sds_name"] == "gluster":
-            nodes = cluster["nodes"]
-            if [x["fqdn"] in valid_trusted_pool_reuse for x in nodes]:
-                cluster_id = cluster["cluster_id"]
-    pytest.check(
-        cluster_id is not None,
-        "Cluster id is: {}".format(cluster_id))
-    node_ids = [x["node_id"] for x in nodes]
-    pytest.check(
-        len(valid_trusted_pool_reuse) == len(node_ids),
-        "number of nodes in trusted pool ({}) should correspond "
-        "with number of imported nodes ({})".format(len(valid_trusted_pool_reuse),
-                                                    len(node_ids)))
-
     job_id = api.import_cluster(cluster_id)["job_id"]
 
     api.wait_for_job_status(job_id)
