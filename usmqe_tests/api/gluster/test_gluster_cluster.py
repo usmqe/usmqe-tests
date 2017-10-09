@@ -153,7 +153,7 @@ Positive import gluster cluster.
 
 
 @pytest.mark.cluster_import_gluster
-def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
+def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool_reuse):
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
 
@@ -203,16 +203,16 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
         nodes = []
         if cluster["sds_name"] == "gluster":
             nodes = cluster["nodes"]
-            if [x["fqdn"] in valid_trusted_pool for x in nodes]:
+            if [x["fqdn"] in valid_trusted_pool_reuse for x in nodes]:
                 cluster_id = cluster["cluster_id"]
     pytest.check(
         cluster_id is not None,
         "Cluster id is: {}".format(cluster_id))
     node_ids = [x["node_id"] for x in nodes]
     pytest.check(
-        len(valid_trusted_pool) == len(node_ids),
+        len(valid_trusted_pool_reuse) == len(node_ids),
         "number of nodes in trusted pool ({}) should correspond "
-        "with number of imported nodes ({})".format(len(valid_trusted_pool),
+        "with number of imported nodes ({})".format(len(valid_trusted_pool_reuse),
                                                     len(node_ids)))
 
     job_id = api.import_cluster(cluster_id)["job_id"]
@@ -236,9 +236,9 @@ def test_cluster_import_valid(valid_session_credentials, valid_trusted_pool):
           "as from `gluster peer status` command ({})"
     LOGGER.debug("debug imported clusters: %s" % imported_clusters)
     pytest.check(
-        [x["fqdn"] in valid_trusted_pool
+        [x["fqdn"] in valid_trusted_pool_reuse
          for x in imported_clusters[0]["nodes"]],
-        msg.format(valid_trusted_pool))
+        msg.format(valid_trusted_pool_reuse))
 
 
 """@pylatest api/gluster.cluster_import

@@ -2,7 +2,6 @@ import pytest
 import os.path
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
-import usmqe.inventory as inventory
 
 LOGGER = pytest.get_logger('gluster_conftest', module=True)
 
@@ -28,13 +27,13 @@ def invalid_cluster_id(request):
 
 
 @pytest.fixture
-def valid_trusted_pool():
+def valid_trusted_pool_reuse():
     """
-    Return list of node hostname from created trusted pool.
+    Return list of node hostname from created trusted pool with node specified
+    by usm_id_fqdn option in usm.ini.
     """
     storage = gluster.GlusterCommon()
-    host = inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]
-    return storage.get_hosts_from_trusted_pool(host)
+    return storage.get_hosts_from_trusted_pool(pytest.config.getini("usm_id_fqdn"))
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
