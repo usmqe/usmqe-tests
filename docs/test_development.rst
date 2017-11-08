@@ -121,10 +121,10 @@ Files with tests example:
 
 Test uses fixtures for getting ``cluster`` object:
 
-* cluster_reuse_(storage_type) - fixture loads cluster ID from configuration and
-  returns ``cluster`` object which can be used for testing. Cluster should already
-  exist and it's made by ``cluster_`` or ``import_`` test. This fixture is used
-  in most of the tests.
+* cluster_reuse_(storage_type) - fixture loads cluster ID from node defined by
+  ``usm_id_fqdn`` parameter in configuration and returns ``cluster`` object
+  which can be used for testing. Cluster should already exist and it's made by 
+  ``cluster_`` or ``import_`` test. This fixture is used in most of the tests.
 
 * cluster_import_(storage_type) - fixture imports cluster and returns ``cluster``
   object. Cluster should be created and imported by this fixture.

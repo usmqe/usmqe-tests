@@ -12,15 +12,6 @@ LOGGER = pytest.get_logger("glusterapi", module=True)
 class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
     """
-    def import_cluster(self, nodes, asserts_in=None):
-        """ Import Gluster cluster.
-
-        Args:
-            nodes (list): node list of cluster which will be imported
-            asserts_in (dict): assert values for this call and this method
-        """
-        return super().import_cluster(nodes, "gluster", asserts_in)
-
     def create_cluster(
             self,
             name,

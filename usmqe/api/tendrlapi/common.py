@@ -248,9 +248,9 @@ class TendrlApi(ApiBase):
 
         Name:        "get_nodes",
         Method:      "GET",
-        Pattern:     "GetNodeList",
+        Pattern:     "nodes",
         """
-        pattern = "GetNodeList"
+        pattern = "nodes"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth)
@@ -325,16 +325,16 @@ class TendrlApi(ApiBase):
         self.check_response(response, asserts_in)
         return response.json()
 
-    def import_cluster(self, nodes, sds_type=None, asserts_in=None):
+    def import_cluster(self, cluster_id, enable_profiling="yes", asserts_in=None):
         """ Import cluster.
 
         Name:        "import_cluster",
         Method:      "POST",
-        Pattern:     "ImportCluster",
+        Pattern:     "clusters/:cluster_id/import",
 
         Args:
-            sds_type (str): ceph or glusterfs
-            nodes (list): node list of cluster which will be imported
+            enable_profiling (str): enables profiling for imported cluster,
+                values: "yes"|"no"
             asserts_in (dict): assert values for this call and this method
         """
         asserts_in = asserts_in or {
@@ -342,10 +342,8 @@ class TendrlApi(ApiBase):
             "ok": True,
             "reason": 'Accepted',
             "status": 202}
-        pattern = "ImportCluster"
-        data = {"node_ids": nodes}
-        if sds_type:
-            data["sds_type"] = sds_type
+        pattern = "clusters/{}/import".format(cluster_id)
+        data = {"enable_volume_profiling": enable_profiling}
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             data=json.dumps(data),
@@ -359,9 +357,9 @@ class TendrlApi(ApiBase):
 
         Name:        "get_cluster_list",
         Method:      "GET",
-        Pattern:     "GetClusterList",
+        Pattern:     "clusters",
         """
-        pattern = "GetClusterList"
+        pattern = "clusters"
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth)

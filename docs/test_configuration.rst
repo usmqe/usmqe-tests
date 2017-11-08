@@ -89,7 +89,8 @@ Now, you need to:
   file.
 
 * Provide all mandatory options in *usm config file* initialized in a previous
-  step. This includes: ``username``, ``password``, ``web_url`` and ``api_url``.
+  step. This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
+  ``id_fqdn``.
   The actual list depends on the test suite you are going to run (eg. api
   tests don't care about ``web_url`` while LDAP integration tests would need
   to know address of the LDAP server).
