@@ -235,10 +235,10 @@ Negative import gluster cluster.
 """
 
 
-@pytest.mark.parametrize("cluster_id", [
-    ("000000-0000-0000-0000-000000000")])
+@pytest.mark.parametrize("cluster_id, status", [
+    ("000000-0000-0000-0000-000000000", "failed")])
 @pytest.mark.gluster
-def test_cluster_import_invalid(valid_session_credentials, cluster_id):
+def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """@pylatest api/gluster.cluster_import
         .. test_step:: 1
@@ -258,6 +258,6 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id):
 
         .. test_result:: 2
 
-            Job status should be `failed`.
+            Job status should be in status given by `status` parameter.
         """
-    api.wait_for_job_status(job_id, status="failed")
+    api.wait_for_job_status(job_id, status=status)
