@@ -9,7 +9,6 @@ tendrl_packages = [
     "carbon-selinux",
     "tendrl-ansible",
     "tendrl-api",
-    "tendrl-api-doc",
     "tendrl-api-httpd",
     "tendrl-collectd-selinux",
     "tendrl-commons",
