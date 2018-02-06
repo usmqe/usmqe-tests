@@ -114,7 +114,7 @@ class TendrlApi(ApiBase):
 
         Name:       "get_job_attribute",
         Method:     "GET",
-        Pattern     "jobs",
+        Pattern     "jobs/:job_id:",
 
         Args:
             job_id:     id of job
