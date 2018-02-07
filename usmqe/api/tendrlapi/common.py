@@ -114,7 +114,7 @@ class TendrlApi(ApiBase):
 
         Name:       "get_job_attribute",
         Method:     "GET",
-        Pattern     "jobs",
+        Pattern     "jobs/:job_id:",
 
         Args:
             job_id:     id of job
@@ -208,6 +208,20 @@ class TendrlApi(ApiBase):
                 status),
             issue=issue)
         return current_status
+
+    def jobs(self, asserts_in=None):
+        """ Jobs REST API
+        Name:        "jobs",
+        Method:      "GET",
+        Pattern:     "jobs",
+        """
+        pattern = "jobs"
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth,)
+        self.print_req_info(response)
+        self.check_response(response, asserts_in)
+        return response.json()
 
     def ping(self, asserts_in=None):
         """ Ping REST API
