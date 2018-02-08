@@ -48,7 +48,7 @@ def cluster_reuse(valid_session_credentials):
     is need to identify cluster directly by storage
     tools this function should be split.
     """
-    id_hostname = pytest.config.getini("usm_id_fqdn")
+    id_hostname = pytest.config.getini("usm_cluster_member")
     api = TendrlApi(auth=valid_session_credentials)
     clusters = api.get_cluster_list()
     clusters = [cluster for cluster in clusters
