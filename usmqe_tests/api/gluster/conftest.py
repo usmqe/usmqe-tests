@@ -30,10 +30,10 @@ def invalid_cluster_id(request):
 def valid_trusted_pool_reuse():
     """
     Return list of node hostname from created trusted pool with node specified
-    by usm_id_fqdn option in usm.ini.
+    by usm_cluster_member option in usm.ini.
     """
     storage = gluster.GlusterCommon()
-    return storage.get_hosts_from_trusted_pool(pytest.config.getini("usm_id_fqdn"))
+    return storage.get_hosts_from_trusted_pool(pytest.config.getini("usm_cluster_member"))
 
 
 @pytest.fixture(params=[None, "0000000000000000"])

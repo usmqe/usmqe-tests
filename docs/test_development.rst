@@ -122,7 +122,7 @@ Files with tests example:
 Test uses fixtures for getting ``cluster`` object:
 
 * cluster_reuse_(storage_type) - fixture loads cluster ID from node defined by
-  ``usm_id_fqdn`` parameter in configuration and returns ``cluster`` object
+  ``usm_cluster_member`` parameter in configuration and returns ``cluster`` object
   which can be used for testing. Cluster should already exist and it's made by 
   ``cluster_`` or ``import_`` test. This fixture is used in most of the tests.
 
