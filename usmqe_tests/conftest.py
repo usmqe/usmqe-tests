@@ -59,7 +59,7 @@ def logger_testcase(request):
         "name": "Tom Hardy",
         "username": "thardy",
         "email": "thardy@tendrl.org",
-        "role": "admin",
+        "role": "normal",
         "password": "pass1234",
         "password_confirmation": "pass1234",
         "email_notifications": True}])
