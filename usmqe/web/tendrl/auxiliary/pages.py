@@ -6,7 +6,6 @@ Some usefull pages classes for common work with tendrl web
 from selenium.webdriver.common.keys import Keys
 
 from webstr.core import WebstrPage
-import webstr.patternfly.dropdown.pages as dropdown
 
 import usmqe.web.tendrl.auxiliary.models as m_auxiliary
 
@@ -81,7 +80,38 @@ class UpperMenu(WebstrPage):
         return UserMenu(self.driver)
 
 
-class UserMenu(dropdown.DropDownMenu):
+class UserManagement*WebstrPage):
+    """
+    Base page object for user management pop-up menu
+
+    Parameters:
+      _model - page model
+    """
+    _model = m_auxiliary.UserManagementModel
+    _label = 'user management popup menu'
+    _required_elems = ['users']
+
+    def users(self):
+        """ Open Users page - click on users """
+        self._model.users.click()
+
+
+# TODO: Alert list is not finished
+#       Most probably other classes will be inherited not just WebstrPage
+#       but some List and Row classes
+class AlertList(WebstrPage):
+    """
+    Page object for drop-down alert list
+    """
+
+
+class AlertRowModel(WebstrModel):
+    """
+    Page Object for any alert message
+    """
+
+
+class UserMenu(WebstrPage):
     """
     Base page object for user pop-up menu
 
@@ -92,29 +122,10 @@ class UserMenu(dropdown.DropDownMenu):
     _label = 'user popup menu'
     _required_elems = ['logout']
 
+    def my_settings(self):
+        """ open user settings - click on my_settings """
+        self._model.my_settings.click()
+
     def logout(self):
         """ log out current user - click on logout """
         self._model.logout.click()
-
-
-class Alert(WebstrPage):
-    """
-    page object for alert/notice message
-    """
-    _model = m_auxiliary.AlertModel
-    _label = 'alert/notice message'
-    _required_elems = ['message, close_btn']
-
-    @property
-    def message(self):
-        """
-        returns message text
-        """
-        return self._model.message.text
-
-    def close(self):
-        """
-        close the alert/notice
-        click on close button - X symbol
-        """
-        self._model.close_btn.click()
