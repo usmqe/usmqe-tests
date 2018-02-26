@@ -7,7 +7,7 @@ Author: ltrilety
 
 import time
 
-from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
+from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
 
 
 class LandingException(Exception):
@@ -38,6 +38,6 @@ def get_landing_page(driver, timeout=10):
         raise LandingException('There should not remain landing-page in URL '
                                'longer than {} seconds'.format(timeout))
     if 'clusters' in driver.current_url:
-        return NavMenuBars(driver)
+        return ClustersList(driver)
     else:
         raise LandingException('Not expected landing page')

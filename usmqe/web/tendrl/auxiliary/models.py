@@ -42,6 +42,9 @@ class UserMenuModel(dropdown.DropDownMenuModel):
     """
     Common page model for main page - user page
     """
+    _base_locator = '//*[contains(@class, "dropdown user")]'\
+                    '/*[contains(@class, "dropdown-menu")]/..'
+    _root = RootPageElement(by=By.XPATH, locator=_base_locator + '/ul[./li]')
     logout = PageElement(by=By.LINK_TEXT, locator="Logout")
 
 
