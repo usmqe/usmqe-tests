@@ -3,7 +3,6 @@
 Graphite REST API.
 """
 
-import json
 import requests
 import pytest
 from usmqe.api.base import ApiBase
@@ -31,4 +30,4 @@ class ApiCommon(ApiBase):
         response = requests.get(
             pytest.config.getini("graphite_api_url") + pattern)
         self.check_response(response)
-        return json.loads(response.json()[0]["datapoints"])
+        return response.json()[0]["datapoints"]
