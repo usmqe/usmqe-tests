@@ -11,7 +11,7 @@ import pytest
 
 from webstr.core import WebstrPage
 
-import usmqe.web.tendrl.mainpage.clusters.models as m_clusters
+import usmqe.web.tendrl.clusters.auxiliary.models as m_clusters
 
 
 IMPORT_TIMEOUT = 3600

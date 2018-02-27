@@ -7,9 +7,9 @@ import copy
 
 from webstr.patternfly.contentviews import pages as contentviews
 
-import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
+import usmqe.web.tendrl.clusters.models as m_cluster_list
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
-from usmqe.web.tendrl.mainpage.clusters.pages import ClustersWorkBase
+from usmqe.web.tendrl.clusters.auxiliary.pages import ClustersWorkBase
 
 
 class ClustersMenu(ListMenu, ClustersWorkBase):

@@ -14,7 +14,7 @@ from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 from usmqe.web.tendrl.details.navpage import models as m_navpage
 # TODO
 # not available for now
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
+from usmqe.web.tendrl.clusters.pages import ClustersList
 from usmqe.web.tendrl.details.hosts.pages import HostsList
 # TODO
 # not available yet
