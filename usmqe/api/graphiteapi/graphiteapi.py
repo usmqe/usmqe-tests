@@ -18,9 +18,13 @@ class ApiCommon(ApiBase):
         """ Get required datapoints of provided Graphite target.
         Datapoints are in format:
         ``[[value, epoch-time], [value, epoch-time], ...]``
+        Datetime format used by Graphite API is described on:
+        ``https://graphite-api.readthedocs.io/en/latest/api.html#from-until``
 
         Args:
             target: id of Graphite metric.
+            from_date: datetime string from which date are records shown
+            until_date: datetime string to which date are records shown
         """
         pattern = "render/?target={}&format=json".format(target)
         if from_date:
