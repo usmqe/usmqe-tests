@@ -9,7 +9,7 @@ from webstr.core import WebstrPage
 from webstr.patternfly.contentviews import pages as contentviews
 import webstr.common.containers.pages as containers
 
-import usmqe.web.tendrl.mainpage.tasks.models as m_tasks
+import usmqe.web.tendrl.details.tasks.models as m_tasks
 
 
 class TasksMenu(WebstrPage):

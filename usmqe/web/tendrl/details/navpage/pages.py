@@ -11,15 +11,14 @@ Author: ltrilety
 import copy
 
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
-from usmqe.web.tendrl.mainpage.navpage import models as m_navpage
+from usmqe.web.tendrl.details.navpage import models as m_navpage
 # TODO
 # not available for now
-# from usmqe.web.tendrl.mainpage.dashboard.pages import Dashboard
 from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
-from usmqe.web.tendrl.mainpage.hosts.pages import HostsList
+from usmqe.web.tendrl.details.hosts.pages import HostsList
 # TODO
 # not available yet
-# from usmqe.web.tendrl.mainpage.admin.tasks.pages import TasksList
+# from usmqe.web.tendrl.details.tasks.pages import TasksList
 
 
 class NavMenuBars(UpperMenu):

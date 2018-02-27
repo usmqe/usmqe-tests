@@ -9,7 +9,7 @@ import time
 import datetime
 import pytest
 
-from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails, TaskEvents
+from usmqe.web.tendrl.details.tasks.pages import TaskDetails, TaskEvents
 
 
 class TaskWaitException(Exception):

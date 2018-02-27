@@ -8,7 +8,7 @@ import copy
 from webstr.patternfly.contentviews import pages as contentviews
 import webstr.patternfly.dropdown.pages as dropdown
 
-import usmqe.web.tendrl.mainpage.hosts.models as m_hosts
+import usmqe.web.tendrl.details.hosts.models as m_hosts
 from usmqe.web.tendrl.auxiliary.pages import ListMenu
 
 

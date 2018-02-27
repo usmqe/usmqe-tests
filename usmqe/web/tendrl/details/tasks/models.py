@@ -8,7 +8,8 @@ from webstr.core import By, WebstrModel, PageElement, BaseWebElementHelper,\
 import webstr.patternfly.contentviews.models as contentviews
 import webstr.common.form.models as form
 
-LOCATION = "#/admin/tasks"
+# The URL is not much usable as the correct one ends with /<cluster_id>
+LOCATION = "#/cluster-tasks"
 
 
 class StatusIconHelper(BaseWebElementHelper):
