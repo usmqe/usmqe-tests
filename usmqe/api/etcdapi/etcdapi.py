@@ -58,7 +58,7 @@ class ApiCommon(ApiBase):
         """
 
         pattern = "keys/{}".format(key)
-        if pytest.config.getini("etcd_api_url")[4] == "s":
+        if pytest.config.getini("etcd_api_url").startswith("https"):
             response = requests.get(
                 pytest.config.getini("etcd_api_url") + pattern,
                 cert=(
