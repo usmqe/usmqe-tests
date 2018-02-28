@@ -80,7 +80,7 @@ class UpperMenu(WebstrPage):
         return UserMenu(self.driver)
 
 
-class UserManagement*WebstrPage):
+class UserManagement(WebstrPage):
     """
     Base page object for user management pop-up menu
 
@@ -105,7 +105,7 @@ class AlertList(WebstrPage):
     """
 
 
-class AlertRowModel(WebstrModel):
+class AlertRowModel(WebstrPage):
     """
     Page Object for any alert message
     """

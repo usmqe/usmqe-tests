@@ -7,7 +7,7 @@ Page objects for Events page
 
 from webstr.core import WebstrPage
 
-from usmqe.web.tendrl.auxiliary.events import models as m_events
+from usmqe.web.tendrl.details.events import models as m_events
 
 
 class Events(WebstrPage):

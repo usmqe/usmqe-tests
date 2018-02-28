@@ -4,8 +4,8 @@ Some usefull model classes for common work with tendrl web
 
 from webstr.core import WebstrModel, By, PageElement, RootPageElement
 from webstr.common.form import models as form
-
-from usmqe.web.utils import StatusIcon
+#
+# from usmqe.web.utils import StatusIcon
 
 
 class ListMenuModel(WebstrModel):
@@ -70,5 +70,5 @@ class UserMenuModel(WebstrModel):
     _base_locator = '//*[contains(@class, "dropdown user")]'\
                     '/*[contains(@class, "dropdown-menu")]/..'
     _root = RootPageElement(by=By.XPATH, locator=_base_locator + '/ul[./li]')
-    my_settings = PageElement(by=By.LINK_TEXT, locator="My Settings") 
+    my_settings = PageElement(by=By.LINK_TEXT, locator="My Settings")
     logout = PageElement(by=By.LINK_TEXT, locator="Logout")
