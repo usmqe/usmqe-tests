@@ -60,11 +60,11 @@ class ApiCommon(ApiBase):
         pattern = "keys/{}".format(key)
         if pytest.config.getini("etcd_api_url")[4] == "s":
             response = requests.get(
-                    pytest.config.getini("etcd_api_url") + pattern,
-                    cert=(
-                        '/etc/pki/tls/certs/etcd.crt',
-                        '/etc/pki/tls/private/etcd.key'),
-                    verify = '/etc/pki/tls/certs/ca-usmqe.crt')
+                pytest.config.getini("etcd_api_url") + pattern,
+                cert=(
+                    '/etc/pki/tls/certs/etcd.crt',
+                    '/etc/pki/tls/private/etcd.key'),
+                verify='/etc/pki/tls/certs/ca-usmqe.crt')
         else:
             response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
         self.check_response(response)
