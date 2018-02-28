@@ -32,26 +32,15 @@ class HostsItem(contentviews.ListViewRow):
         '_root',
         'status_icon',
         'name_label',
-        # TODO uncomment following lines when performance monitoring
-        #      will work and charts will be available
-        # 'storage_label',
-        # 'storage_used_chart',
-        # 'storage_used_nr',
-        # 'storage_total_nr',
-        # 'cpu_label',
-        # 'cpu_percent_chart',
-        # 'cpu_percent',
-        # 'memory_label',
-        # 'memory_used_chart',
-        # 'memory_used_nr',
-        # 'memory_total_nr',
-        'cluster_label',
-        'cluster_value',
+        'gluster_label',
+        'gluster_value',
         'roles_label',
         'roles_value',
+        'bricks_label',
+        'bricks_value',
         'alerts_label',
         'alerts_value',
-        'menu_link']
+        'dashboard_link']
 
     @property
     def status(self):
@@ -71,18 +60,11 @@ class HostsItem(contentviews.ListViewRow):
         return self._model.name.text
 
     @property
-    def ip(self):
+    def gluster_version(self):
         """
-        returns host ip address
+        returns gluster version of cluster in which host is located
         """
-        return self._model.ip.text
-
-    @property
-    def cluster(self):
-        """
-        returns cluster in which host is located
-        """
-        return self._model.cluster_value.text
+        return self._model.gluster_value.text
 
     @property
     def role(self):
@@ -93,6 +75,13 @@ class HostsItem(contentviews.ListViewRow):
         return self._model.roles_value.text
 
     @property
+    def bricks_nr(self):
+        """
+        return number of bricks on the host
+        """
+        return self._model.bricks_value.text
+
+    @property
     def alerts_nr(self):
         """
         returns number of alerts related to the cluster as string
@@ -100,21 +89,11 @@ class HostsItem(contentviews.ListViewRow):
         """
         return self._model.alerts_value.text
 
-    def click_on_alerts(self):
+    def dashboard_open(self):
         """
-        click on alerts number
+        click on dashboard button
         """
-        self._model.alerts_value.click()
-
-    def open_menu(self):
-        """
-        open row menu
-
-        Returns:
-            HostsRowMenu instance
-        """
-        self._model.menu_link.click()
-        return HostsRowMenu(self.driver)
+        self._model.dashboard_btn.click()
 
 
 class HostsList(contentviews.ListView):
@@ -132,6 +111,4 @@ class HostsRowMenu(dropdown.DropDownMenu):
     """
     _model = m_hosts.HostsRowMenuModel
     _label = 'hosts row menu'
-    _required_elems = ['forget_link', 'remove_link', 'replace_link']
-
-# TODO use menu
+    _required_elems = []
