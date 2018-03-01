@@ -32,7 +32,6 @@ class GrafanaApi(ApiBase):
             slug: slug of dashboard uri
         """
         pattern = "dashboards/db/{}".format(slug)
-        print(pytest.config.getini("grafana_api_url") + pattern)
         response = requests.get(
             pytest.config.getini("grafana_api_url") + pattern)
         self.check_response(response)
