@@ -46,7 +46,26 @@ class ApiCommon(ApiBase):
             job_id: id of created job
             attribute: attribute that is in given cluster
         """
-        pattern = "keys/queue/{}".format(job_id)
-        response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
+        pattern = "queue/{}".format(job_id)
+        response = self.get_key_value(pattern)
+        return json.loads(response["node"]["value"])[attribute]
+
+    def get_key_value(self, key):
+        """ Get required value of a given key.
+
+        Args:
+            key: part of URI that is used in request on etcd
+        """
+
+        pattern = "keys/{}".format(key)
+        if pytest.config.getini("etcd_api_url").startswith("https"):
+            response = requests.get(
+                pytest.config.getini("etcd_api_url") + pattern,
+                cert=(
+                    '/etc/pki/tls/certs/etcd.crt',
+                    '/etc/pki/tls/private/etcd.key'),
+                verify='/etc/pki/tls/certs/ca-usmqe.crt')
+        else:
+            response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
         self.check_response(response)
-        return json.loads(response.json()["node"]["value"])[attribute]
+        return response.json()
