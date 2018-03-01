@@ -2,32 +2,95 @@
 Some usefull model classes for common work with tendrl web
 """
 
-from webstr.core import WebstrModel, By, PageElement, RootPageElement
+from webstr.core import WebstrModel, By, PageElement, RootPageElement,\
+    DynamicWebstrModel, DynamicPageElement
 from webstr.common.form import models as form
 #
 # from usmqe.web.utils import StatusIcon
 
 
-class ListMenuModel(WebstrModel):
+class ListMenuModel(DynamicWebstrModel):
     """
     auxiliary model for list menu (filter and order fields)
+
+    NOTE: Click on filter_by and order_by opens a menu with some links
+          such links has will be instanced from Page object
+          a _link_text parameter will be used
+          e.g. name = PageElement(by=By.LINK_TEXT, locator="Name")
     """
-    filter_by = form.Select(
+    filter_by = form.Button(
         By.XPATH,
-        '//select[contains(translate(@ng-model, "F", "f"), "filterBy")]')
-    filter_input = form.TextInput(By.ID, 'filter')
-    order_by = form.TextInput(
+        '//button[contains(translate(@uib-tooltip, "F", "f"), "filter by")]')
+    filter_by_value = DynamicPageElement(by=By.LINK_TEXT, locator="%s")
+    # TODO In some cases the following is Button
+    #      in other case it's real TextInput
+    #      if not be aware with value property usage
+    filter_input = form.TextInput(
         By.XPATH,
-        '//select[contains(@ng-model, "orderBy")]')
+        '//div[contains(@ng-if, "filterType")]')
+    filter_input_value = filter_by_value
+    order_by = form.Button(
+        By.XPATH,
+        '(//*[@id="hostSort"]//button)[1]')
+    order_by_value = filter_by_value
     order_btn = form.Button(
         By.XPATH,
-        '//button[contains(@ng-init, "Order")]')
+        '(//*[@id="hostSort"]//button)[2]')
+
+    # note the element is present only if some filter is active
+    clear_all_filters = PageElement(
+        by=By.LINK_TEXT,
+        locator="Clear All Filters")
+
+    # TODO add active filters elements
+    #      note it's a list
+
+    def __init__(self, driver):
+        """
+        Initialize the ListMenu instance
+
+        Parameters:
+            driver: webdriver instance
+            name: page model instance name; this name is used for identifying
+                  single instance along others, e.g., single VM in the VM list
+        """
+        super(DynamicWebstrModel, self).__init__(driver)
+        self._link_text = ""
+
+    def __setattr__(self, name, value):
+        """ setter for link_text """
+        if name == 'link_text':
+            name = '_link_text'
+        super(ListMenuModel, self).__setattr__(name, value)
+
+#    def set_link_text(self, text):
+#        """
+#        set _link_text parameter
+#
+#        Parameters:
+#            text - the string which will be set
+#        """
+#        self._link_text = text
+#
+#    link_text = property(, set_link_text)
+
+    @property
+    def _instance_identifier(self):
+        """
+        Page model instance identifier.
+
+        Property method whose return value is used for string interpolation
+        of locators of all dynamic elements.
+        """
+        return self._link_text
 
 
 class UpperMenuModel(WebstrModel):
     """
     Common model for upper menu
     """
+    # right part of upper navbar
+# TODO add context switcher drop-down list element
     # left part of upper navbar
 # TODO: waiting for fix of https://github.com/Tendrl/ui/issues/839
 #    users_link = PageElement(By.ID, locator="usermanagement")

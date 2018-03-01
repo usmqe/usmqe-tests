@@ -23,7 +23,9 @@ class ListMenu(WebstrPage):
         'order_btn'
     ]
 
-    def set_filter(self, filter_type=None, filter_input=None):
+    # TODO make getter for filter_by and order_by values
+
+    def set_filter_text(self, filter_type=None, filter_input=None):
         """
         Set filter and press ENTER key
 
@@ -32,34 +34,61 @@ class ListMenu(WebstrPage):
             filter_input (str) - text to be filled in the filter text field
         """
         if filter_type is not None:
-            self._model.filter_by.value = filter_type
+            self._model.link_text = filter_type
+            self._model.filter_by_value.click()
         if filter_input is not None:
             self._model.filter_input.value = filter_input
         self._model.filter_input.send_keys(Keys.RETURN)
 
-    @property
-    def order_by(self):
-        """ get by which elem the list is ordered
-
-        Returns:
-            order by
+    def set_filter_value(self, filter_type=None, filter_input=None):
         """
-        return self._model.order_by.value
-
-    @order_by.setter
-    def order_by(self, value):
-        """ set the order by field
+        Choose filter value from a list and set it
 
         Parameters:
-            value (str): order by text value
+            filter_type (str) - by which type of filter hosts are filtered by
+            filter_input (str) - text to be filled in the filter text field
         """
-        self._model.order_by.value = value
+        if filter_type is not None:
+            self._model.link_text = filter_type
+            self._model.filter_by_value.click()
+        if filter_input is not None:
+            self._model.link_text = filter_input
+            self._model.filter_input_value.click()
 
-    def order_order(self):
+    def __setattr__(self, name, value):
+        """
+        setter for order_by
+        """
+        if name == 'order_by':
+            self._model.order_by.click()
+            self._model.link_text = value
+            self._model.order_by_value.click()
+        else:
+            super(ListMenu, self).__setattr__(name, value)
+
+#    def set_order_by(self, value):
+#        """ set the order by field
+#
+#        Parameters:
+#            value (str): order by text value
+#        """
+#        self._model.order_by.click()
+#        self._model.link_text = value
+#        self._model.order_by_value.click()
+
+    def sort_order(self):
         """
         switch order of the list
         """
         self._model.order_btn.click()
+
+    # TODO clear just one filter
+
+    def clear_all_filters(self):
+        """
+        Clear all filters, click on clear_all_filters link
+        """
+        self._model.clear_all_filters.click()
 
 
 class UpperMenu(WebstrPage):
