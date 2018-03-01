@@ -26,10 +26,14 @@ class GrafanaApi(ApiBase):
             if dashboard["type"] == "dash-db"]
 
     def get_dashboard(self, slug):
-        """Get layout of dashboard described in grafana.
+        """Get layout of dashboard described in grafana. For dashboard
+        reference is used ``slug``. For more information about ``slugs``
+        refer to:
+        ``http://docs.grafana.org/http_api/dashboard/#get-dashboard-by-slug``
 
         Args:
-            slug: slug of dashboard uri
+            slug: Slug of dashboard uri. Slug is the url friendly version
+                  of the dashboard title.
         """
         pattern = "dashboards/db/{}".format(slug)
         response = requests.get(
