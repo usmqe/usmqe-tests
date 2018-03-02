@@ -35,7 +35,8 @@ class ApiCommon(ApiBase):
         response = requests.get(
             pytest.config.getini("graphite_api_url") + pattern)
         self.check_response(response)
-        try:
-            return response.json()[0]["datapoints"]
-        except IndexError as err:
-            return response.json()
+        response_json = response.json()
+        if len(response_json) == 1 and "datapoints" in response_json[0]:
+            return response_json[0]["datapoints"]
+        else:
+            return response_json

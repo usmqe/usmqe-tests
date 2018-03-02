@@ -352,6 +352,6 @@ def test_cluster_unmanage_valid(
     cluster_health = graphite_api.get_datapoints(
         target="tendrl.clusters.{}.status".format(cluster_id))
     pytest.check(
-        not cluster_health,
-        """graphite health of cluster {}: {}
-        There should be no data.""".format(cluster_id, cluster_health))
+        cluster_health == [],
+        """graphite health of cluster {}: `{}`
+        There should be `[]`.""".format(cluster_id, cluster_health))
