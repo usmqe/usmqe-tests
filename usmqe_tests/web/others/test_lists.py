@@ -22,7 +22,7 @@ def test_hosts_list(valid_credentials):
     hosts_list = navMenuBar.open_hosts()
     inventory_hosts = usmqe.inventory.role2hosts('usm_nodes')
     inventory_hosts.append(usmqe.inventory.role2hosts('usm_server')[0])
-    gluster_hosts = usmqe.inventory.role2hosts('gluster') or []
+    gluster_hosts = usmqe.inventory.role2hosts(pytest.config.getini("usm_gluster_role")) or []
     ceph_mon_hosts = usmqe.inventory.role2hosts('ceph_mon') or []
     ceph_osd_hosts = usmqe.inventory.role2hosts('ceph_osd') or []
     # there should be all storage nodes plus tendrl machine in the list

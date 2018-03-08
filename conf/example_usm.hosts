@@ -1,22 +1,14 @@
 [usm_nodes]
-example-usm3-mon1.usmqe.tendrl.org
-example-usm3-mon2.usmqe.tendrl.org
-example-usm3-mon3.usmqe.tendrl.org
-example-usm3-node1.usmqe.tendrl.org
-example-usm3-node2.usmqe.tendrl.org
-example-usm3-node3.usmqe.tendrl.org
-example-usm3-node4.usmqe.tendrl.org
+example-usm3-gl1.usmqe.tendrl.org
+example-usm3-gl2.usmqe.tendrl.org
+example-usm3-gl3.usmqe.tendrl.org
+example-usm3-gl4.usmqe.tendrl.org
 
-[ceph_mon]
-example-usm3-mon1.usmqe.tendrl.org
-example-usm3-mon2.usmqe.tendrl.org
-example-usm3-mon3.usmqe.tendrl.org
-
-[ceph_osd]
-example-usm3-node1.usmqe.tendrl.org
-example-usm3-node2.usmqe.tendrl.org
-example-usm3-node3.usmqe.tendrl.org
-example-usm3-node4.usmqe.tendrl.org
+[gluster-servers]
+example-usm3-gl1.usmqe.tendrl.org
+example-usm3-gl2.usmqe.tendrl.org
+example-usm3-gl3.usmqe.tendrl.org
+example-usm3-gl4.usmqe.tendrl.org
 
 [usm_server]
 example-usm3-server.usmqe.tendrl.org
