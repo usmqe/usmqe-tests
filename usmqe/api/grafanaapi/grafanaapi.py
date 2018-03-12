@@ -15,7 +15,9 @@ class GrafanaApi(ApiBase):
     """
 
     def get_dashboards(self):
-        """Get list of dashboards defined in grafana.
+        """Get list of slugs that identify dashboards in Grafana.
+        For more information about ``slugs`` refer to:
+        ``http://docs.grafana.org/http_api/dashboard/#get-dashboard-by-slug``
         """
         pattern = "search"
         response = requests.get(
