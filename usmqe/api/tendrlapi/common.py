@@ -382,10 +382,8 @@ class TendrlApi(ApiBase):
             "reason": 'Accepted',
             "status": 202}
         pattern = "clusters/{}/unmanage".format(cluster_id)
-        data = {}
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
-            data=json.dumps(data),
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response, asserts_in)
