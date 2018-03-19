@@ -112,13 +112,12 @@ class GlusterCommon(object):
 
     def get_volume_names(self):
         """
-        Returns name(s) of volume.
-        TODO specify order or some search if more volumes
+        Returns list of volume names.
         """
-        vol_name = self.run_on_node(command="volume info").findtext(
-            "./volInfo/volumes/volume/name")
-        LOGGER.debug("Volume_name: %s" % vol_name)
-        return vol_name
+        vol_names = [vn.text for vn in self.run_on_node(command="info").findall(
+            "./volInfo/volumes/volume/name")]
+        LOGGER.debug("Volume_names: %s" % vol_names)
+        return vol_names
 
     def get_hosts_from_trusted_pool(self, host):
         """
