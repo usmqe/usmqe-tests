@@ -54,7 +54,7 @@ class TendrlApiGluster(TendrlApi):
         Args:
             cluster: id of cluster where will be created volume
         """
-        pattern = "{}/GetVolumeList".format(cluster)
+        pattern = "clusters/{}/volumes".format(cluster)
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth)
