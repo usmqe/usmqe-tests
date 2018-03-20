@@ -117,7 +117,7 @@ class TaskDetailsModel(WebstrModel):
 
 class TaskEventModel(DynamicWebstrModel):
     """
-    An item (row) in a Tasks list.
+    An item-event (row) in a Tasks Details list.
     """
     _root = NameRootPageElement(
         by=By.ID,
@@ -141,7 +141,7 @@ class TaskEventModel(DynamicWebstrModel):
 
 class TaskEventsModel(WebstrModel):
     """
-    Page model for list of tasks.
+    Page model for list of tasks events.
     """
     LIST_XPATH = '//*[contains(concat(" ", @class, " "), '\
                  '" div-with-scroll-logs ")]'
