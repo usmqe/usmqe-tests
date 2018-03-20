@@ -114,9 +114,9 @@ class GlusterCommon(object):
         """
         Returns list of volume names.
         """
-        vol_names = [vn.text for vn in self.run_on_node(command="info").findall(
-            "./volInfo/volumes/volume/name")]
-        LOGGER.debug("Volume_names: %s" % vol_names)
+        vol_names = [vn.text for vn in self.run_on_node(command="list").findall(
+            "./volList/volume")]
+        LOGGER.debug("Volume_names: %s", vol_names)
         return vol_names
 
     def get_hosts_from_trusted_pool(self, host):
