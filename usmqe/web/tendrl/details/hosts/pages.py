@@ -9,16 +9,17 @@ from webstr.patternfly.contentviews import pages as contentviews
 import webstr.patternfly.dropdown.pages as dropdown
 
 import usmqe.web.tendrl.details.hosts.models as m_hosts
-from usmqe.web.tendrl.auxiliary.pages import ListMenu
+from usmqe.web.tendrl.auxiliary.pages import FilterListMenu, OrderListMenu
 
 
-class HostsMenu(ListMenu):
+class HostsMenu(FilterListMenu, OrderListMenu):
     """
     page object for hosts top menu
     """
     _model = m_hosts.HostsMenuModel
     _label = 'hosts top menu'
-    _required_elems = copy.deepcopy(ListMenu._required_elems)
+    _required_elems = copy.deepcopy(FilterListMenu._required_elems)
+    _required_elems.extend(copy.deepcopy(OrderListMenu._required_elems))
     _required_elems.append('header')
 
 

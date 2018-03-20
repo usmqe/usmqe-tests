@@ -7,14 +7,15 @@ from webstr.core import By, PageElement, NameRootPageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
-from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+from usmqe.web.tendrl.auxiliary.models import FilterListMenuModel,\
+    OrderListMenuModel
 from usmqe.web.tendrl.clusters.auxiliary.models import ViewTaskPageModel
 
 # The URL is not much usable as the correct one ends with /<cluster_id>
 location = '/#/import-cluster'
 
 
-class ImportClusterModel(ListMenuModel):
+class ImportClusterModel(FilterListMenuModel, OrderListMenuModel):
     """
     model for Import Cluster - Configure Cluster page
     """

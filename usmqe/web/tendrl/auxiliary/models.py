@@ -9,7 +9,41 @@ from webstr.common.form import models as form
 # from usmqe.web.utils import StatusIcon
 
 
-class ListMenuModel(DynamicWebstrModel):
+class BaseListMenuModel(DynamicWebstrModel):
+    """
+    base auxiliary model for list menu (filter and order fields)
+    """
+
+    def __init__(self, driver):
+        """
+        Initialize the ListMenu instance
+
+        Parameters:
+            driver: webdriver instance
+            name: page model instance name; this name is used for identifying
+                  single instance along others, e.g., single VM in the VM list
+        """
+        super(DynamicWebstrModel, self).__init__(driver)
+        self._link_text = ""
+
+    def __setattr__(self, name, value):
+        """ setter for link_text """
+        if name == 'link_text':
+            name = '_link_text'
+        super(BaseListMenuModel, self).__setattr__(name, value)
+
+    @property
+    def _instance_identifier(self):
+        """
+        Page model instance identifier.
+
+        Property method whose return value is used for string interpolation
+        of locators of all dynamic elements.
+        """
+        return self._link_text
+
+
+class FilterListMenuModel(BaseListMenuModel):
     """
     auxiliary model for list menu (filter and order fields)
 
@@ -32,10 +66,6 @@ class ListMenuModel(DynamicWebstrModel):
     order_by = form.Button(
         By.XPATH,
         '(//*[@id="hostSort"]//button)[1]')
-    order_by_value = filter_by_value
-    order_btn = form.Button(
-        By.XPATH,
-        '(//*[@id="hostSort"]//button)[2]')
 
     # note the element is present only if some filter is active
     clear_all_filters = PageElement(
@@ -45,44 +75,23 @@ class ListMenuModel(DynamicWebstrModel):
     # TODO add active filters elements
     #      note it's a list
 
-    def __init__(self, driver):
-        """
-        Initialize the ListMenu instance
 
-        Parameters:
-            driver: webdriver instance
-            name: page model instance name; this name is used for identifying
-                  single instance along others, e.g., single VM in the VM list
-        """
-        super(DynamicWebstrModel, self).__init__(driver)
-        self._link_text = ""
+class OrderListMenuModel(BaseListMenuModel):
+    """
+    auxiliary model for list menu (order fields)
 
-    def __setattr__(self, name, value):
-        """ setter for link_text """
-        if name == 'link_text':
-            name = '_link_text'
-        super(ListMenuModel, self).__setattr__(name, value)
-
-#    def set_link_text(self, text):
-#        """
-#        set _link_text parameter
-#
-#        Parameters:
-#            text - the string which will be set
-#        """
-#        self._link_text = text
-#
-#    link_text = property(, set_link_text)
-
-    @property
-    def _instance_identifier(self):
-        """
-        Page model instance identifier.
-
-        Property method whose return value is used for string interpolation
-        of locators of all dynamic elements.
-        """
-        return self._link_text
+    NOTE: Click on order_by opens a menu with some links
+          such links has will be instanced from Page object
+          a _link_text parameter will be used
+          e.g. name = PageElement(by=By.LINK_TEXT, locator="Name")
+    """
+    order_by = form.Button(
+        By.XPATH,
+        '(//*[@id="hostSort"]//button)[1]')
+    order_by_value = DynamicPageElement(by=By.LINK_TEXT, locator="%s")
+    order_btn = form.Button(
+        By.XPATH,
+        '(//*[@id="hostSort"]//button)[2]')
 
 
 class UpperMenuModel(WebstrModel):

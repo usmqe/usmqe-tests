@@ -10,9 +10,10 @@ from webstr.patternfly.contentviews import pages as contentviews
 import webstr.common.containers.pages as containers
 
 import usmqe.web.tendrl.details.tasks.models as m_tasks
+from usmqe.web.tendrl.auxiliary.pages import FilterListMenu
 
 
-class TasksMenu(WebstrPage):
+class TasksMenu(FilterListMenu):
     """
     page object for tasks top menu
     """
@@ -24,20 +25,6 @@ class TasksMenu(WebstrPage):
         'from_input',
         'to_input'
     ]
-
-    def set_filter(self, filter_type=None, filter_input=None):
-        """
-        Set filter and press ENTER key
-
-        Parameters:
-            filter_type (str) - by which type of filter tasks are filtered by
-            filter_input (str) - text to be filled in the filter text field
-        """
-        if filter_type is not None:
-            self._model.filter_by.value = filter_type
-        if filter_input is not None:
-            self._model.filter_input.value = filter_input
-        self._model.filter_input.send_keys(Keys.RETURN)
 
     def set_from(self, from_input):
         """

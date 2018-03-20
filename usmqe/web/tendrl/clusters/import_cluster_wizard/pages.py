@@ -7,13 +7,13 @@ import webstr.patternfly.contentviews.pages as contentviews
 
 import usmqe.web.tendrl.clusters.\
     import_cluster_wizard.models as m_wizard
-from usmqe.web.tendrl.auxiliary.pages import ListMenu
+from usmqe.web.tendrl.auxiliary.pages import FilterListMenu, OrderListMenu
 from usmqe.web.tendrl.clusters.auxiliary.pages import ViewTaskPage, check_hosts
 # from usmqe.ceph import ceph_cluster
 from usmqe.gluster import gluster
 
 
-class ImportCluster(ListMenu):
+class ImportCluster(FilterListMenu, OrderListMenu):
     """
     Import Cluster page
     """

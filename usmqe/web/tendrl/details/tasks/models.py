@@ -7,6 +7,7 @@ from webstr.core import By, WebstrModel, PageElement, BaseWebElementHelper,\
     DynamicWebstrModel, RootPageElement, NameRootPageElement
 import webstr.patternfly.contentviews.models as contentviews
 import webstr.common.form.models as form
+from usmqe.web.tendrl.auxiliary.models import FilterListMenuModel
 
 # The URL is not much usable as the correct one ends with /<cluster_id>
 LOCATION = "#/cluster-tasks"
@@ -46,15 +47,11 @@ class StatusIcon(PageElement):
     _helper = StatusIconHelper
 
 
-class TasksMenuModel(WebstrModel):
+class TasksMenuModel(FilterListMenuModel):
     """
     Tasks page top menu
     """
     header = PageElement(by=By.XPATH, locator="//h1[contains(text(),'Tasks')]")
-    filter_by = form.Select(
-        By.XPATH,
-        '//select[contains(@ng-model, "filterBy")]')
-    filter_input = form.TextInput(By.ID, 'filter')
     from_input = form.TextInput(
         By.XPATH,
         '//div[@ng-model="taskCntrl.date.fromDate"]/input')

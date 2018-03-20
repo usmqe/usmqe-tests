@@ -10,20 +10,18 @@ from webstr.core import WebstrPage
 import usmqe.web.tendrl.auxiliary.models as m_auxiliary
 
 
-class ListMenu(WebstrPage):
+class FilterListMenu(WebstrPage):
     """
     auxiliary class for work with a list menu (filter and order fields)
     """
-    _model = m_auxiliary.ListMenuModel
+    _model = m_auxiliary.FilterListMenuModel
     _label = 'list menu'
     _required_elems = [
         'filter_by',
         'filter_input',
-        'order_by',
-        'order_btn'
     ]
 
-    # TODO make getter for filter_by and order_by values
+    # TODO make getter for filter_by value
 
     def set_filter_text(self, filter_type=None, filter_input=None):
         """
@@ -55,6 +53,28 @@ class ListMenu(WebstrPage):
             self._model.link_text = filter_input
             self._model.filter_input_value.click()
 
+    # TODO clear just one filter
+
+    def clear_all_filters(self):
+        """
+        Clear all filters, click on clear_all_filters link
+        """
+        self._model.clear_all_filters.click()
+
+
+class OrderListMenu(WebstrPage):
+    """
+    auxiliary class for work with a list menu (filter and order fields)
+    """
+    _model = m_auxiliary.OrderListMenuModel
+    _label = 'list menu'
+    _required_elems = [
+        'order_by',
+        'order_btn'
+    ]
+
+    # TODO make getter for order_by value
+
     def __setattr__(self, name, value):
         """
         setter for order_by
@@ -64,7 +84,7 @@ class ListMenu(WebstrPage):
             self._model.link_text = value
             self._model.order_by_value.click()
         else:
-            super(ListMenu, self).__setattr__(name, value)
+            super(OrderListMenu, self).__setattr__(name, value)
 
 #    def set_order_by(self, value):
 #        """ set the order by field
@@ -81,14 +101,6 @@ class ListMenu(WebstrPage):
         switch order of the list
         """
         self._model.order_btn.click()
-
-    # TODO clear just one filter
-
-    def clear_all_filters(self):
-        """
-        Clear all filters, click on clear_all_filters link
-        """
-        self._model.clear_all_filters.click()
 
 
 class UpperMenu(WebstrPage):

@@ -9,13 +9,14 @@ import webstr.patternfly.contentviews.models as contentviews
 import webstr.patternfly.dropdown.models as dropdown
 
 from usmqe.web.utils import StatusIcon
-from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+from usmqe.web.tendrl.auxiliary.models import FilterListMenuModel,\
+    OrderListMenuModel
 
 # The URL is not much usable as the correct one ends with /<cluster_id>
 LOCATION = "#/cluster-hosts"
 
 
-class HostsMenuModel(ListMenuModel):
+class HostsMenuModel(FilterListMenuModel, OrderListMenuModel):
     """
     Hosts page top menu
     """
