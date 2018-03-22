@@ -1,6 +1,8 @@
 """
 REST API test suite - ping
 """
+import pytest
+
 from usmqe.api.tendrlapi.common import TendrlApi
 
 
@@ -15,6 +17,7 @@ Teardown
 """
 
 
+@pytest.mark.stable
 def test_ping():
     """@pylatest api/ping
     API: ping

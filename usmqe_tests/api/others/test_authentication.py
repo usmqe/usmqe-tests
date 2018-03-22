@@ -6,11 +6,13 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi, login, logout
 
 
+@pytest.mark.stable
 def test_login_valid(valid_session_credentials):
     api = TendrlApi(auth=valid_session_credentials)
     api.jobs()
 
 
+@pytest.mark.stable
 def test_login_invalid():
     asserts = {
         "cookies": None,
@@ -23,6 +25,7 @@ def test_login_invalid():
     api.jobs(asserts_in=asserts)
 
 
+@pytest.mark.stable
 def test_session_unauthorized():
     asserts = {
         "cookies": None,
@@ -36,6 +39,7 @@ def test_session_unauthorized():
     api.jobs(asserts_in=asserts)
 
 
+@pytest.mark.stable
 def test_session_invalid(invalid_session_credentials):
     asserts = {
         "cookies": None,
@@ -47,6 +51,7 @@ def test_session_invalid(invalid_session_credentials):
     api.jobs(asserts_in=asserts)
 
 
+@pytest.mark.stable
 def test_login_multiple_sessions():
     auth_one = login(
         pytest.config.getini("usm_username"),
@@ -58,6 +63,7 @@ def test_login_multiple_sessions():
     logout(auth=auth_two)
 
 
+@pytest.mark.stable
 def test_login_multiple_sessions_twisted():
     asserts = {
         "cookies": None,
