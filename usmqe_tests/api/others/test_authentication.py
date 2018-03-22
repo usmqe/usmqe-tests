@@ -6,6 +6,7 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi, login, logout
 
 
+@pytest.mark.happypath
 @pytest.mark.stable
 def test_login_valid(valid_session_credentials):
     api = TendrlApi(auth=valid_session_credentials)
@@ -51,6 +52,7 @@ def test_session_invalid(invalid_session_credentials):
     api.jobs(asserts_in=asserts)
 
 
+@pytest.mark.happypath
 @pytest.mark.stable
 def test_login_multiple_sessions():
     auth_one = login(

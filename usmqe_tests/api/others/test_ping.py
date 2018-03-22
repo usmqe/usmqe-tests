@@ -17,6 +17,7 @@ Teardown
 """
 
 
+@pytest.mark.happypath
 @pytest.mark.stable
 def test_ping():
     """@pylatest api/ping

@@ -194,6 +194,7 @@ def test_delete_volume_invalid(
             status="failed")
 
 
+@pytest.mark.happypath
 @pytest.mark.stable
 @pytest.mark.gluster
 def test_volumes_list(

@@ -153,6 +153,7 @@ Positive import gluster cluster.
 """
 
 
+@pytest.mark.happypath
 @pytest.mark.stable
 @pytest.mark.cluster_import_gluster
 def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
