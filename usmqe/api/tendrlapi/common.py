@@ -346,6 +346,29 @@ class TendrlApi(ApiBase):
         self.check_response(response, asserts_in)
         return response.json()
 
+    def unmanage_cluster(self, cluster_id, asserts_in=None):
+        """ unmanage cluster.
+
+        Name:        "unmanage_cluster",
+        Method:      "POST",
+        Pattern:     "clusters/:cluster_id/unmanage",
+
+        Args:
+            asserts_in (dict): assert values for this call and this method
+        """
+        asserts_in = asserts_in or {
+            "cookies": None,
+            "ok": True,
+            "reason": 'Accepted',
+            "status": 202}
+        pattern = "clusters/{}/unmanage".format(cluster_id)
+        response = requests.post(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response, asserts_in)
+        return response.json()
+
     def get_cluster_list(self):
         """ Get list of clusters
 

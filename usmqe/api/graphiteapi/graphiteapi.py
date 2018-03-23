@@ -15,7 +15,8 @@ class ApiCommon(ApiBase):
     """
 
     def get_datapoints(self, target, from_date=None, until_date=None):
-        """ Get required datapoints of provided Graphite target.
+        """ Get required datapoints of provided Graphite target. If there
+        are no datapoints then return empty list.
         Datapoints are in format:
         ``[[value, epoch-time], [value, epoch-time], ...]``
         Datetime format used by Graphite API is described on:
@@ -34,4 +35,8 @@ class ApiCommon(ApiBase):
         response = requests.get(
             pytest.config.getini("graphite_api_url") + pattern)
         self.check_response(response)
-        return response.json()[0]["datapoints"]
+        response_json = response.json()
+        if len(response_json) == 1 and "datapoints" in response_json[0]:
+            return response_json[0]["datapoints"]
+        else:
+            return response_json

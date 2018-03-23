@@ -5,6 +5,7 @@ REST API test suite - gluster cluster
 import pytest
 import uuid
 
+from usmqe.api.graphiteapi import graphiteapi
 from usmqe.api.tendrlapi import glusterapi
 
 
@@ -261,3 +262,96 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
             Job status should be in status given by `status` parameter.
         """
     api.wait_for_job_status(job_id, status=status)
+
+
+"""@pylatest api/gluster.cluster_unmanage
+API-gluster: cluster_unmanage
+***************************
+
+.. test_metadata:: author fbalak@redhat.com
+
+Description
+===========
+
+Positive unmanage gluster cluster.
+"""
+
+
+@pytest.mark.cluster_unmanage_gluster
+def test_cluster_unmanage_valid(
+        valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
+    """@pylatest api/gluster.cluster_unmanage
+        .. test_step:: 1
+
+            Check that tested cluster is correctly managed by Tendrl.
+
+        .. test_result:: 1
+
+            There is in Tendrl ``"is_managed":"yes"`` for cluster with id [cluster_id].
+            Graphite contains data related to health of tested cluster.
+
+        """
+    tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    graphite_api = graphiteapi.ApiCommon()
+
+    cluster_id = cluster_reuse["cluster_id"]
+    pytest.check(
+        cluster_id is not None,
+        "Cluster id is: {}".format(cluster_id))
+    pytest.check(
+        cluster_reuse["is_managed"] == "yes",
+        "is_managed: {}\nThere should be ``yes``.".format(cluster_reuse["is_managed"]))
+
+    cluster_health = graphite_api.get_datapoints(
+        target="tendrl.clusters.{}.status".format(cluster_id))
+    pytest.check(
+        cluster_health,
+        """graphite health of cluster {}: {}
+        There should be related data.""".format(cluster_id, cluster_health))
+
+    """@pylatest api/gluster.cluster_unmanage
+        .. test_step:: 2
+
+            Send POST request to Tendrl API ``APIURL/clusters/:cluster_id/unmanage``.
+
+        .. test_result:: 2
+
+            Server should return response in JSON format:
+
+                {
+                  "job_id": job_id
+                }
+
+            Return code should be **202**
+                with data ``{"message": "Accepted"}``.
+
+        """
+    job_id = tendrl_api.unmanage_cluster(cluster_id)["job_id"]
+
+    tendrl_api.wait_for_job_status(job_id)
+
+    """@pylatest api/gluster.cluster_unmanage
+        .. test_step:: 3
+
+            Check that tested cluster is correctly managed by Tendrl.
+
+        .. test_result:: 3
+
+            There is in Tendrl ``"is_managed": "no"`` for cluster with id [cluster_id].
+            Graphite contains no data related to health of tested cluster.
+
+        """
+    for cluster in tendrl_api.get_cluster_list():
+        if cluster["cluster_id"] == cluster_id:
+            unmanaged_cluster = cluster
+            break
+    pytest.check(
+        unmanaged_cluster["is_managed"] == "no",
+        "is_managed: {}\nThere should be ``no``.".format(unmanaged_cluster["is_managed"]))
+
+    cluster_health = graphite_api.get_datapoints(
+        target="tendrl.clusters.{}.status".format(cluster_id))
+    pytest.check(
+        cluster_health == [],
+        """graphite health of cluster {}: `{}`
+        There should be `[]`.""".format(cluster_id, cluster_health))
