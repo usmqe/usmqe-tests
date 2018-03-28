@@ -280,6 +280,7 @@ Positive unmanage gluster cluster.
 """
 
 
+@pytest.mark.stable
 @pytest.mark.cluster_unmanage_gluster
 def test_cluster_unmanage_valid(
         valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
