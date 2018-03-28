@@ -1,4 +1,5 @@
 import pytest
+import usmqe.usmssh as usmssh
 
 
 # initialize usmqe logging module
@@ -98,3 +99,13 @@ def valid_password(request):
     Return valid password string.
     """
     return request.param
+
+
+@pytest.fixture
+def os_distro():
+    """
+    Return name of os distribution.
+    """
+    SSH = usmssh.get_ssh()
+    cmd_distro = "awk -F'\"' 'NR==1{print $2}' /etc/os-release"
+    return SSH[pytest.config.getini("usm_cluster_member")].run(cmd_distro)[1].decode().strip()

@@ -16,6 +16,8 @@ Prepare USM cluster accordingly to documentation.
 server.
 ``GRAPHITE`` for this file stands for Graphite API url used by tested Tendrl
 server.
+``PREFIX`` for this file is either *tendrl* or *webadmin* based on os
+distribution.
 
 """
 
@@ -25,7 +27,7 @@ Teardown
 """
 
 
-def test_layout():
+def test_layout(os_distro):
     """@pylatest grafana/layout
     API-grafana: layout
     *******************
@@ -39,16 +41,22 @@ def test_layout():
     ``https://github.com/Tendrl/specifications/issues/222``
     """
     api = grafanaapi.GrafanaApi()
+    print(type(os_distro))
+    if os_distro == "Red Hat Enterprise Linux Server":
+        prefix = "webadmin"
+    else:
+        prefix = "tendrl"
     """@pylatest grafana/layout
     .. test_step:: 1
 
-        Send **GET** request to ``GRAFANA/dasboards/db/gluster-at-a-glance``.
+        Send **GET** request to ``GRAFANA/dashboards/db/PREFIX-gluster-at-a-glance``.
 
     .. test_result:: 1
 
         JSON structure containing data related to layout is returned.
     """
-    layout = api.get_dashboard("tendrl-gluster-at-a-glance")
+    LOGGER.debug("{}-gluster-at-a-glance".format(prefix))
+    layout = api.get_dashboard("{}-gluster-at-a-glance".format(prefix))
     pytest.check(
         len(layout) > 0,
         layout)
