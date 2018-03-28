@@ -55,10 +55,58 @@ def test_layout(os_distro):
 
         JSON structure containing data related to layout is returned.
     """
-    LOGGER.debug("{}-gluster-at-a-glance".format(prefix))
     layout = api.get_dashboard("{}-gluster-at-a-glance".format(prefix))
     pytest.check(
         len(layout) > 0,
         layout)
 
-# TODO(fbalak) check all rows and panels are in place
+    """@pylatest grafana/layout
+    .. test_step:: 2
+
+        Compare structure of panels and rows as defined in specification:
+        ``https://github.com/Tendrl/specifications/issues/222``
+
+    .. test_result:: 2
+
+        Defined structure and structure from Grafana API are equivalent.
+    """
+    structure_defined = {
+        'Header': [],
+        'Top Consumers': [
+            'Top 5 Utilization by Bricks',
+            'Top 5 Utilization by Volume',
+            'CPU Utilization by Host',
+            'Memory Utilization by Host',
+            'Ping Latency Trend'],
+        'At-a-glance': [
+            'Health',
+            'Snapshots',
+            'Hosts',
+            'Volumes',
+            'Bricks',
+            'Geo-Replication Session',
+            'Connection Trend',
+            'IOPS',
+            'Capacity Utilization',
+            'Capacity Available',
+            'Weekly Growth Rate',
+            'Weeks Remaining',
+            'Throughput Trend'],
+        'Status': [
+            'Volume Status',
+            'Host Status',
+            'Brick Status']}
+    structure = {}
+    for row in layout["dashboard"]["rows"]:
+        structure[row["title"]] = []
+        for panel in row["panels"]:
+            if panel["title"]:
+                structure[row["title"]].append(panel["title"])
+            elif "displayName" in panel.keys() and panel["displayName"]:
+                structure[row["title"]].append(panel["displayName"])
+
+    LOGGER.debug("defined layout structure = {}".format(structure_defined))
+    LOGGER.debug("layout structure in grafana = {}".format(structure))
+    pytest.check(
+        structure_defined == structure,
+        "defined structure of panels should equal to structure in grafana")
