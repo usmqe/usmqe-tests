@@ -280,6 +280,7 @@ Positive unmanage gluster cluster.
 """
 
 
+@pytest.mark.happypath
 @pytest.mark.stable
 @pytest.mark.cluster_unmanage_gluster
 def test_cluster_unmanage_valid(
