@@ -131,6 +131,19 @@ class GlusterCommon(object):
         LOGGER.debug("Hosts in trusted pool: %s" % hosts)
         return hosts
 
+    def get_host_states_from_trusted_pool(self, host):
+        """
+        Returns dictionary of hosts where key is hostname and value is host
+        status of connectivity from trusted pool with given hostname.
+        """
+        hosts = self.run_on_node(node=host, command="peer status").findall(
+            "./peerStatus/peer")
+        states = {}
+        for host in hosts:
+            states[host.find("hostnames/hostname").text] = host.find("connected").text
+        LOGGER.debug("Host connectivity in trusted pool: %s" % states)
+        return hosts
+
     def find_volume_name(self, name, expected=True):
         """
         Check if there is volume with given name.
