@@ -4,6 +4,7 @@ REST API test suite - Grafana dashboard Gluster-At-A-Glance
 
 import pytest
 from usmqe.api.grafanaapi import grafanaapi
+from usmqe.gluster.gluster import GlusterCommon
 
 
 LOGGER = pytest.get_logger('gluster_at_a_glance', module=True)
@@ -110,3 +111,20 @@ def test_layout(os_distro):
     pytest.check(
         structure_defined == structure,
         "defined structure of panels should equal to structure in grafana")
+
+
+def test_status():
+    """@pylatest grafana/status
+    API-grafana: layout
+    *******************
+
+    .. test_metadata:: author fbalak@redhat.com
+
+    Description
+    ===========
+
+    Check that Grafana panel *Hosts* is showing correct values.
+    """
+    gluster = GlusterCommon()
+    states = gluster.get_host_states_from_trusted_pool(
+        pytest.config.getini("usm_cluster_member"))
