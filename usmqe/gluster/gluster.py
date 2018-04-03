@@ -139,10 +139,14 @@ class GlusterCommon(object):
         hosts = self.run_on_node(node=host, command="peer status").findall(
             "./peerStatus/peer")
         states = {}
+        states[host] = True
         for host in hosts:
-            states[host.find("hostnames/hostname").text] = host.find("connected").text
+            if host.find("connected").text == "1":
+                states[host.find("hostnames/hostname").text] = True
+            else:
+                states[host.find("hostnames/hostname").text] = False
         LOGGER.debug("Host connectivity in trusted pool: %s" % states)
-        return hosts
+        return states
 
     def find_volume_name(self, name, expected=True):
         """
