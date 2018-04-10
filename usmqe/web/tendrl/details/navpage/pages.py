@@ -14,7 +14,7 @@ from usmqe.web.tendrl.auxiliary.pages import UpperMenu
 from usmqe.web.tendrl.details.navpage import models as m_navpage
 # TODO
 # not available for now
-from usmqe.web.tendrl.clusters.pages import ClustersList
+# from usmqe.web.tendrl.clusters.pages import ClustersList
 from usmqe.web.tendrl.details.hosts.pages import HostsList
 from usmqe.web.tendrl.details.tasks.pages import TasksList
 
@@ -42,21 +42,22 @@ class NavMenuBars(UpperMenu):
         'events_link'
     ])
 
-    def open_clusters(self, click_only=False):
-        """
-        Opens clusters page.
-
-        Parameters:
-            click_only (bool): just click on the link and return None
-
-        Returns:
-            Instance of ClustersList if click_only is False
-            None otherwise
-        """
-        self._model.clusters_link.click()
-        if click_only:
-            return None
-        return ClustersList(self.driver)
+# TODO for open clusters page a "context switcher's" dropdown menu has to be used
+#    def open_clusters(self, click_only=False):
+#        """
+#        Opens clusters page.
+#
+#        Parameters:
+#            click_only (bool): just click on the link and return None
+#
+#        Returns:
+#            Instance of ClustersList if click_only is False
+#            None otherwise
+#        """
+#        self._model.clusters_link.click()
+#        if click_only:
+#            return None
+#        return ClustersList(self.driver)
 
     def open_hosts(self, click_only=False):
         """
