@@ -1,3 +1,4 @@
+import configparser
 import pytest
 import usmqe.usmssh as usmssh
 
@@ -102,10 +103,17 @@ def valid_password(request):
 
 
 @pytest.fixture
-def os_distro():
+def os_info():
     """
-    Return name of os distribution.
+    Return information from /etc/os-release file about current os distribution.
     """
     SSH = usmssh.get_ssh()
-    cmd_distro = "awk -F'\"' 'NR==1{print $2}' /etc/os-release"
-    return SSH[pytest.config.getini("usm_cluster_member")].run(cmd_distro)[1].decode().strip()
+    os_release = 'cat /etc/os-release'
+    f_content = SSH[
+        pytest.config.getini(
+            "usm_cluster_member")].run(
+                    os_release)[1].decode("utf-8").replace('"', '')
+    config = configparser.ConfigParser()
+    config.read_string('[os_info]\n' + f_content)
+    LOGGER.debug(config['os_info'])
+    return dict(config['os_info'])

@@ -29,7 +29,7 @@ Teardown
 """
 
 
-def test_layout(os_distro):
+def test_layout(os_info):
     """@pylatest grafana/layout
     API-grafana: layout
     *******************
@@ -43,7 +43,7 @@ def test_layout(os_distro):
     ``https://github.com/Tendrl/specifications/issues/222``
     """
     api = grafanaapi.GrafanaApi()
-    if os_distro == "Red Hat Enterprise Linux Server":
+    if os_info['name'] == "Red Hat Enterprise Linux Server":
         prefix = "webadmin"
     else:
         prefix = "tendrl"
@@ -114,7 +114,7 @@ def test_layout(os_distro):
         "defined structure of panels should equal to structure in grafana")
 
 
-def test_status(os_distro, cluster_reuse):
+def test_status(os_info, cluster_reuse):
     """@pylatest grafana/status
     API-grafana: hosts
     *******************
@@ -131,7 +131,7 @@ def test_status(os_distro, cluster_reuse):
         pytest.config.getini("usm_cluster_member"))
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
-    if os_distro == "Red Hat Enterprise Linux Server":
+    if os_info['name'] == "Red Hat Enterprise Linux Server":
         prefix = "webadmin"
     else:
         prefix = "tendrl"
