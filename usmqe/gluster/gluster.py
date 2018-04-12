@@ -131,7 +131,7 @@ class GlusterCommon(object):
         LOGGER.debug("Hosts in trusted pool: %s" % hosts)
         return hosts
 
-    def get_host_states_from_trusted_pool(self, host):
+    def get_cluster_hosts_connection_states(self, host):
         """
         Returns dictionary of hosts where key is hostname and value is host
         status of connectivity from trusted pool with given hostname.

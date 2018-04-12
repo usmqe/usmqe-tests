@@ -127,7 +127,7 @@ def test_status(os_info, cluster_reuse):
     Check that Grafana panel *Hosts* is showing correct values.
     """
     gluster = GlusterCommon()
-    states = gluster.get_host_states_from_trusted_pool(
+    states = gluster.get_cluster_hosts_connection_states(
         pytest.config.getini("usm_cluster_member"))
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
