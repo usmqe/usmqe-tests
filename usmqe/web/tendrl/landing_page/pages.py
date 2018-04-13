@@ -7,7 +7,7 @@ Author: ltrilety
 
 import time
 
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
+from usmqe.web.tendrl.clusters.pages import ClustersList
 
 
 class LandingException(Exception):

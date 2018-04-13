@@ -11,15 +11,12 @@ Author: ltrilety
 import copy
 
 from usmqe.web.tendrl.auxiliary.pages import UpperMenu
-from usmqe.web.tendrl.mainpage.navpage import models as m_navpage
+from usmqe.web.tendrl.details.navpage import models as m_navpage
 # TODO
 # not available for now
-# from usmqe.web.tendrl.mainpage.dashboard.pages import Dashboard
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersList
-from usmqe.web.tendrl.mainpage.hosts.pages import HostsList
-# TODO
-# not available yet
-# from usmqe.web.tendrl.mainpage.admin.tasks.pages import TasksList
+# from usmqe.web.tendrl.clusters.pages import ClustersList
+from usmqe.web.tendrl.details.hosts.pages import HostsList
+from usmqe.web.tendrl.details.tasks.pages import TasksList
 
 
 class NavMenuBars(UpperMenu):
@@ -38,46 +35,29 @@ class NavMenuBars(UpperMenu):
     _label = 'main page - menu bar'
     _required_elems = copy.deepcopy(UpperMenu._required_elems)
     _required_elems.extend([
-        # left navbar
-        # 'dashboard_link',
         'clusters_link',
         'nodes_link',
-        'alerts_link',
-        'admin_link'
+        'volumes_link',
+        'tasks_link',
+        'events_link'
     ])
 
-# TODO
-# dashboard page not working yet
-#    def open_dashboard(self, click_only=False):
+# TODO for open clusters page a "context switcher's" dropdown menu has to be used
+#    def open_clusters(self, click_only=False):
 #        """
-#        Opens dashboard page.
+#        Opens clusters page.
 #
 #        Parameters:
 #            click_only (bool): just click on the link and return None
 #
 #        Returns:
-#            Instance of Dasboard
+#            Instance of ClustersList if click_only is False
+#            None otherwise
 #        """
-#        self._model.dashboard_link.click()
+#        self._model.clusters_link.click()
 #        if click_only:
 #            return None
-#        return Dashboard(self.driver)
-
-    def open_clusters(self, click_only=False):
-        """
-        Opens clusters page.
-
-        Parameters:
-            click_only (bool): just click on the link and return None
-
-        Returns:
-            Instance of ClustersList if click_only is False
-            None otherwise
-        """
-        self._model.clusters_link.click()
-        if click_only:
-            return None
-        return ClustersList(self.driver)
+#        return ClustersList(self.driver)
 
     def open_hosts(self, click_only=False):
         """
@@ -95,7 +75,7 @@ class NavMenuBars(UpperMenu):
             return None
         return HostsList(self.driver)
 
-    def open_alerts(self, click_only=False):
+    def open_volumes(self, click_only=False):
         """
         Opens alerts page.
 
@@ -106,20 +86,13 @@ class NavMenuBars(UpperMenu):
             Instance of AlertsList if click_only is False
             None otherwise
         """
-        self._model.file_shares_link.click()
+        self._model.volumes_link.click()
         if click_only:
             return None
 # TODO
-# alerts not yet implemented
-#        return AlertsList(self.driver)
+# volumes not yet implemented
+#        return VolumesList(self.driver)
 
-    def open_admin_submenu(self):
-        """
-        Opens admin sub-menu
-        """
-        self._model.admin_link.click()
-
-    # Admin sub-menu links
     def open_tasks(self, click_only=False):
         """
         Opens tasks page.
@@ -133,14 +106,11 @@ class NavMenuBars(UpperMenu):
         """
         self.open_admin_submenu()
         self._model.tasks_link.click()
-# TODO
-# uncomment when Tasks page will be working
-#        if click_only:
-#            return None
-#        return TasksList(self.driver)
+        if click_only:
+            return None
+        return TasksList(self.driver)
 
-    # Users sub-menu links
-    def open_users(self, click_only=False):
+    def open_events(self, click_only=False):
         """
         Opens users page.
 
@@ -152,9 +122,9 @@ class NavMenuBars(UpperMenu):
             None otherwise
         """
         self.open_admin_submenu()
-        self._model.users_link.click()
+        self._model.events_link.click()
 # TODO
-# uncomment when Users page will be working
+# uncomment when Events page will be working
 #        if click_only:
 #            return None
-#        return UsersList(self.driver)
+#        return EventsList(self.driver)

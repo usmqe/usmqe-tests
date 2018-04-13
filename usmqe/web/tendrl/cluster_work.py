@@ -9,14 +9,12 @@ import pytest
 from webstr.selenium.ui.support import WebDriverUtils
 from webstr.selenium.ui.exceptions import InitPageValidationError
 
-from usmqe.web.tendrl.mainpage.navpage.pages import NavMenuBars
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import\
+from usmqe.web.tendrl.clusters.pages import\
     ClustersList
-from usmqe.web.tendrl.mainpage.clusters.import_cluster_wizard.pages\
+from usmqe.web.tendrl.clusters.import_cluster_wizard.pages\
     import ImportCluster
-from usmqe.web.tendrl.mainpage.tasks.pages import TaskDetails
+from usmqe.web.tendrl.details.tasks.pages import TaskDetails
 from usmqe.web.tendrl.task_wait import task_wait
-# from usmqe.web.tendrl.mainpage.clusters.pages import check_hosts
 
 IMPORT_TIMEOUT = 3600
 
@@ -68,7 +66,8 @@ def post_check(driver, cluster_name, hosts, login_page=None):
         login_page: LoginPage instance
     """
     try:
-        NavMenuBars(driver).open_clusters(click_only=True)
+        # TODO!!! navigation to all-clusters is elsewhere
+        # NavMenuBars(driver).open_clusters(click_only=True)
 
         # TODO remove following sleep
         # sleep a while because of https://github.com/Tendrl/api/issues/159

@@ -7,18 +7,19 @@ import copy
 
 from webstr.patternfly.contentviews import pages as contentviews
 
-import usmqe.web.tendrl.mainpage.clusters.cluster_list.models as m_cluster_list
-from usmqe.web.tendrl.auxiliary.pages import ListMenu
-from usmqe.web.tendrl.mainpage.clusters.pages import ClustersWorkBase
+import usmqe.web.tendrl.clusters.models as m_cluster_list
+from usmqe.web.tendrl.auxiliary.pages import FilterListMenu, OrderListMenu
+from usmqe.web.tendrl.clusters.auxiliary.pages import ClustersWorkBase
 
 
-class ClustersMenu(ListMenu, ClustersWorkBase):
+class ClustersMenu(FilterListMenu, OrderListMenu, ClustersWorkBase):
     """
     Clusters page top menu
     """
     _model = m_cluster_list.ClustersMenuModel
     _label = 'cluster page top menu'
-    _required_elems = copy.deepcopy(ListMenu._required_elems)
+    _required_elems = copy.deepcopy(FilterListMenu._required_elems)
+    _required_elems.extend(copy.deepcopy(OrderListMenu._required_elems))
     _required_elems.extend(['header'])
 
 

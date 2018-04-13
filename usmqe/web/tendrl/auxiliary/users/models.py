@@ -1,19 +1,19 @@
 # TODO
 # The page is just placeholder, update when it will work
 """
-Page model for Tasks
+Page model for Users page
 """
 
 
 from webstr.core import WebstrModel
 
 
-LOCATION = '/#/admin/task'
+LOCATION = '/#/admin/users'
 
 
-class TasksModel(WebstrModel):
+class UsersModel(WebstrModel):
     """
-    Page model for Tasks
+    Page model for Users page
     """
 # Coming soon...
     pass

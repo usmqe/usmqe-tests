@@ -8,8 +8,8 @@ Author: ltrilety
 import pytest
 
 import usmqe.inventory
-from usmqe.web.tendrl.mainpage.clusters.cluster_list.pages import ClustersMenu
-from usmqe.web.tendrl.mainpage.hosts.pages import HostsMenu
+from usmqe.web.tendrl.clusters.pages import ClustersMenu
+from usmqe.web.tendrl.details.hosts.pages import HostsMenu
 
 
 def test_hosts_list(valid_credentials):

@@ -7,8 +7,10 @@ from webstr.core import By, WebstrModel, PageElement, BaseWebElementHelper,\
     DynamicWebstrModel, RootPageElement, NameRootPageElement
 import webstr.patternfly.contentviews.models as contentviews
 import webstr.common.form.models as form
+from usmqe.web.tendrl.auxiliary.models import FilterListMenuModel
 
-LOCATION = "#/admin/tasks"
+# The URL is not much usable as the correct one ends with /<cluster_id>
+LOCATION = "#/cluster-tasks"
 
 
 class StatusIconHelper(BaseWebElementHelper):
@@ -45,15 +47,11 @@ class StatusIcon(PageElement):
     _helper = StatusIconHelper
 
 
-class TasksMenuModel(WebstrModel):
+class TasksMenuModel(FilterListMenuModel):
     """
     Tasks page top menu
     """
     header = PageElement(by=By.XPATH, locator="//h1[contains(text(),'Tasks')]")
-    filter_by = form.Select(
-        By.XPATH,
-        '//select[contains(@ng-model, "filterBy")]')
-    filter_input = form.TextInput(By.ID, 'filter')
     from_input = form.TextInput(
         By.XPATH,
         '//div[@ng-model="taskCntrl.date.fromDate"]/input')
@@ -119,7 +117,7 @@ class TaskDetailsModel(WebstrModel):
 
 class TaskEventModel(DynamicWebstrModel):
     """
-    An item (row) in a Tasks list.
+    An item-event (row) in a Tasks Details list.
     """
     _root = NameRootPageElement(
         by=By.ID,
@@ -143,7 +141,7 @@ class TaskEventModel(DynamicWebstrModel):
 
 class TaskEventsModel(WebstrModel):
     """
-    Page model for list of tasks.
+    Page model for list of tasks events.
     """
     LIST_XPATH = '//*[contains(concat(" ", @class, " "), '\
                  '" div-with-scroll-logs ")]'

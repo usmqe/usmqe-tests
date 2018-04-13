@@ -7,14 +7,15 @@ from webstr.core import By, PageElement
 from webstr.common.form import models as form
 import webstr.patternfly.contentviews.models as contentviews
 
-from usmqe.web.tendrl.auxiliary.models import ListMenuModel
+from usmqe.web.tendrl.auxiliary.models import FilterListMenuModel,\
+    OrderListMenuModel
 # from usmqe.web.utils import StatusIcon
 
 
 LOCATION = '/#/clusters'
 
 
-class ClustersMenuModel(ListMenuModel):
+class ClustersMenuModel(FilterListMenuModel, OrderListMenuModel):
     """
     Clusters page top menu
     """
