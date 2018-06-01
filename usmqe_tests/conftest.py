@@ -109,10 +109,10 @@ def os_info():
     """
     SSH = usmssh.get_ssh()
     os_release = 'cat /etc/os-release'
-    f_content = SSH[
-        pytest.config.getini(
-            "usm_cluster_member")].run(
-                    os_release)[1].decode("utf-8").replace('"', '')
+    node_connection = SSH[pytest.config.getini("usm_cluster_member")]
+    f_content = node_connection.run(
+        os_release)
+    f_content = f_content[1].decode("utf-8").replace('"', '')
     config = configparser.ConfigParser()
     config.read_string('[os_info]\n' + f_content)
     LOGGER.debug(config['os_info'])

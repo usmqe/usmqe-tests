@@ -151,13 +151,15 @@ def test_status(cluster_reuse):
 
     .. test_result:: 2
 
-        JSON structure containing data related to Total host count with last
+        JSON structure containing data relatedo Total host count with last
         value coresponding with output of gluster command.
     """
-    target = [
-        panel for panel in layout["dashboard"]["rows"][1]["panels"]
+    panels = layout["dashboard"]["rows"][1]["panels"]
+    panel = [
+        panel for panel in panels
         if "clusterName" in panel and panel["clusterName"] == "Hosts"
-            ][0]["targets"][0]["target"]
+            ]
+    target = panel[0]["targets"][0]["target"]
     target = target.replace("$cluster_id", cluster_reuse["integration_id"])
     LOGGER.debug("Total hosts target: {}".format(target))
     g_total = graphite.get_datapoints(target)[-1][0]
@@ -180,10 +182,12 @@ def test_status(cluster_reuse):
         JSON structure containing data related to Up host count with last
         value coresponding with output of gluster command.
     """
-    target = [
-        panel for panel in layout["dashboard"]["rows"][1]["panels"]
+    panels = layout["dashboard"]["rows"][1]["panels"]
+    panel = [
+        panel for panel in panels
         if "clusterName" in panel and panel["clusterName"] == "Hosts"
-            ][0]["targets"][1]["target"]
+            ]
+    target = panel[0]["targets"][1]["target"]
     target = target.replace("$cluster_id", cluster_reuse["integration_id"])
     LOGGER.debug("Up hosts target: {}".format(target))
     g_up = graphite.get_datapoints(target)[-1][0]
@@ -210,10 +214,12 @@ def test_status(cluster_reuse):
         JSON structure containing data related to Down host count with last
         value coresponding with output of gluster command.
     """
-    target = [
-        panel for panel in layout["dashboard"]["rows"][1]["panels"]
+    panels = layout["dashboard"]["rows"][1]["panels"]
+    panel = [
+        panel for panel in panels
         if "clusterName" in panel and panel["clusterName"] == "Hosts"
-            ][0]["targets"][2]["target"]
+            ]
+    target = panel[0]["targets"][2]["target"]
     target = target.replace("$cluster_id", cluster_reuse["integration_id"])
     LOGGER.debug("Down hosts target: {}".format(target))
     g_down = graphite.get_datapoints(target)[-1][0]
