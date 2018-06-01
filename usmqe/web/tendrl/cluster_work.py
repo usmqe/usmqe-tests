@@ -6,7 +6,6 @@ Author: ltrilety
 
 import pytest
 
-from webstr.selenium.ui.support import WebDriverUtils
 from webstr.selenium.ui.exceptions import InitPageValidationError
 
 from usmqe.web.tendrl.clusters.pages import\
@@ -68,10 +67,6 @@ def post_check(driver, cluster_name, hosts, login_page=None):
     try:
         # TODO!!! navigation to all-clusters is elsewhere
         # NavMenuBars(driver).open_clusters(click_only=True)
-
-        # TODO remove following sleep
-        # sleep a while because of https://github.com/Tendrl/api/issues/159
-        WebDriverUtils.wait_a_while(90, driver)
 
         cluster_list = ClustersList(driver)
 
