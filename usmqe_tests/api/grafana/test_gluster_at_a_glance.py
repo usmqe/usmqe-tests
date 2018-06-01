@@ -18,8 +18,6 @@ Prepare USM cluster accordingly to documentation.
 server.
 ``GRAPHITE`` for this file stands for Graphite API url used by tested Tendrl
 server.
-``PREFIX`` for this file is either *tendrl* or *webadmin* based on os
-distribution.
 
 """
 
@@ -29,7 +27,7 @@ Teardown
 """
 
 
-def test_layout(os_info):
+def test_layout():
     """@pylatest grafana/layout
     API-grafana: layout
     *******************
@@ -43,21 +41,17 @@ def test_layout(os_info):
     ``https://github.com/Tendrl/specifications/issues/222``
     """
     api = grafanaapi.GrafanaApi()
-    if os_info['name'] == "Red Hat Enterprise Linux Server":
-        prefix = "webadmin"
-    else:
-        prefix = "tendrl"
     """@pylatest grafana/layout
     .. test_step:: 1
 
         Send **GET** request to:
-        ``GRAFANA/dashboards/db/PREFIX-gluster-at-a-glance``.
+        ``GRAFANA/dashboards/db/gluster-at-a-glance``.
 
     .. test_result:: 1
 
         JSON structure containing data related to layout is returned.
     """
-    layout = api.get_dashboard("{}-gluster-at-a-glance".format(prefix))
+    layout = api.get_dashboard("gluster-at-a-glance")
     pytest.check(
         len(layout) > 0,
         layout)
@@ -114,7 +108,7 @@ def test_layout(os_info):
         "defined structure of panels should equal to structure in grafana")
 
 
-def test_status(os_info, cluster_reuse):
+def test_status(cluster_reuse):
     """@pylatest grafana/status
     API-grafana: hosts
     *******************
@@ -131,22 +125,18 @@ def test_status(os_info, cluster_reuse):
         pytest.config.getini("usm_cluster_member"))
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
-    if os_info['name'] == "Red Hat Enterprise Linux Server":
-        prefix = "webadmin"
-    else:
-        prefix = "tendrl"
     """@pylatest grafana/hosts
     .. test_step:: 1
 
         Send **GET** request to:
-        ``GRAFANA/dashboards/db/PREFIX-gluster-at-a-glance``.
+        ``GRAFANA/dashboards/db/gluster-at-a-glance``.
 
     .. test_result:: 1
 
         JSON structure containing data related to layout is returned.
     """
 
-    layout = grafana.get_dashboard("{}-gluster-at-a-glance".format(prefix))
+    layout = grafana.get_dashboard("gluster-at-a-glance")
     pytest.check(
         len(layout) > 0,
         layout)
