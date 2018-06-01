@@ -1,5 +1,5 @@
 """
-REST API test suite - Grafana dashboard Gluster-At-A-Glance
+REST API test suite - Grafana dashboard cluster-dashboard
 """
 
 import pytest
@@ -8,7 +8,7 @@ from usmqe.api.graphiteapi import graphiteapi
 from usmqe.gluster.gluster import GlusterCommon
 
 
-LOGGER = pytest.get_logger('gluster_at_a_glance', module=True)
+LOGGER = pytest.get_logger('cluster_dashboard', module=True)
 """@pylatest default
 Setup
 =====
@@ -45,13 +45,13 @@ def test_layout():
     .. test_step:: 1
 
         Send **GET** request to:
-        ``GRAFANA/dashboards/db/gluster-at-a-glance``.
+        ``GRAFANA/dashboards/db/cluster-dashboard``.
 
     .. test_result:: 1
 
         JSON structure containing data related to layout is returned.
     """
-    layout = api.get_dashboard("gluster-at-a-glance")
+    layout = api.get_dashboard("cluster-dashboard")
     pytest.check(
         len(layout) > 0,
         layout)
@@ -129,14 +129,14 @@ def test_status(cluster_reuse):
     .. test_step:: 1
 
         Send **GET** request to:
-        ``GRAFANA/dashboards/db/gluster-at-a-glance``.
+        ``GRAFANA/dashboards/db/cluster-dashboard``.
 
     .. test_result:: 1
 
         JSON structure containing data related to layout is returned.
     """
 
-    layout = grafana.get_dashboard("gluster-at-a-glance")
+    layout = grafana.get_dashboard("cluster-dashboard")
     pytest.check(
         len(layout) > 0,
         layout)
