@@ -154,7 +154,7 @@ Positive import gluster cluster.
 
 
 @pytest.mark.happypath
-@pytest.mark.stable
+@pytest.mark.testready
 @pytest.mark.cluster_import_gluster
 def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
     """@pylatest api/gluster.cluster_import
@@ -238,7 +238,7 @@ Negative import gluster cluster.
 """
 
 
-@pytest.mark.stable
+@pytest.mark.testready
 @pytest.mark.parametrize("cluster_id, status", [
     ("000000-0000-0000-0000-000000000", "failed")])
 @pytest.mark.gluster
@@ -281,7 +281,7 @@ Positive unmanage gluster cluster.
 
 
 @pytest.mark.happypath
-@pytest.mark.stable
+@pytest.mark.testready
 @pytest.mark.cluster_unmanage_gluster
 def test_cluster_unmanage_valid(
         valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):

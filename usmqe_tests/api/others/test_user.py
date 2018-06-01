@@ -26,7 +26,7 @@ Teardown
 
 
 @pytest.mark.happypath
-@pytest.mark.stable
+@pytest.mark.testready
 def test_user_get(valid_session_credentials, valid_new_user):
     """@pylatest api/user.get
     API-users: get user
@@ -65,7 +65,7 @@ def test_user_get(valid_session_credentials, valid_new_user):
 
 
 @pytest.mark.happypath
-@pytest.mark.stable
+@pytest.mark.testready
 def test_user_change_password(valid_new_user, valid_password):
     """@pylatest api/user.edit
     API-users: edit user
@@ -130,7 +130,7 @@ def test_user_change_password(valid_new_user, valid_password):
 
 
 @pytest.mark.happypath
-@pytest.mark.stable
+@pytest.mark.testready
 def test_user_add_del(valid_session_credentials, valid_user_data):
     """@pylatest api/user.add_delete
     API-users: add and delete

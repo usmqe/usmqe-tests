@@ -195,7 +195,7 @@ def test_delete_volume_invalid(
 
 
 @pytest.mark.happypath
-@pytest.mark.stable
+@pytest.mark.testready
 @pytest.mark.gluster
 def test_volumes_list(
         valid_session_credentials,
