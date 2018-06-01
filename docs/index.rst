@@ -50,7 +50,7 @@ USM QE tests are:
   is automated via `ansible`_)
 * based on `pytest`_ framework, which is extended or changed via many pytest
   plugins
-* written in `Python 3.5`_ only
+* written in `Python 3.6`_ only
 * expected to be executed from Red Hat (or CentOS) 7 machine
 * maintained by :ref:`usmqe-team-label`
 
@@ -74,7 +74,7 @@ Indices and tables
 .. _`usmqe-tests`: https://github.com/usmqe/usmqe-tests
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
-.. _`Python 3.5`: https://docs.python.org/3/whatsnew/3.5.html
+.. _`Python 3.6`: https://docs.python.org/3/whatsnew/3.6.html
 .. _`Tendrl REST API`: https://github.com/Tendrl/documentation/blob/master/api/overview.adoc
 .. _`requests`: http://docs.python-requests.org/en/master/
 .. _`selenium`: https://selenium-python.readthedocs.io/
