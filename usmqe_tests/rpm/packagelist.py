@@ -17,10 +17,8 @@ tendrl_packages = [
     "tendrl-grafana-selinux",
     "tendrl-monitoring-integration",
     "tendrl-node-agent",
-    "tendrl-node-selinux",
     "tendrl-notifier",
     "tendrl-selinux",
-    "tendrl-server-selinux",
     "tendrl-ui",
     ]
 
