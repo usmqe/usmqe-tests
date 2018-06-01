@@ -360,3 +360,22 @@ def test_cluster_unmanage_valid(
         cluster_health == [],
         """graphite health of cluster {}: `{}`
         There should be `[]`.""".format(cluster_id, cluster_health))
+
+    """@pylatest api/gluster.cluster_unmanage
+        .. test_step:: 4
+
+            Reimport cluster and check that tested cluster is correctly managed by Tendrl.
+
+        .. test_result:: 4
+
+            There is ``"is_managed": "yes"`` in Tendrl for cluster with id [cluster_id].
+        """
+    job_id = tendrl_api.import_cluster(cluster_id)["job_id"]
+    tendrl_api.wait_for_job_status(job_id)
+    for cluster in tendrl_api.get_cluster_list():
+        if cluster["cluster_id"] == cluster_id:
+            managed_cluster = cluster
+            break
+    pytest.check(
+        managed_cluster["is_managed"] == "yes",
+        "is_managed: {}\nThere should be ``yes``.".format(managed_cluster["is_managed"]))
