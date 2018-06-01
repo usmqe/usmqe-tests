@@ -115,6 +115,17 @@ def chroot_dir(tendrl_repos):
     """)
     with open(grafana_repofile_path, "w") as repofile:
         repofile.write(grafana_repofile_content)
+    # HACK/WORKAROUND: install centos-gluster repo (upstream Tendrl dependency)
+    gluster_repofile_path = os.path.join(tmpdirname, "etc/yum.repos.d/centos-gluster.repo")
+    gluster_repofile_content = textwrap.dedent("""\
+    [centos-gluster]
+    baseurl = http://artifacts.ci.centos.org/gluster/nightly/master/7/x86_64/
+    gpgcheck = 0
+    name = Gluster nightly builds from CentOS Storage SIG
+    repo_gpgcheck = 0
+    """)
+    with open(gluster_repofile_path, "w") as repofile:
+        repofile.write(gluster_repofile_content)
     # import the gpg keys for all yum repositories
     for key in repo_keys:
         cmd = ["rpm", "--root", tmpdirname, "--import", key]
@@ -145,6 +156,7 @@ def centos_repos():
         "fedora-epel": "http://mirror.karneval.cz/pub/linux/fedora/epel/7/x86_64/",
         "gdeploy": "http://copr-be.cloud.fedoraproject.org/results/sac/gdeploy/epel-7-x86_64/",
         "grafana": "https://packagecloud.io/grafana/stable/el/6/x86_64/",
+        "centos-gluster": "http://artifacts.ci.centos.org/gluster/nightly/master/7/x86_64/",
         }
     for url in repo_dict.values():
         reg = requests.get(url)
