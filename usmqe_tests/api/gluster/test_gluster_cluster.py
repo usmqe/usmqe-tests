@@ -192,8 +192,7 @@ def test_cluster_unmanage_valid(
         cluster_target_id = cluster_reuse["short_name"]
     else:
         cluster_target_id = cluster_reuse["cluster_id"]
-    i = 0
-    while i < 31:
+    for i in range(31):
         cluster_health = graphite_api.get_datapoints(
             target="tendrl.clusters.{}.status".format(cluster_target_id))
 
@@ -201,7 +200,6 @@ def test_cluster_unmanage_valid(
             break
         else:
             time.sleep(30)
-            i += 1
     pytest.check(
         cluster_health,
         """graphite health of cluster {}: {}
@@ -239,14 +237,12 @@ def test_cluster_unmanage_valid(
             Graphite contains no data related to health of tested cluster.
 
         """
-    i = 0
-    while i < 15:
+    for i in range(15):
         cluster_list = tendrl_api.get_cluster_list()
         if len(cluster_list) > 0:
             break
         else:
             time.sleep(10)
-            i += 1
     for cluster in cluster_list:
         if cluster["cluster_id"] == cluster_id:
             unmanaged_cluster = cluster
