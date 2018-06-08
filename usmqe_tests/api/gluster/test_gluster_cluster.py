@@ -245,6 +245,7 @@ def test_cluster_unmanage_valid(
             break
         else:
             time.sleep(10)
+    assert cluster_list
     for cluster in cluster_list:
         if cluster["cluster_id"] == cluster_id:
             unmanaged_cluster = cluster
