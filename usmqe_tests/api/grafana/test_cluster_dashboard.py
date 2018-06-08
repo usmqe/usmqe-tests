@@ -54,7 +54,7 @@ def test_layout():
     layout = api.get_dashboard("cluster-dashboard")
     pytest.check(
         len(layout) > 0,
-        layout)
+        "cluster-dashboard layout should not be empty")
 
     """@pylatest grafana/layout
     .. test_step:: 2
@@ -139,7 +139,7 @@ def test_status(cluster_reuse):
     layout = grafana.get_dashboard("cluster-dashboard")
     pytest.check(
         len(layout) > 0,
-        layout)
+        "cluster-dashboard layout should not be empty")
     """@pylatest grafana/hosts
     .. test_step:: 2
 
@@ -182,11 +182,6 @@ def test_status(cluster_reuse):
         JSON structure containing data related to Up host count with last
         value coresponding with output of gluster command.
     """
-    panels = layout["dashboard"]["rows"][1]["panels"]
-    panel = [
-        panel for panel in panels
-        if "clusterName" in panel and panel["clusterName"] == "Hosts"
-            ]
     target = panel[0]["targets"][1]["target"]
     target = target.replace("$cluster_id", cluster_reuse["integration_id"])
     LOGGER.debug("Up hosts target: {}".format(target))
@@ -214,11 +209,6 @@ def test_status(cluster_reuse):
         JSON structure containing data related to Down host count with last
         value coresponding with output of gluster command.
     """
-    panels = layout["dashboard"]["rows"][1]["panels"]
-    panel = [
-        panel for panel in panels
-        if "clusterName" in panel and panel["clusterName"] == "Hosts"
-            ]
     target = panel[0]["targets"][2]["target"]
     target = target.replace("$cluster_id", cluster_reuse["integration_id"])
     LOGGER.debug("Down hosts target: {}".format(target))
