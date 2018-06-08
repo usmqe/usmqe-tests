@@ -4,6 +4,9 @@
  Setup of QE Server
 ====================
 
+:author: mbukatov
+:date: 2018-06-08
+
 QE Server is machine where ``usmqe-tests`` (along with all it's dependencies)
 are installed and where the integration tests are executed from.
 
@@ -34,14 +37,24 @@ this command):
 
 .. code-block:: console
 
-    $ virt-builder centos-7.2 -o mbukatov-qe-server.qcow2 --size 15G --format qcow2 --mkdir /root/.ssh  --chmod 0700:/root/.ssh  --upload /root/.ssh/authorized_keys:/root/.ssh/authorized_keys --selinux-relabel --update
+    $ virt-builder centos-7.5 -o mbukatov.qe-server.centos7.qcow2 --size 15G --format qcow2 --mkdir /root/.ssh  --chmod 0700:/root/.ssh  --upload /root/.ssh/authorized_keys:/root/.ssh/authorized_keys --selinux-relabel --update
+
+Note that ``virt-builder`` sets random root password, which you may like to
+write down in your password manager so that you can connect to the machine
+directly via console (using ``virsh console``) later in case of problems. That
+said, under normal circumstances you will connect to the machine via ssh
+using key based authentication.
 
 Then we `import the new image into libvirt`_ creating new virtual machine (aka
 guest) and  booting it for the first time:
 
 .. code-block:: console
 
-    # virt-install --import --name mbukatov-qe-server --ram 2048 --os-variant rhel7 --disk path=/var/lib/libvirt/images/mbukatov-qe-server.qcow2,format=qcow2 --network default --noautoconsole
+    # virt-install --import --name mbukatov --ram 2048 --os-variant rhel7 --disk path=/var/lib/libvirt/images/mbukatov.qe-server.centos7.qcow2,format=qcow2 --network default --noautoconsole
+
+If you need change default network bridge or MAC address of the virtual
+machine, update ``--network`` option of ``virt-install``, eg.: ``--network
+bridge=br0_vlan4,mac=52:54:00:59:15:04``.
 
 When the new machine is ready, specify an ip address or fqdn of the new qe
 server in the inventory file:
@@ -57,17 +70,21 @@ local ssh client configuration) so that ansible can work with the machine:
 
 .. code-block:: console
 
-	$ ansible -i qe.hosts -m ping all
+	$ ansible -i qe.hosts -m ping qe_server
 	10.34.126.60 | SUCCESS => {
 		"changed": false, 
 		"ping": "pong"
 	}
 
-Then you can run the `qe_server` playbook:
+Then you can run the ``qe_server.yml`` playbook:
 
 .. code-block:: console
 
-    $ ansible-playbook -i qe.hosts qe_server.yml
+    $ ANSIBLE_ROLES_PATH=~/projects/tendrl.org/tendrl-ansible/roles ansible-playbook -i qe.hosts qe_server.yml
+
+Note that we have to reference `tendrl-ansible`_ here as the qe server playbook
+uses `tendrl-ansible.gluster-gdeploy-copr`_ role, which installs *upstream*
+build of `gdeploy`_.
 
 When the ansible playbook run finishes, you can login to the usmqe account
 on the QE Server for the first time:
@@ -75,33 +92,38 @@ on the QE Server for the first time:
 .. code-block:: console
 
     $ ssh root@10.34.126.6
-    [root@qeserver ~]# su - usmqe
-    [usmqe@qeserver ~]$ ls
-    usmqe-setup  usmqe-tests
+    [root@mbukatov ~]# su - usmqe
+    [usmqe@mbukatov ~]$ ls
+    tendrl-ansible  usmqe-setup  usmqe-tests
 
-Note that ``rh-python35`` software collection is enabled by default in
+Note that ``rh-python36`` software collection is enabled by default in
 ``~/.bashrc`` file of usmqe user account and that all requirements (eg. pytest,
 mrglog, ...) are already available:
 
 .. code-block:: console
 
     [usmqe@qeserver ~]$ python --version
-    Python 3.5.1
+    Python 3.6.3
     [usmqe@qeserver ~]$ py.test --version
-    This is pytest version 3.0.4, imported from /home/usmqe/.local/lib/python3.5/site-packages/pytest.py
+    This is pytest version 3.6.1, imported from /home/usmqe/.local/lib/python3.6/site-packages/pytest.py
+    setuptools registered plugins:
+      pytest-ansible-playbook-0.3.0 at /home/usmqe/.local/lib/python3.6/site-packages/pytest_ansible_playbook.py
     [usmqe@qeserver ~]$ which mrglog_demo.py
     ~/.local/bin/mrglog_demo.py
 
-Also note that even though the default python for usmqe user is ``python3.5``
+Also note that even though the default python for usmqe user is ``python3.6``
 from the software collection, one can still run other system utilities which
 are running on system default python2:
 
 .. code-block:: console
 
     [usmqe@qeserver ~]$ ansible --version
-    ansible 2.1.2.0
+    ansible 2.5.3
       config file = /etc/ansible/ansible.cfg
-      configured module search path = Default w/o overrides
+      configured module search path = [u'/home/usmqe/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+      ansible python module location = /usr/lib/python2.7/site-packages/ansible
+      executable location = /bin/ansible
+      python version = 2.7.5 (default, Apr 11 2018, 07:36:10) [GCC 4.8.5 20150623 (Red Hat 4.8.5-28)]
 
 This is the case because all python tools packaged in Fedora/Red Hat/CentOS
 uses explicit shebang:
@@ -131,3 +153,6 @@ For full description and examples how to run integration tests, see
 .. _`import the new image into libvirt`: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/sect-Guest_virtual_machine_installation_overview-Creating_guests_with_virt_install.html
 .. _`qe_server.yml`: https://github.com/usmqe/usmqe-setup/blob/master/qe_server.yml
 .. _`usmqe-setup repository`: https://github.com/usmqe/usmqe-setup
+.. _`tendrl-ansible`: https://github.com/Tendrl/tendrl-ansible
+.. _`tendrl-ansible.gluster-gdeploy-copr`: https://github.com/Tendrl/tendrl-ansible/tree/master/roles/tendrl-ansible.gluster-gdeploy-copr
+.. _`gdeploy`: https://gdeploy.readthedocs.io/en/latest/
