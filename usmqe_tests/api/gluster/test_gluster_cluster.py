@@ -3,6 +3,7 @@
 REST API test suite - gluster cluster
 """
 import pytest
+import time
 
 from usmqe.api.graphiteapi import graphiteapi
 from usmqe.api.tendrlapi import glusterapi
@@ -186,8 +187,16 @@ def test_cluster_unmanage_valid(
         cluster_reuse["is_managed"] == "yes",
         "is_managed: {}\nThere should be ``yes``.".format(cluster_reuse["is_managed"]))
 
-    cluster_health = graphite_api.get_datapoints(
-        target="tendrl.clusters.{}.status".format(cluster_id))
+    i = 0
+    while i < 31:
+        cluster_health = graphite_api.get_datapoints(
+            target="tendrl.clusters.{}.status".format(cluster_id))
+
+        if cluster_health:
+            break
+        else:
+            time.sleep(30)
+            i += 1
     pytest.check(
         cluster_health,
         """graphite health of cluster {}: {}
@@ -225,7 +234,15 @@ def test_cluster_unmanage_valid(
             Graphite contains no data related to health of tested cluster.
 
         """
-    for cluster in tendrl_api.get_cluster_list():
+    i = 0
+    while i < 15:
+        cluster_list = tendrl_api.get_cluster_list()
+        if len(cluster_list) > 0:
+            break
+        else:
+            time.sleep(10)
+            i += 1
+    for cluster in cluster_list:
         if cluster["cluster_id"] == cluster_id:
             unmanaged_cluster = cluster
             break
