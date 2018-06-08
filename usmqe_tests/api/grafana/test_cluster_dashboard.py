@@ -120,6 +120,10 @@ def test_status(cluster_reuse):
 
     Check that Grafana panel *Hosts* is showing correct values.
     """
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
     gluster = GlusterCommon()
     states = gluster.get_cluster_hosts_connection_states(
         pytest.config.getini("usm_cluster_member"))
@@ -140,6 +144,11 @@ def test_status(cluster_reuse):
     pytest.check(
         len(layout) > 0,
         "cluster-dashboard layout should not be empty")
+    panels = layout["dashboard"]["rows"][1]["panels"]
+    panel = [
+        panel for panel in panels
+        if "displayName" in panel and panel["displayName"] == "Hosts"
+            ]
     """@pylatest grafana/hosts
     .. test_step:: 2
 
@@ -154,13 +163,8 @@ def test_status(cluster_reuse):
         JSON structure containing data relatedo Total host count with last
         value coresponding with output of gluster command.
     """
-    panels = layout["dashboard"]["rows"][1]["panels"]
-    panel = [
-        panel for panel in panels
-        if "clusterName" in panel and panel["clusterName"] == "Hosts"
-            ]
     target = panel[0]["targets"][0]["target"]
-    target = target.replace("$cluster_id", cluster_reuse["integration_id"])
+    target = target.replace("$cluster_id", cluster_identifier)
     LOGGER.debug("Total hosts target: {}".format(target))
     g_total = graphite.get_datapoints(target)[-1][0]
     pytest.check(
@@ -183,17 +187,17 @@ def test_status(cluster_reuse):
         value coresponding with output of gluster command.
     """
     target = panel[0]["targets"][1]["target"]
-    target = target.replace("$cluster_id", cluster_reuse["integration_id"])
+    target = target.replace("$cluster_id", cluster_identifier)
     LOGGER.debug("Up hosts target: {}".format(target))
     g_up = graphite.get_datapoints(target)[-1][0]
-    t_up = []
+    real_up = []
     for host in states.keys():
         if states[host]:
-            t_up.append(host)
+            real_up.append(host)
     pytest.check(
-        g_up == len(t_up),
+        g_up == len(real_up),
         "Number of hosts that are up in graphite ({}) should be {}".format(
-            g_up, len(t_up)))
+            g_up, len(real_up)))
 
     """@pylatest grafana/hosts
     .. test_step:: 4
@@ -210,14 +214,14 @@ def test_status(cluster_reuse):
         value coresponding with output of gluster command.
     """
     target = panel[0]["targets"][2]["target"]
-    target = target.replace("$cluster_id", cluster_reuse["integration_id"])
+    target = target.replace("$cluster_id", cluster_identifier)
     LOGGER.debug("Down hosts target: {}".format(target))
     g_down = graphite.get_datapoints(target)[-1][0]
-    t_down = []
+    real_down = []
     for host in states.keys():
         if not states[host]:
-            t_down.append(host)
+            real_down.append(host)
     pytest.check(
-        g_down == len(t_down),
+        g_down == len(real_down),
         "Number of hosts that are down in graphite ({}) should be {}".format(
-            g_down, len(t_down)))
+            g_down, len(real_down)))
