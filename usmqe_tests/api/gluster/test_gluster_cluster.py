@@ -192,6 +192,7 @@ def test_cluster_unmanage_valid(
         cluster_target_id = cluster_reuse["short_name"]
     else:
         cluster_target_id = cluster_reuse["cluster_id"]
+    # it takes 15 minutes to refresh data Host status panel
     for i in range(31):
         cluster_health = graphite_api.get_datapoints(
             target="tendrl.clusters.{}.status".format(cluster_target_id))
@@ -237,6 +238,7 @@ def test_cluster_unmanage_valid(
             Graphite contains no data related to health of tested cluster.
 
         """
+    # TODO(fbalak) remove this workaround when BZ 1589321 is resolved
     for i in range(15):
         cluster_list = tendrl_api.get_cluster_list()
         if len(cluster_list) > 0:
