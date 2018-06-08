@@ -1,4 +1,6 @@
+import configparser
 import pytest
+import usmqe.usmssh as usmssh
 
 
 # initialize usmqe logging module
@@ -98,3 +100,20 @@ def valid_password(request):
     Return valid password string.
     """
     return request.param
+
+
+@pytest.fixture
+def os_info():
+    """
+    Return information from /etc/os-release file about current os distribution.
+    """
+    SSH = usmssh.get_ssh()
+    os_release = 'cat /etc/os-release'
+    node_connection = SSH[pytest.config.getini("usm_cluster_member")]
+    f_content = node_connection.run(
+        os_release)
+    f_content = f_content[1].decode("utf-8").replace('"', '')
+    config = configparser.ConfigParser()
+    config.read_string('[os_info]\n' + f_content)
+    LOGGER.debug(config['os_info'])
+    return dict(config['os_info'])

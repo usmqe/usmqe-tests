@@ -10,7 +10,7 @@ from usmqe.api.base import ApiBase
 LOGGER = pytest.get_logger("graphiteapi", module=True)
 
 
-class ApiCommon(ApiBase):
+class GraphiteApi(ApiBase):
     """ Common methods for graphite REST API.
     """
 
