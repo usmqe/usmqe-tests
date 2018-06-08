@@ -187,10 +187,15 @@ def test_cluster_unmanage_valid(
         cluster_reuse["is_managed"] == "yes",
         "is_managed: {}\nThere should be ``yes``.".format(cluster_reuse["is_managed"]))
 
+    # graphite target uses short name if it is set
+    if cluster_reuse["short_name"]:
+        cluster_target_id = cluster_reuse["short_name"]
+    else:
+        cluster_target_id = cluster_reuse["cluster_id"]
     i = 0
     while i < 31:
         cluster_health = graphite_api.get_datapoints(
-            target="tendrl.clusters.{}.status".format(cluster_id))
+            target="tendrl.clusters.{}.status".format(cluster_target_id))
 
         if cluster_health:
             break
@@ -251,7 +256,7 @@ def test_cluster_unmanage_valid(
         "is_managed: {}\nThere should be ``no``.".format(unmanaged_cluster["is_managed"]))
 
     cluster_health = graphite_api.get_datapoints(
-        target="tendrl.clusters.{}.status".format(cluster_id))
+        target="tendrl.clusters.{}.status".format(cluster_target_id))
     pytest.check(
         cluster_health == [],
         """graphite health of cluster {}: `{}`
