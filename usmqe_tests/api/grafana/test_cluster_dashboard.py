@@ -73,7 +73,7 @@ def test_layout():
             'Top 5 Utilization by Volume',
             'CPU Utilization by Host',
             'Memory Utilization by Host',
-            'Ping Latency Trend'],
+            'Ping Latency'],
         'At-a-glance': [
             'Health',
             'Snapshots',
@@ -81,13 +81,13 @@ def test_layout():
             'Volumes',
             'Bricks',
             'Geo-Replication Session',
-            'Connection Trend',
+            'Connection',
             'IOPS',
             'Capacity Utilization',
             'Capacity Available',
             'Weekly Growth Rate',
             'Weeks Remaining',
-            'Throughput Trend'],
+            'Throughput'],
         'Status': [
             'Volume Status',
             'Host Status',
@@ -141,10 +141,56 @@ def test_status(cluster_reuse):
     """
 
     layout = grafana.get_dashboard("cluster-dashboard")
-    pytest.check(
-        len(layout) > 0,
-        "cluster-dashboard layout should not be empty")
-    panels = layout["dashboard"]["rows"][1]["panels"]
+    assert len(layout) > 0
+
+    """
+    structure of grafana data:
+
+    {
+    ...
+    "dashboard":
+        "rows":
+            [
+                ...
+                {
+                ...
+                "displayName": ...,
+                "panels":
+                    [
+                        ...
+                        {
+                            ...
+                            targets:
+                                [
+                                    ...
+                                    {
+                                        "refid": ...,
+                                        "target": ...,
+                                        ...
+                                    }
+                                    ...
+                                ]
+                            ...
+                        }
+                    ...
+                    ]
+                ...
+                }
+            ...
+            ]
+    """
+    dashboard_rows = layout["dashboard"]["rows"]
+    assert len(dashboard_rows) > 0
+    # first row contains some links links and navigation
+    assert len(dashboard_rows[0]) > 0
+    # second row contains At-a-glance panels
+    assert len(dashboard_rows[1]) > 0
+    # third row contains Top Consumers panels
+    assert len(dashboard_rows[2]) > 0
+    # fourth row contains Status panels
+    assert len(dashboard_rows[3]) > 0
+
+    panels = dashboard_rows[1]["panels"]
     panel = [
         panel for panel in panels
         if "displayName" in panel and panel["displayName"] == "Hosts"
@@ -163,6 +209,7 @@ def test_status(cluster_reuse):
         JSON structure containing data relatedo Total host count with last
         value coresponding with output of gluster command.
     """
+    # get graphite target pointing at data containing number of host
     target = panel[0]["targets"][0]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
     LOGGER.debug("Total hosts target: {}".format(target))
@@ -186,6 +233,8 @@ def test_status(cluster_reuse):
         JSON structure containing data related to Up host count with last
         value coresponding with output of gluster command.
     """
+    # get graphite target pointing at data containing number of host that are
+    # up
     target = panel[0]["targets"][1]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
     LOGGER.debug("Up hosts target: {}".format(target))
@@ -213,6 +262,8 @@ def test_status(cluster_reuse):
         JSON structure containing data related to Down host count with last
         value coresponding with output of gluster command.
     """
+    # get graphite target pointing at data containing number of host that are
+    # down
     target = panel[0]["targets"][2]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
     LOGGER.debug("Down hosts target: {}".format(target))
