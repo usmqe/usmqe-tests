@@ -54,8 +54,6 @@ def logger_testcase(request):
     LOGGER.testEnd()
 
 
-# TODO(fbalak) remove line with `password_confirmation` after
-# https://github.com/Tendrl/api/issues/106 is resolved
 @pytest.fixture(
     params=[{
         "name": "Tom Hardy",
@@ -63,7 +61,6 @@ def logger_testcase(request):
         "email": "thardy@tendrl.org",
         "role": "normal",
         "password": "pass1234",
-        "password_confirmation": "pass1234",
         "email_notifications": True}])
 def valid_user_data(request):
     """
