@@ -177,7 +177,7 @@ def test_cluster_unmanage_valid(
 
         """
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    graphite_api = graphiteapi.ApiCommon()
+    graphite_api = graphiteapi.GraphiteApi()
 
     cluster_id = cluster_reuse["cluster_id"]
     pytest.check(
