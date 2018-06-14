@@ -32,7 +32,7 @@ To access data from the host inventory, use functions provided by
 
     import usmqe.inventory as inventory
 
-    for host in inventory.role2hosts("ceph_osd"):
+    for host in inventory.role2hosts("gluster"):
         print("check storage server {0}".format(host))
 
 To access USM QE configuration, use standard pytest configuration functions:
@@ -86,7 +86,7 @@ Functional Tests
 ====================
 
 Functional API tests are stored in logical chunks in files. Tests are tagged by tags.
-So it is possible to run for example just Ceph tests. All tests should have
+So it is possible to run for example just Gluster tests. All tests should have
 fixture for proper ``setup`` and ``teardown``. All objects created during testing
 should be removed after test run. There should not be any remains after test run.
 
