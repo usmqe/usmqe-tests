@@ -1,6 +1,6 @@
 
 """
-SkyRing REST API.
+etcd REST API.
 """
 
 import json
@@ -12,7 +12,7 @@ from usmqe.api.base import ApiBase
 LOGGER = pytest.get_logger("etcdapi", module=True)
 
 
-class ApiCommon(ApiBase):
+class EtcdApi(ApiBase):
     """ Common methods for etcd REST API.
     """
 
