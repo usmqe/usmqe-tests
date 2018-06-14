@@ -383,3 +383,18 @@ class TendrlApi(ApiBase):
         self.print_req_info(response)
         self.check_response(response)
         return response.json()["clusters"]
+
+    def get_cluster(self, cluster_id):
+        """ Get cluster informations
+
+        Name:        "get_cluster",
+        Method:      "GET",
+        Pattern:     "clusters/:cluster_id:",
+        """
+        pattern = "clusters/{}".format(cluster_id)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()

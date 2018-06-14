@@ -51,10 +51,21 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
         """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     cluster_id = cluster_reuse["cluster_id"]
-    nodes = cluster_reuse["nodes"]
     pytest.check(
         cluster_id is not None,
         "Cluster id is: {}".format(cluster_id))
+    for _ in range(12):
+        cluster = api.get_cluster(cluster_id)
+        if len(cluster["nodes"]) == len(valid_trusted_pool_reuse):
+            break
+        time.sleep(10)
+    else:
+        pytest.check(
+            len(valid_trusted_pool_reuse) == len(cluster["nodes"]),
+            "Number of nodes from gluster trusted pool ({}) should be "
+            "the same as number of nodes in tendrl ({})".format(len(valid_trusted_pool_reuse),
+                                                                len(cluster["nodes"])))
+    nodes = cluster["nodes"]
     node_fqdns = [x["fqdn"] for x in nodes]
     pytest.check(
         set(valid_trusted_pool_reuse) == set(node_fqdns),

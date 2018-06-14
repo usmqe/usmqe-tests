@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 
+import time
+
 import pytest
 
 from usmqe.api.tendrlapi.common import TendrlAuth, login, logout, TendrlApi
@@ -50,12 +52,15 @@ def cluster_reuse(valid_session_credentials):
     """
     id_hostname = pytest.config.getini("usm_cluster_member")
     api = TendrlApi(auth=valid_session_credentials)
-    clusters = api.get_cluster_list()
-    clusters = [cluster for cluster in clusters
-                if id_hostname in
-                [node["fqdn"] for node in cluster["nodes"]]
-                ]
-    if len(clusters) != 1:
-        raise Exception("There is not one cluster which includes node"
-                        " with FQDN == {}.".format(id_hostname))
-    return clusters[0]
+    for _ in range(12):
+        clusters = api.get_cluster_list()
+        clusters = [cluster for cluster in clusters
+                    if id_hostname in
+                    [node["fqdn"] for node in cluster["nodes"]]
+                    ]
+        if len(clusters) == 1:
+            return clusters[0]
+        time.sleep(5)
+
+    raise Exception("There is not one cluster which includes node"
+                    " with FQDN == {}.".format(id_hostname))
