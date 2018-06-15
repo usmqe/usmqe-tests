@@ -54,20 +54,18 @@ def logger_testcase(request):
     LOGGER.testEnd()
 
 
-# TODO(fbalak) remove line with `password_confirmation` after
-# https://github.com/Tendrl/api/issues/106 is resolved
 @pytest.fixture(
     params=[{
-        "name": "Tom Hardy",
-        "username": "thardy",
-        "email": "thardy@tendrl.org",
-        "role": "normal",
-        "password": "pass1234",
-        "password_confirmation": "pass1234",
-        "email_notifications": True}])
-def valid_user_data(request):
+        "name": "Tom Admin",
+        "username": "tom-admin",
+        "email": "tom-admin@tendrl.org",
+        "role": "admin",
+        "password": "tomadmin1234",
+        "email_notifications": False}])
+def valid_admin_user_data(request):
     """
-    Generate valid data that can be imported into tendrl as a new user.
+    Generate valid data that can be imported into tendrl as a new user with
+    admin role.
 
     ``params`` parameter takes list of dictionaries where each dictionary
         contains ``username`` and ``password`` as keys.
@@ -77,18 +75,54 @@ def valid_user_data(request):
 
 
 @pytest.fixture
-def valid_new_user(valid_user_data):
+def valid_new_admin_user(valid_admin_user_data):
     """
-    Create user from valid_user_data fixture and return these data.
+    Create user from valid_admin_user_data fixture and return these data.
     At the end remove this user.
     """
     auth = login(
         pytest.config.getini("usm_username"),
         pytest.config.getini("usm_password"))
     admin = tendrlapi_user.ApiUser(auth=auth)
-    admin.add_user(valid_user_data)
-    yield valid_user_data
-    admin.del_user(valid_user_data["username"])
+    admin.add_user(valid_admin_user_data)
+    yield valid_admin_user_data
+    admin.del_user(valid_admin_user_data["username"])
+    logout(auth=auth)
+
+
+@pytest.fixture(
+    params=[{
+        "name": "Jerry Normal",
+        "username": "jerry-normal",
+        "email": "jerry-normal@tendrl.org",
+        "role": "normal",
+        "password": "jerrynormal1234",
+        "email_notifications": False}])
+def valid_normal_user_data(request):
+    """
+    Generate valid data that can be imported into tendrl as a new user with
+    normal role.
+
+    ``params`` parameter takes list of dictionaries where each dictionary
+        contains ``username`` and ``password`` as keys.
+    """
+
+    return request.param
+
+
+@pytest.fixture
+def valid_new_normal_user(valid_normal_user_data):
+    """
+    Create user from valid_noramal_user_data fixture and return these data.
+    At the end remove this user.
+    """
+    auth = login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    admin = tendrlapi_user.ApiUser(auth=auth)
+    admin.add_user(valid_normal_user_data)
+    yield valid_normal_user_data
+    admin.del_user(valid_normal_user_data["username"])
     logout(auth=auth)
 
 

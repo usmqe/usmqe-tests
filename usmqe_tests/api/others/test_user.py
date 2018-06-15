@@ -27,7 +27,7 @@ Teardown
 
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_user_get(valid_session_credentials, valid_new_user):
+def test_user_get(valid_session_credentials, valid_new_normal_user):
     """@pylatest api/user.get
     API-users: get user
     *******************
@@ -37,7 +37,7 @@ def test_user_get(valid_session_credentials, valid_new_user):
     Description
     ===========
 
-    Get user from ``valid_new_user`` fixture.
+    Get user from ``valid_new_normal_user`` fixture.
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     """@pylatest api/user.get
@@ -59,14 +59,14 @@ def test_user_get(valid_session_credentials, valid_new_user):
 
     .. test_result:: 3
 
-        User information for user from ``valid_new_user`` fixture is returned.
+        User information for user from ``valid_new_normal_user`` fixture is returned.
     """
-    test.check_user(valid_new_user)
+    test.check_user(valid_new_normal_user)
 
 
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_user_change_password(valid_new_user, valid_password):
+def test_user_change_password(valid_new_normal_user, valid_password):
     """@pylatest api/user.edit
     API-users: edit user
     *******************
@@ -78,7 +78,9 @@ def test_user_change_password(valid_new_user, valid_password):
 
     Change password and email of user and login with new password.
     """
-    auth = login(valid_new_user["username"], valid_new_user["password"])
+    auth = login(
+        valid_new_normal_user["username"],
+        valid_new_normal_user["password"])
     test = tendrlapi_user.ApiUser(auth=auth)
     """@pylatest api/user.get
     .. test_step:: 1
@@ -97,7 +99,7 @@ def test_user_change_password(valid_new_user, valid_password):
         "email": new_email,
         "password": valid_password,
         "password_confirmation": valid_password}
-    test.edit_user(valid_new_user["username"], edit_data)
+    test.edit_user(valid_new_normal_user["username"], edit_data)
     """@pylatest api/user.get
     .. test_step:: 2
 
@@ -110,7 +112,7 @@ def test_user_change_password(valid_new_user, valid_password):
         User is logged with new credentials.
     """
     logout(auth=auth)
-    auth = login(valid_new_user["username"], valid_password)
+    auth = login(valid_new_normal_user["username"], valid_password)
     test = tendrlapi_user.ApiUser(auth=auth)
 
     """@pylatest api/user.get
@@ -124,14 +126,14 @@ def test_user_change_password(valid_new_user, valid_password):
 
         User information is checked if email was correctly changed.
     """
-    valid_new_user["email"] = new_email
-    test.check_user(valid_new_user)
+    valid_new_normal_user["email"] = new_email
+    test.check_user(valid_new_normal_user)
     logout(auth=auth)
 
 
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_user_add_del(valid_session_credentials, valid_user_data):
+def test_user_add_del(valid_session_credentials, valid_normal_user_data):
     """@pylatest api/user.add_delete
     API-users: add and delete
     *************************
@@ -150,7 +152,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
         Add user test2.
 
         Send **PUT** request to ``APIURL/users/test2`` with data from fixture
-        valid_user_data where are specified keys: email, username, name, role
+        valid_normal_user_data where are specified keys: email, username, name, role
 
     .. test_result:: 2
 
@@ -160,7 +162,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
     """
     # add test user
 
-    added_user = test.add_user(valid_user_data)
+    added_user = test.add_user(valid_normal_user_data)
     """@pylatest api/user.add_delete
     .. test_step:: 3
        :include: api/user.get:2
@@ -182,7 +184,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
 
         Return code should be 200.
     """
-    test.del_user(valid_user_data["username"])
+    test.del_user(valid_normal_user_data["username"])
     """@pylatest api/user.add_delete
     .. test_step:: 5
        :include: api/user.get:2
@@ -199,7 +201,7 @@ def test_user_add_del(valid_session_credentials, valid_user_data):
         "ok": False,
         "reason": 'Not Found',
         "status": 404}
-    test.get_user(valid_user_data["username"], asserts_in=asserts)
+    test.get_user(valid_normal_user_data["username"], asserts_in=asserts)
     """@pylatest api/user.add_delete
     .. test_step:: 6
        :include: api/user.logout:3
