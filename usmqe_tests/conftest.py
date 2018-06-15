@@ -88,7 +88,26 @@ def valid_new_admin_user(valid_admin_user_data):
         pytest.config.getini("usm_password"))
     admin = tendrlapi_user.ApiUser(auth=auth)
     admin.add_user(valid_admin_user_data)
+
+    if valid_admin_user_data['email'].endswith(
+            usmqe.inventory.role2hosts("usm_client")[0]):
+        SSH = usmssh.get_ssh()
+        useradd = 'useradd {}'.format(valid_admin_user_data['username'])
+        node_connection = SSH[usmqe.inventory.role2hosts("usm_client")[0]]
+        node_connection.run(useradd)
+        passwd = 'echo "{}" | passwd --stdin {}'.format(
+            valid_admin_user_data['password'],
+            valid_admin_user_data['username'])
+        passwd_response = node_connection.run(passwd)
+        # passwd command returned 0 return code
+        assert passwd_response[0] == 0
     yield valid_admin_user_data
+    if valid_admin_user_data['email'].endswith(
+            usmqe.inventory.role2hosts("usm_client")[0]):
+        userdel = 'userdel {}'.format(valid_admin_user_data['username'])
+        userdel_response = node_connection.run(userdel)
+        # userdel command returned 0 return code
+        assert userdel_response[0] == 0
     admin.del_user(valid_admin_user_data["username"])
     logout(auth=auth)
 
@@ -126,7 +145,26 @@ def valid_new_normal_user(valid_normal_user_data):
         pytest.config.getini("usm_password"))
     admin = tendrlapi_user.ApiUser(auth=auth)
     admin.add_user(valid_normal_user_data)
+
+    if valid_normal_user_data['email'].endswith(
+            usmqe.inventory.role2hosts("usm_client")[0]):
+        SSH = usmssh.get_ssh()
+        useradd = 'useradd {}'.format(valid_normal_user_data['username'])
+        node_connection = SSH[usmqe.inventory.role2hosts("usm_client")[0]]
+        node_connection.run(useradd)
+        passwd = 'echo "{}" | passwd --stdin {}'.format(
+            valid_normal_user_data['password'],
+            valid_normal_user_data['username'])
+        passwd_response = node_connection.run(passwd)
+        # passwd command returned 0 return code
+        assert passwd_response[0] == 0
     yield valid_normal_user_data
+    if valid_normal_user_data['email'].endswith(
+            usmqe.inventory.role2hosts("usm_client")[0]):
+        userdel = 'userdel {}'.format(valid_normal_user_data['username'])
+        userdel_response = node_connection.run(userdel)
+        # userdel command returned 0 return code
+        assert userdel_response[0] == 0
     admin.del_user(valid_normal_user_data["username"])
     logout(auth=auth)
 
