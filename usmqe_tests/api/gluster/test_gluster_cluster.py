@@ -56,7 +56,8 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
         "Cluster id is: {}".format(cluster_id))
     for _ in range(12):
         cluster = api.get_cluster(cluster_id)
-        if len(cluster["nodes"]) == len(valid_trusted_pool_reuse):
+        nodes = [node for node in cluster["nodes"] if node["fqdn"]]
+        if len(nodes) == len(valid_trusted_pool_reuse):
             break
         time.sleep(10)
     else:
@@ -65,7 +66,6 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
             "Number of nodes from gluster trusted pool ({}) should be "
             "the same as number of nodes in tendrl ({})".format(len(valid_trusted_pool_reuse),
                                                                 len(cluster["nodes"])))
-    nodes = cluster["nodes"]
     node_fqdns = [x["fqdn"] for x in nodes]
     pytest.check(
         set(valid_trusted_pool_reuse) == set(node_fqdns),
