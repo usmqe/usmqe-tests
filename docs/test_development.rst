@@ -2,10 +2,8 @@
  Test Development
 ==================
 
-.. image:: https://travis-ci.org/usmqe/usmqe-tests.svg?branch=master
-    :target: https://travis-ci.org/usmqe/usmqe-tests
-
-TODO: include all the details
+This is an overview of style and rules we follow when automating system
+functional test cases.
 
 Code style
 ==========
