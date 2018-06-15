@@ -140,7 +140,7 @@ Related information
 At this point, we have a fresh QE server machine. But for us to be able to run
 integration tests, we need to:
 
-* Prepare fresh machines where Tendrl, Ceph and/or Gluster will be installed.
+* Prepare fresh machines where Tendrl and Gluster will be installed.
   See :ref:`test-enviroment-label`.
 * Configure the tests, go into ``~/usmqe-tests`` directory and
   follow :ref:`config-before-testrun-label`
