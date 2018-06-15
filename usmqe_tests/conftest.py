@@ -1,6 +1,7 @@
 import configparser
 import pytest
 import usmqe.usmssh as usmssh
+import usmqe.inventory
 
 
 # initialize usmqe logging module
@@ -58,7 +59,7 @@ def logger_testcase(request):
     params=[{
         "name": "Tom Admin",
         "username": "tom-admin",
-        "email": "tom-admin@tendrl.org",
+        "email": "tom-admin@example.com",
         "role": "admin",
         "password": "tomadmin1234",
         "email_notifications": False}])
@@ -94,7 +95,7 @@ def valid_new_admin_user(valid_admin_user_data):
     params=[{
         "name": "Jerry Normal",
         "username": "jerry-normal",
-        "email": "jerry-normal@tendrl.org",
+        "email": "jerry-normal@example.com",
         "role": "normal",
         "password": "jerrynormal1234",
         "email_notifications": False}])
@@ -106,7 +107,6 @@ def valid_normal_user_data(request):
     ``params`` parameter takes list of dictionaries where each dictionary
         contains ``username`` and ``password`` as keys.
     """
-
     return request.param
 
 
