@@ -95,34 +95,34 @@ python source files (python modules).
 Test cases which requires an imported cluster (aka trusted storage pool), uses
 pytest fixture ``imported_cluster``, which:
 
- * Doesn't create the cluster, but just checks if the cluster is already
-   imported and tries to import it if it's not imported already. If it fails
-   during the import or no suitable cluster is available for import, it
-   raises an errror.
- * Cluster suitable for import is identified using node defined by
-   ``usm_cluster_member`` parameter in usmqe configuration file.
- * Returns information about the imported cluster via value of the fixture
-   passed to the test function (``cluster`` object), which includes cluster
-   name, cluster id, volumes in the cluster.
- * Teardown of this fixture runs cluster unmanage if the cluster was imported
-   during setup phase.
+* Doesn't create the cluster, but just checks if the cluster is already
+  imported and tries to import it if it's not imported already. If it fails
+  during the import or no suitable cluster is available for import, it
+  raises an errror.
+* Cluster suitable for import is identified using node defined by
+  ``usm_cluster_member`` parameter in usmqe configuration file.
+* Returns information about the imported cluster via value of the fixture
+  passed to the test function (``cluster`` object), which includes cluster
+  name, cluster id, volumes in the cluster.
+* Teardown of this fixture runs cluster unmanage if the cluster was imported
+  during setup phase.
 
 Test casess are tagged by tags:
 
- * TODO: marker for gluster related tests
- * TODO: marker for volume type
- * TODO: marker for happy path tests
- * TODO: marker for status of gluster profiling
- * TODO: marker for human readable name
+* TODO: marker for gluster related tests
+* TODO: marker for volume type
+* TODO: marker for happy path tests
+* TODO: marker for status of gluster profiling
+* TODO: marker for human readable name
 
  .. note::
 
     Open questions, enhancements:
 
-     * fixture to read markers and change import accordingly
-     * fixture to read markers and check if the cluster matches the
-       requirements (eg. do we have specified volume type there?)
-     * multiple clusters
+    * fixture to read markers and change import accordingly
+    * fixture to read markers and check if the cluster matches the
+      requirements (eg. do we have specified volume type there?)
+    * multiple clusters
 
 Tagging makes it possible to run for example just tests related to particular
 volume which requires profiling to be enabled.
