@@ -66,12 +66,14 @@ def logger_testcase(request):
 def valid_admin_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
-    admin role.
+    admin role. `example.com` domain is replaced with hostname `usm_client`
+    inventory file role.
 
     ``params`` parameter takes list of dictionaries where each dictionary
         contains ``username`` and ``password`` as keys.
     """
-
+    request.param["email"] = request.param["email"].replace(
+        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
     return request.param
 
 
@@ -102,11 +104,14 @@ def valid_new_admin_user(valid_admin_user_data):
 def valid_normal_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
-    normal role.
+    normal role. `example.com` domain is replaced with hostname `usm_client`
+    inventory file role.
 
     ``params`` parameter takes list of dictionaries where each dictionary
         contains ``username`` and ``password`` as keys.
     """
+    request.param["email"] = request.param["email"].replace(
+        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
     return request.param
 
 
