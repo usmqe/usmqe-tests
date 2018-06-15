@@ -56,12 +56,12 @@ def logger_testcase(request):
 
 @pytest.fixture(
     params=[{
-        "name": "Tom Hardy",
+        "name": "Tom Admin",
         "username": "tom-admin",
         "email": "tom-admin@tendrl.org",
         "role": "admin",
-        "password": "pass1234",
-        "email_notifications": True}])
+        "password": "tomadmin1234",
+        "email_notifications": False}])
 def valid_admin_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
@@ -92,12 +92,12 @@ def valid_new_admin_user(valid_admin_user_data):
 
 @pytest.fixture(
     params=[{
-        "name": "Tom Hardy",
-        "username": "tom-normal",
-        "email": "tom-normal@tendrl.org",
+        "name": "Jerry Normal",
+        "username": "jerry-normal",
+        "email": "jerry-normal@tendrl.org",
         "role": "normal",
-        "password": "pass1234",
-        "email_notifications": True}])
+        "password": "jerrynormal1234",
+        "email_notifications": False}])
 def valid_normal_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
