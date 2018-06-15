@@ -114,6 +114,8 @@ Test casess are tagged by tags:
 * TODO: marker for happy path tests
 * TODO: marker for status of gluster profiling
 * TODO: marker for human readable name
+* marker for working/stable test - currently ``mark.testready``
+* TODO: marker for wip test?
 
  .. note::
 
