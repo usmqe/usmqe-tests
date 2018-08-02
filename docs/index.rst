@@ -70,7 +70,7 @@ Indices and tables
 * :ref:`search`
 
 .. _`Tendrl project`: http://tendrl.org/
-.. _`Tendrl Tests Documentation`: https://usmqe-testdoc.readthedocs.io/en/latest/
+.. _`Tendrl Tests Documentation`: https://github.com/usmqe/usmqe-testdoc
 .. _`usmqe-tests`: https://github.com/usmqe/usmqe-tests
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
