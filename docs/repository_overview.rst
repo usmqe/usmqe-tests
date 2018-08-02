@@ -35,8 +35,6 @@ Upstream: https://github.com/usmqe/usmqe-testdoc
 Here you find description of usmqe testing strategy, environment and test
 cases.
 
-For a latest html build, see: https://usmqe-testdoc.readthedocs.io/en/latest/
-
 usmqe-setup
 ===========
 
