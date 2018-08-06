@@ -114,10 +114,9 @@ Configuration options
 * *usm_ca_cert* - path to CA cert
 
 * *usm_id_fqdn* - one of nodes from cluster which identifies cluster for re-use testing,
-  see section `Functional Tests in Test developement document`_
+  see section :ref:`functional_tests`.
 
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
 .. _`conf/example_usm.ini`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.ini
-.. _`Functional Tests in Test developement document`: https://usmqe-tests.readthedocs.io/en/latest/test_development.html#functional-tests

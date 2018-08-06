@@ -79,6 +79,7 @@ To execute the unit tests, just run ``tox`` command in root directory of
 Moreover the unit tests are executed for `each new pull request via Travis
 CI`_.
 
+.. _functional_tests:
 
 Structure of Functional Tests
 =============================
