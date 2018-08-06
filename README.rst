@@ -38,6 +38,8 @@ running of usm qe integration tests.
 The code and pytest configuration of the unit tests are stored in
 ``usmqe/unit_tests`` directory. For more details see the readme file there.
 
+.. image:: https://travis-ci.org/usmqe/usmqe-tests.svg?branch=master
+    :target: https://travis-ci.org/usmqe/usmqe-tests
 
 License
 -------
