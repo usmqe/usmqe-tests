@@ -1,6 +1,7 @@
 import configparser
 import pytest
 import usmqe.usmssh as usmssh
+import usmqe.inventory
 
 
 # initialize usmqe logging module
@@ -58,20 +59,66 @@ def logger_testcase(request):
     params=[{
         "name": "Tom Admin",
         "username": "tom-admin",
-        "email": "tom-admin@tendrl.org",
+        "email": "tom-admin@example.com",
         "role": "admin",
         "password": "tomadmin1234",
         "email_notifications": False}])
 def valid_admin_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
-    admin role.
+    admin role. `example.com` domain is replaced with hostname `usm_client`
+    inventory file role.
 
     ``params`` parameter takes list of dictionaries where each dictionary
         contains ``username`` and ``password`` as keys.
     """
-
+    request.param["email"] = request.param["email"].replace(
+        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
     return request.param
+
+
+def create_new_user(user_data):
+    """
+    Create user from given user_data.
+    """
+    auth = login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    admin = tendrlapi_user.ApiUser(auth=auth)
+    admin.add_user(user_data)
+
+    if user_data['email'].endswith(
+            usmqe.inventory.role2hosts("usm_client")[0]):
+        SSH = usmssh.get_ssh()
+        useradd = 'useradd {}'.format(user_data['username'])
+        node_connection = SSH[usmqe.inventory.role2hosts("usm_client")[0]]
+        node_connection.run(useradd)
+        passwd = 'echo "{}" | passwd --stdin {}'.format(
+            user_data['password'],
+            user_data['username'])
+        passwd_response = node_connection.run(passwd)
+        # passwd command returned 0 return code
+        assert passwd_response[0] == 0
+
+
+def delete_new_user(user_data):
+    """
+    Delete user with given user_data.
+    """
+    auth = login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    admin = tendrlapi_user.ApiUser(auth=auth)
+    if user_data['email'].endswith(
+            usmqe.inventory.role2hosts("usm_client")[0]):
+        SSH = usmssh.get_ssh()
+        node_connection = SSH[usmqe.inventory.role2hosts("usm_client")[0]]
+        userdel = 'userdel {}'.format(user_data['username'])
+        userdel_response = node_connection.run(userdel)
+        # userdel command returned 0 return code
+        assert userdel_response[0] == 0
+    admin.del_user(user_data["username"])
+    logout(auth=auth)
 
 
 @pytest.fixture
@@ -80,33 +127,30 @@ def valid_new_admin_user(valid_admin_user_data):
     Create user from valid_admin_user_data fixture and return these data.
     At the end remove this user.
     """
-    auth = login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
-    admin = tendrlapi_user.ApiUser(auth=auth)
-    admin.add_user(valid_admin_user_data)
+    create_new_user(valid_admin_user_data)
     yield valid_admin_user_data
-    admin.del_user(valid_admin_user_data["username"])
-    logout(auth=auth)
+    delete_new_user(valid_admin_user_data)
 
 
 @pytest.fixture(
     params=[{
         "name": "Jerry Normal",
         "username": "jerry-normal",
-        "email": "jerry-normal@tendrl.org",
+        "email": "jerry-normal@example.com",
         "role": "normal",
         "password": "jerrynormal1234",
         "email_notifications": False}])
 def valid_normal_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
-    normal role.
+    normal role. `example.com` domain is replaced with hostname `usm_client`
+    inventory file role.
 
     ``params`` parameter takes list of dictionaries where each dictionary
         contains ``username`` and ``password`` as keys.
     """
-
+    request.param["email"] = request.param["email"].replace(
+        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
     return request.param
 
 
@@ -116,14 +160,9 @@ def valid_new_normal_user(valid_normal_user_data):
     Create user from valid_noramal_user_data fixture and return these data.
     At the end remove this user.
     """
-    auth = login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
-    admin = tendrlapi_user.ApiUser(auth=auth)
-    admin.add_user(valid_normal_user_data)
+    create_new_user(valid_normal_user_data)
     yield valid_normal_user_data
-    admin.del_user(valid_normal_user_data["username"])
-    logout(auth=auth)
+    delete_new_user(valid_normal_user_data)
 
 
 @pytest.fixture(params=[
