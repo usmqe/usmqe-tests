@@ -28,7 +28,7 @@ scheme:
   file one is supposed to create and change as needed. You need to provide
   all important config values in this file to be able to run the tests.
 
-* Ansible *host inventory file* (see an example in ``conf/example.hosts``),
+* Ansible *host inventory file* (see an example in `conf/example_usm.hosts`_),
   which is used both by ansible and by USM QE inventory module to organize
   machines into groups by it's role in test cluster. Actual path of this file
   is configured in ``usm_inventory`` option in main ``pytest.ini`` file.
@@ -120,3 +120,4 @@ Configuration options
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
 .. _`conf/example_usm.ini`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.ini
+.. _`conf/example_usm.hosts`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.hosts
