@@ -4,7 +4,7 @@ example-usm3-gl2.usmqe.tendrl.org
 example-usm3-gl3.usmqe.tendrl.org
 example-usm3-gl4.usmqe.tendrl.org
 
-[gluster-servers]
+[gluster_servers]
 example-usm3-gl1.usmqe.tendrl.org
 example-usm3-gl2.usmqe.tendrl.org
 example-usm3-gl3.usmqe.tendrl.org
