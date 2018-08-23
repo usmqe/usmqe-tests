@@ -109,7 +109,7 @@ def test_layout():
         "defined structure of panels should equal to structure in grafana")
 
 
-def test_cpu_utilization(measured_cpu_utilization):
+def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
     """@pylatest grafana/cpu_utilization
     API-grafana: cpu_utilization
     *******************
@@ -121,4 +121,61 @@ def test_cpu_utilization(measured_cpu_utilization):
 
     Check that Grafana panel *CPU Utilization* is showing correct values.
     """
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
     print(measured_cpu_utilization)
+    grafana = grafanaapi.GrafanaApi()
+    graphite = graphiteapi.GraphiteApi()
+    """@pylatest grafana/hosts
+    .. test_step:: 1
+        Send **GET** request to:
+        ``GRAFANA/dashboards/db/host-dashboard``.
+    .. test_result:: 1
+        JSON structure containing data related to layout is returned.
+    """
+
+    layout = grafana.get_dashboard("host-dashboard")
+    assert len(layout) > 0
+    dashboard_rows = layout["dashboard"]["rows"]
+
+    # get CPU Utilization panel from first row
+    panels = dashboard_rows[0]["panels"]
+    panel = [
+        panel for panel in panels
+        if "title" in panel
+            and panel["title"] == "CPU Utilization"]
+
+    """@pylatest grafana/cpu_utilization
+    .. test_step:: 2
+        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+        where [target] is part of uri obtained from previous GRAFANA call.
+        There should be target for CPU utilization of a host.
+        Compare number of hosts from Graphite with value retrieved from
+        ``measured_cpu_utilization`` fixture.
+    .. test_result:: 2
+        JSON structure containing data related to CPU utilization is similar
+        to values set by ``measured_cpu_utilization`` fixture in given time.
+    """
+    # get graphite target pointing at data containing number of host
+    target = panel[0]["targets"][0]["target"]
+    target = target.replace("$cluster_id", cluster_identifier)
+    target = target.replace("$host_name", pytest.config.getini(
+        "usm_cluster_member").replace(".", "_"))
+    target = target.strip("aliasSub(groupByNode(")
+    target = target.split("},", 1)[0]
+    target_base, target_options = target.rsplit(".{", 1)
+    target_options = target_options
+    LOGGER.debug("target: {}".format(target))
+    LOGGER.debug("target_base: {}".format(target_base))
+    LOGGER.debug("target_options: {}".format(target_options))
+    pytest.check(
+        target_options == "percent-user,percent-system",
+        "The panel CPU Utilization is composed of user and system parts")
+    target_user, target_system = [target_base + x for x
+        in target_options.split(",")]
+    LOGGER.debug("CPU user utilization target: {}".format(target_user))
+    LOGGER.debug("CPU system utilization target: {}".format(target_system))
+    graphite_user_cpu = graphite.get_datapoints(target_user)[-1][0]
+    graphite_system_cpu = graphite.get_datapoints(target_system)[-1][0]
