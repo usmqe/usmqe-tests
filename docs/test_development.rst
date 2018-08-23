@@ -110,9 +110,11 @@ pytest fixture ``imported_cluster``, which:
 
 Test casess are tagged by tags:
 
+* Positive test case: ``@pytest.mark.happypath``
+* Negative test case: ``@pytest.mark.negative``
+
 * TODO: marker for gluster related tests
 * TODO: marker for volume type
-* TODO: marker for happy path tests
 * TODO: marker for status of gluster profiling
 * TODO: marker for human readable name
 * marker for working/stable test - currently ``mark.testready``
