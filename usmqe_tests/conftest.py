@@ -175,6 +175,19 @@ def valid_password(request):
     return request.param
 
 
+@pytest.fixture(params=[
+        "a",
+        "tooshort",
+        "toolong" + "a" * 128,
+        ])
+def invalid_password(request):
+    """
+    Return invalid password string.
+    Password length requirements are described here: https://bugzilla.redhat.com/show_bug.cgi?id=1610913
+    """
+    return request.param
+
+
 @pytest.fixture
 def os_info():
     """
