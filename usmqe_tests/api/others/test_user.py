@@ -130,6 +130,56 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     test.check_user(valid_new_normal_user)
     logout(auth=auth)
 
+@pytest.mark.xfail
+@pytest.mark.negative
+def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
+    """@pylatest api/user.edit
+    API-users: edit user
+    *******************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Attempt to change password to invalid - either too long or too short.
+    Checks on 8-symbol password and on an extremely long password fail due to bug 
+    https://bugzilla.redhat.com/show_bug.cgi?id=1610947 
+    """
+    auth = login(
+        valid_new_normal_user["username"],
+        valid_new_normal_user["password"])
+    test = tendrlapi_user.ApiUser(auth=auth)
+    """@pylatest api/user.get
+    .. test_step:: 1
+
+        Send **PUT** request to ``APIURL/users``.
+
+        During this step is set email to `testmail@example.com` because
+        user can not be edited if he does not have set email. (e.g. admin)
+
+    .. test_result:: 1
+
+        Edited user data are returned.
+    """
+    new_email = "testmail@example.com"
+    edit_data = {
+        "email": new_email,
+        "password": invalid_password,
+        "password_confirmation": invalid_password}
+    asserts = {
+        "ok": False,
+        "reason": 'Unprocessable Entity',
+        "status": 422}
+
+    response = test.edit_user(valid_new_normal_user["username"], edit_data, asserts_in=asserts)
+    if len(invalid_password) > 10:
+        pass_length_error = "is too long" in str(response) 
+    else:
+        pass_length_error = "is too short" in str(response)
+    pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947') 
+    
+
 
 @pytest.mark.happypath
 @pytest.mark.testready
