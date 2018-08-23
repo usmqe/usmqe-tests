@@ -177,5 +177,11 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
         in target_options.split(",")]
     LOGGER.debug("CPU user utilization target: {}".format(target_user))
     LOGGER.debug("CPU system utilization target: {}".format(target_system))
-    graphite_user_cpu = graphite.get_datapoints(target_user)[-1][0]
-    graphite_system_cpu = graphite.get_datapoints(target_system)[-1][0]
+    graphite_user_cpu = graphite.get_datapoints(
+        target_user,
+        from_date=measured_cpu_utilization["start"].strftime("%H:%M_%y%m%d"),
+        until_date=measured_cpu_utilization["end"].strftime("%H:%M_%y%m%d"))
+    graphite_systemc_cpu = graphite.get_datapoints(
+        target_system,
+        from_date=measured_cpu_utilization["start"].strftime("%H:%M_%y%m%d"),
+        until_date=measured_cpu_utilization["end"].strftime("%H:%M_%y%m%d"))
