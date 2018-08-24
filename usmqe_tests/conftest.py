@@ -183,7 +183,8 @@ def valid_password(request):
 def invalid_password(request):
     """
     Return invalid password string.
-    Password length requirements are described here: https://bugzilla.redhat.com/show_bug.cgi?id=1610913
+    Password length requirements are described here:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1610913
     """
     return request.param
 

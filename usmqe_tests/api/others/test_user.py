@@ -130,6 +130,7 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     test.check_user(valid_new_normal_user)
     logout(auth=auth)
 
+
 @pytest.mark.xfail
 @pytest.mark.negative
 def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
@@ -143,8 +144,8 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     ===========
 
     Attempt to change password to invalid - either too long or too short.
-    Checks on 8-symbol password and on an extremely long password fail due to bug 
-    https://bugzilla.redhat.com/show_bug.cgi?id=1610947 
+    Checks on 8-symbol password and on an extremely long password fail due to bug
+    https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     auth = login(
         valid_new_normal_user["username"],
@@ -174,11 +175,10 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
 
     response = test.edit_user(valid_new_normal_user["username"], edit_data, asserts_in=asserts)
     if len(invalid_password) > 10:
-        pass_length_error = "is too long" in str(response) 
+        pass_length_error = "is too long" in str(response)
     else:
         pass_length_error = "is too short" in str(response)
-    pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947') 
-    
+    pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947')
 
 
 @pytest.mark.happypath
