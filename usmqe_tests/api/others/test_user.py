@@ -161,7 +161,9 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
 
     .. test_result:: 1
 
-        Edited user data are returned.
+        Error 422 Unprocessable Entity is returned. The response includes words
+        "is too long" or "is too short" depending on the invalid password length.
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     new_email = "testmail@example.com"
     edit_data = {
@@ -179,7 +181,17 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     else:
         pass_length_error = "is too short" in str(response)
     pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947')
-    # change the password back to original if there was no password length error
+    """@pylatest api/user.get
+    .. test_step:: 2
+
+        Check if the response to the request in test_step 1 returned the expected error.
+        If it didn't, change the password back to original.
+
+    .. test_result:: 2
+
+        User password is the same as it was before test_step 1
+
+    """
     if not pass_length_error:
         edit_back_data = {
             "email": new_email,
