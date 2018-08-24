@@ -179,6 +179,13 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     else:
         pass_length_error = "is too short" in str(response)
     pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947')
+    # change the password back to original if there was no password length error
+    if not pass_length_error:
+        edit_back_data = {
+            "email": new_email,
+            "password": valid_new_normal_user["password"],
+            "password_confirmation": valid_new_normal_user["password"]}
+        test.edit_user(valid_new_normal_user["username"], edit_back_data)
 
 
 @pytest.mark.happypath
