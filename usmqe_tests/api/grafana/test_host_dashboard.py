@@ -143,8 +143,8 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
     panels = dashboard_rows[0]["panels"]
     panel = [
         panel for panel in panels
-        if "title" in panel
-            and panel["title"] == "CPU Utilization"]
+        if "title" in panel and
+        panel["title"] == "CPU Utilization"]
 
     """@pylatest grafana/cpu_utilization
     .. test_step:: 2
@@ -173,7 +173,7 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
         target_options == "percent-user,percent-system",
         "The panel CPU Utilization is composed of user and system parts")
     target_user, target_system = ["{}.{}".format(target_base, x) for x
-        in target_options.split(",")]
+                                  in target_options.split(",")]
     graphite_user_cpu_data = graphite.get_datapoints(
         target_user,
         from_date=measured_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
@@ -198,7 +198,8 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
     graphite_cpu_mean = graphite_user_cpu_mean + graphite_system_cpu_mean
     pytest.check(
         minimal_cpu_utilization < graphite_cpu_mean < maximal_cpu_utilization,
-        "CPU should be {}, CPU in Graphite is: {}, applicable divergence is {}".format(
+        "CPU should be {}, CPU in Graphite is: {}, \
+applicable divergence is {}".format(
             measured_cpu_utilization["result"],
             graphite_cpu_mean,
             divergence))
