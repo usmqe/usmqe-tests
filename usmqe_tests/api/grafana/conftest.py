@@ -38,7 +38,7 @@ def measured_cpu_utilization(request):
         """
         Use `stress-ng` tool to stress cpu for 1 minute to given percentage
         """
-        # stress cpu for for 60 seconds
+        # stress cpu for for 180 seconds
         run_time = 180
         SSH = usmqe.usmssh.get_ssh()
         host = pytest.config.getini("usm_cluster_member")
