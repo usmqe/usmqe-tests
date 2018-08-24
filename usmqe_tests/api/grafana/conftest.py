@@ -1,10 +1,7 @@
 import pytest
-import os.path
 import datetime
-import time
 import usmqe.usmssh
 from usmqe.api.tendrlapi import glusterapi
-from usmqe.gluster import gluster
 
 LOGGER = pytest.get_logger('grafana_conftest', module=True)
 
@@ -42,7 +39,7 @@ def measured_cpu_utilization(request):
         Use `stress-ng` tool to stress cpu for 1 minute to given percentage
         """
         # stress cpu for for 60 seconds
-        run_time = 60
+        run_time = 180
         SSH = usmqe.usmssh.get_ssh()
         host = pytest.config.getini("usm_cluster_member")
         processors_cmd = "grep -c ^processor /proc/cpuinfo"

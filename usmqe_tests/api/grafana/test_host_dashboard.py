@@ -5,7 +5,6 @@ REST API test suite - Grafana dashboard host-dashboard
 import pytest
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
-from usmqe.gluster.gluster import GlusterCommon
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
