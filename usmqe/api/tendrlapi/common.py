@@ -320,7 +320,7 @@ class TendrlApi(ApiBase):
         return response.json()
 
     def import_cluster(
-            self, cluster_id, profiling="enable", short_name=None,
+            self, cluster_id, profiling=None, short_name=None,
             asserts_in=None):
         """ Import cluster.
 
@@ -330,10 +330,13 @@ class TendrlApi(ApiBase):
 
         Args:
             profiling (str): enables profiling for imported cluster,
-                values: "enable"|"disable"
+                values: "enable"|"disable"|"leave-as-is". When this argument is set to
+                *None*, "leave-as-is" value is used.
             short_name (str): short name that is set during import
             asserts_in (dict): assert values for this call and this method
         """
+        if not profiling:
+            profiling = "leave-as-is"
         asserts_in = asserts_in or {
             "cookies": None,
             "ok": True,
