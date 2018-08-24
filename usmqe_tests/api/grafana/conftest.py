@@ -54,7 +54,7 @@ def measured_cpu_utilization(request):
         retcode, stdout, stderr = SSH[host].run(stress_cmd)
         if retcode != 0:
             raise OSError(stderr)
-        return stdout
+        return request.param
 
     return measure_operation(fill_cpu)
 

@@ -173,15 +173,33 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
     pytest.check(
         target_options == "percent-user,percent-system",
         "The panel CPU Utilization is composed of user and system parts")
-    target_user, target_system = [target_base + x for x
+    target_user, target_system = ["{}.{}".format(target_base, x) for x
         in target_options.split(",")]
-    LOGGER.debug("CPU user utilization target: {}".format(target_user))
-    LOGGER.debug("CPU system utilization target: {}".format(target_system))
-    graphite_user_cpu = graphite.get_datapoints(
+    graphite_user_cpu_data = graphite.get_datapoints(
         target_user,
         from_date=measured_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
         until_date=measured_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
-    graphite_systemc_cpu = graphite.get_datapoints(
+    graphite_system_cpu_data = graphite.get_datapoints(
         target_system,
         from_date=measured_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
         until_date=measured_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
+    graphite_user_cpu_mean = sum(
+        [x[0] for x in graphite_user_cpu_data]) / max(
+            len(graphite_user_cpu_data), 1)
+    graphite_system_cpu_mean = sum(
+        [x[0] for x in graphite_system_cpu_data]) / max(
+            len(graphite_system_cpu_data), 1)
+    LOGGER.debug("CPU user utilization in Graphite: {}".format(
+        graphite_user_cpu_mean))
+    LOGGER.debug("CPU system utilization in Graphite: {}".format(
+        graphite_system_cpu_mean))
+    divergence = 10
+    minimal_cpu_utilization = measured_cpu_utilization["result"] - divergence
+    maximal_cpu_utilization = measured_cpu_utilization["result"] + divergence
+    graphite_cpu_mean = graphite_user_cpu_mean + graphite_system_cpu_mean
+    pytest.check(
+        minimal_cpu_utilization < graphite_cpu_mean < maximal_cpu_utilization,
+        "CPU should be {}, CPU in Graphite is: {}, applicable divergence is {}".format(
+            measured_cpu_utilization["result"],
+            graphite_cpu_mean,
+            divergence))
