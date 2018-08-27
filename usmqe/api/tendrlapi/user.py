@@ -86,11 +86,19 @@ class ApiUser(TendrlApi):
         self.print_req_info(request)
         self.check_response(request, asserts_in)
         sent_user = {k: user_in[k] for k in USERDATA_KEYS}
-        stored_user = self.get_user(user_in["username"])
-        pytest.check(
-            sent_user == stored_user,
-            """Information sent: {}, information stored in database: {},
-            These should match""".format(sent_user, stored_user))
+        if not asserts_in["ok"]:
+            get_user_asserts_in = {
+                "ok": False,
+                "reason": 'Not Found',
+                "status": 404}
+        else:
+            get_user_asserts_in = {}
+        stored_user = self.get_user(user_in["username"], asserts_in=get_user_asserts_in)
+        if asserts_in["ok"]:
+            pytest.check(
+                sent_user == stored_user,
+                """Information sent: {}, information stored in database: {},
+                These should match""".format(sent_user, stored_user))
         return stored_user
 
     def get_user(self, username, asserts_in=None):
