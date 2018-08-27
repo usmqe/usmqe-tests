@@ -319,7 +319,9 @@ class TendrlApi(ApiBase):
         self.check_response(response, asserts_in)
         return response.json()
 
-    def import_cluster(self, cluster_id, enable_profiling="yes", asserts_in=None):
+    def import_cluster(
+            self, cluster_id, profiling=None, short_name=None,
+            asserts_in=None):
         """ Import cluster.
 
         Name:        "import_cluster",
@@ -327,17 +329,23 @@ class TendrlApi(ApiBase):
         Pattern:     "clusters/:cluster_id/import",
 
         Args:
-            enable_profiling (str): enables profiling for imported cluster,
-                values: "yes"|"no"
+            profiling (str): enables profiling for imported cluster,
+                values: "enable"|"disable"|"leave-as-is". When this argument is set to
+                *None*, "leave-as-is" value is used.
+            short_name (str): short name that is set during import
             asserts_in (dict): assert values for this call and this method
         """
+        if not profiling:
+            profiling = "leave-as-is"
         asserts_in = asserts_in or {
             "cookies": None,
             "ok": True,
             "reason": 'Accepted',
             "status": 202}
         pattern = "clusters/{}/import".format(cluster_id)
-        data = {"enable_volume_profiling": enable_profiling}
+        data = {
+            "Cluster.volume_profiling_flag": profiling,
+            "Cluster.short_name": short_name}
         response = requests.post(
             pytest.config.getini("usm_api_url") + pattern,
             data=json.dumps(data),
