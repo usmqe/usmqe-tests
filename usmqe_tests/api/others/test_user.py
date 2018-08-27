@@ -200,6 +200,80 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         test.edit_user(valid_new_normal_user["username"], edit_back_data)
 
 
+@pytest.mark.xfail
+@pytest.mark.negative
+def test_add_user_invalid_password(valid_session_credentials,
+                                   valid_normal_user_data, invalid_password):
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Attempt to add a user with invalid password
+    """
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+    """@pylatest
+    .. test_step:: 1 api/user.add_delete
+
+        Attempt to add user using an invalid password, either too long or too short.
+
+        Send **PUT** request to ``APIURL/users/test2`` with data from fixture
+        valid_normal_user_data where are specified keys: email, username, name, role
+
+    .. test_result:: 1
+
+        User should not be created.
+
+        Return code should be 422.
+
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+    """
+    user_data_password_invalid = valid_normal_user_data
+    user_data_password_invalid["password"] = invalid_password
+    asserts = {
+        "ok": False,
+        "reason": 'Unprocessable Entity',
+        "status": 422}
+    test.add_user(user_data_password_invalid, asserts_in=asserts)
+
+    """@pylatest api/user.get
+    .. test_step:: 2
+
+        Check that the user doesn't exist
+
+    .. test_result:: 2
+
+        User can not be found.
+
+        Return code should be 404.
+
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+
+    """
+    asserts = {
+        "ok": False,
+        "reason": 'Not Found',
+        "status": 404}
+    not_found = test.get_user(user_data_password_invalid["username"], asserts_in=asserts)
+
+    """@pylatest api/user.add_delete
+    .. test_step:: 3
+
+        If the user was found, the user is deleted
+
+    .. test_result:: 3
+
+        If a new user was created during step 1 the user is deleted.
+
+    """
+    if "Not found" not in str(not_found):
+        test.del_user(user_data_password_invalid["username"])
+
+
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_user_add_del(valid_session_credentials, valid_normal_user_data):
