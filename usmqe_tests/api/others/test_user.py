@@ -221,8 +221,8 @@ def test_add_user_invalid_password(valid_session_credentials,
 
         Attempt to add user using an invalid password, either too long or too short.
 
-        Send **PUT** request to ``APIURL/users/test2`` with data from fixture
-        valid_normal_user_data where are specified keys: email, username, name, role
+        Send **POST** request to ``APIURL/users`` with data from fixture
+        valid_normal_user_data with user password substituted with invalid password.
 
     .. test_result:: 1
 
@@ -294,8 +294,8 @@ def test_add_user_invalid_username(valid_session_credentials,
 
         Attempt to add user using an invalid username, either too long or too short.
 
-        Send **PUT** request to ``APIURL/users/test2`` with data from fixture
-        valid_normal_user_data where are specified keys: email, username, name, role
+        Send **POST** request to ``APIURL/users`` with data from fixture
+        valid_normal_user_data with valid username substituted with an invalid one
 
     .. test_result:: 1
 
@@ -345,6 +345,51 @@ def test_add_user_invalid_username(valid_session_credentials,
     """
     if "Not found" not in str(not_found):
         test.del_user(user_data_username_invalid["username"])
+
+
+@pytest.mark.negative
+def test_delete_admin(valid_session_credentials):
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Attempt to delete the admin user
+    """
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+
+    """@pylatest api/user.add_delete
+    .. test_step:: 1
+
+        Attempt to delete the admin user
+
+    .. test_result:: 1
+
+        Admin user is not deleted.
+
+    """
+    asserts = {
+         "ok": False,
+         "reason": 'Forbidden',
+         "status": 403}
+
+    test.del_user("admin", asserts_in=asserts)
+
+    """@pylatest api/user.get
+     .. test_step:: 2
+
+         Check if user admin still exists
+
+     .. test_result:: 2
+
+         User admin still exists.
+
+    """
+    pytest.check(test.get_user("admin")["name"] == "Admin")
 
 
 @pytest.mark.happypath
