@@ -34,6 +34,7 @@ class GraphiteApi(ApiBase):
             pattern += "&until={}".format(until_date)
         response = requests.get(
             pytest.config.getini("graphite_api_url") + pattern)
+        self.print_req_info(response)
         self.check_response(response)
         response_json = response.json()
         if len(response_json) == 1 and "datapoints" in response_json[0]:
