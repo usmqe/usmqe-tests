@@ -124,7 +124,6 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         cluster_identifier = cluster_reuse["short_name"]
     else:
         cluster_identifier = cluster_reuse["integration_id"]
-    print(workload_cpu_utilization)
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
     """@pylatest grafana/hosts
