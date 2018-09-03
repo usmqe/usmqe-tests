@@ -108,7 +108,7 @@ def test_layout():
         "defined structure of panels should equal to structure in grafana")
 
 
-def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
+def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """@pylatest grafana/cpu_utilization
     API-grafana: cpu_utilization
     *******************
@@ -124,7 +124,7 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
         cluster_identifier = cluster_reuse["short_name"]
     else:
         cluster_identifier = cluster_reuse["integration_id"]
-    print(measured_cpu_utilization)
+    print(workload_cpu_utilization)
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
     """@pylatest grafana/hosts
@@ -152,10 +152,10 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
         where [target] is part of uri obtained from previous GRAFANA call.
         There should be target for CPU utilization of a host.
         Compare number of hosts from Graphite with value retrieved from
-        ``measured_cpu_utilization`` fixture.
+        ``workload_cpu_utilization`` fixture.
     .. test_result:: 2
         JSON structure containing data related to CPU utilization is similar
-        to values set by ``measured_cpu_utilization`` fixture in given time.
+        to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     target = panel[0]["targets"][0]["target"]
@@ -176,12 +176,12 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
                                   in target_options.split(",")]
     graphite_user_cpu_data = graphite.get_datapoints(
         target_user,
-        from_date=measured_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
-        until_date=measured_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
+        from_date=workload_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
+        until_date=workload_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
     graphite_system_cpu_data = graphite.get_datapoints(
         target_system,
-        from_date=measured_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
-        until_date=measured_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
+        from_date=workload_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
+        until_date=workload_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
     graphite_user_cpu_mean = sum(
         [x[0] for x in graphite_user_cpu_data]) / max(
             len(graphite_user_cpu_data), 1)
@@ -193,13 +193,13 @@ def test_cpu_utilization(measured_cpu_utilization, cluster_reuse):
     LOGGER.debug("CPU system utilization in Graphite: {}".format(
         graphite_system_cpu_mean))
     divergence = 10
-    minimal_cpu_utilization = measured_cpu_utilization["result"] - divergence
-    maximal_cpu_utilization = measured_cpu_utilization["result"] + divergence
+    minimal_cpu_utilization = workload_cpu_utilization["result"] - divergence
+    maximal_cpu_utilization = workload_cpu_utilization["result"] + divergence
     graphite_cpu_mean = graphite_user_cpu_mean + graphite_system_cpu_mean
     pytest.check(
         minimal_cpu_utilization < graphite_cpu_mean < maximal_cpu_utilization,
         "CPU should be {}, CPU in Graphite is: {}, \
 applicable divergence is {}".format(
-            measured_cpu_utilization["result"],
+            workload_cpu_utilization["result"],
             graphite_cpu_mean,
             divergence))

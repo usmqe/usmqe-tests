@@ -28,7 +28,7 @@ def measure_operation(operation):
 
 
 @pytest.fixture(params=[60, 80, 95])
-def measured_cpu_utilization(request):
+def workload_cpu_utilization(request):
     """
     Returns:
         dict: contains information about `start` and `stop` time of stress-ng
