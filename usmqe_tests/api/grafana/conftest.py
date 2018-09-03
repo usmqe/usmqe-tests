@@ -57,9 +57,10 @@ def workload_cpu_utilization(request):
 
 
 @pytest.fixture
-def valid_nodes(valid_session_credentials):
+def up_gluster_nodes(valid_session_credentials):
     """
     Generate valid host info from GetNodeList api call related to tendrl/nodes
+    for hosts that are UP.
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     cluster_list = api.get_nodes()
