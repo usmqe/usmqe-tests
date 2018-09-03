@@ -140,10 +140,11 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
 
     # get CPU Utilization panel from first row
     panels = dashboard_rows[0]["panels"]
-    panel = [
+    cpu_panels = [
         panel for panel in panels
         if "title" in panel and
         panel["title"] == "CPU Utilization"]
+    pytest.check(len(cpu_panels) == 1)
 
     """@pylatest grafana/cpu_utilization
     .. test_step:: 2
@@ -157,7 +158,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
-    target = panel[0]["targets"][0]["target"]
+    target = cpu_panels[0]["targets"][0]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
     target = target.replace("$host_name", pytest.config.getini(
         "usm_cluster_member").replace(".", "_"))
