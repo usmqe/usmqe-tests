@@ -3,7 +3,6 @@ REST API test suite - Grafana dashboard host-dashboard
 """
 
 import pytest
-import time
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
 
@@ -195,7 +194,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     expected_sample_rate =\
         workload_cpu_utilization["end"] - workload_cpu_utilization["start"]
     expected_sample_rate =\
-        time.mktime(expected_sample_rate.timetuple()) * SAMPLE_RATE
+        round(expected_sample_rate.total_seconds() / 60) * SAMPLE_RATE
     pytest.check(
         (len(graphite_user_cpu_data) == expected_sample_rate) or
         (len(graphite_user_cpu_data) == expected_sample_rate - 1),
