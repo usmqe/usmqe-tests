@@ -3,6 +3,7 @@ REST API test suite - Grafana dashboard host-dashboard
 """
 
 import pytest
+import time
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
 
@@ -177,14 +178,18 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         "The panel CPU Utilization is composed of user and system parts")
     target_user, target_system = ["{}.{}".format(target_base, x) for x
                                   in target_options.split(",")]
+    # make sure that all data in graphite are saved
+    time.sleep(2)
     graphite_user_cpu_data = graphite.get_datapoints(
         target_user,
-        from_date=workload_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
-        until_date=workload_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
+        from_date=int(workload_cpu_utilization["start"].timestamp()),
+        until_date=int(workload_cpu_utilization["end"].timestamp()))
     graphite_system_cpu_data = graphite.get_datapoints(
         target_system,
-        from_date=workload_cpu_utilization["start"].strftime("%H:%M_%Y%m%d"),
-        until_date=workload_cpu_utilization["end"].strftime("%H:%M_%Y%m%d"))
+        from_date=int(workload_cpu_utilization["start"].timestamp()),
+        until_date=int(workload_cpu_utilization["end"].timestamp()))
+    graphite_user_cpu_data = [x for x in graphite_user_cpu_data if x[0]]
+    graphite_system_cpu_data = [x for x in graphite_system_cpu_data if x[0]]
     graphite_user_cpu_mean = sum(
         [x[0] for x in graphite_user_cpu_data]) / max(
             len(graphite_user_cpu_data), 1)
