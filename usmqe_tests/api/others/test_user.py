@@ -5,6 +5,7 @@ REST API test suite - user
 
 import json
 import pytest
+import copy
 from usmqe.api.tendrlapi import user as tendrlapi_user
 from usmqe.api.tendrlapi.common import login, logout
 
@@ -305,7 +306,7 @@ def test_add_user_invalid_username(valid_session_credentials,
 
         This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
-    user_data_username_invalid = valid_normal_user_data
+    user_data_username_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_username_invalid["username"] = invalid_username
     asserts = {
         "ok": False,
