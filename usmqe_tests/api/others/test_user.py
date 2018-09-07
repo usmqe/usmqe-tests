@@ -5,6 +5,7 @@ REST API test suite - user
 
 import json
 import pytest
+import copy
 from usmqe.api.tendrlapi import user as tendrlapi_user
 from usmqe.api.tendrlapi.common import login, logout
 
@@ -198,6 +199,198 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
             "password": valid_new_normal_user["password"],
             "password_confirmation": valid_new_normal_user["password"]}
         test.edit_user(valid_new_normal_user["username"], edit_back_data)
+
+
+@pytest.mark.xfail
+@pytest.mark.negative
+def test_add_user_invalid_password(valid_session_credentials,
+                                   valid_normal_user_data, invalid_password):
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Attempt to add a user with invalid password
+    """
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+    """@pylatest
+    .. test_step:: 1 api/user.add_delete
+
+        Attempt to add user using an invalid password, either too long or too short.
+
+        Send **POST** request to ``APIURL/users`` with data from fixture
+        valid_normal_user_data with user password substituted with invalid password.
+
+    .. test_result:: 1
+
+        User should not be created.
+
+        Return code should be 422.
+
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+    """
+    user_data_password_invalid = valid_normal_user_data
+    user_data_password_invalid["password"] = invalid_password
+    asserts = {
+        "ok": False,
+        "reason": 'Unprocessable Entity',
+        "status": 422}
+    test.add_user(user_data_password_invalid, asserts_in=asserts)
+
+    """@pylatest api/user.get
+    .. test_step:: 2
+
+        Check that the user doesn't exist
+
+    .. test_result:: 2
+
+        User can not be found.
+
+        Return code should be 404.
+
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+
+    """
+    asserts = {
+        "ok": False,
+        "reason": 'Not Found',
+        "status": 404}
+    not_found = test.get_user(user_data_password_invalid["username"], asserts_in=asserts)
+
+    """@pylatest api/user.add_delete
+    .. test_step:: 3
+
+        If the user was found, the user is deleted
+
+    .. test_result:: 3
+
+        If a new user was created during step 1 the user is deleted.
+
+    """
+    if "Not found" not in str(not_found):
+        test.del_user(user_data_password_invalid["username"])
+
+
+@pytest.mark.negative
+def test_add_user_invalid_username(valid_session_credentials,
+                                   valid_normal_user_data, invalid_username):
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Attempt to add a user with invalid username
+    """
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+    """@pylatest
+    .. test_step:: 1 api/user.add_delete
+
+        Attempt to add user using an invalid username, either too long or too short.
+
+        Send **POST** request to ``APIURL/users`` with data from fixture
+        valid_normal_user_data with valid username substituted with an invalid one
+
+    .. test_result:: 1
+
+        User should not be created.
+
+        Return code should be 422.
+
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+    """
+    user_data_username_invalid = copy.deepcopy(valid_normal_user_data)
+    user_data_username_invalid["username"] = invalid_username
+    asserts = {
+        "ok": False,
+        "reason": 'Unprocessable Entity',
+        "status": 422}
+    test.add_user(user_data_username_invalid, asserts_in=asserts)
+
+    """@pylatest api/user.get
+    .. test_step:: 2
+
+        Check that the user doesn't exist
+
+    .. test_result:: 2
+
+        User can not be found.
+
+        Return code should be 404.
+
+        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+
+    """
+    asserts = {
+        "ok": False,
+        "reason": 'Not Found',
+        "status": 404}
+    not_found = test.get_user(user_data_username_invalid["username"], asserts_in=asserts)
+
+    """@pylatest api/user.add_delete
+    .. test_step:: 3
+
+        If the user was found, the user is deleted
+
+    .. test_result:: 3
+
+        If a new user was created during step 1 the user is deleted.
+
+    """
+    if "Not found" not in str(not_found):
+        test.del_user(user_data_username_invalid["username"])
+
+
+@pytest.mark.negative
+def test_delete_admin(valid_session_credentials):
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Attempt to delete the admin user
+    """
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+
+    """@pylatest api/user.add_delete
+    .. test_step:: 1
+
+        Attempt to delete the admin user
+
+    .. test_result:: 1
+
+        Admin user is not deleted.
+
+    """
+    asserts = {
+         "ok": False,
+         "reason": 'Forbidden',
+         "status": 403}
+
+    test.del_user("admin", asserts_in=asserts)
+
+    """@pylatest api/user.get
+     .. test_step:: 2
+
+         Check if user admin still exists
+
+     .. test_result:: 2
+
+         User admin still exists.
+
+    """
+    pytest.check(test.get_user("admin")["name"] == "Admin")
 
 
 @pytest.mark.happypath
