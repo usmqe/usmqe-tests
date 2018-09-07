@@ -4,10 +4,6 @@ plumbum
 requests
 mrglog
 
-# install webstr from master branch on github
-# TODO: use particular version (either reference tag or PyPI release)
-git+https://github.com/Webstr-framework/webstr.git@master
-
 # we have to use selenium compatible with firefox packaged in RHEL/CentOS 7
 # see https://stackoverflow.com/questions/40048940
 # see also: https://www.python.org/dev/peps/pep-0440/#version-specifiers
