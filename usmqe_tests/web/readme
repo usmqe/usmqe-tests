@@ -1,6 +1,0 @@
-This directory is for web tests of tendrl (RHSC 3.0 and higher)
-
-Tests are distributed to sub-directories via their area of interest
-ceph        ceph specific tests
-gluster     gluster specific tests
-others      tests which are valid for all areas
