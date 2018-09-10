@@ -526,5 +526,5 @@ def test_user_change_username_and_email(valid_new_normal_user):
         test.edit_user(new_username, edit_back_data)
     else:
         test.del_user(new_username)
-        pytest.check(False, 
+        pytest.check(False,
                      issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610660')
