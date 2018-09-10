@@ -503,7 +503,7 @@ def test_user_change_username_and_email(valid_new_normal_user):
     """
     new_email = "testmail@example.com"
     new_username = "newusername"
-    edit_data = { 
+    edit_data = {
         "email": new_email,
         "username": new_username}
     test.edit_user(valid_new_normal_user["username"], edit_data)
@@ -511,20 +511,20 @@ def test_user_change_username_and_email(valid_new_normal_user):
     .. test_step:: 2
 
         Check if the number of users changed as a result of updating a user.
-        Change all the users to their original state. 
+        Change all the users to their original state.
 
     .. test_result:: 2
 
         Fail if the number of users changed as a result of updating a user.
-        All the users are changed back to their original state. 
+        All the users are changed back to their original state.
 
     """
     if len(test.get_users()) == original_users_number:
-        edit_back_data = { 
+        edit_back_data = {
             "email": valid_new_normal_user["email"],
-            "username": valid_new_normal_user["username"],}
+            "username": valid_new_normal_user["username"]}
         test.edit_user(new_username, edit_back_data)
     else:
         test.del_user(new_username)
-        pytest.check(False, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610660')
-
+        pytest.check(False, 
+                     issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610660')
