@@ -165,6 +165,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
+    # TODO: create a general function to prepare grafana targets (in usmqe module)
     target = cpu_panel["targets"][0]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
     target = target.replace("$host_name", pytest.config.getini(
