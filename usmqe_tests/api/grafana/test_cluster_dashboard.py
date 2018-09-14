@@ -27,7 +27,7 @@ Teardown
 """
 
 
-def test_layout():
+def test_cluster_dashboard_layout():
     """@pylatest grafana/layout
     API-grafana: layout
     *******************
@@ -108,7 +108,7 @@ def test_layout():
         "defined structure of panels should equal to structure in grafana")
 
 
-def test_status(cluster_reuse):
+def test_hosts_panel_status(cluster_reuse):
     """@pylatest grafana/status
     API-grafana: hosts
     *******************
