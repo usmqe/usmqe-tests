@@ -471,3 +471,57 @@ def test_user_add_del(valid_session_credentials, valid_normal_user_data):
     .. test_result:: 6
        :include: api/user.logout:3
     """
+
+
+@pytest.mark.xfail
+def test_user_change_username_and_email(valid_session_credentials, valid_new_normal_user):
+    """@pylatest api/user.add_delete
+    API-users: add and delete
+    *************************
+
+    .. test_metadata:: author ebondare@redhat.com
+
+    Description
+    ===========
+
+    Change user's username and e-mail. New user shouldn't be created.
+    https://bugzilla.redhat.com/show_bug.cgi?id=1610660
+    """
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+    original_users_number = len(test.get_users())
+    """@pylatest api/user.get
+    .. test_step:: 1
+
+        Update a user's username and e-mail.
+
+    .. test_result:: 1
+
+        User's username and e-mail are updated.
+    """
+    new_email = "testmail@example.com"
+    new_username = "newusername"
+    edit_data = {
+        "email": new_email,
+        "username": new_username}
+    test.edit_user(valid_new_normal_user["username"], edit_data)
+    """@pylatest api/user.get
+    .. test_step:: 2
+
+        Check if the number of users changed as a result of updating a user.
+        Change all the users to their original state.
+
+    .. test_result:: 2
+
+        Fail if the number of users changed as a result of updating a user.
+        All the users are changed back to their original state.
+
+    """
+    if len(test.get_users()) == original_users_number:
+        edit_back_data = {
+            "email": valid_new_normal_user["email"],
+            "username": valid_new_normal_user["username"]}
+        test.edit_user(new_username, edit_back_data)
+    else:
+        test.del_user(new_username)
+        pytest.check(False,
+                     issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610660')
