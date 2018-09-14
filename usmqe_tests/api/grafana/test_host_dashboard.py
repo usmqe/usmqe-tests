@@ -110,7 +110,7 @@ def test_host_dashboard_layout():
 
 
 # TODO: move it to usmqe module
-def get_cpu_utilization_panel(grafana)
+def get_cpu_utilization_panel(grafana):
     """
     Args:
       grafana: GrafanaApi object (represeting connection to grafana)
