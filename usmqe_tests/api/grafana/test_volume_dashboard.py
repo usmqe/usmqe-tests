@@ -25,7 +25,7 @@ Teardown
 """
 
 
-def test_layout():
+def test_volume_dashboard_layout():
     """@pylatest grafana/layout
     API-grafana: layout
     *******************
@@ -98,7 +98,6 @@ def test_layout():
                 structure[row["title"]].append(panel["title"])
             elif "displayName" in panel.keys() and panel["displayName"]:
                 structure[row["title"]].append(panel["displayName"])
-    print(structure)
 
     LOGGER.debug("defined layout structure = {}".format(structure_defined))
     LOGGER.debug("layout structure in grafana = {}".format(structure))
