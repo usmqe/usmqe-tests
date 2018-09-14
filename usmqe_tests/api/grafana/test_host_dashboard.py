@@ -172,7 +172,6 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     target = target.strip("aliasSub(groupByNode(")
     target = target.split("},", 1)[0]
     target_base, target_options = target.rsplit(".{", 1)
-    target_options = target_options
     LOGGER.debug("target: {}".format(target))
     LOGGER.debug("target_base: {}".format(target_base))
     LOGGER.debug("target_options: {}".format(target_options))
