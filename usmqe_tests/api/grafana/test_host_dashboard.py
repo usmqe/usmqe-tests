@@ -109,6 +109,25 @@ def test_host_dashboard_layout():
         "defined structure of panels should equal to structure in grafana")
 
 
+# TODO: move it to usmqe module
+def get_cpu_utilization_panel(grafana)
+    """
+    Args:
+      grafana: GrafanaApi object (represeting connection to grafana)
+    """
+    layout = grafana.get_dashboard("host-dashboard")
+    assert len(layout) > 0
+    dashboard_rows = layout["dashboard"]["rows"]
+    # get CPU Utilization panel from first row
+    panels = dashboard_rows[0]["panels"]
+    cpu_panels = [
+        panel for panel in panels
+        if "title" in panel and
+        panel["title"] == "CPU Utilization"]
+    assert len(cpu_panels) == 1
+    return cpu_panels[0]
+
+
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """@pylatest grafana/cpu_utilization
     API-grafana: cpu_utilization
@@ -128,27 +147,11 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         cluster_identifier = cluster_reuse["short_name"]
     else:
         cluster_identifier = cluster_reuse["integration_id"]
+
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
-    """@pylatest grafana/hosts
-    .. test_step:: 1
-        Send **GET** request to:
-        ``GRAFANA/dashboards/db/host-dashboard``.
-    .. test_result:: 1
-        JSON structure containing data related to layout is returned.
-    """
 
-    layout = grafana.get_dashboard("host-dashboard")
-    assert len(layout) > 0
-    dashboard_rows = layout["dashboard"]["rows"]
-
-    # get CPU Utilization panel from first row
-    panels = dashboard_rows[0]["panels"]
-    cpu_panels = [
-        panel for panel in panels
-        if "title" in panel and
-        panel["title"] == "CPU Utilization"]
-    pytest.check(len(cpu_panels) == 1)
+    cpu_panel = get_cpu_utilization_panel(grafana)
 
     """@pylatest grafana/cpu_utilization
     .. test_step:: 2
@@ -162,7 +165,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
-    target = cpu_panels[0]["targets"][0]["target"]
+    target = cpu_panel["targets"][0]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
     target = target.replace("$host_name", pytest.config.getini(
         "usm_cluster_member").replace(".", "_"))
@@ -178,6 +181,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         "The panel CPU Utilization is composed of user and system parts")
     target_user, target_system = ["{}.{}".format(target_base, x) for x
                                   in target_options.split(",")]
+
     # make sure that all data in graphite are saved
     time.sleep(2)
     graphite_user_cpu_data = graphite.get_datapoints(
