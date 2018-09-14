@@ -474,7 +474,7 @@ def test_user_add_del(valid_session_credentials, valid_normal_user_data):
 
 
 @pytest.mark.xfail
-def test_user_change_username_and_email(valid_new_normal_user):
+def test_user_change_username_and_email(valid_session_credentials, valid_new_normal_user):
     """@pylatest api/user.add_delete
     API-users: add and delete
     *************************
@@ -487,10 +487,7 @@ def test_user_change_username_and_email(valid_new_normal_user):
     Change user's username and e-mail. New user shouldn't be created.
     https://bugzilla.redhat.com/show_bug.cgi?id=1610660
     """
-    auth = login(
-        "admin",
-        "adminuser")
-    test = tendrlapi_user.ApiUser(auth=auth)
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     original_users_number = len(test.get_users())
     """@pylatest api/user.get
     .. test_step:: 1
