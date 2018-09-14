@@ -27,7 +27,7 @@ Teardown
 """
 
 
-def test_layout():
+def test_host_dashboard_layout():
     """@pylatest grafana/layout
     API-grafana: layout
     *******************
@@ -196,20 +196,18 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     graphite_system_cpu_mean = sum(
         [x[0] for x in graphite_system_cpu_data]) / max(
             len(graphite_system_cpu_data), 1)
-    expected_sample_rate =\
-        workload_cpu_utilization["end"] - workload_cpu_utilization["start"]
-    expected_sample_rate =\
-        round(expected_sample_rate.total_seconds() / 60) * SAMPLE_RATE
+    workload_time_range = workload_cpu_utilization["end"] - workload_cpu_utilization["start"]
+    expected_number_of_datapoints = round(workload_time_range.total_seconds() / 60) * SAMPLE_RATE
     pytest.check(
-        (len(graphite_user_cpu_data) == expected_sample_rate) or
-        (len(graphite_user_cpu_data) == expected_sample_rate - 1),
+        (len(graphite_user_cpu_data) == expected_number_of_datapoints) or
+        (len(graphite_user_cpu_data) == expected_number_of_datapoints - 1),
         "Number of samples of user data should be {}, is {}.".format(
-            expected_sample_rate, len(graphite_user_cpu_data)))
+            expected_number_of_datapoints, len(graphite_user_cpu_data)))
     pytest.check(
-        (len(graphite_system_cpu_data) == expected_sample_rate) or
-        (len(graphite_system_cpu_data) == expected_sample_rate - 1),
+        (len(graphite_system_cpu_data) == expected_number_of_datapoints) or
+        (len(graphite_system_cpu_data) == expected_number_of_datapoints - 1),
         "Number of samples of system data should be {}, is {}.".format(
-            expected_sample_rate, len(graphite_system_cpu_data)))
+            expected_number_of_datapoints, len(graphite_system_cpu_data)))
     LOGGER.debug("CPU user utilization in Graphite: {}".format(
         graphite_user_cpu_mean))
     LOGGER.debug("CPU system utilization in Graphite: {}".format(
