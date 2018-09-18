@@ -81,7 +81,7 @@ def test_cluster_dashboard_layout():
             'Volumes',
             'Bricks',
             'Geo-Replication Session',
-            'Connection',
+            'Connections',
             'IOPS',
             'Capacity Utilization',
             'Capacity Available',
