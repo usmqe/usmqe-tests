@@ -52,12 +52,12 @@ class GlusterCommon(object):
         last_error = None
         output = None
         if node is None:
-            node = usmqe.inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]
+            node = pytest.config.getini("usm_cluster_member")
         if not node:
             raise GlusterCommandErrorException(
                 "Problem with gluster command '%s'.\n"
                 "Possible problem is no gluster-node (gluster_node list: %s)" %
-                (command, usmqe.inventory.role2hosts(pytest.config.getini("usm_gluster_role"))[0]))
+                (command, pytest.config.getini("usm_cluster_member")))
         if not executor:
             executor = self.cmd
         try:
@@ -119,11 +119,13 @@ class GlusterCommon(object):
         LOGGER.debug("Volume_names: %s", vol_names)
         return vol_names
 
-    def get_hosts_from_trusted_pool(self, host):
+    def get_hosts_from_trusted_pool(self, host=None):
         """
         Returns host names from trusted pool with given hostname.
         """
         # TODO change to right path to hostnames
+        if host is None:
+            host = pytest.config.getini("usm_cluster_member")
         hosts = self.run_on_node(node=host, command="peer status").findall(
             "./peerStatus/peer/hostnames/hostname")
         hosts = [x.text for x in hosts]
