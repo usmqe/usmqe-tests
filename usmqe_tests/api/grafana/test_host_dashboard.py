@@ -109,25 +109,6 @@ def test_host_dashboard_layout():
         "defined structure of panels should equal to structure in grafana")
 
 
-# TODO: move it to usmqe module
-def get_cpu_utilization_panel(grafana):
-    """
-    Args:
-      grafana: GrafanaApi object (represeting connection to grafana)
-    """
-    layout = grafana.get_dashboard("host-dashboard")
-    assert len(layout) > 0
-    dashboard_rows = layout["dashboard"]["rows"]
-    # get CPU Utilization panel from first row
-    panels = dashboard_rows[0]["panels"]
-    cpu_panels = [
-        panel for panel in panels
-        if "title" in panel and
-        panel["title"] == "CPU Utilization"]
-    assert len(cpu_panels) == 1
-    return cpu_panels[0]
-
-
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """@pylatest grafana/cpu_utilization
     API-grafana: cpu_utilization
@@ -151,7 +132,10 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
 
-    cpu_panel = get_cpu_utilization_panel(grafana)
+    cpu_panel = grafana.get_panel(
+        "CPU Utilization",
+        row_title="At-a-Glance",
+        dashboard="host-dashboard")
 
     """@pylatest grafana/cpu_utilization
     .. test_step:: 2

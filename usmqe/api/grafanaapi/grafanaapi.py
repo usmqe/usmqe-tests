@@ -42,3 +42,27 @@ class GrafanaApi(ApiBase):
             pytest.config.getini("grafana_api_url") + pattern)
         self.check_response(response)
         return response.json()
+
+
+    def get_panel(self, panel_title, row_title, dashboard):
+        """
+        Args:
+          panel_title (str): title of desired panel
+          row_title (str): title of row containing desired panel
+          dashboard (str): stub of dashboard containing desired panel
+        """
+        layout = self.get_dashboard(dashboard)
+        assert len(layout) > 0
+        dashboard_rows = layout["dashboard"]["rows"]
+        found_rows = [
+            row for row in dashboard_rows
+            if "title" in row and
+            row["title"] == row_title]
+        assert len(found_rows) == 1
+        panels = found_rows[0]["panels"]
+        found_panels = [
+            panel for panel in panels
+            if "title" in panel and
+            panel["title"] == panel_title]
+        assert len(found_panels) == 1
+        return found_panels[0]
