@@ -80,6 +80,26 @@ class TendrlApiGluster(TendrlApi):
         self.check_response(response)
         return response.json()
 
+    def get_brick_list(self, cluster, volume):
+        """ Get list of gluster volume bricks specified by cluster id
+        and volume id.
+
+        Name:        "get_brick_list",
+        Method:      "GET",
+        Pattern:     ":cluster_id:/volumes/:volume_id:/bricks",
+
+        Args:
+            cluster: id of cluster
+            volume: id of volume
+        """
+        pattern = "clusters/{}/volumes/{}/bricks".format(cluster, volume)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
+
     def create_bricks(self, cluster, nodes, devices, brick_name, asserts_in=None):
         """Create volume bricks on given nodes with specified path.
 
