@@ -80,8 +80,6 @@ class GrafanaApi(ApiBase):
         targets = [target["target"] for target in panel["targets"]
                    if not "hide" in target.keys() or not target["hide"]]
         output = []
-        LOGGER.debug(
-            "targets raw found in panel {}: {}".format(panel["title"], targets))
         for target in targets:
             target = target.replace("$cluster_id", cluster_identifier)
             target = target.replace("$host_name", pytest.config.getini(
