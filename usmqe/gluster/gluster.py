@@ -221,6 +221,10 @@ class GlusterVolume(GlusterCommon):
             "./volInfo/volumes/volume/brickCount")
         self.snap_count = xml.findtext(
             "./volInfo/volumes/volume/snapshotCount")
+        # parse bricks informations
+        self.bricks = [
+                brick.text for brick in xml.findall('./volInfo/volumes/volume/bricks/brick')]
+
         LOGGER.debug("Volume_status: %s" % self.status)
 
     def get_volume_id(self):
