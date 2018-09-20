@@ -43,7 +43,6 @@ class GrafanaApi(ApiBase):
         self.check_response(response)
         return response.json()
 
-
     def get_panel(self, panel_title, row_title, dashboard):
         """
         Args:
@@ -78,7 +77,7 @@ class GrafanaApi(ApiBase):
                 targets
         """
         targets = [target["target"] for target in panel["targets"]
-                   if not "hide" in target.keys() or not target["hide"]]
+                   if "hide" not in target.keys() or not target["hide"]]
         output = []
         for target in targets:
             target = target.replace("$cluster_id", cluster_identifier)
@@ -90,12 +89,12 @@ class GrafanaApi(ApiBase):
             for t in targets_split:
                 try:
                     t = t.rsplit("(", 1)[1]
-                except:
+                except Exception:
                     pass
                 t = t.split(")", 1)[0]
                 try:
                     t, target_options = t.rsplit(".{", 1)
-                except:
+                except Exception:
                     target_options = None
                 if target_options:
                     target_output.extend(["{}.{}".format(t, x.split("}", 1)[0]) for x

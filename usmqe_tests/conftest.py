@@ -240,6 +240,7 @@ def os_info():
     LOGGER.debug(config['os_info'])
     return dict(config['os_info'])
 
+
 @pytest.fixture(params=[60, 80, 95])
 def workload_cpu_utilization(request):
     """
