@@ -185,3 +185,85 @@ applicable divergence is {}".format(
             workload_cpu_utilization["result"],
             graphite_user_cpu_mean,
             divergence))
+
+
+def test_memory_utilization(workload_memory_utilization, cluster_reuse):
+    """@pylatest grafana/memory_utilization
+    API-grafana: memory_utilization
+    *******************
+
+    .. test_metadata:: author fbalak@redhat.com
+
+    Description
+    ===========
+
+    Check that Grafana panel *memory Utilization* is showing correct values.
+    """
+    # TODO(fbalak): get this number dynamically
+    # number of samples from graphite target per minute
+    SAMPLE_RATE = 1
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
+
+    grafana = grafanaapi.GrafanaApi()
+    graphite = graphiteapi.GraphiteApi()
+
+    memory_panel = grafana.get_panel(
+        "Memory Utilization",
+        row_title="At-a-Glance",
+        dashboard="host-dashboard")
+
+    """@pylatest grafana/memory_utilization
+    .. test_step:: 2
+        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+        where [target] is part of uri obtained from previous GRAFANA call.
+        There should be target for memory utilization of a host.
+        Compare number of hosts from Graphite with value retrieved from
+        ``workload_memory_utilization`` fixture.
+    .. test_result:: 2
+        JSON structure containing data related to memory utilization is similar
+        to values set by ``workload_memory_utilization`` fixture in given time.
+    """
+    # get graphite target pointing at data containing number of host
+    targets = grafana.get_panel_chart_targets(memory_panel, cluster_identifier)
+    pytest.check(
+        [t.split(".")[-1] for t in targets[-1]] == ["percent-used"],
+        "The panel memory Utilization is composed of used and system parts.")
+    target_used = targets[-1][0]
+    target_expected = "memory.percent-used"
+    pytest.check(
+        ".".join(target_used.rsplit(".", 2)[-2:]) == target_expected,
+        "target that is used is related to `{}`".format(target_expected))
+    # make sure that all data in graphite are saved
+    time.sleep(2)
+    # get data from graphite
+    from_date = int(workload_memory_utilization["start"].timestamp())
+    until_date = int(workload_memory_utilization["end"].timestamp())
+    graphite_used_memory_data = graphite.get_datapoints(
+        target_used, from_date=from_date, until_date=until_date)
+    graphite_used_memory_data = [x for x in graphite_used_memory_data if x[0]]
+    # process data from graphite
+    graphite_used_memory_mean = sum(
+        [x[0] for x in graphite_used_memory_data]) / max(
+            len(graphite_used_memory_data), 1)
+    workload_time_range = workload_memory_utilization["end"] - workload_memory_utilization["start"]
+    expected_number_of_datapoints = round(workload_time_range.total_seconds() / 60) * SAMPLE_RATE
+    pytest.check(
+        (len(graphite_used_memory_data) == expected_number_of_datapoints) or
+        (len(graphite_used_memory_data) == expected_number_of_datapoints - 1),
+        "Number of samples of used data should be {}, is {}.".format(
+            expected_number_of_datapoints, len(graphite_used_memory_data)))
+    LOGGER.debug("memory used utilization in Graphite: {}".format(
+        graphite_used_memory_mean))
+    divergence = 10
+    minimal_memory_utilization = workload_memory_utilization["result"] - divergence
+    maximal_memory_utilization = workload_memory_utilization["result"] + divergence
+    pytest.check(
+        minimal_memory_utilization < graphite_used_memory_mean < maximal_memory_utilization,
+        "used memory should be {}, used memory in Graphite is: {}, \
+applicable divergence is {}".format(
+            workload_memory_utilization["result"],
+            graphite_used_memory_mean,
+            divergence))
