@@ -64,3 +64,59 @@ def test_volumes_list(
     pytest.check(
         t_volume_names == g_volume_names,
         "List of volumes from Gluster should be the same as from Tendrl API.")
+
+
+@pytest.mark.happypath
+@pytest.mark.testready
+@pytest.mark.gluster
+def test_volume_brick_list(
+        valid_session_credentials,
+        cluster_reuse,
+        valid_trusted_pool_reuse):
+    """@pylatest api/gluster.volume_brick_list
+        API-gluster: volume_brick_list
+        ******************************
+
+        .. test_metadata:: author dahorak@redhat.com
+
+        Description
+        ===========
+
+        List bricks for given volume via API.
+
+        .. test_step:: 1
+
+                Connect to Tendrl API via GET request to
+                ``APIURL/:cluster_id/volumes/:volume_id/bricks``
+                Where cluster_id is set to predefined value.
+
+        .. test_result:: 1
+
+                Server should return response in JSON format:
+
+                Return code should be **200** with data ``{"bricks": [{...}, ...]}``.
+                """
+
+    # get list of volumes from Tendrl
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    t_volumes = api.get_volume_list(cluster_reuse['cluster_id'])
+
+    # perform brick list test for each volume
+    for t_volume in t_volumes["volumes"]:
+        LOGGER.info("Compare bricks for volume: %s", t_volume["name"])
+        gl_volume = gluster.GlusterVolume(volume_name=t_volume["name"])
+        gl_volume.info()
+
+        t_bricks = api.get_brick_list(cluster_reuse['cluster_id'], t_volume["vol_id"])
+        t_brick_list = {brick["brick_path"] for brick in t_bricks["bricks"]}
+
+        g_brick_list = set(gl_volume.bricks)
+
+        LOGGER.info("list of bricks for '%s' from Tendrl api: %s",
+                    t_volume["name"], str(t_brick_list))
+        LOGGER.info("list of bricks for '%s' from gluster: %s",
+                    t_volume["name"], g_brick_list)
+        pytest.check(
+            t_brick_list == g_brick_list,
+            "List of bricks for '{}' from Tendrl API should be the same "
+            "as from Gluster.".format(t_volume["name"]))
