@@ -66,3 +66,47 @@ class GrafanaApi(ApiBase):
             panel["title"] == panel_title]
         assert len(found_panels) == 1
         return found_panels[0]
+
+    def get_panel_chart_targets(self, panel, cluster_identifier=""):
+        """
+        Get all targets from panel. Returns list of lists for each visible line
+        in chart.
+
+        Args:
+            panel (object): panel object from *get_panel* function
+            cluster_identifier (str): id of cluster if id is expected among
+                targets
+        """
+        targets = [target["target"] for target in panel["targets"]
+                   if not "hide" in target.keys() or not target["hide"]]
+        output = []
+        LOGGER.debug(
+            "targets raw found in panel {}: {}".format(panel["title"], targets))
+        for target in targets:
+            target = target.replace("$cluster_id", cluster_identifier)
+            target = target.replace("$host_name", pytest.config.getini(
+                "usm_cluster_member").replace(".", "_"))
+            targets_split = target.split(", ")
+
+            target_output = []
+            for t in targets_split:
+                try:
+                    t = t.rsplit("(", 1)[1]
+                except:
+                    pass
+                t = t.split(")", 1)[0]
+                try:
+                    t, target_options = t.rsplit(".{", 1)
+                except:
+                    target_options = None
+                if target_options:
+                    target_output.extend(["{}.{}".format(t, x.split("}", 1)[0]) for x
+                                          in target_options.split(",")])
+                else:
+                    # drop target tendrl label
+                    if t.startswith("tendrl."):
+                        target_output.append(t)
+            output.append(target_output)
+        LOGGER.debug(
+            "targets found in panel {}: {}".format(panel["title"], output))
+        return output

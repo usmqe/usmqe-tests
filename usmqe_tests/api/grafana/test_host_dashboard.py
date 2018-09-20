@@ -149,23 +149,11 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
-    # TODO: create a general function to prepare grafana targets (in usmqe module)
-    target = cpu_panel["targets"][0]["target"]
-    target = target.replace("$cluster_id", cluster_identifier)
-    target = target.replace("$host_name", pytest.config.getini(
-        "usm_cluster_member").replace(".", "_"))
-    target = target.strip("aliasSub(groupByNode(")
-    target = target.split("},", 1)[0]
-    target_base, target_options = target.rsplit(".{", 1)
-    LOGGER.debug("target: {}".format(target))
-    LOGGER.debug("target_base: {}".format(target_base))
-    LOGGER.debug("target_options: {}".format(target_options))
+    targets = grafana.get_panel_chart_targets(cpu_panel, cluster_identifier)
     pytest.check(
-        target_options == "percent-user,percent-system",
+        [t.split(".")[-1] for t in targets[-1]] == ["percent-user", "percent-system"],
         "The panel CPU Utilization is composed of user and system parts")
-    target_user, _ = ["{}.{}".format(target_base, x) for x
-                      in target_options.split(",")]
-
+    target_user = targets[-1][0]
     # make sure that all data in graphite are saved
     time.sleep(2)
     # get data from graphite
