@@ -240,7 +240,6 @@ def os_info():
     LOGGER.debug(config['os_info'])
     return dict(config['os_info'])
 
-
 @pytest.fixture(params=[60, 80, 95])
 def workload_cpu_utilization(request):
     """
@@ -250,7 +249,7 @@ def workload_cpu_utilization(request):
     """
     def fill_cpu():
         """
-        Use `stress-ng` tool to stress cpu for 1 minute to given percentage
+        Use `stress-ng` tool to stress cpu for 3 minutes to given percentage
         """
         # stress cpu for for 180 seconds
         run_time = 180
@@ -267,3 +266,32 @@ def workload_cpu_utilization(request):
             raise OSError(stderr)
         return request.param
     return measure_operation(fill_cpu)
+
+
+@pytest.fixture(params=[60, 80, 95])
+def workload_memory_utilization(request):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of stress-ng
+            command and its `result`
+    """
+    def fill_memory():
+        """
+        Use `stress-ng` tool to stress memory for 3 minutes to given percentage
+        """
+        # stress memory for for 180 seconds
+        run_time = 180
+        SSH = usmqe.usmssh.get_ssh()
+        host = pytest.config.getini("usm_cluster_member")
+        memory_cmd = "free -b | awk '/Mem:/ {print $2}'"
+        retcode, total_memory, _ = SSH[host].run(memory_cmd)
+        target_memory = request.param / 100 * int(total_memory)
+        stress_cmd = "stress-ng --vm {} --vm-bytes {} --timeout {}s".format(
+            1,
+            int(target_memory),
+            run_time)
+        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+        return request.param
+    return measure_operation(fill_memory)
