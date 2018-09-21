@@ -153,38 +153,14 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     pytest.check(
         [t.split(".")[-1] for t in targets[-1]] == ["percent-user", "percent-system"],
         "The panel CPU Utilization is composed of user and system parts")
-    target_user = targets[-1][0]
+    targets_used = (targets[-1][0],)
     # make sure that all data in graphite are saved
     time.sleep(2)
-    # get data from graphite
-    from_date = int(workload_cpu_utilization["start"].timestamp())
-    until_date = int(workload_cpu_utilization["end"].timestamp())
-    graphite_user_cpu_data = graphite.get_datapoints(
-        target_user, from_date=from_date, until_date=until_date)
-    graphite_user_cpu_data = [x for x in graphite_user_cpu_data if x[0]]
-    # process data from graphite
-    graphite_user_cpu_mean = sum(
-        [x[0] for x in graphite_user_cpu_data]) / max(
-            len(graphite_user_cpu_data), 1)
-    workload_time_range = workload_cpu_utilization["end"] - workload_cpu_utilization["start"]
-    expected_number_of_datapoints = round(workload_time_range.total_seconds() / 60) * SAMPLE_RATE
-    pytest.check(
-        (len(graphite_user_cpu_data) == expected_number_of_datapoints) or
-        (len(graphite_user_cpu_data) == expected_number_of_datapoints - 1),
-        "Number of samples of user data should be {}, is {}.".format(
-            expected_number_of_datapoints, len(graphite_user_cpu_data)))
-    LOGGER.debug("CPU user utilization in Graphite: {}".format(
-        graphite_user_cpu_mean))
-    divergence = 10
-    minimal_cpu_utilization = workload_cpu_utilization["result"] - divergence
-    maximal_cpu_utilization = workload_cpu_utilization["result"] + divergence
-    pytest.check(
-        minimal_cpu_utilization < graphite_user_cpu_mean < maximal_cpu_utilization,
-        "user CPU should be {}, user CPU in Graphite is: {}, \
-applicable divergence is {}".format(
-            workload_cpu_utilization["result"],
-            graphite_user_cpu_mean,
-            divergence))
+    graphite.compare_data_mean(
+        workload_cpu_utilization["result"],
+        targets_used,
+        workload_cpu_utilization["start"],
+        workload_cpu_utilization["end"])
 
 
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
