@@ -201,7 +201,6 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     """
     # TODO(fbalak): get this number dynamically
     # number of samples from graphite target per minute
-    SAMPLE_RATE = 1
     if cluster_reuse["short_name"]:
         cluster_identifier = cluster_reuse["short_name"]
     else:
@@ -231,39 +230,19 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     pytest.check(
         [t.split(".")[-1] for t in targets[-1]] == ["percent-used"],
         "The panel memory Utilization is composed of used and system parts.")
-    target_used = targets[-1][0]
+    targets_used = (targets[0][0], targets[1][0], targets[-1][0])
     target_expected = "memory.percent-used"
-    pytest.check(
-        ".".join(target_used.rsplit(".", 2)[-2:]) == target_expected,
-        "target that is used is related to `{}`".format(target_expected))
+    for key, target_expected in enumerate((
+        "memory.percent-buffered",
+        "memory.percent-cached",
+        "memory.percent-used")):
+        pytest.check(
+            targets_used[key].endswith(target_expected),
+            "There is used target that ends with `{}`".format(target_expected))
     # make sure that all data in graphite are saved
     time.sleep(2)
-    # get data from graphite
-    from_date = int(workload_memory_utilization["start"].timestamp())
-    until_date = int(workload_memory_utilization["end"].timestamp())
-    graphite_used_memory_data = graphite.get_datapoints(
-        target_used, from_date=from_date, until_date=until_date)
-    graphite_used_memory_data = [x for x in graphite_used_memory_data if x[0]]
-    # process data from graphite
-    graphite_used_memory_mean = sum(
-        [x[0] for x in graphite_used_memory_data]) / max(
-            len(graphite_used_memory_data), 1)
-    workload_time_range = workload_memory_utilization["end"] - workload_memory_utilization["start"]
-    expected_number_of_datapoints = round(workload_time_range.total_seconds() / 60) * SAMPLE_RATE
-    pytest.check(
-        (len(graphite_used_memory_data) == expected_number_of_datapoints) or
-        (len(graphite_used_memory_data) == expected_number_of_datapoints - 1),
-        "Number of samples of used data should be {}, is {}.".format(
-            expected_number_of_datapoints, len(graphite_used_memory_data)))
-    LOGGER.debug("memory used utilization in Graphite: {}".format(
-        graphite_used_memory_mean))
-    divergence = 10
-    minimal_memory_utilization = workload_memory_utilization["result"] - divergence
-    maximal_memory_utilization = workload_memory_utilization["result"] + divergence
-    pytest.check(
-        minimal_memory_utilization < graphite_used_memory_mean < maximal_memory_utilization,
-        "used memory should be {}, used memory in Graphite is: {}, \
-applicable divergence is {}".format(
-            workload_memory_utilization["result"],
-            graphite_used_memory_mean,
-            divergence))
+    graphite.compare_data_mean(
+        workload_memory_utilization["result"],
+        targets_used,
+        workload_memory_utilization["start"],
+        workload_memory_utilization["end"])
