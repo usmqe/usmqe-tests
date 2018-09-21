@@ -123,7 +123,6 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """
     # TODO(fbalak): get this number dynamically
     # number of samples from graphite target per minute
-    SAMPLE_RATE = 1
     if cluster_reuse["short_name"]:
         cluster_identifier = cluster_reuse["short_name"]
     else:
@@ -209,9 +208,9 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     targets_used = (targets[0][0], targets[1][0], targets[-1][0])
     target_expected = "memory.percent-used"
     for key, target_expected in enumerate((
-        "memory.percent-buffered",
-        "memory.percent-cached",
-        "memory.percent-used")):
+            "memory.percent-buffered",
+            "memory.percent-cached",
+            "memory.percent-used")):
         pytest.check(
             targets_used[key].endswith(target_expected),
             "There is used target that ends with `{}`".format(target_expected))

@@ -43,8 +43,13 @@ class GraphiteApi(ApiBase):
             return response_json
 
     def compare_data_mean(
-        self, expected_result, targets,
-        from_date=None, until_date=None, divergence=10, sample_rate=1):
+            self,
+            expected_result,
+            targets,
+            from_date=None,
+            until_date=None,
+            divergence=10,
+            sample_rate=1):
         """
         Compare expected result with sum of means from graphite data from given targets.
 
