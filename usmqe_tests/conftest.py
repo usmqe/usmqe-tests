@@ -269,7 +269,7 @@ def workload_cpu_utilization(request):
     return measure_operation(fill_cpu)
 
 
-@pytest.fixture(params=[60, 80, 95])
+@pytest.fixture(params=[60, 80])
 def workload_memory_utilization(request):
     """
     Returns:
