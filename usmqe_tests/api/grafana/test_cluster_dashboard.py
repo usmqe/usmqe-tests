@@ -74,8 +74,6 @@ def test_cluster_dashboard_layout():
             'IOPS',
             'Capacity Utilization',
             'Capacity Available',
-            'Weekly Growth Rate',
-            'Weeks Remaining',
             'Throughput'],
         'Status': [
             'Volume Status',
