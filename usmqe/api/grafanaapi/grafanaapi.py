@@ -3,8 +3,10 @@
 Grafana REST API.
 """
 
+import json
 import requests
 import pytest
+from difflib import Differ
 from usmqe.api.base import ApiBase
 
 LOGGER = pytest.get_logger("grafanaapi", module=True)
@@ -66,6 +68,11 @@ class GrafanaApi(ApiBase):
 
         LOGGER.debug("defined layout structure = {}".format(structure))
         LOGGER.debug("layout structure in grafana = {}".format(structure_grafana))
+        d = Differ()
+        LOGGER.debug("reduced diff between the layouts: {}".format(
+            "".join([x.strip() for x in d.compare(
+                json.dumps(structure, sort_keys=True),
+                json.dumps(structure_grafana, sort_keys=True))])))
         pytest.check(
             structure == structure_grafana,
             "defined structure of panels should be equal to structure in grafana")
