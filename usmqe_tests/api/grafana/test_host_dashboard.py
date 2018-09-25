@@ -73,8 +73,6 @@ def test_host_dashboard_layout():
             'Total Brick Capacity Utilization',
             'Total Brick Capacity Utilization',
             'Total Brick Capacity Available',
-            'Weekly Growth Rate',
-            'Weeks Remaining',
             'Top Bricks by Capacity Percent Utilized',
             'Top Bricks by Total Capacity',
             'Top Bricks by Capacity Utilized',
