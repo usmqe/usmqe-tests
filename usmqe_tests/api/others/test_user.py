@@ -477,7 +477,7 @@ def test_user_add_del(valid_session_credentials, valid_normal_user_data):
 
 @pytest.mark.negative
 @pytest.mark.testready
-def test_change_username(valid_session_credentials, valid_new_normal_user):
+def test_change_username_and_email(valid_session_credentials, valid_new_normal_user):
     """@pylatest api/user.change_username
     API-users: edit
     *************************
@@ -488,6 +488,7 @@ def test_change_username(valid_session_credentials, valid_new_normal_user):
     ===========
 
     Try to change user's username and e-mail. It is not allowed.
+    Tests reproducer from BZ 1610660
     https://bugzilla.redhat.com/show_bug.cgi?id=1610660
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
@@ -499,6 +500,8 @@ def test_change_username(valid_session_credentials, valid_new_normal_user):
     .. test_result:: 1
 
         User's username and e-mail are not changed.
+
+        Return code should be 422.
     """
     new_email = "testmail@example.com"
     new_username = "newusername"
@@ -511,3 +514,22 @@ def test_change_username(valid_session_credentials, valid_new_normal_user):
          "status": 422}
 
     test.edit_user(valid_new_normal_user["username"], edit_data, asserts_in=asserts)
+
+    """
+    .. test_step:: 2
+
+       Check there's no user with the new username
+
+    .. test_result:: 2
+
+        User with the new username is not available.
+
+        Return code should be 404.
+    """
+    asserts = {
+         "json": json.loads('{"Error": "Not found"}'),
+         "cookies": None,
+         "ok": False,
+         "reason": 'Not Found',
+         "status": 404}
+    test.get_user(edit_data["username"], asserts_in=asserts)
