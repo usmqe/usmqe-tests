@@ -1,0 +1,2 @@
+[tendrlui.application_collections]
+domains = tendrlui.base.modeling.entities.domains:DomainsCollection

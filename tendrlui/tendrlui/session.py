@@ -1,0 +1,376 @@
+"""Session controller which manages UI session"""
+import copy
+import logging
+import os
+import sys
+from datetime import datetime
+
+from cached_property import cached_property
+from fauxfactory import gen_string
+
+from tendrlui import settings
+from tendrlui.browser import TendrluiBrowser, SeleniumBrowserFactory
+from tendrlui.entities.activationkey import ActivationKeyEntity
+from tendrlui.entities.architecture import ArchitectureEntity
+from tendrlui.entities.computeprofile import ComputeProfileEntity
+from tendrlui.entities.contentcredential import ContentCredentialEntity
+from tendrlui.entities.contentview import ContentViewEntity
+from tendrlui.entities.computeresource import ComputeResourceEntity
+from tendrlui.entities.discoveryrule import DiscoveryRuleEntity
+from tendrlui.entities.domain import DomainEntity
+from tendrlui.entities.errata import ErrataEntity
+from tendrlui.entities.host import HostEntity
+from tendrlui.entities.hostcollection import HostCollectionEntity
+from tendrlui.entities.job_template import JobTemplateEntity
+from tendrlui.entities.filter import FilterEntity
+from tendrlui.entities.ldap_authentication import LDAPAuthenticationEntity
+from tendrlui.entities.lifecycleenvironment import LCEEntity
+from tendrlui.entities.location import LocationEntity
+from tendrlui.entities.login import LoginEntity
+from tendrlui.entities.os import OperatingSystemEntity
+from tendrlui.entities.organization import OrganizationEntity
+from tendrlui.entities.package import PackageEntity
+from tendrlui.entities.partitiontable import PartitionTableEntity
+from tendrlui.entities.puppet_class import PuppetClassEntity
+from tendrlui.entities.puppet_environment import PuppetEnvironmentEntity
+from tendrlui.entities.product import ProductEntity
+from tendrlui.entities.repository import RepositoryEntity
+from tendrlui.entities.role import RoleEntity
+from tendrlui.entities.template import ProvisioningTemplateEntity
+from tendrlui.entities.smart_class_parameter import SmartClassParameterEntity
+from tendrlui.entities.smart_variable import SmartVariableEntity
+from tendrlui.entities.subnet import SubnetEntity
+from tendrlui.entities.syncplan import SyncPlanEntity
+from tendrlui.entities.user import UserEntity
+from tendrlui.entities.usergroup import UserGroupEntity
+from tendrlui.navigation import navigator
+
+LOGGER = logging.getLogger(__name__)
+
+
+class Session(object):
+    """A session context manager which is a key controller in tendrlui.
+
+    It is responsible for initializing and starting
+    :class:`tendrlui.browser.TendrluiBrowser`, navigating to satellite, performing
+    post-init browser tweaks, initializing navigator, all available UI
+    entities, and logging in to satellite.
+
+    When session is about to close, it saves a screenshot in case of any
+    exception, attempts to log out from satellite and performs all necessary
+    browser closure steps like quitting the browser, sending results to
+    saucelabs, stopping docker container etc.
+
+    For tests level it offers direct control over when UI session is started
+    and stopped as well as provides all the entities available without the need
+    to import and initialize them manually.
+
+    Usage::
+
+        def test_foo():
+            # steps executed before starting UI session
+            # [...]
+
+            # start of UI session
+            with Session('test_foo') as session:
+                # steps executed during UI session. For example:
+                session.architecture.create({'name': 'bar'})
+                [...]
+
+            # steps executed after UI session was closed
+
+    You can also pass credentials different from default ones specified in
+    settings like that::
+
+        with Session(test_name, user='foo', password='bar'):
+            # [...]
+
+    Every test may use multiple sessions if needed::
+
+        def test_foo():
+            with Session('test_foo', 'admin', 'password') as admin_session:
+                # UI steps, performed by 'admin' user
+                admin_session.user.create({'login': 'user1', 'password: 'pwd'})
+                # [...]
+            with Session('test_foo', 'user1', 'pwd1') as user1_session:
+                # UI steps, performed by 'user1' user
+                user1_session.architecture.create({'name': 'bar'})
+                # [...]
+
+    Nested sessions are supported as well, just don't forget to use different
+    variables for sessions::
+
+        def test_foo():
+            with Session('test_foo', 'admin', 'password') as admin_session:
+                # UI steps, performed by 'admin' user only
+                admin_session.user.create({'login': 'user1', 'password: 'pwd'})
+                # [...]
+                with Session('test_foo', 'user1', 'pwd1') as user1_session:
+                    # UI steps, performed by 'user1' user OR 'admin' in
+                    # different browser instances
+                    user1_session.architecture.create({'name': 'bar'})
+                    admin_session.architecture.search('bar')
+                    # [...]
+                # UI steps, performed by 'admin' user only
+                admin_session.user.delete({'login': 'user1'})
+
+    """
+
+    def __init__(self, session_name=None, user=None, password=None):
+        """Stores provided values, doesn't perform any actions.
+
+        :param str optional session_name: string representing session name.
+            Used in screenshot names, saucelabs test results, docker container
+            names etc. You should provide your test name here in most cases.
+            Defaults to random alphanumeric value.
+        :param str optional user: username (login) of user, who will perform UI
+            actions. If None is passed - default one provided by settings will
+            beused.
+        :param str optional password: password for provided user. If None is
+            passed - default one from settings will be used.
+        """
+        self.name = session_name or gen_string('alphanumeric')
+        self._user = user or settings.satellite.username
+        self._password = password or settings.satellite.password
+        self._factory = None
+        self.browser = None
+
+    def __enter__(self):
+        """Starts the browser, navigates to satellite, performs post-init
+        browser tweaks, initializes navigator and UI entities, and logs in to
+        satellite.
+        """
+        LOGGER.info(
+            u'Starting UI session %r for user %r', self.name, self._user)
+        self._factory = SeleniumBrowserFactory(test_name=self.name)
+        try:
+            selenium_browser = self._factory.get_browser()
+            self.browser = TendrluiBrowser(selenium_browser, self)
+
+            self.browser.url = 'https://' + settings.satellite.hostname
+            self._factory.post_init()
+
+            # Navigator
+            self.navigator = copy.deepcopy(navigator)
+            self.navigator.browser = self.browser
+
+            self.login.login({
+                'username': self._user, 'password': self._password})
+        except Exception as exception:
+            self.__exit__(*sys.exc_info())
+            raise exception
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Attempts to log out, saves the screenshot and performs all required
+        session closure activities.
+
+        NOTE: exceptions during logout or saving screenshot are just logged and
+            not risen not to shadow real session result.
+        """
+        LOGGER.info(
+            u'Stopping UI session %r for user %r', self.name, self._user)
+        passed = True if exc_type is None else False
+        try:
+            if passed:
+                self.login.logout()
+            else:
+                self.take_screenshot()
+        except Exception as err:
+            LOGGER.exception(err)
+        finally:
+            self._factory.finalize(passed)
+
+    def take_screenshot(self):
+        """Take screen shot from the current browser window.
+
+        The screenshot named ``screenshot-YYYY-mm-dd_HH_MM_SS.png`` will be
+        placed on the path specified by
+        ``settings.screenshots_path/YYYY-mm-dd/ClassName/method_name/``.
+
+        All directories will be created if they don't exist. Make sure that the
+        user running Robottelo have the right permissions to create files and
+        directories matching the complete.
+
+        This method is called automatically in case any exception during UI
+        session happens.
+        """
+        now = datetime.now()
+        path = os.path.join(
+            settings.selenium.screenshots_path,
+            now.strftime('%Y-%m-%d'),
+        )
+        if not os.path.exists(path):
+            os.makedirs(path)
+        filename = '{0}-screenshot-{1}.png'.format(
+            self.name.replace(' ', '_'),
+            now.strftime('%Y-%m-%d_%H_%M_%S')
+        )
+        path = os.path.join(path, filename)
+        LOGGER.debug('Saving screenshot %s', path)
+        self.browser.selenium.save_screenshot(path)
+
+    @cached_property
+    def activationkey(self):
+        """Instance of Activation Key entity."""
+        return ActivationKeyEntity(self.browser)
+
+    @cached_property
+    def architecture(self):
+        """Instance of Architecture entity."""
+        return ArchitectureEntity(self.browser)
+
+    @cached_property
+    def computeprofile(self):
+        """Instance of Compute Profile entity."""
+        return ComputeProfileEntity(self.browser)
+
+    @cached_property
+    def contentcredential(self):
+        """Instance of Content Credential entity."""
+        return ContentCredentialEntity(self.browser)
+
+    @cached_property
+    def computeresource(self):
+        """Instance of ComputeResource entity."""
+        return ComputeResourceEntity(self.browser)
+
+    @cached_property
+    def contentview(self):
+        """Instance of Content View entity."""
+        return ContentViewEntity(self.browser)
+
+    @cached_property
+    def discoveryrule(self):
+        """Instance of Discovery Rule entity."""
+        return DiscoveryRuleEntity(self.browser)
+
+    @cached_property
+    def domain(self):
+        """Instance of domain entity."""
+        return DomainEntity(self.browser)
+
+    @cached_property
+    def errata(self):
+        """Instance of Errata entity."""
+        return ErrataEntity(self.browser)
+
+    @cached_property
+    def filter(self):
+        """Instance of Filter entity."""
+        return FilterEntity(self.browser)
+
+    @cached_property
+    def host(self):
+        """Instance of Host entity."""
+        return HostEntity(self.browser)
+
+    @cached_property
+    def hostcollection(self):
+        """Instance of Host Collection entity."""
+        return HostCollectionEntity(self.browser)
+
+    @cached_property
+    def jobtemplate(self):
+        """Instance of Job Template entity."""
+        return JobTemplateEntity(self.browser)
+
+    @cached_property
+    def ldapauthentication(self):
+        """Instance of LDAP Authentication entity."""
+        return LDAPAuthenticationEntity(self.browser)
+
+    @cached_property
+    def lifecycleenvironment(self):
+        """Instance of LCE entity."""
+        return LCEEntity(self.browser)
+
+    @cached_property
+    def location(self):
+        """Instance of Location entity."""
+        return LocationEntity(self.browser)
+
+    @cached_property
+    def login(self):
+        """Instance of Login entity."""
+        return LoginEntity(self.browser)
+
+    @cached_property
+    def operatingsystem(self):
+        """Instance of Operating System entity."""
+        return OperatingSystemEntity(self.browser)
+
+    @cached_property
+    def organization(self):
+        """Instance of Organization entity."""
+        return OrganizationEntity(self.browser)
+
+    @cached_property
+    def package(self):
+        """Instance of Packge entity."""
+        return PackageEntity(self.browser)
+
+    @cached_property
+    def partitiontable(self):
+        """Instance of Partition Table entity."""
+        return PartitionTableEntity(self.browser)
+
+    @cached_property
+    def puppetclass(self):
+        """Instance of Puppet Class entity."""
+        return PuppetClassEntity(self.browser)
+
+    @cached_property
+    def puppetenvironment(self):
+        """Instance of Puppet Environment entity."""
+        return PuppetEnvironmentEntity(self.browser)
+
+    @cached_property
+    def product(self):
+        """Instance of Product entity."""
+        return ProductEntity(self.browser)
+
+    @cached_property
+    def provisioningtemplate(self):
+        """Instance of Provisioning Template entity."""
+        return ProvisioningTemplateEntity(self.browser)
+
+    @cached_property
+    def repository(self):
+        """Instance of Repository entity."""
+        return RepositoryEntity(self.browser)
+
+    @cached_property
+    def role(self):
+        """Instance of Role entity."""
+        return RoleEntity(self.browser)
+
+    @cached_property
+    def sc_parameter(self):
+        """Instance of Smart Class Parameter entity."""
+        return SmartClassParameterEntity(self.browser)
+
+    @cached_property
+    def smartvariable(self):
+        """Instance of Smart Variable entity."""
+        return SmartVariableEntity(self.browser)
+
+    @cached_property
+    def subnet(self):
+        """Instance of Subnet entity."""
+        return SubnetEntity(self.browser)
+
+    @cached_property
+    def syncplan(self):
+        """Instance of Sync Plan entity."""
+        return SyncPlanEntity(self.browser)
+
+    @cached_property
+    def user(self):
+        """Instance of User entity."""
+        return UserEntity(self.browser)
+
+    @cached_property
+    def usergroup(self):
+        """Instance of User Group entity."""
+        return UserGroupEntity(self.browser)
