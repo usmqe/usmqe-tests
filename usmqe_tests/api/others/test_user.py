@@ -233,7 +233,7 @@ def test_add_user_invalid_password(valid_session_credentials,
 
         This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
-    user_data_password_invalid = valid_normal_user_data
+    user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_password_invalid["password"] = invalid_password
     asserts = {
         "ok": False,
