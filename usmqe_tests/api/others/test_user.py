@@ -132,8 +132,8 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     logout(auth=auth)
 
 
-@pytest.mark.xfail
 @pytest.mark.negative
+@pytest.mark.testready
 def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
     """@pylatest api/user.edit
     API-users: edit user
@@ -201,8 +201,8 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         test.edit_user(valid_new_normal_user["username"], edit_back_data)
 
 
-@pytest.mark.xfail
 @pytest.mark.negative
+@pytest.mark.testready
 def test_add_user_invalid_password(valid_session_credentials,
                                    valid_normal_user_data, invalid_password):
     """@pylatest api/user.add_delete
@@ -276,6 +276,7 @@ def test_add_user_invalid_password(valid_session_credentials,
 
 
 @pytest.mark.negative
+@pytest.mark.testready
 def test_add_user_invalid_username(valid_session_credentials,
                                    valid_normal_user_data, invalid_username):
     """@pylatest api/user.add_delete
@@ -349,6 +350,7 @@ def test_add_user_invalid_username(valid_session_credentials,
 
 
 @pytest.mark.negative
+@pytest.mark.testready
 def test_delete_admin(valid_session_credentials):
     """@pylatest api/user.add_delete
     API-users: add and delete
@@ -473,7 +475,6 @@ def test_user_add_del(valid_session_credentials, valid_normal_user_data):
     """
 
 
-@pytest.mark.xfail
 def test_user_change_username_and_email(valid_session_credentials, valid_new_normal_user):
     """@pylatest api/user.add_delete
     API-users: add and delete
