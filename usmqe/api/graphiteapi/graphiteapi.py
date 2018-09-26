@@ -89,7 +89,6 @@ class GraphiteApi(ApiBase):
             graphite_data_mean_sum += graphite_data_mean
         LOGGER.debug("mean of all used data from Graphite: {}".format(
             graphite_data_mean_sum))
-        divergence = 10
         minimal_expected_result = expected_result - divergence
         maximal_expected_result = expected_result + divergence
         pytest.check(
