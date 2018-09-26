@@ -214,6 +214,19 @@ def invalid_password(request):
 
 
 @pytest.fixture(params=[
+        "wee4",
+        "a2345678901234567890",
+        ])
+def valid_username(request):
+    """
+    Return valid username string.
+    Password length requirements are described here:
+    https://bugzilla.redhat.com/show_bug.cgi?id=1610913
+    """
+    return request.param
+
+
+@pytest.fixture(params=[
         "wee",
         "toolong" + "a" * 14,
         "a23456789012345678901",
