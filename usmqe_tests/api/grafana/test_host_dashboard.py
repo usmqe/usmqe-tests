@@ -220,4 +220,5 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
         workload_memory_utilization["result"],
         targets_used,
         workload_memory_utilization["start"],
-        workload_memory_utilization["end"])
+        workload_memory_utilization["end"],
+        divergence=15)
