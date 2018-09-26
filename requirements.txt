@@ -1,10 +1,7 @@
+mrglog
+plumbum
 pytest
 pytest-ansible-playbook
-plumbum
 requests
-mrglog
-
-# we have to use selenium compatible with firefox packaged in RHEL/CentOS 7
-# see https://stackoverflow.com/questions/40048940
-# see also: https://www.python.org/dev/peps/pep-0440/#version-specifiers
-selenium == 2.53.6
+taretto
+webdriver_kaifuku
