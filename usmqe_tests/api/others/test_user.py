@@ -395,7 +395,11 @@ def test_delete_admin(valid_session_credentials):
 
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_user_add_del(valid_session_credentials, valid_normal_user_data):
+def test_user_add_del(
+        valid_session_credentials,
+        valid_normal_user_data,
+        valid_username,
+        valid_password):
     """@pylatest api/user.add_delete
     API-users: add and delete
     *************************
@@ -407,6 +411,8 @@ def test_user_add_del(valid_session_credentials, valid_normal_user_data):
 
     Add and remove *test* user.
     """
+    valid_normal_user_data["username"] = valid_username
+    valid_normal_user_data["password"] = valid_password
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     """@pylatest api/user.add_delete
     .. test_step:: 2
