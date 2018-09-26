@@ -188,7 +188,9 @@ def valid_new_normal_user(valid_normal_user_data):
 
 
 @pytest.fixture(params=[
-        "new_password_123"
+        "new_password_123",
+        "123456789",
+        "a" * 128,
         ])
 def valid_password(request):
     """
