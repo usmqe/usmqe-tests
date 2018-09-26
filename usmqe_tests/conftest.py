@@ -200,7 +200,7 @@ def valid_password(request):
 @pytest.fixture(params=[
         "a",
         "tooshort",
-        "toolong" + "a" * 128,
+        "a" * 129,
         ])
 def invalid_password(request):
     """
@@ -214,6 +214,7 @@ def invalid_password(request):
 @pytest.fixture(params=[
         "wee",
         "toolong" + "a" * 14,
+        "a23456789012345678901",
         ])
 def invalid_username(request):
     """
