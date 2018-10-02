@@ -132,8 +132,8 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     logout(auth=auth)
 
 
-@pytest.mark.xfail
 @pytest.mark.negative
+@pytest.mark.testready
 def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
     """@pylatest api/user.edit
     API-users: edit user
@@ -201,8 +201,8 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         test.edit_user(valid_new_normal_user["username"], edit_back_data)
 
 
-@pytest.mark.xfail
 @pytest.mark.negative
+@pytest.mark.testready
 def test_add_user_invalid_password(valid_session_credentials,
                                    valid_normal_user_data, invalid_password):
     """@pylatest api/user.add_delete
@@ -233,7 +233,7 @@ def test_add_user_invalid_password(valid_session_credentials,
 
         This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
-    user_data_password_invalid = valid_normal_user_data
+    user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_password_invalid["password"] = invalid_password
     asserts = {
         "ok": False,
@@ -276,6 +276,7 @@ def test_add_user_invalid_password(valid_session_credentials,
 
 
 @pytest.mark.negative
+@pytest.mark.testready
 def test_add_user_invalid_username(valid_session_credentials,
                                    valid_normal_user_data, invalid_username):
     """@pylatest api/user.add_delete
@@ -349,6 +350,7 @@ def test_add_user_invalid_username(valid_session_credentials,
 
 
 @pytest.mark.negative
+@pytest.mark.testready
 def test_delete_admin(valid_session_credentials):
     """@pylatest api/user.add_delete
     API-users: add and delete
@@ -473,10 +475,11 @@ def test_user_add_del(valid_session_credentials, valid_normal_user_data):
     """
 
 
-@pytest.mark.xfail
-def test_user_change_username_and_email(valid_session_credentials, valid_new_normal_user):
-    """@pylatest api/user.add_delete
-    API-users: add and delete
+@pytest.mark.negative
+@pytest.mark.testready
+def test_change_username_and_email(valid_session_credentials, valid_new_normal_user):
+    """@pylatest api/user.change_username
+    API-users: edit
     *************************
 
     .. test_metadata:: author ebondare@redhat.com
@@ -484,44 +487,49 @@ def test_user_change_username_and_email(valid_session_credentials, valid_new_nor
     Description
     ===========
 
-    Change user's username and e-mail. New user shouldn't be created.
+    Try to change user's username and e-mail. It is not allowed.
+    Tests reproducer from BZ 1610660
     https://bugzilla.redhat.com/show_bug.cgi?id=1610660
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-    original_users_number = len(test.get_users())
     """@pylatest api/user.get
     .. test_step:: 1
 
-        Update a user's username and e-mail.
+        Try to update a user's username and e-mail.
 
     .. test_result:: 1
 
-        User's username and e-mail are updated.
+        User's username and e-mail are not changed.
+
+        Return code should be 422.
     """
     new_email = "testmail@example.com"
     new_username = "newusername"
     edit_data = {
         "email": new_email,
         "username": new_username}
-    test.edit_user(valid_new_normal_user["username"], edit_data)
-    """@pylatest api/user.get
+    asserts = {
+         "ok": False,
+         "reason": 'Unprocessable Entity',
+         "status": 422}
+
+    test.edit_user(valid_new_normal_user["username"], edit_data, asserts_in=asserts)
+
+    """
     .. test_step:: 2
 
-        Check if the number of users changed as a result of updating a user.
-        Change all the users to their original state.
+       Check there's no user with the new username
 
     .. test_result:: 2
 
-        Fail if the number of users changed as a result of updating a user.
-        All the users are changed back to their original state.
+        User with the new username is not available.
 
+        Return code should be 404.
     """
-    if len(test.get_users()) == original_users_number:
-        edit_back_data = {
-            "email": valid_new_normal_user["email"],
-            "username": valid_new_normal_user["username"]}
-        test.edit_user(new_username, edit_back_data)
-    else:
-        test.del_user(new_username)
-        pytest.check(False,
-                     issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610660')
+    asserts = {
+         "json": json.loads('{"Error": "Not found"}'),
+         "cookies": None,
+         "ok": False,
+         "reason": 'Not Found',
+         "status": 404}
+    test.get_user(edit_data["username"], asserts_in=asserts)
