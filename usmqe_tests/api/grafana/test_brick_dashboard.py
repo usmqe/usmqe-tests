@@ -45,7 +45,7 @@ def test_brick_dashboard_layout():
        Send **GET** request to:
        ``GRAFANA/dashboards/db/cluster-dashboard`` and get layout structure.
        Compare structure of panels and rows as defined in specification:
-       ``https://github.com/Tendrl/specifications/issues/222``
+       ``https://github.com/Tendrl/specifications/issues/230``
 
     .. test_result:: 1
 
