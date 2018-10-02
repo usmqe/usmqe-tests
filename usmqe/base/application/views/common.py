@@ -22,12 +22,6 @@ class Navbar(View):
 class BaseLoggedInView(View):
     navbar = View.nested(Navbar)
 
-
-class UsersView(BaseLoggedInView):
-    adduser = Button("Add")
-
-
-class ClustersView(BaseLoggedInView):
-    pass
-
-
+    @property
+    def logged_in(self):
+        return len(self.navbar.clusters.text) > 2
