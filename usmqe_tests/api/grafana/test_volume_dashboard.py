@@ -38,38 +38,26 @@ def test_volume_dashboard_layout():
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/224``
     """
-    api = grafanaapi.GrafanaApi()
+    grafana = grafanaapi.GrafanaApi()
+
     """@pylatest grafana/layout
     .. test_step:: 1
 
         Send **GET** request to:
-        ``GRAFANA/dashboards/db/volume-dashboard``.
-
-    .. test_result:: 1
-
-        JSON structure containing data related to layout is returned.
-    """
-    layout = api.get_dashboard("volume-dashboard")
-    pytest.check(
-        len(layout) > 0,
-        "volume-dashboard layout should not be empty")
-
-    """@pylatest grafana/layout
-    .. test_step:: 2
-
+        ``GRAFANA/dashboards/db/volume-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/224``
 
-    .. test_result:: 2
+    .. test_result:: 1
 
         Defined structure and structure from Grafana API are equivalent.
     """
+
     structure_defined = {
         'At-a-Glance': [
             'Health',
             'Bricks',
             'Brick Status',
-            'Subvolume',
             'Geo-Replication Sessions',
             'Rebalance',
             'Rebalance Status',
@@ -90,17 +78,4 @@ def test_volume_dashboard_layout():
             'File Operations for Read/Write',
             'File Operations for Inode Operations',
             'File Operations for Entry Operations']}
-    structure = {}
-    for row in layout["dashboard"]["rows"]:
-        structure[row["title"]] = []
-        for panel in row["panels"]:
-            if panel["title"]:
-                structure[row["title"]].append(panel["title"])
-            elif "displayName" in panel.keys() and panel["displayName"]:
-                structure[row["title"]].append(panel["displayName"])
-
-    LOGGER.debug("defined layout structure = {}".format(structure_defined))
-    LOGGER.debug("layout structure in grafana = {}".format(structure))
-    pytest.check(
-        structure_defined == structure,
-        "defined structure of panels should equal to structure in grafana")
+    grafana.compare_structure(structure_defined, "volume-dashboard")
