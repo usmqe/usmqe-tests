@@ -14,6 +14,7 @@ class Navbar(View):
     ROOT = ".//nav[@class='navbar-pf-vertical tendrl-header-container']"
     title = Text(".//a[@class='navbar-brand']")
     clusters = Select(".//select[@id='repeatSelect']")
+    # TODO: navbar for normal user is smaller
     usermanagement = NavDropdown(".//a[@id='usermanagement']")
     alerts = NavDropdown(".//a[@id='notifications']")
     usermenu = NavDropdown(".//a[@id='usermenu']")
