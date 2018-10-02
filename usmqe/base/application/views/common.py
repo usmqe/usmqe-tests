@@ -1,6 +1,8 @@
 from taretto.ui.core import TextInput, View
 from taretto.ui.patternfly import Button
-
+from widgetastic.widget import Checkbox, GenericLocatorWidget
+from widgetastic.widget import Text, TextInput, View, Select
+from taretto.ui.patternfly import NavDropdown
 
 class LoginPage(View):
     username = TextInput(id="username")
@@ -8,5 +10,24 @@ class LoginPage(View):
     log_in = Button("Log In")
 
 
+class Navbar(View):
+    ROOT = ".//nav[@class='navbar-pf-vertical tendrl-header-container']"
+    title = Text(".//a[@class='navbar-brand']")
+    clusters = Select(".//select[@id='repeatSelect']")
+    usermanagement = NavDropdown(".//a[@id='usermanagement']")
+    alerts = NavDropdown(".//a[@id='notifications']")
+    usermenu = NavDropdown(".//a[@id='usermenu']")
+
+
 class BaseLoggedInView(View):
+    navbar = View.nested(Navbar)
+
+
+class UsersView(BaseLoggedInView):
+    adduser = Button("Add")
+
+
+class ClustersView(BaseLoggedInView):
     pass
+
+
