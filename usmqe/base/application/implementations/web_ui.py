@@ -71,13 +71,7 @@ class ViaWebUI(Implementation):
     def __init__(self, owner):
         super(ViaWebUI, self).__init__(owner)
         self.browser_manager = BrowserManager.from_conf({
-            "webdriver": "Remote",
-            "webdriver_options": {
-                "desired_capabilities": {
-                    "acceptInsecureCerts": True,
-                    "browserName": "chrome"
-                }
-            }
+            "webdriver": "Chrome"
         })
 
     def create_view(self, view_class, additional_context=None):
