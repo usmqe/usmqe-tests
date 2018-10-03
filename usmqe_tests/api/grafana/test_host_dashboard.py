@@ -202,11 +202,7 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(memory_panel, cluster_identifier)
-    pytest.check(
-        [t.split(".")[-1] for t in targets[-1]] == ["percent-used"],
-        "The panel memory Utilization is composed of used and system parts.")
     targets_used = (targets[0][0], targets[1][0], targets[-1][0])
-    target_expected = "memory.percent-used"
     for key, target_expected in enumerate((
             "memory.percent-buffered",
             "memory.percent-cached",
