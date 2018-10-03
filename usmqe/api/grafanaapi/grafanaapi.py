@@ -80,9 +80,11 @@ class GrafanaApi(ApiBase):
                    if "hide" not in target.keys() or not target["hide"]]
         output = []
         for target in targets:
-            target = target.replace("$cluster_id", cluster_identifier)
-            target = target.replace("$host_name", pytest.config.getini(
-                "usm_cluster_member").replace(".", "_"))
+            if "$cluster_id" in target:
+                target = target.replace("$cluster_id", cluster_identifier)
+            if "$host_name" in target:
+                target = target.replace("$host_name", pytest.config.getini(
+                    "usm_cluster_member").replace(".", "_"))
             targets_split = target.split(", ")
 
             target_output = []
