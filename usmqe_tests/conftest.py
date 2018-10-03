@@ -284,10 +284,12 @@ def workload_memory_utilization(request):
         run_time = 240
         SSH = usmqe.usmssh.get_ssh()
         host = pytest.config.getini("usm_cluster_member")
-        stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}% --timeout {}s".format(
+        stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
             1,
-            request.param,
+            request.param)
+        stress_cmd += " --timeout {}s --vm-hang 0 --vm-keep --verify".format(
             run_time)
+        stress_cmd += " --syslog"
         retcode, stdout, stderr = SSH[host].run(stress_cmd)
         if retcode != 0:
             raise OSError(stderr)
