@@ -70,6 +70,7 @@ class GraphiteApi(ApiBase):
         for target in targets:
             graphite_data = self.get_datapoints(
                 target, from_date=from_date, until_date=until_date)
+            # drop empty data points
             graphite_data = [x for x in graphite_data if x[0]]
             # process data from graphite
             graphite_data_mean = sum(
