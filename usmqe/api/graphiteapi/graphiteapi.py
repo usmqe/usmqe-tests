@@ -91,10 +91,12 @@ class GraphiteApi(ApiBase):
             graphite_data_mean_sum))
         minimal_expected_result = expected_result - divergence
         maximal_expected_result = expected_result + divergence
+        msg = "Data mean should be {}, data mean in Graphite is: {}, ".format(
+            expected_result,
+            graphite_data_mean_sum)
+        print(type(msg))
+        msg += "applicable divergence is {}".format(divergence)
         pytest.check(
-            minimal_expected_result < graphite_data_mean_sum < maximal_expected_result,
-            "Data mean should be {}, data mean in Graphite is: {}, \
-    applicable divergence is {}".format(
-                expected_result,
-                graphite_data_mean_sum,
-                divergence))
+            minimal_expected_result <
+            graphite_data_mean_sum < maximal_expected_result,
+            msg)
