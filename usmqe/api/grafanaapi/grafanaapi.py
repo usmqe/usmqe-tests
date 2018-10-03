@@ -73,7 +73,7 @@ class GrafanaApi(ApiBase):
 
         Args:
             panel (object): panel object from *get_panel* function
-            cluster_identifier (str): id of cluster if id is expected among
+            cluster_identifier (str): identifier of cluster to use withni
                 targets
         """
         targets = [target["target"] for target in panel["targets"]
