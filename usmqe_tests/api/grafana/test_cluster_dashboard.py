@@ -40,32 +40,21 @@ def test_cluster_dashboard_layout():
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/222``
     """
-    api = grafanaapi.GrafanaApi()
+    grafana = grafanaapi.GrafanaApi()
+
     """@pylatest grafana/layout
     .. test_step:: 1
 
         Send **GET** request to:
-        ``GRAFANA/dashboards/db/cluster-dashboard``.
-
-    .. test_result:: 1
-
-        JSON structure containing data related to layout is returned.
-    """
-    layout = api.get_dashboard("cluster-dashboard")
-    pytest.check(
-        len(layout) > 0,
-        "cluster-dashboard layout should not be empty")
-
-    """@pylatest grafana/layout
-    .. test_step:: 2
-
+        ``GRAFANA/dashboards/db/cluster-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/222``
 
-    .. test_result:: 2
+    .. test_result:: 1
 
         Defined structure and structure from Grafana API are equivalent.
     """
+
     structure_defined = {
         'Header': [],
         'Top Consumers': [
@@ -81,31 +70,16 @@ def test_cluster_dashboard_layout():
             'Volumes',
             'Bricks',
             'Geo-Replication Session',
-            'Connection',
+            'Connections',
             'IOPS',
             'Capacity Utilization',
             'Capacity Available',
-            'Weekly Growth Rate',
-            'Weeks Remaining',
             'Throughput'],
         'Status': [
             'Volume Status',
             'Host Status',
             'Brick Status']}
-    structure = {}
-    for row in layout["dashboard"]["rows"]:
-        structure[row["title"]] = []
-        for panel in row["panels"]:
-            if panel["title"]:
-                structure[row["title"]].append(panel["title"])
-            elif "displayName" in panel.keys() and panel["displayName"]:
-                structure[row["title"]].append(panel["displayName"])
-
-    LOGGER.debug("defined layout structure = {}".format(structure_defined))
-    LOGGER.debug("layout structure in grafana = {}".format(structure))
-    pytest.check(
-        structure_defined == structure,
-        "defined structure of panels should equal to structure in grafana")
+    grafana.compare_structure(structure_defined, "cluster-dashboard")
 
 
 def test_hosts_panel_status(cluster_reuse):

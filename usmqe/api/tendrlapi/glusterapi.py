@@ -44,6 +44,24 @@ class TendrlApiGluster(TendrlApi):
             sds_version=pytest.config.getini("usm_gluster_version"),
             asserts_in=asserts_in)
 
+    def get_node_list(self, cluster):
+        """ Get list of gluster nodes specified by cluster id
+
+        Name:        "get_node_list",
+        Method:      "GET",
+        Pattern:     ":cluster_id:/nodes",
+
+        Args:
+            cluster: id of cluster where will be created volume
+        """
+        pattern = "clusters/{}/nodes".format(cluster)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
+
     def get_volume_list(self, cluster):
         """ Get list of gluster volumes specified by cluster id
 
@@ -55,6 +73,26 @@ class TendrlApiGluster(TendrlApi):
             cluster: id of cluster where will be created volume
         """
         pattern = "clusters/{}/volumes".format(cluster)
+        response = requests.get(
+            pytest.config.getini("usm_api_url") + pattern,
+            auth=self._auth)
+        self.print_req_info(response)
+        self.check_response(response)
+        return response.json()
+
+    def get_brick_list(self, cluster, volume):
+        """ Get list of gluster volume bricks specified by cluster id
+        and volume id.
+
+        Name:        "get_brick_list",
+        Method:      "GET",
+        Pattern:     ":cluster_id:/volumes/:volume_id:/bricks",
+
+        Args:
+            cluster: id of cluster
+            volume: id of volume
+        """
+        pattern = "clusters/{}/volumes/{}/bricks".format(cluster, volume)
         response = requests.get(
             pytest.config.getini("usm_api_url") + pattern,
             auth=self._auth)
