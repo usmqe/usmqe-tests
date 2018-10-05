@@ -266,7 +266,7 @@ def workload_cpu_utilization(request):
     """
     def fill_cpu():
         """
-        Use `stress-ng` tool to stress cpu for 1 minute to given percentage
+        Use `stress-ng` tool to stress cpu for 3 minutes to given percentage
         """
         # stress cpu for for 180 seconds
         run_time = 180
@@ -283,3 +283,31 @@ def workload_cpu_utilization(request):
             raise OSError(stderr)
         return request.param
     return measure_operation(fill_cpu)
+
+
+@pytest.fixture(params=[60, 80])
+def workload_memory_utilization(request):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of stress-ng
+            command and its `result`
+    """
+    def fill_memory():
+        """
+        Use `stress-ng` tool to stress memory for 4 minutes to given percentage
+        """
+        # stress memory for for 240 seconds
+        run_time = 240
+        SSH = usmqe.usmssh.get_ssh()
+        host = pytest.config.getini("usm_cluster_member")
+        stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
+            1,
+            request.param)
+        stress_cmd += " --timeout {}s --vm-hang 0 --vm-keep --verify".format(
+            run_time)
+        stress_cmd += " --syslog"
+        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+        return request.param
+    return measure_operation(fill_memory)
