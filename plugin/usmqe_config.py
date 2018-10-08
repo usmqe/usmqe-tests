@@ -13,9 +13,9 @@ import pytest
 import os
 import argparse
 import yaml
+from py.path import local
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
-
 
 
 class UsmConfig(object):
@@ -40,9 +40,10 @@ class UsmConfig(object):
             help="path to usm inventory file")
         args = parser.parse_args()
 
+        base_path = local(os.path.abspath(__file__)).new(basename='..')
         # get default usm.yaml from conf/usm.yaml
         if not args.config_file:
-            config_file = os.path.join(os.getcwd(), "conf", "usm.yaml")
+            config_file = os.path.join(str(base_path), "conf", "usm.yaml")
         else:
             try:
                 config_file = args.config_file
@@ -53,7 +54,7 @@ class UsmConfig(object):
 
         # get default inventory file from conf/usm.hosts
         if not args.inventory_file:
-            inventory_file = os.path.join(os.getcwd(), "conf", "usm.hosts")
+            inventory_file = os.path.join(str(base_path), "conf", "usm.hosts")
         else:
             try:
                 inventory_file = args.inventory_file
@@ -65,11 +66,13 @@ class UsmConfig(object):
             loader=loader,
             sources=inventory_file)
 
-
     def load_config(self, config_file):
         """
         Loads configuration from pytest.yaml file.
         """
-        with open(config_file) as config_open:
-            conf = yaml.load(config_open)
+        with open(config_file, "r") as stream:
+            try:
+                conf = yaml.load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
         return conf
