@@ -66,25 +66,6 @@ class UsmConfig(object):
             sources=inventory_file)
 
 
-    def load_inventory(self, inventory_file):
-        """
-        Load inventory file to module inventory.py.
-
-        To use content from inventory file just *import inventory* and then use
-        proper function from ``usmqe.inventory``.
-        Name of inventory file is stored in ``usm_inventory`` option in
-        ``pytest.ini``.  Its value can be overriden by ``pytest -o
-        usm_inventory=path``.
-        """
-        inventory = InventoryManager(loader=loader, sources="/home/usmqe/usmqe-tests/conf/usm.hosts")
-        # update machine config (reading ansible inventory)
-        hosts = ConfigParser(allow_no_value=True)
-        hosts.read(inventory_file)
-        for rolename in hosts.sections():
-            for hostname, _ in hosts.items(rolename):
-                usmqe.inventory.add_host_entry(rolename, hostname)
-
-
     def load_config(self, config_file):
         """
         Loads configuration from pytest.yaml file.
