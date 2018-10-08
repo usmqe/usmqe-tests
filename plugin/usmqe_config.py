@@ -13,7 +13,9 @@ import pytest
 import os
 import argparse
 import yaml
-import usmqe.inventory
+from ansible.inventory.manager import InventoryManager
+from ansible.parsing.dataloader import DataLoader
+
 
 
 class UsmConfig(object):
@@ -23,7 +25,7 @@ class UsmConfig(object):
     """
 
     def __init__(self):
-        self.hosts = {}
+        self.inventory = {}
         self.usm = {}
         self.pytest = {}
 
@@ -58,7 +60,10 @@ class UsmConfig(object):
             except FileNotFoundError() as err:
                 print("Inventory file {} does not exist.".format(
                     args.inventory_file))
-        # self.hosts = self.load_inventory(inventory_file)
+        loader = DataLoader()
+        self.inventory = InventoryManager(
+            loader=loader,
+            sources=inventory_file)
 
 
     def load_inventory(self, inventory_file):
@@ -71,6 +76,7 @@ class UsmConfig(object):
         ``pytest.ini``.  Its value can be overriden by ``pytest -o
         usm_inventory=path``.
         """
+        inventory = InventoryManager(loader=loader, sources="/home/usmqe/usmqe-tests/conf/usm.hosts")
         # update machine config (reading ansible inventory)
         hosts = ConfigParser(allow_no_value=True)
         hosts.read(inventory_file)
