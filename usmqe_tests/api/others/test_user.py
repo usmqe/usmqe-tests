@@ -348,8 +348,8 @@ def test_add_user_invalid_username(valid_session_credentials,
 @pytest.mark.testready
 def test_delete_admin(valid_session_credentials):
     """
-    API-users: add and delete
-    *************************
+    add and delete
+    **************
 
     .. test_metadata:: author ebondare@redhat.com
 
@@ -360,7 +360,7 @@ def test_delete_admin(valid_session_credentials):
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
 
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 1
 
         Attempt to delete the admin user
@@ -398,8 +398,8 @@ def test_user_add_del(
         valid_username,
         valid_password):
     """
-    API-users: add and delete
-    *************************
+    add and delete
+    **************
 
     .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com fbalak@redhat.com
 
@@ -411,7 +411,7 @@ def test_user_add_del(
     valid_normal_user_data["username"] = valid_username
     valid_normal_user_data["password"] = valid_password
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 2
 
         Add user test2.
@@ -493,7 +493,7 @@ def test_change_username_and_email(valid_session_credentials, valid_new_normal_u
     https://bugzilla.redhat.com/show_bug.cgi?id=1610660
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-    """@pylatest api/user.get
+    """
     .. test_step:: 1
 
         Try to update a user's username and e-mail.

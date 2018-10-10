@@ -24,8 +24,8 @@ server.
 
 def test_cluster_dashboard_layout():
     """
-    API-grafana: layout
-    *******************
+    layout
+    ******
 
     .. test_metadata:: author fbalak@redhat.com
 
@@ -37,7 +37,7 @@ def test_cluster_dashboard_layout():
     """
     grafana = grafanaapi.GrafanaApi()
 
-    """@pylatest grafana/layout
+    """
     .. test_step:: 1
 
         Send **GET** request to:
@@ -98,7 +98,7 @@ def test_hosts_panel_status(cluster_reuse):
         pytest.config.getini("usm_cluster_member"))
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
-    """@pylatest grafana/hosts
+    """
     .. test_step:: 1
 
         Send **GET** request to:
@@ -164,7 +164,7 @@ def test_hosts_panel_status(cluster_reuse):
         panel for panel in panels
         if "displayName" in panel and panel["displayName"] == "Hosts"
             ]
-    """@pylatest grafana/hosts
+    """
     .. test_step:: 2
 
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
