@@ -9,7 +9,7 @@ from usmqe.gluster.gluster import GlusterCommon
 
 
 LOGGER = pytest.get_logger('cluster_dashboard', module=True)
-"""@pylatest default
+"""
 Setup
 =====
 
@@ -21,14 +21,9 @@ server.
 
 """
 
-"""@pylatest default
-Teardown
-========
-"""
-
 
 def test_cluster_dashboard_layout():
-    """@pylatest grafana/layout
+    """
     API-grafana: layout
     *******************
 
@@ -83,7 +78,7 @@ def test_cluster_dashboard_layout():
 
 
 def test_hosts_panel_status(cluster_reuse):
-    """@pylatest grafana/status
+    """
     API-grafana: hosts
     *******************
 
@@ -193,7 +188,7 @@ def test_hosts_panel_status(cluster_reuse):
         "Number of total hosts in graphite ({}) should be {}".format(
             g_total, len(states)))
 
-    """@pylatest grafana/hosts
+    """
     .. test_step:: 3
 
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
@@ -222,7 +217,7 @@ def test_hosts_panel_status(cluster_reuse):
         "Number of hosts that are up in graphite ({}) should be {}".format(
             g_up, len(real_up)))
 
-    """@pylatest grafana/hosts
+    """
     .. test_step:: 4
 
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
