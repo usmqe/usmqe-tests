@@ -11,7 +11,7 @@ from usmqe.api.tendrlapi.common import login, logout
 
 
 LOGGER = pytest.get_logger('user_test', module=True)
-"""@pylatest default
+"""
 Setup
 =====
 
@@ -20,18 +20,13 @@ Prepare USM cluster accordingly to documentation.
 Further mentioned ``APIURL`` points to: ``http://USMSERVER/api/1.0``.
 """
 
-"""@pylatest default
-Teardown
-========
-"""
-
 
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_user_get(valid_session_credentials, valid_new_normal_user):
-    """@pylatest api/user.get
-    API-users: get user
-    *******************
+    """
+    get user
+    ********
 
     .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com fbalak@redhat.com
 
@@ -41,7 +36,7 @@ def test_user_get(valid_session_credentials, valid_new_normal_user):
     Get user from ``valid_new_normal_user`` fixture.
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-    """@pylatest api/user.get
+    """
     .. test_step:: 2
 
         Send **GET** request to ``APIURL/users``.
@@ -51,7 +46,7 @@ def test_user_get(valid_session_credentials, valid_new_normal_user):
         List of users in database is returned
     """
     test.get_users()
-    """@pylatest api/user.get
+    """
     .. test_step:: 3
 
         Get user info.
@@ -68,9 +63,9 @@ def test_user_get(valid_session_credentials, valid_new_normal_user):
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_user_change_password(valid_new_normal_user, valid_password):
-    """@pylatest api/user.edit
-    API-users: edit user
-    *******************
+    """
+    edit user
+    *********
 
     .. test_metadata:: author fbalak@redhat.com
 
@@ -83,7 +78,7 @@ def test_user_change_password(valid_new_normal_user, valid_password):
         valid_new_normal_user["username"],
         valid_new_normal_user["password"])
     test = tendrlapi_user.ApiUser(auth=auth)
-    """@pylatest api/user.get
+    """
     .. test_step:: 1
 
         Send **PUT** request to ``APIURL/users``.
@@ -101,7 +96,7 @@ def test_user_change_password(valid_new_normal_user, valid_password):
         "password": valid_password,
         "password_confirmation": valid_password}
     test.edit_user(valid_new_normal_user["username"], edit_data)
-    """@pylatest api/user.get
+    """
     .. test_step:: 2
 
         Login
@@ -116,7 +111,7 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     auth = login(valid_new_normal_user["username"], valid_password)
     test = tendrlapi_user.ApiUser(auth=auth)
 
-    """@pylatest api/user.get
+    """
     .. test_step:: 3
 
         Check if user have edited email.
@@ -135,9 +130,9 @@ def test_user_change_password(valid_new_normal_user, valid_password):
 @pytest.mark.negative
 @pytest.mark.testready
 def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
-    """@pylatest api/user.edit
-    API-users: edit user
-    *******************
+    """
+    edit user
+    *********
 
     .. test_metadata:: author ebondare@redhat.com
 
@@ -152,7 +147,7 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         valid_new_normal_user["username"],
         valid_new_normal_user["password"])
     test = tendrlapi_user.ApiUser(auth=auth)
-    """@pylatest api/user.get
+    """
     .. test_step:: 1
 
         Send **PUT** request to ``APIURL/users``.
@@ -182,7 +177,7 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     else:
         pass_length_error = "is too short" in str(response)
     pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947')
-    """@pylatest api/user.get
+    """
     .. test_step:: 2
 
         Check if the response to the request in test_step 1 returned the expected error.
@@ -205,9 +200,9 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
 @pytest.mark.testready
 def test_add_user_invalid_password(valid_session_credentials,
                                    valid_normal_user_data, invalid_password):
-    """@pylatest api/user.add_delete
-    API-users: add and delete
-    *************************
+    """
+    add and delete
+    **************
 
     .. test_metadata:: author ebondare@redhat.com
 
@@ -217,8 +212,8 @@ def test_add_user_invalid_password(valid_session_credentials,
     Attempt to add a user with invalid password
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-    """@pylatest
-    .. test_step:: 1 api/user.add_delete
+    """
+    .. test_step:: 1
 
         Attempt to add user using an invalid password, either too long or too short.
 
@@ -241,7 +236,7 @@ def test_add_user_invalid_password(valid_session_credentials,
         "status": 422}
     test.add_user(user_data_password_invalid, asserts_in=asserts)
 
-    """@pylatest api/user.get
+    """
     .. test_step:: 2
 
         Check that the user doesn't exist
@@ -261,7 +256,7 @@ def test_add_user_invalid_password(valid_session_credentials,
         "status": 404}
     not_found = test.get_user(user_data_password_invalid["username"], asserts_in=asserts)
 
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 3
 
         If the user was found, the user is deleted
@@ -279,9 +274,9 @@ def test_add_user_invalid_password(valid_session_credentials,
 @pytest.mark.testready
 def test_add_user_invalid_username(valid_session_credentials,
                                    valid_normal_user_data, invalid_username):
-    """@pylatest api/user.add_delete
-    API-users: add and delete
-    *************************
+    """
+    add and delete
+    **************
 
     .. test_metadata:: author ebondare@redhat.com
 
@@ -291,8 +286,8 @@ def test_add_user_invalid_username(valid_session_credentials,
     Attempt to add a user with invalid username
     """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-    """@pylatest
-    .. test_step:: 1 api/user.add_delete
+    """
+    .. test_step:: 1
 
         Attempt to add user using an invalid username, either too long or too short.
 
@@ -315,7 +310,7 @@ def test_add_user_invalid_username(valid_session_credentials,
         "status": 422}
     test.add_user(user_data_username_invalid, asserts_in=asserts)
 
-    """@pylatest api/user.get
+    """
     .. test_step:: 2
 
         Check that the user doesn't exist
@@ -335,7 +330,7 @@ def test_add_user_invalid_username(valid_session_credentials,
         "status": 404}
     not_found = test.get_user(user_data_username_invalid["username"], asserts_in=asserts)
 
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 3
 
         If the user was found, the user is deleted
@@ -352,7 +347,7 @@ def test_add_user_invalid_username(valid_session_credentials,
 @pytest.mark.negative
 @pytest.mark.testready
 def test_delete_admin(valid_session_credentials):
-    """@pylatest api/user.add_delete
+    """
     API-users: add and delete
     *************************
 
@@ -382,7 +377,7 @@ def test_delete_admin(valid_session_credentials):
 
     test.del_user("admin", asserts_in=asserts)
 
-    """@pylatest api/user.get
+    """
      .. test_step:: 2
 
          Check if user admin still exists
@@ -402,7 +397,7 @@ def test_user_add_del(
         valid_normal_user_data,
         valid_username,
         valid_password):
-    """@pylatest api/user.add_delete
+    """
     API-users: add and delete
     *************************
 
@@ -433,7 +428,7 @@ def test_user_add_del(
     # add test user
 
     added_user = test.add_user(valid_normal_user_data)
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 3
        :include: api/user.get:2
 
@@ -441,7 +436,7 @@ def test_user_add_del(
        :include: api/user.get:2
     """
     test.check_user(added_user)
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 4
 
         Delete user test2.
@@ -455,7 +450,7 @@ def test_user_add_del(
         Return code should be 200.
     """
     test.del_user(valid_normal_user_data["username"])
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 5
        :include: api/user.get:2
 
@@ -472,7 +467,7 @@ def test_user_add_del(
         "reason": 'Not Found',
         "status": 404}
     test.get_user(valid_normal_user_data["username"], asserts_in=asserts)
-    """@pylatest api/user.add_delete
+    """
     .. test_step:: 6
        :include: api/user.logout:3
 
@@ -484,9 +479,9 @@ def test_user_add_del(
 @pytest.mark.negative
 @pytest.mark.testready
 def test_change_username_and_email(valid_session_credentials, valid_new_normal_user):
-    """@pylatest api/user.change_username
-    API-users: edit
-    *************************
+    """
+    edit
+    ****
 
     .. test_metadata:: author ebondare@redhat.com
 
