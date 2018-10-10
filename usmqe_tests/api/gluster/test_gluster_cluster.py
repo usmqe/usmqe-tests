@@ -10,23 +10,22 @@ from usmqe.api.tendrlapi import glusterapi
 
 
 LOGGER = pytest.get_logger('cluster_test', module=True)
-"""
-cluster_import
-**************
-
-.. test_metadata:: author fbalak@redhat.com
-
-Description
-===========
-
-Positive import gluster cluster.
-"""
 
 
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.cluster_import_gluster
 def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
+    """
+    cluster_import
+    **************
+
+    Description
+    ===========
+
+    Positive import gluster cluster.
+    """
     """
     .. test_step:: 1
 
@@ -106,24 +105,23 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
         msg.format(valid_trusted_pool_reuse))
 
 
-"""
-cluster_import
-**************
-
-.. test_metadata:: author fbalak@redhat.com
-
-Description
-===========
-
-Negative import gluster cluster.
-"""
-
-
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.testready
 @pytest.mark.parametrize("cluster_id, status", [
     ("000000-0000-0000-0000-000000000", "failed")])
 @pytest.mark.gluster
 def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
+    """
+    cluster_import
+    **************
+
+    .. test_metadata:: author fbalak@redhat.com
+
+    Description
+    ===========
+
+    Negative import gluster cluster.
+    """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """
     .. test_step:: 1
@@ -148,24 +146,23 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
     api.wait_for_job_status(job_id, status=status)
 
 
-"""
-cluster_unmanage
-***************************
-
-.. test_metadata:: author fbalak@redhat.com
-
-Description
-===========
-
-Positive unmanage gluster cluster.
-"""
 
 
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.cluster_unmanage_gluster
 def test_cluster_unmanage_valid(
         valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
+    """
+    cluster_unmanage
+    ***************************
+
+    Description
+    ===========
+
+    Positive unmanage gluster cluster.
+    """
     """
     .. test_step:: 1
 

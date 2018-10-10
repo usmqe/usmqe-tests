@@ -6,14 +6,13 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
 
 
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_ping():
     """
     ping
     ****
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========
@@ -22,7 +21,7 @@ def test_ping():
     """
     test = TendrlApi()
     # TODO(fbalak): add valid returned json to docstring and test them
-    """@pylatest api/common.ping_valid
+    """
     .. test_step:: 1
 
         Call USM API via GET request with pattern ``APIURL/ping``.

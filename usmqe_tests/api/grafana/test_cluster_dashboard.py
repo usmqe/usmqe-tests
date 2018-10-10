@@ -22,12 +22,11 @@ server.
 """
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_cluster_dashboard_layout():
     """
     layout
     ******
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========
@@ -77,12 +76,11 @@ def test_cluster_dashboard_layout():
     grafana.compare_structure(structure_defined, "cluster-dashboard")
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_hosts_panel_status(cluster_reuse):
     """
     API-grafana: hosts
     *******************
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========

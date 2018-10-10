@@ -22,12 +22,11 @@ server.
 """
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_host_dashboard_layout():
     """
     layout
     ******
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========
@@ -77,12 +76,11 @@ def test_host_dashboard_layout():
     grafana.compare_structure(structure_defined, "host-dashboard")
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """
     cpu_utilization
     ***************
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========
@@ -130,12 +128,11 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         workload_cpu_utilization["end"])
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     """
     memory_utilization
     ******************
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========

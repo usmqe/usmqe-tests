@@ -8,6 +8,7 @@ from usmqe.api.tendrlapi import glusterapi
 LOGGER = pytest.get_logger('volume_nodes', module=True)
 
 
+@pytest.mark.author("dahorak@redhat.com")
 @pytest.mark.testready
 @pytest.mark.happypath
 @pytest.mark.gluster
@@ -17,9 +18,7 @@ def test_nodes_list(
         valid_trusted_pool_reuse):
     """
     nodes_list
-    ******************************
-
-    .. test_metadata:: author dahorak@redhat.com
+    **********
 
     Description
     ===========

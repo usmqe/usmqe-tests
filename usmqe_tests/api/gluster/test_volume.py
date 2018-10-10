@@ -9,6 +9,7 @@ from usmqe.gluster import gluster
 LOGGER = pytest.get_logger('volume_test', module=True)
 
 
+@pytest.mark.author("dahorak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.gluster
@@ -19,8 +20,6 @@ def test_volumes_list(
     """
     volumes_list
     ************
-
-    .. test_metadata:: author dahorak@redhat.com
 
     Description
     ===========
@@ -57,6 +56,7 @@ def test_volumes_list(
         "List of volumes from Gluster should be the same as from Tendrl API.")
 
 
+@pytest.mark.author("dahorak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.gluster
@@ -67,8 +67,6 @@ def test_volume_brick_list(
     """
     volume_brick_list
     *****************
-
-    .. test_metadata:: author dahorak@redhat.com
 
     Description
     ===========

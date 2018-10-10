@@ -21,14 +21,15 @@ Further mentioned ``APIURL`` points to: ``http://USMSERVER/api/1.0``.
 """
 
 
+@pytest.mark.author("mkudlej@redhat.com")
+@pytest.mark.author("dahorak@redhat.com")
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_user_get(valid_session_credentials, valid_new_normal_user):
     """
     get user
     ********
-
-    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com fbalak@redhat.com
 
     Description
     ===========
@@ -60,14 +61,13 @@ def test_user_get(valid_session_credentials, valid_new_normal_user):
     test.check_user(valid_new_normal_user)
 
 
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_user_change_password(valid_new_normal_user, valid_password):
     """
     edit user
     *********
-
-    .. test_metadata:: author fbalak@redhat.com
 
     Description
     ===========
@@ -127,14 +127,13 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     logout(auth=auth)
 
 
+@pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
 @pytest.mark.testready
 def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
     """
     edit user
     *********
-
-    .. test_metadata:: author ebondare@redhat.com
 
     Description
     ===========
@@ -196,6 +195,7 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         test.edit_user(valid_new_normal_user["username"], edit_back_data)
 
 
+@pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
 @pytest.mark.testready
 def test_add_user_invalid_password(valid_session_credentials,
@@ -203,8 +203,6 @@ def test_add_user_invalid_password(valid_session_credentials,
     """
     add and delete
     **************
-
-    .. test_metadata:: author ebondare@redhat.com
 
     Description
     ===========
@@ -270,6 +268,7 @@ def test_add_user_invalid_password(valid_session_credentials,
         test.del_user(user_data_password_invalid["username"])
 
 
+@pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
 @pytest.mark.testready
 def test_add_user_invalid_username(valid_session_credentials,
@@ -277,8 +276,6 @@ def test_add_user_invalid_username(valid_session_credentials,
     """
     add and delete
     **************
-
-    .. test_metadata:: author ebondare@redhat.com
 
     Description
     ===========
@@ -344,14 +341,13 @@ def test_add_user_invalid_username(valid_session_credentials,
         test.del_user(user_data_username_invalid["username"])
 
 
+@pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
 @pytest.mark.testready
 def test_delete_admin(valid_session_credentials):
     """
     add and delete
     **************
-
-    .. test_metadata:: author ebondare@redhat.com
 
     Description
     ===========
@@ -389,7 +385,9 @@ def test_delete_admin(valid_session_credentials):
     """
     pytest.check(test.get_user("admin")["name"] == "Admin")
 
-
+@pytest.mark.author("mkudlej@redhat.com")
+@pytest.mark.author("dahorak@redhat.com")
+@pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_user_add_del(
@@ -400,8 +398,6 @@ def test_user_add_del(
     """
     add and delete
     **************
-
-    .. test_metadata:: author mkudlej@redhat.com dahorak@redhat.com fbalak@redhat.com
 
     Description
     ===========
@@ -476,14 +472,13 @@ def test_user_add_del(
     """
 
 
+@pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
 @pytest.mark.testready
 def test_change_username_and_email(valid_session_credentials, valid_new_normal_user):
     """
     edit
     ****
-
-    .. test_metadata:: author ebondare@redhat.com
 
     Description
     ===========

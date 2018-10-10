@@ -20,12 +20,11 @@ server.
 """
 
 
+@pytest.mark.author("ebondare@redhat.com")
 def test_brick_dashboard_layout():
     """
     layout
     ******
-
-    .. test_metadata:: author ebondare@redhat.com
 
     Description
     ===========
