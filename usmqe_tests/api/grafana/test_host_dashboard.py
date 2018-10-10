@@ -9,7 +9,7 @@ from usmqe.api.graphiteapi import graphiteapi
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
-"""@pylatest default
+"""
 Setup
 =====
 
@@ -21,16 +21,11 @@ server.
 
 """
 
-"""@pylatest default
-Teardown
-========
-"""
-
 
 def test_host_dashboard_layout():
-    """@pylatest grafana/layout
-    API-grafana: layout
-    *******************
+    """
+    layout
+    ******
 
     .. test_metadata:: author fbalak@redhat.com
 
@@ -42,7 +37,7 @@ def test_host_dashboard_layout():
     """
     grafana = grafanaapi.GrafanaApi()
 
-    """@pylatest grafana/layout
+    """
     .. test_step:: 1
 
         Send **GET** request to:
@@ -83,9 +78,9 @@ def test_host_dashboard_layout():
 
 
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
-    """@pylatest grafana/cpu_utilization
-    API-grafana: cpu_utilization
-    *******************
+    """
+    cpu_utilization
+    ***************
 
     .. test_metadata:: author fbalak@redhat.com
 
@@ -109,7 +104,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         row_title="At-a-Glance",
         dashboard="host-dashboard")
 
-    """@pylatest grafana/cpu_utilization
+    """
     .. test_step:: 2
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
@@ -136,9 +131,9 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
 
 
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
-    """@pylatest grafana/memory_utilization
-    API-grafana: memory_utilization
-    *******************
+    """
+    memory_utilization
+    ******************
 
     .. test_metadata:: author fbalak@redhat.com
 
@@ -162,7 +157,7 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
         row_title="At-a-Glance",
         dashboard="host-dashboard")
 
-    """@pylatest grafana/memory_utilization
+    """
     .. test_step:: 2
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
