@@ -146,8 +146,6 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
     api.wait_for_job_status(job_id, status=status)
 
 
-
-
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready

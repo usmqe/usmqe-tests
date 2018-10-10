@@ -385,6 +385,7 @@ def test_delete_admin(valid_session_credentials):
     """
     pytest.check(test.get_user("admin")["name"] == "Admin")
 
+
 @pytest.mark.author("mkudlej@redhat.com")
 @pytest.mark.author("dahorak@redhat.com")
 @pytest.mark.author("fbalak@redhat.com")
