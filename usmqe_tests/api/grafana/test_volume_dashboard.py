@@ -7,7 +7,7 @@ from usmqe.api.grafanaapi import grafanaapi
 
 
 LOGGER = pytest.get_logger('volume_dashboard', module=True)
-"""@pylatest default
+"""
 Setup
 =====
 
@@ -19,16 +19,11 @@ server.
 
 """
 
-"""@pylatest default
-Teardown
-========
-"""
-
 
 def test_volume_dashboard_layout():
-    """@pylatest grafana/layout
-    API-grafana: layout
-    *******************
+    """
+    layout
+    ******
 
     .. test_metadata:: author ebondare@redhat.com
 
@@ -40,7 +35,7 @@ def test_volume_dashboard_layout():
     """
     grafana = grafanaapi.GrafanaApi()
 
-    """@pylatest grafana/layout
+    """
     .. test_step:: 1
 
         Send **GET** request to:
