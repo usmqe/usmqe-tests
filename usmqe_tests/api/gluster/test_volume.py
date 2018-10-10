@@ -7,15 +7,6 @@ from usmqe.gluster import gluster
 
 
 LOGGER = pytest.get_logger('volume_test', module=True)
-"""@pylatest default
-Setup
-=====
-"""
-
-"""@pylatest default
-Teardown
-========
-"""
 
 
 @pytest.mark.happypath
@@ -25,28 +16,28 @@ def test_volumes_list(
         valid_session_credentials,
         cluster_reuse,
         valid_trusted_pool_reuse):
-    """@pylatest api/gluster.volumes_list
-        API-gluster: volumes_list
-        ******************************
+    """
+    volumes_list
+    ************
 
-        .. test_metadata:: author dahorak@redhat.com
+    .. test_metadata:: author dahorak@redhat.com
 
-        Description
-        ===========
+    Description
+    ===========
 
-        List volumes for given cluster via API.
+    List volumes for given cluster via API.
 
-        .. test_step:: 1
+    .. test_step:: 1
 
-                Connect to Tendrl API via GET request to ``APIURL/:cluster_id/volumes``
-                Where cluster_id is set to predefined value.
+            Connect to Tendrl API via GET request to ``APIURL/:cluster_id/volumes``
+            Where cluster_id is set to predefined value.
 
-        .. test_result:: 1
+    .. test_result:: 1
 
-                Server should return response in JSON format:
+            Server should return response in JSON format:
 
-                Return code should be **200** with data ``{"volumes": [{...}, ...]}``.
-                """
+            Return code should be **200** with data ``{"volumes": [{...}, ...]}``.
+    """
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     glv_cmd = gluster.GlusterVolume()
@@ -73,29 +64,29 @@ def test_volume_brick_list(
         valid_session_credentials,
         cluster_reuse,
         valid_trusted_pool_reuse):
-    """@pylatest api/gluster.volume_brick_list
-        API-gluster: volume_brick_list
-        ******************************
+    """
+    volume_brick_list
+    *****************
 
-        .. test_metadata:: author dahorak@redhat.com
+    .. test_metadata:: author dahorak@redhat.com
 
-        Description
-        ===========
+    Description
+    ===========
 
-        List bricks for given volume via API.
+    List bricks for given volume via API.
 
-        .. test_step:: 1
+    .. test_step:: 1
 
-                Connect to Tendrl API via GET request to
-                ``APIURL/:cluster_id/volumes/:volume_id/bricks``
-                Where cluster_id is set to predefined value.
+            Connect to Tendrl API via GET request to
+            ``APIURL/:cluster_id/volumes/:volume_id/bricks``
+            Where cluster_id is set to predefined value.
 
-        .. test_result:: 1
+    .. test_result:: 1
 
-                Server should return response in JSON format:
+            Server should return response in JSON format:
 
-                Return code should be **200** with data ``{"bricks": [{...}, ...]}``.
-                """
+            Return code should be **200** with data ``{"bricks": [{...}, ...]}``.
+    """
 
     # get list of volumes from Tendrl
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
