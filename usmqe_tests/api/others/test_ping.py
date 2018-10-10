@@ -6,23 +6,12 @@ import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
 
 
-"""@pylatest default
-Setup
-=====
-"""
-
-"""@pylatest default
-Teardown
-========
-"""
-
-
 @pytest.mark.happypath
 @pytest.mark.testready
 def test_ping():
-    """@pylatest api/ping
-    API: ping
-    **********************
+    """
+    ping
+    ****
 
     .. test_metadata:: author fbalak@redhat.com
 
