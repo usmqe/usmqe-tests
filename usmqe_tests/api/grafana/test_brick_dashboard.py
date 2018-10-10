@@ -7,7 +7,7 @@ from usmqe.api.grafanaapi import grafanaapi
 
 
 LOGGER = pytest.get_logger('brick_dashboard', module=True)
-"""@pylatest default
+"""
 Setup
 =====
 
@@ -19,16 +19,11 @@ server.
 
 """
 
-"""@pylatest default
-Teardown
-========
-"""
-
 
 def test_brick_dashboard_layout():
-    """@pylatest grafana/layout
-    API-grafana: layout
-    *******************
+    """
+    layout
+    ******
 
     .. test_metadata:: author ebondare@redhat.com
 
@@ -39,7 +34,7 @@ def test_brick_dashboard_layout():
     ``https://github.com/Tendrl/specifications/issues/230``
     """
     grafana = grafanaapi.GrafanaApi()
-    """@pylatest grafana/layout
+    """
     .. test_step:: 1
 
        Send **GET** request to:
