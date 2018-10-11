@@ -25,26 +25,20 @@ server.
 @pytest.mark.author("fbalak@redhat.com")
 def test_host_dashboard_layout():
     """
-    layout
-    ******
-
-    Description
-    ===========
-
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/222``
     """
     grafana = grafanaapi.GrafanaApi()
 
     """
-    .. test_step:: 1
+    :step:
 
         Send **GET** request to:
         ``GRAFANA/dashboards/db/host-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/222``
 
-    .. test_result:: 1
+    :result:
 
         Defined structure and structure from Grafana API are equivalent.
     """
@@ -79,12 +73,6 @@ def test_host_dashboard_layout():
 @pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """
-    cpu_utilization
-    ***************
-
-    Description
-    ===========
-
     Check that Grafana panel *CPU Utilization* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
@@ -103,13 +91,13 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         dashboard="host-dashboard")
 
     """
-    .. test_step:: 2
+    :step:
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
         There should be target for CPU utilization of a host.
         Compare number of hosts from Graphite with value retrieved from
         ``workload_cpu_utilization`` fixture.
-    .. test_result:: 2
+    :result:
         JSON structure containing data related to CPU utilization is similar
         to values set by ``workload_cpu_utilization`` fixture in given time.
     """
@@ -131,12 +119,6 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
 @pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     """
-    memory_utilization
-    ******************
-
-    Description
-    ===========
-
     Check that Grafana panel *memory Utilization* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
@@ -155,13 +137,13 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
         dashboard="host-dashboard")
 
     """
-    .. test_step:: 2
+    :step:
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
         There should be target for memory utilization of a host.
         Compare number of hosts from Graphite with value retrieved from
         ``workload_memory_utilization`` fixture.
-    .. test_result:: 2
+    :result:
         JSON structure containing data related to memory utilization is similar
         to values set by ``workload_memory_utilization`` fixture in given time.
     """

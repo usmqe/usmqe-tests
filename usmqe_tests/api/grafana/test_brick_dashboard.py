@@ -23,25 +23,19 @@ server.
 @pytest.mark.author("ebondare@redhat.com")
 def test_brick_dashboard_layout():
     """
-    layout
-    ******
-
-    Description
-    ===========
-
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/230``
     """
     grafana = grafanaapi.GrafanaApi()
     """
-    .. test_step:: 1
+    :step:
 
        Send **GET** request to:
        ``GRAFANA/dashboards/db/brick-dashboard`` and get layout structure.
        Compare structure of panels and rows as defined in specification:
        ``https://github.com/Tendrl/specifications/issues/230``
 
-    .. test_result:: 1
+    :result:
 
        Defined structure and structure from Grafana API are equivalent.
     """

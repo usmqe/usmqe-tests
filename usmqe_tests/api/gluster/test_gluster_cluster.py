@@ -18,21 +18,15 @@ LOGGER = pytest.get_logger('cluster_test', module=True)
 @pytest.mark.cluster_import_gluster
 def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
     """
-    cluster_import
-    **************
-
-    Description
-    ===========
-
     Positive import gluster cluster.
     """
     """
-    .. test_step:: 1
+    :step:
 
         Check that fqdns of nodes in tendrl correspond with fqdns
         from ``gluster`` command.
 
-    .. test_result:: 1
+    :result:
 
         Sets of fqdns of nodes in tendrl and from ``gluster`` command
         should be the same.
@@ -63,11 +57,11 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
                                                     node_fqdns))
 
     """
-    .. test_step:: 2
+    :step:
 
         Send POST request to Tendrl API ``APIURL/clusters/:cluster_id/import``
 
-    .. test_result:: 2
+    :result:
 
         Server should return response in JSON format:
 
@@ -112,34 +106,26 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
 @pytest.mark.gluster
 def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
     """
-    cluster_import
-    **************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
     Negative import gluster cluster.
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """
-    .. test_step:: 1
+    :step:
 
         Create import cluster job via API with invalid cluster id.
 
-    .. test_result:: 1
+    :result:
 
         API returns response with json: `{"job_id":job_id}`
     """
     job_id = api.import_cluster(cluster_id)["job_id"]
     """
-    .. test_step:: 2
+    :step:
 
         Repeatedly check if job with `job_id` from test_step 1 is
         `finished` or `failed`.
 
-    .. test_result:: 2
+    :result:
 
         Job status should be in status given by `status` parameter.
     """
@@ -153,20 +139,14 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
 def test_cluster_unmanage_valid(
         valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
     """
-    cluster_unmanage
-    ***************************
-
-    Description
-    ===========
-
     Positive unmanage gluster cluster.
     """
     """
-    .. test_step:: 1
+    :step:
 
         Check that tested cluster is correctly managed by Tendrl.
 
-    .. test_result:: 1
+    :result:
 
         There is in Tendrl ``"is_managed":"yes"`` for cluster with id [cluster_id].
         Graphite contains data related to health of tested cluster.
@@ -203,11 +183,11 @@ def test_cluster_unmanage_valid(
         There should be related data.""".format(cluster_id, cluster_health))
 
     """
-    .. test_step:: 2
+    :step:
 
         Send POST request to Tendrl API ``APIURL/clusters/:cluster_id/unmanage``.
 
-    .. test_result:: 2
+    :result:
 
         Server should return response in JSON format:
 
@@ -224,11 +204,11 @@ def test_cluster_unmanage_valid(
     tendrl_api.wait_for_job_status(job_id)
 
     """
-    .. test_step:: 3
+    :step:
 
         Check that tested cluster is correctly managed by Tendrl.
 
-    .. test_result:: 3
+    :result:
 
         There is in Tendrl ``"is_managed": "no"`` for cluster with id [cluster_id].
         Graphite contains no data related to health of tested cluster.
@@ -258,11 +238,11 @@ def test_cluster_unmanage_valid(
         There should be `[]`.""".format(cluster_id, cluster_health))
 
     """
-    .. test_step:: 4
+    :step:
 
         Reimport cluster and check that tested cluster is correctly managed by Tendrl.
 
-    .. test_result:: 4
+    :result:
 
         There is ``"is_managed": "yes"`` in Tendrl for cluster with id [cluster_id].
     """

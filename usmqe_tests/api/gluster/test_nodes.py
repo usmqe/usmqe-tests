@@ -17,20 +17,14 @@ def test_nodes_list(
         cluster_reuse,
         valid_trusted_pool_reuse):
     """
-    nodes_list
-    **********
-
-    Description
-    ===========
-
     List nodes for given cluster via API.
 
-    .. test_step:: 1
+    :step:
 
             Connect to Tendrl API via GET request to ``APIURL/:cluster_id/nodes``
             Where cluster_id is set to predefined value.
 
-    .. test_result:: 1
+    :result:
 
             Server should return response in JSON format:
 

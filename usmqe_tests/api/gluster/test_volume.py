@@ -18,20 +18,14 @@ def test_volumes_list(
         cluster_reuse,
         valid_trusted_pool_reuse):
     """
-    volumes_list
-    ************
-
-    Description
-    ===========
-
     List volumes for given cluster via API.
 
-    .. test_step:: 1
+    :step:
 
             Connect to Tendrl API via GET request to ``APIURL/:cluster_id/volumes``
             Where cluster_id is set to predefined value.
 
-    .. test_result:: 1
+    :result:
 
             Server should return response in JSON format:
 
@@ -65,21 +59,15 @@ def test_volume_brick_list(
         cluster_reuse,
         valid_trusted_pool_reuse):
     """
-    volume_brick_list
-    *****************
-
-    Description
-    ===========
-
     List bricks for given volume via API.
 
-    .. test_step:: 1
+    :step:
 
             Connect to Tendrl API via GET request to
             ``APIURL/:cluster_id/volumes/:volume_id/bricks``
             Where cluster_id is set to predefined value.
 
-    .. test_result:: 1
+    :result:
 
             Server should return response in JSON format:
 

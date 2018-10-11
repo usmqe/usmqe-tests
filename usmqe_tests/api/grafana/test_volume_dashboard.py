@@ -23,26 +23,20 @@ server.
 @pytest.mark.author("ebondare@redhat.com")
 def test_volume_dashboard_layout():
     """
-    layout
-    ******
-
-    Description
-    ===========
-
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/224``
     """
     grafana = grafanaapi.GrafanaApi()
 
     """
-    .. test_step:: 1
+    :step:
 
         Send **GET** request to:
         ``GRAFANA/dashboards/db/volume-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/224``
 
-    .. test_result:: 1
+    :result:
 
         Defined structure and structure from Grafana API are equivalent.
     """
