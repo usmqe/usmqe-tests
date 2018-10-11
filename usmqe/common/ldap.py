@@ -35,8 +35,6 @@ def load_ldap_users_conf(conf_file):
 
 def main():
     """ Main function for testing util functions.
-    @pylatest api/user.login_valid2
-    @usmid api/user.login_valid1
     """
     print(load_ldap_users_conf(sys.argv[1]))
 

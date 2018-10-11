@@ -9,50 +9,24 @@ from usmqe.api.graphiteapi import graphiteapi
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
-"""@pylatest default
-Setup
-=====
-
-Prepare USM cluster accordingly to documentation.
-``GRAFANA`` for this file stands for Grafana API url used by tested Tendrl
-server.
-``GRAPHITE`` for this file stands for Graphite API url used by tested Tendrl
-server.
-
-"""
-
-"""@pylatest default
-Teardown
-========
-"""
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_host_dashboard_layout():
-    """@pylatest grafana/layout
-    API-grafana: layout
-    *******************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
+    """
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/222``
     """
     grafana = grafanaapi.GrafanaApi()
 
-    """@pylatest grafana/layout
-    .. test_step:: 1
-
-        Send **GET** request to:
-        ``GRAFANA/dashboards/db/host-dashboard`` and get layout structure.
-        Compare structure of panels and rows as defined in specification:
-        ``https://github.com/Tendrl/specifications/issues/222``
-
-    .. test_result:: 1
-
-        Defined structure and structure from Grafana API are equivalent.
+    """
+    :step:
+      Send **GET** request to:
+      ``GRAFANA/dashboards/db/host-dashboard`` and get layout structure.
+      Compare structure of panels and rows as defined in specification:
+      ``https://github.com/Tendrl/specifications/issues/222``
+    :result:
+      Defined structure and structure from Grafana API are equivalent.
     """
     structure_defined = {
         'Network': [
@@ -82,16 +56,9 @@ def test_host_dashboard_layout():
     grafana.compare_structure(structure_defined, "host-dashboard")
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
-    """@pylatest grafana/cpu_utilization
-    API-grafana: cpu_utilization
-    *******************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
+    """
     Check that Grafana panel *CPU Utilization* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
@@ -109,16 +76,16 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         row_title="At-a-Glance",
         dashboard="host-dashboard")
 
-    """@pylatest grafana/cpu_utilization
-    .. test_step:: 2
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for CPU utilization of a host.
-        Compare number of hosts from Graphite with value retrieved from
-        ``workload_cpu_utilization`` fixture.
-    .. test_result:: 2
-        JSON structure containing data related to CPU utilization is similar
-        to values set by ``workload_cpu_utilization`` fixture in given time.
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for CPU utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_cpu_utilization`` fixture.
+    :result:
+      JSON structure containing data related to CPU utilization is similar
+      to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(cpu_panel, cluster_identifier)
@@ -135,16 +102,9 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         workload_cpu_utilization["end"])
 
 
+@pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
-    """@pylatest grafana/memory_utilization
-    API-grafana: memory_utilization
-    *******************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
+    """
     Check that Grafana panel *memory Utilization* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
@@ -162,16 +122,16 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
         row_title="At-a-Glance",
         dashboard="host-dashboard")
 
-    """@pylatest grafana/memory_utilization
-    .. test_step:: 2
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for memory utilization of a host.
-        Compare number of hosts from Graphite with value retrieved from
-        ``workload_memory_utilization`` fixture.
-    .. test_result:: 2
-        JSON structure containing data related to memory utilization is similar
-        to values set by ``workload_memory_utilization`` fixture in given time.
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for memory utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_memory_utilization`` fixture.
+    :result:
+      JSON structure containing data related to memory utilization is similar
+      to values set by ``workload_memory_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(memory_panel, cluster_identifier)

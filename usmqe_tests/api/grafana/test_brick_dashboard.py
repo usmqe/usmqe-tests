@@ -7,49 +7,23 @@ from usmqe.api.grafanaapi import grafanaapi
 
 
 LOGGER = pytest.get_logger('brick_dashboard', module=True)
-"""@pylatest default
-Setup
-=====
-
-Prepare USM cluster accordingly to documentation.
-``GRAFANA`` for this file stands for Grafana API url used by tested Tendrl
-server.
-``GRAPHITE`` for this file stands for Graphite API url used by tested Tendrl
-server.
-
-"""
-
-"""@pylatest default
-Teardown
-========
-"""
 
 
+@pytest.mark.author("ebondare@redhat.com")
 def test_brick_dashboard_layout():
-    """@pylatest grafana/layout
-    API-grafana: layout
-    *******************
-
-    .. test_metadata:: author ebondare@redhat.com
-
-    Description
-    ===========
-
+    """
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/230``
     """
     grafana = grafanaapi.GrafanaApi()
-    """@pylatest grafana/layout
-    .. test_step:: 1
-
-       Send **GET** request to:
-       ``GRAFANA/dashboards/db/brick-dashboard`` and get layout structure.
-       Compare structure of panels and rows as defined in specification:
-       ``https://github.com/Tendrl/specifications/issues/230``
-
-    .. test_result:: 1
-
-       Defined structure and structure from Grafana API are equivalent.
+    """
+    :step:
+      Send **GET** request to:
+      ``GRAFANA/dashboards/db/brick-dashboard`` and get layout structure.
+      Compare structure of panels and rows as defined in specification:
+      ``https://github.com/Tendrl/specifications/issues/230``
+    :result:
+      Defined structure and structure from Grafana API are equivalent.
     """
 
     structure_defined = {
