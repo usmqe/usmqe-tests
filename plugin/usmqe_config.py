@@ -18,35 +18,37 @@ from ansible.parsing.dataloader import DataLoader
 class UsmConfig(object):
     """
     Configuration object containing inventory hosts file and configuration
-    specified in usm yaml configuration file.
+    specified in usm yaml configuration files. Main configuration is defined
+    in conf/MAIN.yaml.
     """
 
     def __init__(self):
         self.inventory = {}
-        self.usm = {}
-        self.pytest = {}
+        self.config = {}
 
         base_path = local(os.path.abspath(__file__)).new(basename='..')
-        # get default usm.yaml from conf/usm.yaml
-        if not args.config_file:
-            config_file = os.path.join(str(base_path), "conf", "usm.yaml")
-        else:
-            try:
-                config_file = args.config_file
-            except FileNotFoundError() as err:
-                print("Configuration file {} does not exist.".format(
-                    args.config_file))
-        self.usm = self.load_config(config_file)
+        # get default configuration from conf/MAIN.yaml
+        config_file =             try:
+            config_file = os.path.join(str(base_path), "conf", "MAIN.yaml")
+        except FileNotFoundError() as err:
+            print("conf/MAIN.yaml configuration file does not exist."
+        self.config = self.load_config(config_file)
 
+
+        if self.config.configuration_files:
+            for new_config in self.config.configuration_files:
+                self.config = {**self.config, **new_config}
         # get default inventory file from conf/usm.hosts
-        if not args.inventory_file:
-            inventory_file = os.path.join(str(base_path), "conf", "usm.hosts")
-        else:
+        if self.config.inventory_file:
             try:
-                inventory_file = args.inventory_file
+                inventory_file = self.config.inventory_file
             except FileNotFoundError() as err:
                 print("Inventory file {} does not exist.".format(
                     args.inventory_file))
+        else:
+            except FileNotFoundError() as err:
+                print("No inventory file was provided in configuration "
+                      "(inventory_file in configuration file).")
         loader = DataLoader()
         self.inventory = InventoryManager(
             loader=loader,
