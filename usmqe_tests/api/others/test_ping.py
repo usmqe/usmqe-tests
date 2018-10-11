@@ -17,11 +17,8 @@ def test_ping():
     # TODO(fbalak): add valid returned json to docstring and test them
     """
     :step:
-
         Call USM API via GET request with pattern ``APIURL/ping``.
-
     :result:
-
         Return code should be **200** with data ``{"status": "OK"}``.
     """
     test.ping()

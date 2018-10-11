@@ -21,14 +21,10 @@ def test_volumes_list(
     List volumes for given cluster via API.
 
     :step:
-
             Connect to Tendrl API via GET request to ``APIURL/:cluster_id/volumes``
             Where cluster_id is set to predefined value.
-
     :result:
-
             Server should return response in JSON format:
-
             Return code should be **200** with data ``{"volumes": [{...}, ...]}``.
     """
 
@@ -62,15 +58,11 @@ def test_volume_brick_list(
     List bricks for given volume via API.
 
     :step:
-
             Connect to Tendrl API via GET request to
             ``APIURL/:cluster_id/volumes/:volume_id/bricks``
             Where cluster_id is set to predefined value.
-
     :result:
-
             Server should return response in JSON format:
-
             Return code should be **200** with data ``{"bricks": [{...}, ...]}``.
     """
 

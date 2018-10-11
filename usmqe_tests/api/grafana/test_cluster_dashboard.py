@@ -32,14 +32,11 @@ def test_cluster_dashboard_layout():
 
     """
     :step:
-
         Send **GET** request to:
         ``GRAFANA/dashboards/db/cluster-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/222``
-
     :result:
-
         Defined structure and structure from Grafana API are equivalent.
     """
 
@@ -86,12 +83,9 @@ def test_hosts_panel_status(cluster_reuse):
     graphite = graphiteapi.GraphiteApi()
     """
     :step:
-
         Send **GET** request to:
         ``GRAFANA/dashboards/db/cluster-dashboard``.
-
     :result:
-
         JSON structure containing data related to layout is returned.
     """
 
@@ -152,15 +146,12 @@ def test_hosts_panel_status(cluster_reuse):
             ]
     """
     :step:
-
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
         There should be target for Total number of hosts.
         Compare number of hosts from Graphite with value retrieved from gluster
         command.
-
     :result:
-
         JSON structure containing data relatedo Total host count with last
         value coresponding with output of gluster command.
     """
@@ -176,15 +167,12 @@ def test_hosts_panel_status(cluster_reuse):
 
     """
     :step:
-
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
         There should be target for number of hosts that are Up.
         Compare number of hosts from Graphite with value retrieved from gluster
         command.
-
     :result:
-
         JSON structure containing data related to Up host count with last
         value coresponding with output of gluster command.
     """
@@ -205,15 +193,12 @@ def test_hosts_panel_status(cluster_reuse):
 
     """
     :step:
-
         Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
         where [target] is part of uri obtained from previous GRAFANA call.
         There should be target for number of hosts that are Down.
         Compare number of hosts from Graphite with value retrieved from gluster
         command.
-
     :result:
-
         JSON structure containing data related to Down host count with last
         value coresponding with output of gluster command.
     """

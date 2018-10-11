@@ -20,12 +20,9 @@ def test_nodes_list(
     List nodes for given cluster via API.
 
     :step:
-
             Connect to Tendrl API via GET request to ``APIURL/:cluster_id/nodes``
             Where cluster_id is set to predefined value.
-
     :result:
-
             Server should return response in JSON format:
 
             Return code should be **200** with data ``{"nodes": [{...}, ...]}``.

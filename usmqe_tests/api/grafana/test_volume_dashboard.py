@@ -30,14 +30,11 @@ def test_volume_dashboard_layout():
 
     """
     :step:
-
         Send **GET** request to:
         ``GRAFANA/dashboards/db/volume-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/224``
-
     :result:
-
         Defined structure and structure from Grafana API are equivalent.
     """
 

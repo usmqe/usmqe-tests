@@ -22,15 +22,11 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
     """
     """
     :step:
-
         Check that fqdns of nodes in tendrl correspond with fqdns
         from ``gluster`` command.
-
     :result:
-
         Sets of fqdns of nodes in tendrl and from ``gluster`` command
         should be the same.
-
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     cluster_id = cluster_reuse["cluster_id"]
@@ -58,11 +54,8 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
 
     """
     :step:
-
         Send POST request to Tendrl API ``APIURL/clusters/:cluster_id/import``
-
     :result:
-
         Server should return response in JSON format:
 
             {
@@ -71,7 +64,6 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
 
         Return code should be **202**
             with data ``{"message": "Accepted"}``.
-
     """
     job_id = api.import_cluster(cluster_id)["job_id"]
 
@@ -111,22 +103,16 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """
     :step:
-
         Create import cluster job via API with invalid cluster id.
-
     :result:
-
         API returns response with json: `{"job_id":job_id}`
     """
     job_id = api.import_cluster(cluster_id)["job_id"]
     """
     :step:
-
         Repeatedly check if job with `job_id` from test_step 1 is
         `finished` or `failed`.
-
     :result:
-
         Job status should be in status given by `status` parameter.
     """
     api.wait_for_job_status(job_id, status=status)
@@ -143,14 +129,10 @@ def test_cluster_unmanage_valid(
     """
     """
     :step:
-
         Check that tested cluster is correctly managed by Tendrl.
-
     :result:
-
         There is in Tendrl ``"is_managed":"yes"`` for cluster with id [cluster_id].
         Graphite contains data related to health of tested cluster.
-
     """
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     graphite_api = graphiteapi.GraphiteApi()
@@ -184,11 +166,8 @@ def test_cluster_unmanage_valid(
 
     """
     :step:
-
         Send POST request to Tendrl API ``APIURL/clusters/:cluster_id/unmanage``.
-
     :result:
-
         Server should return response in JSON format:
 
             {
@@ -197,7 +176,6 @@ def test_cluster_unmanage_valid(
 
         Return code should be **202**
             with data ``{"message": "Accepted"}``.
-
     """
     job_id = tendrl_api.unmanage_cluster(cluster_id)["job_id"]
 
@@ -205,14 +183,10 @@ def test_cluster_unmanage_valid(
 
     """
     :step:
-
         Check that tested cluster is correctly managed by Tendrl.
-
     :result:
-
         There is in Tendrl ``"is_managed": "no"`` for cluster with id [cluster_id].
         Graphite contains no data related to health of tested cluster.
-
     """
     # TODO(fbalak) remove this workaround when BZ 1589321 is resolved
     for i in range(15):
@@ -239,11 +213,8 @@ def test_cluster_unmanage_valid(
 
     """
     :step:
-
         Reimport cluster and check that tested cluster is correctly managed by Tendrl.
-
     :result:
-
         There is ``"is_managed": "yes"`` in Tendrl for cluster with id [cluster_id].
     """
     job_id = tendrl_api.import_cluster(cluster_id)["job_id"]

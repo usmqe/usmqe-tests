@@ -32,14 +32,11 @@ def test_host_dashboard_layout():
 
     """
     :step:
-
         Send **GET** request to:
         ``GRAFANA/dashboards/db/host-dashboard`` and get layout structure.
         Compare structure of panels and rows as defined in specification:
         ``https://github.com/Tendrl/specifications/issues/222``
-
     :result:
-
         Defined structure and structure from Grafana API are equivalent.
     """
     structure_defined = {
