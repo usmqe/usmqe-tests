@@ -7,11 +7,8 @@ Pytest plugin to handle usmqe ini config files.
 """
 
 
-from configparser import ConfigParser
-
 import pytest
 import os
-import argparse
 import yaml
 from py.path import local
 from ansible.inventory.manager import InventoryManager
@@ -28,17 +25,6 @@ class UsmConfig(object):
         self.inventory = {}
         self.usm = {}
         self.pytest = {}
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--config-file",
-            nargs='?',
-            help="path to file where is usm yaml configuration")
-        parser.add_argument(
-            "--inventory-file",
-            nargs='?',
-            help="path to usm inventory file")
-        args = parser.parse_args()
 
         base_path = local(os.path.abspath(__file__)).new(basename='..')
         # get default usm.yaml from conf/usm.yaml
