@@ -9,17 +9,6 @@ from usmqe.api.graphiteapi import graphiteapi
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
-"""
-Setup
-=====
-
-Prepare USM cluster accordingly to documentation.
-``GRAFANA`` for this file stands for Grafana API url used by tested Tendrl
-server.
-``GRAPHITE`` for this file stands for Graphite API url used by tested Tendrl
-server.
-
-"""
 
 
 @pytest.mark.author("fbalak@redhat.com")

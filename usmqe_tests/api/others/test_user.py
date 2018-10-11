@@ -11,14 +11,6 @@ from usmqe.api.tendrlapi.common import login, logout
 
 
 LOGGER = pytest.get_logger('user_test', module=True)
-"""
-Setup
-=====
-
-Prepare USM cluster accordingly to documentation.
-
-Further mentioned ``APIURL`` points to: ``http://USMSERVER/api/1.0``.
-"""
 
 
 @pytest.mark.author("mkudlej@redhat.com")
