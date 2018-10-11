@@ -29,12 +29,12 @@ def test_brick_dashboard_layout():
     grafana = grafanaapi.GrafanaApi()
     """
     :step:
-       Send **GET** request to:
-       ``GRAFANA/dashboards/db/brick-dashboard`` and get layout structure.
-       Compare structure of panels and rows as defined in specification:
-       ``https://github.com/Tendrl/specifications/issues/230``
+      Send **GET** request to:
+      ``GRAFANA/dashboards/db/brick-dashboard`` and get layout structure.
+      Compare structure of panels and rows as defined in specification:
+      ``https://github.com/Tendrl/specifications/issues/230``
     :result:
-       Defined structure and structure from Grafana API are equivalent.
+      Defined structure and structure from Grafana API are equivalent.
     """
 
     structure_defined = {

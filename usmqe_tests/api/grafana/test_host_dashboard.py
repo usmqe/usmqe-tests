@@ -32,12 +32,12 @@ def test_host_dashboard_layout():
 
     """
     :step:
-        Send **GET** request to:
-        ``GRAFANA/dashboards/db/host-dashboard`` and get layout structure.
-        Compare structure of panels and rows as defined in specification:
-        ``https://github.com/Tendrl/specifications/issues/222``
+      Send **GET** request to:
+      ``GRAFANA/dashboards/db/host-dashboard`` and get layout structure.
+      Compare structure of panels and rows as defined in specification:
+      ``https://github.com/Tendrl/specifications/issues/222``
     :result:
-        Defined structure and structure from Grafana API are equivalent.
+      Defined structure and structure from Grafana API are equivalent.
     """
     structure_defined = {
         'Network': [
@@ -89,14 +89,14 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
 
     """
     :step:
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for CPU utilization of a host.
-        Compare number of hosts from Graphite with value retrieved from
-        ``workload_cpu_utilization`` fixture.
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for CPU utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_cpu_utilization`` fixture.
     :result:
-        JSON structure containing data related to CPU utilization is similar
-        to values set by ``workload_cpu_utilization`` fixture in given time.
+      JSON structure containing data related to CPU utilization is similar
+      to values set by ``workload_cpu_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(cpu_panel, cluster_identifier)
@@ -135,14 +135,14 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
 
     """
     :step:
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for memory utilization of a host.
-        Compare number of hosts from Graphite with value retrieved from
-        ``workload_memory_utilization`` fixture.
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for memory utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_memory_utilization`` fixture.
     :result:
-        JSON structure containing data related to memory utilization is similar
-        to values set by ``workload_memory_utilization`` fixture in given time.
+      JSON structure containing data related to memory utilization is similar
+      to values set by ``workload_memory_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(memory_panel, cluster_identifier)

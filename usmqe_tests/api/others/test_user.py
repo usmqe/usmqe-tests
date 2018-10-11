@@ -33,17 +33,17 @@ def test_user_get(valid_session_credentials, valid_new_normal_user):
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     """
     :step:
-        Send **GET** request to ``APIURL/users``.
+      Send **GET** request to ``APIURL/users``.
     :result:
-        List of users in database is returned
+      List of users in database is returned
     """
     test.get_users()
     """
     :step:
-        Get user info.
-        Send **GET** request to ``APIURL/users/{user}``.
+      Get user info.
+      Send **GET** request to ``APIURL/users/{user}``.
     :result:
-        User information for user from ``valid_new_normal_user`` fixture is returned.
+      User information for user from ``valid_new_normal_user`` fixture is returned.
     """
     test.check_user(valid_new_normal_user)
 
@@ -61,11 +61,11 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     test = tendrlapi_user.ApiUser(auth=auth)
     """
     :step:
-        Send **PUT** request to ``APIURL/users``.
-        During this step is set email to `testmail@example.com` because
-        user can not be edited if he does not have set email. (e.g. admin)
+      Send **PUT** request to ``APIURL/users``.
+      During this step is set email to `testmail@example.com` because
+      user can not be edited if he does not have set email. (e.g. admin)
     :result:
-        Edited user data are returned.
+       Edited user data are returned.
     """
     new_email = "testmail@example.com"
     edit_data = {
@@ -75,10 +75,10 @@ def test_user_change_password(valid_new_normal_user, valid_password):
     test.edit_user(valid_new_normal_user["username"], edit_data)
     """
     :step:
-        Login
-        Send **POST** request to ``APIURL/login``.
+      Login
+      Send **POST** request to ``APIURL/login``.
     :result:
-        User is logged with new credentials.
+      User is logged with new credentials.
     """
     logout(auth=auth)
     auth = login(valid_new_normal_user["username"], valid_password)
@@ -86,10 +86,10 @@ def test_user_change_password(valid_new_normal_user, valid_password):
 
     """
     :step:
-        Check if user have edited email.
-        Send **GET** request to ``APIURL/users/{user}``.
+      Check if user have edited email.
+      Send **GET** request to ``APIURL/users/{user}``.
     :result:
-        User information is checked if email was correctly changed.
+      User information is checked if email was correctly changed.
     """
     valid_new_normal_user["email"] = new_email
     test.check_user(valid_new_normal_user)
@@ -111,13 +111,13 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     test = tendrlapi_user.ApiUser(auth=auth)
     """
     :step:
-        Send **PUT** request to ``APIURL/users``.
-        During this step is set email to `testmail@example.com` because
-        user can not be edited if he does not have set email. (e.g. admin)
+      Send **PUT** request to ``APIURL/users``.
+      During this step is set email to `testmail@example.com` because
+      user can not be edited if he does not have set email. (e.g. admin)
     :result:
-        Error 422 Unprocessable Entity is returned. The response includes words
-        "is too long" or "is too short" depending on the invalid password length.
-        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+      Error 422 Unprocessable Entity is returned. The response includes words
+      "is too long" or "is too short" depending on the invalid password length.
+      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     new_email = "testmail@example.com"
     edit_data = {
@@ -137,10 +137,10 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947')
     """
     :step:
-        Check if the response to the request in test_step 1 returned the expected error.
-        If it didn't, change the password back to original.
+      Check if the response to the request in test_step 1 returned the expected error.
+      If it didn't, change the password back to original.
     :result:
-        User password is the same as it was before test_step 1
+      User password is the same as it was before test_step 1
 
     """
     if not pass_length_error:
@@ -162,13 +162,13 @@ def test_add_user_invalid_password(valid_session_credentials,
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     """
     :step:
-        Attempt to add user using an invalid password, either too long or too short.
-        Send **POST** request to ``APIURL/users`` with data from fixture
-        valid_normal_user_data with user password substituted with invalid password.
+      Attempt to add user using an invalid password, either too long or too short.
+      Send **POST** request to ``APIURL/users`` with data from fixture
+      valid_normal_user_data with user password substituted with invalid password.
     :result:
-        User should not be created.
-        Return code should be 422.
-        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+      User should not be created.
+      Return code should be 422.
+      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_password_invalid["password"] = invalid_password
@@ -180,11 +180,11 @@ def test_add_user_invalid_password(valid_session_credentials,
 
     """
     :step:
-        Check that the user doesn't exist
+      Check that the user doesn't exist
     :result:
-        User can not be found.
-        Return code should be 404.
-        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+      User can not be found.
+      Return code should be 404.
+      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
 
     """
     asserts = {
@@ -195,9 +195,9 @@ def test_add_user_invalid_password(valid_session_credentials,
 
     """
     :step:
-        If the user was found, the user is deleted
+      If the user was found, the user is deleted
     :result:
-        If a new user was created during step 1 the user is deleted.
+      If a new user was created during step 1 the user is deleted.
     """
     if "Not found" not in str(not_found):
         test.del_user(user_data_password_invalid["username"])
@@ -214,13 +214,13 @@ def test_add_user_invalid_username(valid_session_credentials,
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     """
     :step:
-        Attempt to add user using an invalid username, either too long or too short.
-        Send **POST** request to ``APIURL/users`` with data from fixture
-        valid_normal_user_data with valid username substituted with an invalid one
+      Attempt to add user using an invalid username, either too long or too short.
+      Send **POST** request to ``APIURL/users`` with data from fixture
+      valid_normal_user_data with valid username substituted with an invalid one
     :result:
-        User should not be created.
-        Return code should be 422.
-        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+      User should not be created.
+      Return code should be 422.
+      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     user_data_username_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_username_invalid["username"] = invalid_username
@@ -232,11 +232,11 @@ def test_add_user_invalid_username(valid_session_credentials,
 
     """
     :step:
-        Check that the user doesn't exist
+      Check that the user doesn't exist
     :result:
-        User can not be found.
-        Return code should be 404.
-        This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
+      User can not be found.
+      Return code should be 404.
+      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     asserts = {
         "ok": False,
@@ -246,9 +246,9 @@ def test_add_user_invalid_username(valid_session_credentials,
 
     """
     :step:
-        If the user was found, the user is deleted
+      If the user was found, the user is deleted
     :result:
-        If a new user was created during step 1 the user is deleted.
+      If a new user was created during step 1 the user is deleted.
     """
     if "Not found" not in str(not_found):
         test.del_user(user_data_username_invalid["username"])
@@ -265,9 +265,9 @@ def test_delete_admin(valid_session_credentials):
 
     """
     :step:
-        Attempt to delete the admin user
+      Attempt to delete the admin user
     :result:
-        Admin user is not deleted.
+      Admin user is not deleted.
     """
     asserts = {
          "ok": False,
@@ -277,10 +277,10 @@ def test_delete_admin(valid_session_credentials):
     test.del_user("admin", asserts_in=asserts)
 
     """
-     :step:
-         Check if user admin still exists
-     :result:
-         User admin still exists.
+    :step:
+      Check if user admin still exists
+    :result:
+      User admin still exists.
     """
     pytest.check(test.get_user("admin")["name"] == "Admin")
 
@@ -303,12 +303,12 @@ def test_user_add_del(
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     """
     :step:
-        Add user test2.
-        Send **PUT** request to ``APIURL/users/test2`` with data from fixture
-        valid_normal_user_data where are specified keys: email, username, name, role
+      Add user test2.
+      Send **PUT** request to ``APIURL/users/test2`` with data from fixture
+      valid_normal_user_data where are specified keys: email, username, name, role
     :result:
-        User should be created.
-        Return code should be 201.
+      User should be created.
+      Return code should be 201.
     """
     # add test user
 
@@ -322,11 +322,11 @@ def test_user_add_del(
     test.check_user(added_user)
     """
     :step:
-        Delete user test2.
-        Send **DELETE** request to ``APIURL/users/test2``.
+      Delete user test2.
+      Send **DELETE** request to ``APIURL/users/test2``.
     :result:
-        User test2 should be deleted.
-        Return code should be 200.
+      User test2 should be deleted.
+      Return code should be 200.
     """
     test.del_user(valid_normal_user_data["username"])
     """
