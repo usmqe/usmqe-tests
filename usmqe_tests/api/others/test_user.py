@@ -313,12 +313,6 @@ def test_user_add_del(
     # add test user
 
     added_user = test.add_user(valid_normal_user_data)
-    """
-    :step:
-      :include: api/user.get:2
-    :result:
-      :include: api/user.get:2
-    """
     test.check_user(added_user)
     """
     :step:
@@ -331,10 +325,10 @@ def test_user_add_del(
     test.del_user(valid_normal_user_data["username"])
     """
     :step:
-      :include: api/user.get:2
+      Send **GET** request to ``APIURL/users/test2``.
     :result:
-        User test2 is not available.
-        Return code should be 404.
+      User test2 is not available.
+      Return code should be 404.
     """
     asserts = {
         "json": json.loads('{"Error": "Not found"}'),
@@ -343,12 +337,6 @@ def test_user_add_del(
         "reason": 'Not Found',
         "status": 404}
     test.get_user(valid_normal_user_data["username"], asserts_in=asserts)
-    """
-    :step:
-      :include: api/user.logout:3
-    :result:
-      :include: api/user.logout:3
-    """
 
 
 @pytest.mark.author("ebondare@redhat.com")
