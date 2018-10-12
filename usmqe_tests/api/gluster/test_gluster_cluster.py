@@ -92,11 +92,17 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
 
 
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.testready
-@pytest.mark.parametrize("cluster_id, status", [
-    ("000000-0000-0000-0000-000000000", "failed")])
 @pytest.mark.gluster
-def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
+@pytest.mark.negative
+@pytest.mark.testready
+@pytest.mark.parametrize("cluster_id", [
+    "000000-0000-0000-0000-000000000",
+    "aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaa",
+    "0",
+    "0-0",
+    "000000-0000--0000-000000000-0000-000-000-0-0-0-000",
+    ])
+def test_cluster_import_invalid(valid_session_credentials, cluster_id):
     """
     Negative import gluster cluster.
     """
@@ -105,17 +111,50 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id, status):
     :step:
       Create import cluster job via API with invalid cluster id.
     :result:
-      API returns response with json: `{"job_id":job_id}`
+      API respons with 404 error, no job id is returned.
     """
-    job_id = api.import_cluster(cluster_id)["job_id"]
+    asserts = {
+        "ok": False,
+        "reason": 'Not Found',
+        "status": 404,
+        }
+    response = api.import_cluster(cluster_id, asserts_in=asserts)
+    pytest.check("job_id" not in response, "job id is not returned")
+    pytest.check("errors" in response, "there is errors field in response")
+    LOGGER.info("errors reported in response: %s", response.get("errors"))
+
+
+@pytest.mark.author("mbukatov@redhat.com")
+@pytest.mark.gluster
+@pytest.mark.negative
+@pytest.mark.testready
+@pytest.mark.parametrize("cluster_id", [
+    pytest.param("", marks=pytest.mark.xfail),
+    "this is not uuid",
+    pytest.param("@#$@#$%!#^#@@", marks=pytest.mark.xfail),
+    pytest.param("a"*1000, id="long-cluster-id", marks=pytest.mark.xfail),
+    ])
+def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
+    """
+    Negative import gluster cluster using cluster id value which completelly
+    breaks criteria for uuid.
+    """
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     """
     :step:
-      Repeatedly check if job with `job_id` from test_step 1 is
-      `finished` or `failed`.
+      Create import cluster job via API with broken cluster id.
     :result:
-        Job status should be in status given by `status` parameter.
+      API returns some error and refuses to process it.
     """
-    api.wait_for_job_status(job_id, status=status)
+    asserts = {
+        "ok": False,
+        "status": 400,
+        "reason": "Bad Request",
+        }
+    response = api.import_cluster(cluster_id, asserts_in=asserts)
+    pytest.check("job_id" not in response, "job id is not returned")
+    pytest.check("errors" in response, "there is errors field in response")
+    LOGGER.info("errors reported in response: %s", response.get("errors"))
 
 
 @pytest.mark.author("fbalak@redhat.com")
