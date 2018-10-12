@@ -121,6 +121,7 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id):
     response = api.import_cluster(cluster_id, asserts_in=asserts)
     pytest.check("job_id" not in response, "job id is not returned")
     pytest.check("errors" in response, "there is errors field in response")
+    LOGGER.info("errors reported in response: %s", response.get("errors"))
 
 
 @pytest.mark.author("mbukatov@redhat.com")
@@ -153,6 +154,7 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
     response = api.import_cluster(cluster_id, asserts_in=asserts)
     pytest.check("job_id" not in response, "job id is not returned")
     pytest.check("errors" in response, "there is errors field in response")
+    LOGGER.info("errors reported in response: %s", response.get("errors"))
 
 
 @pytest.mark.author("fbalak@redhat.com")
