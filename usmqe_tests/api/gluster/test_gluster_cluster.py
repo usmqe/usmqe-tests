@@ -92,6 +92,8 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
 
 
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.gluster
+@pytest.mark.negative
 @pytest.mark.testready
 @pytest.mark.parametrize("cluster_id", [
     "000000-0000-0000-0000-000000000",
@@ -100,7 +102,6 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
     "0-0",
     "000000-0000--0000-000000000-0000-000-000-0-0-0-000",
     ])
-@pytest.mark.gluster
 def test_cluster_import_invalid(valid_session_credentials, cluster_id):
     """
     Negative import gluster cluster.
@@ -123,14 +124,15 @@ def test_cluster_import_invalid(valid_session_credentials, cluster_id):
 
 
 @pytest.mark.author("mbukatov@redhat.com")
+@pytest.mark.gluster
 @pytest.mark.negative
+@pytest.mark.testready
 @pytest.mark.parametrize("cluster_id", [
     pytest.param("", marks=pytest.mark.xfail),
     "this is not uuid",
     pytest.param("@#$@#$%!#^#@@", marks=pytest.mark.xfail),
     pytest.param("a"*1000, id="long-cluster-id", marks=pytest.mark.xfail),
     ])
-@pytest.mark.gluster
 def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
     """
     Negative import gluster cluster using cluster id value which completelly
