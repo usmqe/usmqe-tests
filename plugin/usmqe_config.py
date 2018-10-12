@@ -10,6 +10,7 @@ Pytest plugin to handle usmqe ini config files.
 import pytest
 import os
 import yaml
+from collections.abc import Iterable
 from py.path import local
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
@@ -28,27 +29,34 @@ class UsmConfig(object):
 
         base_path = local(os.path.abspath(__file__)).new(basename='..')
         # get default configuration from conf/MAIN.yaml
-        config_file =             try:
+        try:
             config_file = os.path.join(str(base_path), "conf", "MAIN.yaml")
         except FileNotFoundError() as err:
-            print("conf/MAIN.yaml configuration file does not exist."
+            print("conf/MAIN.yaml configuration file does not exist.")
         self.config = self.load_config(config_file)
 
+        if self.config["configuration_files"]:
+            for new_config in self.config["configuration_files"]:
+                if not os.path.isabs(new_config):
+                    new_config = os.path.join(str(base_path), new_config)
+                self.config.update(self.load_config(new_config))
 
-        if self.config.configuration_files:
-            for new_config in self.config.configuration_files:
-                self.config = {**self.config, **new_config}
-        # get default inventory file from conf/usm.hosts
-        if self.config.inventory_file:
-            try:
-                inventory_file = self.config.inventory_file
-            except FileNotFoundError() as err:
-                print("Inventory file {} does not exist.".format(
-                    args.inventory_file))
+        # load inventory file to ansible interface
+        # referenced in this class instance
+        if self.config['inventory_file']:
+            if isinstance(self.config['inventory_file'], Iterable):
+                inventory_file = self.config['inventory_file'][0]
+            else:
+                inventory_file = self.config['inventory_file']
+            if not os.path.isabs(inventory_file):
+                inventory_file = os.path.join(str(base_path), inventory_file)
         else:
-            except FileNotFoundError() as err:
-                print("No inventory file was provided in configuration "
-                      "(inventory_file in configuration file).")
+            raise FileNotFoundError(
+                "No inventory file was provided in configuration "
+                "(inventory_file in configuration file).")
+        if not os.path.isfile(inventory_file):
+            raise IOError("Could not find provided inventory file {}".format(
+                inventory_file))
         loader = DataLoader()
         self.inventory = InventoryManager(
             loader=loader,
