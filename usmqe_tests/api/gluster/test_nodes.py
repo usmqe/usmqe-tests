@@ -6,17 +6,9 @@ from usmqe.api.tendrlapi import glusterapi
 
 
 LOGGER = pytest.get_logger('volume_nodes', module=True)
-"""@pylatest default
-Setup
-=====
-"""
-
-"""@pylatest default
-Teardown
-========
-"""
 
 
+@pytest.mark.author("dahorak@redhat.com")
 @pytest.mark.testready
 @pytest.mark.happypath
 @pytest.mark.gluster
@@ -24,28 +16,16 @@ def test_nodes_list(
         valid_session_credentials,
         cluster_reuse,
         valid_trusted_pool_reuse):
-    """@pylatest api/gluster.nodes_list
-        API-gluster: nodes_list
-        ******************************
+    """
+    List nodes for given cluster via API.
 
-        .. test_metadata:: author dahorak@redhat.com
-
-        Description
-        ===========
-
-        List nodes for given cluster via API.
-
-        .. test_step:: 1
-
-                Connect to Tendrl API via GET request to ``APIURL/:cluster_id/nodes``
-                Where cluster_id is set to predefined value.
-
-        .. test_result:: 1
-
-                Server should return response in JSON format:
-
-                Return code should be **200** with data ``{"nodes": [{...}, ...]}``.
-                """
+    :step:
+      Connect to Tendrl API via GET request to ``APIURL/:cluster_id/nodes``
+      Where cluster_id is set to predefined value.
+    :result:
+      Server should return response in JSON format:
+      Return code should be **200** with data ``{"nodes": [{...}, ...]}``.
+    """
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
