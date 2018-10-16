@@ -39,7 +39,7 @@ To access USM QE configuration, use standard pytest configuration functions:
 
     import pytest
 
-    pytest.config.getini("usm_username")
+    config.config["tests"]["usm_username"]
 
 Obviously this assumes that the ``usm_username`` option has been specified in
 USM QE config file (which is referenced via ``usm_config`` option). The minimal

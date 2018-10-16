@@ -23,9 +23,11 @@ from usmqe.gluster.commands import (
     GlusterVolumeCommand
 )
 import usmqe.inventory
+from config.usmqe_config import UsmConfig
 
 
 LOGGER = pytest.get_logger('gluster_cluster', module=True)
+config = UsmConfig()
 
 
 class GlusterCommon(object):
@@ -52,12 +54,12 @@ class GlusterCommon(object):
         last_error = None
         output = None
         if node is None:
-            node = pytest.config.getini("usm_cluster_member")
+            node = config.config["tests"]["usm_cluster_member"]
         if not node:
             raise GlusterCommandErrorException(
                 "Problem with gluster command '%s'.\n"
                 "Possible problem is no gluster-node (gluster_node list: %s)" %
-                (command, pytest.config.getini("usm_cluster_member")))
+                (command, config.config["tests"]["usm_cluster_member"]))
         if not executor:
             executor = self.cmd
         try:
@@ -83,7 +85,7 @@ class GlusterCommon(object):
         last_error = None
         output = None
         if nodes is None:
-            nodes = usmqe.inventory.role2hosts(pytest.config.getini("usm_gluster_role"))
+            nodes = usmqe.inventory.role2hosts(config.config["tests"]["usm_gluster_role"])
         if not executor:
             executor = self.cmd
         for node in nodes:
@@ -104,7 +106,7 @@ class GlusterCommon(object):
                 raise GlusterCommandErrorException(
                     "Problem with gluster command '%s'.\n"
                     "Possible problem is no gluster-node (gluster_node list: %s)" %
-                    (command, usmqe.inventory.role2hosts(pytest.config.getini("usm_gluster_role"))))
+                    (command, usmqe.inventory.role2hosts(config.config["tests"]["usm_gluster_role"])))
 
         if parse_output:
             output = parse_output(output)
@@ -125,7 +127,7 @@ class GlusterCommon(object):
         """
         # TODO change to right path to hostnames
         if host is None:
-            host = pytest.config.getini("usm_cluster_member")
+            host = config.config["tests"]["usm_cluster_member"]
         hosts = self.run_on_node(node=host, command="peer status").findall(
             "./peerStatus/peer/hostnames/hostname")
         hosts = [x.text for x in hosts]

@@ -8,8 +8,10 @@ import time
 import requests
 import pytest
 from usmqe.api.base import ApiBase
+from config.usmqe_config import UsmConfig
 
 LOGGER = pytest.get_logger("etcdapi", module=True)
+config = UsmConfig()
 
 
 class EtcdApi(ApiBase):
@@ -58,14 +60,14 @@ class EtcdApi(ApiBase):
         """
 
         pattern = "keys/{}".format(key)
-        if pytest.config.getini("etcd_api_url").startswith("https"):
+        if config.config["tests"]["etcd_api_url"].startswith("https"):
             response = requests.get(
-                pytest.config.getini("etcd_api_url") + pattern,
+                config.config["tests"]["etcd_api_url"] + pattern,
                 cert=(
                     '/etc/pki/tls/certs/etcd.crt',
                     '/etc/pki/tls/private/etcd.key'),
                 verify='/etc/pki/tls/certs/ca-usmqe.crt')
         else:
-            response = requests.get(pytest.config.getini("etcd_api_url") + pattern)
+            response = requests.get(config.config["tests"]["etcd_api_url"] + pattern)
         self.check_response(response)
         return response.json()

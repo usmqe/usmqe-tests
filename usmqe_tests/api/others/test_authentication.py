@@ -4,6 +4,9 @@
 import pytest
 
 from usmqe.api.tendrlapi.common import TendrlApi, login, logout
+from plugin.usm_config import UsmConfig
+
+config = UsmConfig()
 
 
 @pytest.mark.happypath
@@ -56,11 +59,11 @@ def test_session_invalid(invalid_session_credentials):
 @pytest.mark.testready
 def test_login_multiple_sessions():
     auth_one = login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
+        config.config["tests"]["usm_username"],
+        config.config["tests"]["usm_password"])
     auth_two = login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
+        config.config["tests"]["usm_username"],
+        config.config["tests"]["usm_password"])
     logout(auth=auth_one)
     logout(auth=auth_two)
 
@@ -74,11 +77,11 @@ def test_login_multiple_sessions_twisted():
         "status": 401,
         }
     api_one = TendrlApi(auth=login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password")))
+        config.config["tests"]["usm_username"],
+        config.config["tests"]["usm_password"]))
     api_two = TendrlApi(auth=login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password")))
+        config.config["tests"]["usm_username"],
+        config.config["tests"]["usm_password"]))
     api_one.jobs()
     api_two.jobs()
     logout(auth=api_one._auth)

@@ -60,7 +60,7 @@ def logger_session():
     """
     Close logger on a session scope.
     """
-    log_level = pytest.config.getini("usm_log_level")
+    log_level = config.config["tests"]["usm_log_level"]
     LOGGER.setLevel(log_level)
     yield
     LOGGER.close()
@@ -104,8 +104,8 @@ def create_new_user(user_data):
     Create user from given user_data.
     """
     auth = login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
+        config.config["tests"]["usm_username"],
+        config.config["tests"]["usm_password"])
     admin = tendrlapi_user.ApiUser(auth=auth)
     admin.add_user(user_data)
 
@@ -128,8 +128,8 @@ def delete_new_user(user_data):
     Delete user with given user_data.
     """
     auth = login(
-        pytest.config.getini("usm_username"),
-        pytest.config.getini("usm_password"))
+        config.config["tests"]["usm_username"],
+        config.config["tests"]["usm_password"])
     admin = tendrlapi_user.ApiUser(auth=auth)
     if user_data['email'].endswith(
             usmqe.inventory.role2hosts("usm_client")[0]):
@@ -231,7 +231,7 @@ def os_info():
     """
     SSH = usmssh.get_ssh()
     os_release = 'cat /etc/os-release'
-    node_connection = SSH[pytest.config.getini("usm_cluster_member")]
+    node_connection = SSH[config.config["tests"]["usm_cluster_member"]]
     f_content = node_connection.run(
         os_release)
     f_content = f_content[1].decode("utf-8").replace('"', '')
@@ -255,7 +255,7 @@ def workload_cpu_utilization(request):
         # stress cpu for for 180 seconds
         run_time = 180
         SSH = usmqe.usmssh.get_ssh()
-        host = pytest.config.getini("usm_cluster_member")
+        host = config.config["tests"]["usm_cluster_member"]
         processors_cmd = "grep -c ^processor /proc/cpuinfo"
         retcode, processors_count, _ = SSH[host].run(processors_cmd)
         stress_cmd = "stress-ng --cpu {} -l {} --timeout {}s".format(

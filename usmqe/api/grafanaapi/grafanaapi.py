@@ -6,8 +6,10 @@ Grafana REST API.
 import requests
 import pytest
 from usmqe.api.base import ApiBase
+from config.usmqe_config import UsmConfig
 
 LOGGER = pytest.get_logger("grafanaapi", module=True)
+config = UsmConfig()
 
 
 class GrafanaApi(ApiBase):
@@ -21,7 +23,7 @@ class GrafanaApi(ApiBase):
         """
         pattern = "search"
         response = requests.get(
-            pytest.config.getini("grafana_api_url") + pattern)
+            config.config["tests"]["grafana_api_url"] + pattern)
         self.check_response(response)
         return [
             dashboard["uri"].split("/")[1] for dashboard in response.json()
@@ -39,6 +41,6 @@ class GrafanaApi(ApiBase):
         """
         pattern = "dashboards/db/{}".format(slug)
         response = requests.get(
-            pytest.config.getini("grafana_api_url") + pattern)
+            config.config["tests"]["grafana_api_url"] + pattern)
         self.check_response(response)
         return response.json()

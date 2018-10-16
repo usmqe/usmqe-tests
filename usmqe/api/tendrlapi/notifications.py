@@ -5,8 +5,10 @@ tendrl REST API.
 import requests
 import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
+from config.usmqe_config import UsmConfig
 
 LOGGER = pytest.get_logger("tendrlapi.notifications", module=True)
+config = UsmConfig()
 
 
 class ApiNotifications(TendrlApi):
@@ -24,7 +26,7 @@ class ApiNotifications(TendrlApi):
         """
         pattern = "notifications"
         request = requests.get(
-            pytest.config.getini("usm_api_url") + pattern,
+            config.config["tests"]["usm_api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(request)
         self.check_response(request, asserts_in)

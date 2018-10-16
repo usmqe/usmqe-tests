@@ -6,9 +6,11 @@ import pytest
 import time
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
+from plugin.usm_config import UsmConfig
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
+config = UsmConfig()
 """@pylatest default
 Setup
 =====
@@ -168,8 +170,8 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     # TODO: create a general function to prepare grafana targets (in usmqe module)
     target = cpu_panel["targets"][0]["target"]
     target = target.replace("$cluster_id", cluster_identifier)
-    target = target.replace("$host_name", pytest.config.getini(
-        "usm_cluster_member").replace(".", "_"))
+    target = target.replace("$host_name", config.config["tests"][
+        "usm_cluster_member"].replace(".", "_"))
     target = target.strip("aliasSub(groupByNode(")
     target = target.split("},", 1)[0]
     target_base, target_options = target.rsplit(".{", 1)
