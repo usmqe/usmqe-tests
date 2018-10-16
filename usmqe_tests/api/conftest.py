@@ -5,7 +5,7 @@ import time
 import pytest
 
 from usmqe.api.tendrlapi.common import TendrlAuth, login, logout, TendrlApi
-from plugin.usm_config import UsmConfig
+from plugin.usmqe_config import UsmConfig
 
 config = UsmConfig()
 

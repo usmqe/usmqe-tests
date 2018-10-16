@@ -10,7 +10,7 @@ import urllib
 
 import pytest
 import requests
-from plugin.usm_config import UsmConfig
+from plugin.usmqe_config import UsmConfig
 
 from packagelist import list_packages
 from packagelist import reponame2gpgkey_confname, reponame2baseurl_confname

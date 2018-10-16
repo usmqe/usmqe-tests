@@ -22,7 +22,7 @@ from usmqe.gluster.commands import (
     GlusterCommandErrorException,
     GlusterVolumeCommand
 )
-from config.usmqe_config import UsmConfig
+from plugin.usmqe_config import UsmConfig
 
 
 LOGGER = pytest.get_logger('gluster_cluster', module=True)

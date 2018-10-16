@@ -5,7 +5,7 @@ tendrl REST API.
 import requests
 import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
-from config.usmqe_config import UsmConfig
+from plugin.usmqe_config import UsmConfig
 
 LOGGER = pytest.get_logger("tendrlapi.notifications", module=True)
 config = UsmConfig()
