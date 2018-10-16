@@ -8,7 +8,7 @@ from usmqe.api.tendrlapi.common import TendrlApi
 from plugin.usmqe_config import UsmConfig
 
 LOGGER = pytest.get_logger("glusterapi", module=True)
-congig = UsmConfig()
+config = UsmConfig()
 
 class TendrlApiGluster(TendrlApi):
     """ Gluster methods for Tendrl REST API.
