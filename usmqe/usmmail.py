@@ -40,6 +40,10 @@ def get_client_mail():
     host = usmqe.inventory.role2hosts("usm_client")[0]
     cat_mail_log_cmd = "cat /var/mail/root"
     retcode, stdout, stderr = SSH[host].run(cat_mail_log_cmd)
+    LOGGER.debug("Return code of 'cat /var/mail/root': {}".format(retcode))
+    LOGGER.debug("Stderr of cat: ".format(stderr.decode()))
+    if retcode != 0 and stderr.decode().count('No such file') > 0:
+        return ''
     if retcode != 0:
         raise OSError(stderr)
     return stdout.decode()
@@ -53,7 +57,7 @@ def get_msgs_by_time(start_timestamp=None, end_timestamp=None):
     Return a mailbox object.
     """
     # Pretend we have a Date header; get the date from the Received header
-    client_mail = get_client_mail().replace(';', '\nDate:')
+    client_mail = str(get_client_mail()).replace(';', '\nDate:')
     with open('mailbox_file', 'w') as f:
         f.write(client_mail)
     mailbox_instance = mailbox.mbox('mailbox_file')
