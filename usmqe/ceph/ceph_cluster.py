@@ -31,7 +31,6 @@ import pytest
 
 from usmqe.ceph.commands import CephClusterCommand, RadosCommand,\
                                 CephCommandErrorException
-import usmqe.inventory
 
 
 LOGGER = pytest.get_logger('ceph_cluster', module=True)
@@ -76,7 +75,8 @@ class CephCommon(object):
         """
         last_error = None
         output = None
-        mons = mons or self._mons or usmqe.inventory.role2hosts("ceph_mon")
+        mons = mons or self._mons or config.inventory.get_groups_dict()[
+            "ceph_mon"]
         if not executor:
             executor = self.cmd
         for mon in mons:
@@ -97,7 +97,7 @@ class CephCommon(object):
                 raise CephCommandErrorException(
                     "Problem with ceph command '%s'.\n"
                     "Possible problem is no ceph-mon (ceph_mon list: %s)" %
-                    (command, usmqe.inventory.role2hosts("ceph_mon")))
+                    (command, config.inventory.get_groups_dict()["ceph_mon"]))
 
         if parse_output:
             output = parse_output(output)

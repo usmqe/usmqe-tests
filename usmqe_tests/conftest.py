@@ -2,12 +2,13 @@ import configparser
 import pytest
 import datetime
 import usmqe.usmssh as usmssh
-import usmqe.inventory
+from plugin.usm_config import UsmConfig
 
 
 # initialize usmqe logging module
 LOGGER = pytest.get_logger("pytests_test")
 pytest.set_logger(LOGGER)
+config = UsmConfig()
 
 
 # NOTE beware any usmqe import has to be after LOGGER is initialized not before
@@ -95,7 +96,7 @@ def valid_admin_user_data(request):
         contains ``username`` and ``password`` as keys.
     """
     request.param["email"] = request.param["email"].replace(
-        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
+        "@example.com", "@" + config.inventory.get_groups_dict()["usm_client"][0])
     return request.param
 
 
@@ -110,10 +111,10 @@ def create_new_user(user_data):
     admin.add_user(user_data)
 
     if user_data['email'].endswith(
-            usmqe.inventory.role2hosts("usm_client")[0]):
+            config.inventory.get_groups_dict()["usm_client"][0]):
         SSH = usmssh.get_ssh()
         useradd = 'useradd {}'.format(user_data['username'])
-        node_connection = SSH[usmqe.inventory.role2hosts("usm_client")[0]]
+        node_connection = SSH[config.inventory.get_groups_dict()["usm_client"][0]]
         node_connection.run(useradd)
         passwd = 'echo "{}" | passwd --stdin {}'.format(
             user_data['password'],
@@ -132,9 +133,9 @@ def delete_new_user(user_data):
         config.config["tests"]["usm_password"])
     admin = tendrlapi_user.ApiUser(auth=auth)
     if user_data['email'].endswith(
-            usmqe.inventory.role2hosts("usm_client")[0]):
+            config.inventory.get_groups_dict()["usm_client"][0]):
         SSH = usmssh.get_ssh()
-        node_connection = SSH[usmqe.inventory.role2hosts("usm_client")[0]]
+        node_connection = SSH[config.inventory.get_groups_dict()["usm_client"][0]]
         userdel = 'userdel {}'.format(user_data['username'])
         userdel_response = node_connection.run(userdel)
         # userdel command returned 0 return code
@@ -172,7 +173,7 @@ def valid_normal_user_data(request):
         contains ``username`` and ``password`` as keys.
     """
     request.param["email"] = request.param["email"].replace(
-        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
+        "@example.com", "@" + config.inventory.get_groups_dict()["usm_client"][0])
     return request.param
 
 

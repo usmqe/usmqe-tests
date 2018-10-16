@@ -22,7 +22,6 @@ from usmqe.gluster.commands import (
     GlusterCommandErrorException,
     GlusterVolumeCommand
 )
-import usmqe.inventory
 from config.usmqe_config import UsmConfig
 
 
@@ -85,7 +84,8 @@ class GlusterCommon(object):
         last_error = None
         output = None
         if nodes is None:
-            nodes = usmqe.inventory.role2hosts(config.config["tests"]["usm_gluster_role"])
+            nodes = config.inventory.get_groups_dict()[
+                config.config["tests"]["usm_gluster_role"]]
         if not executor:
             executor = self.cmd
         for node in nodes:
@@ -106,7 +106,10 @@ class GlusterCommon(object):
                 raise GlusterCommandErrorException(
                     "Problem with gluster command '%s'.\n"
                     "Possible problem is no gluster-node (gluster_node list: %s)" %
-                    (command, usmqe.inventory.role2hosts(config.config["tests"]["usm_gluster_role"])))
+                    (
+                        command,
+                        config.inventory.get_groups_dict()["usm_client"][
+                            config.config["tests"]["usm_gluster_role"]]))
 
         if parse_output:
             output = parse_output(output)
