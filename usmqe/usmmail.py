@@ -26,9 +26,18 @@ import mailbox
 import time
 import email.utils
 import os
+import tempfile
 
 
 LOGGER = pytest.get_logger('usmmail', module=True)
+
+
+def create_mailbox_file(filename='mbox_file', content=''):
+    tmpdirname = tempfile.mkdtemp()
+    mbox_file_path = os.path.join(tmpdirname, filename)
+    with open(mbox_file_path, 'w') as f:
+        f.write(content)
+    return mbox_file_path
 
 
 def get_client_mail():
@@ -58,10 +67,9 @@ def get_msgs_by_time(start_timestamp=None, end_timestamp=None):
     """
     # Pretend we have a Date header; get the date from the Received header
     client_mail = str(get_client_mail()).replace(';', '\nDate:')
-    with open('mailbox_file', 'w') as f:
-        f.write(client_mail)
-    mailbox_instance = mailbox.mbox('mailbox_file')
-    relevant_messages = mailbox.mbox('relevant_messages_mailbox')
+
+    mailbox_instance = mailbox.mbox(create_mailbox_file(content=client_mail))
+    relevant_messages = mailbox.mbox(create_mailbox_file())
 
     # Choose the messages
     for message in mailbox_instance.values():
@@ -80,7 +88,4 @@ def get_msgs_by_time(start_timestamp=None, end_timestamp=None):
            (end_timestamp is None or end_timestamp > msg_timestamp):
             relevant_messages.add(message)
 
-    # Clean up
-    os.remove('mailbox_file')
-    os.remove('relevant_messages_mailbox')
     return relevant_messages
