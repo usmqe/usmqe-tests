@@ -1,2 +1,3 @@
 [tendrlui.application_collections]
 domains = tendrlui.base.modeling.entities.domains:DomainsCollection
+users = tendrlui.base.application.entities.users:UsersCollection
