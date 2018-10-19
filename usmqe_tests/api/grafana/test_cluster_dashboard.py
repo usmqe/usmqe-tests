@@ -6,7 +6,7 @@ import pytest
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
 from usmqe.gluster.gluster import GlusterCommon
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('cluster_dashboard', module=True)

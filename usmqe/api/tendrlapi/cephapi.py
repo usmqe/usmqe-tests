@@ -4,7 +4,7 @@ Tendrl REST API for ceph.
 import pytest
 import requests
 from usmqe.api.tendrlapi.common import TendrlApi
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("tendrlapi_ceph", module=True)
 config = UsmConfig()

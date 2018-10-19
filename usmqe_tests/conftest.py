@@ -2,7 +2,7 @@ import configparser
 import pytest
 import datetime
 import usmqe.usmssh as usmssh
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 
 # initialize usmqe logging module

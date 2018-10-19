@@ -8,7 +8,7 @@ import pytest
 import requests
 
 from usmqe.api.base import ApiBase
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("commonapi", module=True)
 config = UsmConfig()

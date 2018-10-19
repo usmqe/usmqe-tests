@@ -2,7 +2,7 @@ import pytest
 import os.path
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger('gluster_conftest', module=True)
 config = UsmConfig()

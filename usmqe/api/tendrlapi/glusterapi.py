@@ -5,7 +5,7 @@ Tendrl REST API for gluster.
 import requests
 import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("glusterapi", module=True)
 config = UsmConfig()

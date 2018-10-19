@@ -6,7 +6,7 @@ import pytest
 import time
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)

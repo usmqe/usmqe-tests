@@ -6,7 +6,7 @@ Graphite REST API.
 import requests
 import pytest
 from usmqe.api.base import ApiBase
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("graphiteapi", module=True)
 config = UsmConfig()

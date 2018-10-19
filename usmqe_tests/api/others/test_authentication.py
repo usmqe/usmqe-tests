@@ -4,7 +4,7 @@
 import pytest
 
 from usmqe.api.tendrlapi.common import TendrlApi, login, logout
-from plugin.usmqe_config import UsmConfig
+from usmqe.usmqeconfig import UsmConfig
 
 config = UsmConfig()
 
