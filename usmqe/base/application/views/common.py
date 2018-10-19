@@ -14,10 +14,14 @@ class Navbar(View):
     ROOT = ".//nav[@class='navbar-pf-vertical tendrl-header-container']"
     title = Text(".//a[@class='navbar-brand']")
     clusters = Select(".//select[@id='repeatSelect']")
-    # TODO: navbar for normal user is smaller
+    #TODO: navbar for normal user is smaller
     usermanagement = NavDropdown(".//a[@id='usermanagement']")
     alerts = NavDropdown(".//a[@id='notifications']")
     usermenu = NavDropdown(".//a[@id='usermenu']")
+
+
+#class AdminNavbar(Navbar):
+#    usermanagement = NavDropdown(".//a[@id='usermanagement']")
 
 
 class BaseLoggedInView(View):
@@ -25,4 +29,9 @@ class BaseLoggedInView(View):
 
     @property
     def logged_in(self):
+        # TODO: make a more elegant function
+        try: 
+            clusters_text = self.navbar.clusters.text
+        except:
+            return False
         return len(self.navbar.clusters.text) > 2
