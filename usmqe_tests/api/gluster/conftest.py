@@ -5,7 +5,7 @@ from usmqe.gluster import gluster
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger('gluster_conftest', module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def valid_trusted_pool_reuse():
     by usm_cluster_member option in usm.ini.
     """
     storage = gluster.GlusterCommon()
-    return storage.get_hosts_from_trusted_pool(config.config["tests"]["usm_cluster_member"])
+    return storage.get_hosts_from_trusted_pool(CONF.config["usmqe"]["cluster_member"])
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
@@ -51,7 +51,7 @@ def valid_brick_name():
     """
     Generate valid brick name.
     """
-    return config.config["tests"]["usm_brick_name"]
+    return CONF.config["usmqe"]["brick_name"]
 
 
 @pytest.fixture

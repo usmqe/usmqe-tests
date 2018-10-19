@@ -9,7 +9,7 @@ from usmqe.api.base import ApiBase
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("graphiteapi", module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class GraphiteApi(ApiBase):
@@ -35,7 +35,7 @@ class GraphiteApi(ApiBase):
         if until_date:
             pattern += "&until={}".format(until_date)
         response = requests.get(
-            config.config["tests"]["graphite_api_url"] + pattern)
+            CONF.config["usmqe"]["graphite_api_url"] + pattern)
         self.print_req_info(response)
         self.check_response(response)
         response_json = response.json()

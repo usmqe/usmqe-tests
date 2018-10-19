@@ -7,10 +7,10 @@ Pytest plugin to handle usmqe ini config files.
 """
 
 
-import pytest
+from collections.abc import Iterable
 import os
 import yaml
-from collections.abc import Iterable
+
 from py.path import local
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
@@ -20,7 +20,7 @@ class UsmConfig(object):
     """
     Configuration object containing inventory hosts file and configuration
     specified in usm yaml configuration files. Main configuration is defined
-    in conf/MAIN.yaml.
+    in conf/main.yaml.
     """
 
     def __init__(self):
@@ -28,11 +28,11 @@ class UsmConfig(object):
         self.config = {}
 
         base_path = local(os.path.abspath(__file__)).new(basename='..')
-        # get default configuration from conf/MAIN.yaml
+        # get default configuration from conf/main.yaml
         try:
-            config_file = os.path.join(str(base_path), "conf", "MAIN.yaml")
+            config_file = os.path.join(str(base_path), "conf", "main.yaml")
         except FileNotFoundError() as err:
-            print("conf/MAIN.yaml configuration file does not exist.")
+            print("conf/main.yaml configuration file does not exist.")
         self.config = self.load_config(config_file)
 
         if self.config["configuration_files"]:

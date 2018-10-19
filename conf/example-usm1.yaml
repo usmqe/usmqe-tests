@@ -1,0 +1,7 @@
+usmqe:
+  web_url: http://example-usm1-server.usmqe.tendrl.org
+  api_url: http://example-usm1-server.usmqe.tendrl.org/api/1.0/
+  etcd_api_url: https://example-usm1-server.usmqe.tendrl.org:2379/v2/
+  graphite_api_url: http://example-usm1-server.usmqe.tendrl.org:10080
+  grafana_api_url: http://example-usm1-server.usmqe.tendrl.org:3000/api/
+  cluster_member: example-usm1-gl1.usmqe.tendrl.org

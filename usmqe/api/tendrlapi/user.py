@@ -10,7 +10,7 @@ from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("tendrlapi.user", module=True)
 USERDATA_KEYS = {'email', 'name', 'role', 'username', 'email_notifications'}
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class ApiUser(TendrlApi):
@@ -28,7 +28,7 @@ class ApiUser(TendrlApi):
         """
         pattern = "users"
         request = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(request)
         self.check_response(request, asserts_in)
@@ -55,7 +55,7 @@ class ApiUser(TendrlApi):
         """
         pattern = "users/{}".format(username)
         request = requests.put(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json.dumps(data),
             auth=self._auth)
         self.print_req_info(request)
@@ -82,7 +82,7 @@ class ApiUser(TendrlApi):
 
         pattern = "users"
         request = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             data=json.dumps(user_in),
             auth=self._auth)
         self.print_req_info(request)
@@ -116,7 +116,7 @@ class ApiUser(TendrlApi):
         """
         pattern = "users/{}".format(username)
         request = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(request)
         self.check_response(request, asserts_in)
@@ -150,7 +150,7 @@ class ApiUser(TendrlApi):
         """
         pattern = "users/{}".format(username)
         request = requests.delete(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(request)
         self.check_response(request, asserts_in)

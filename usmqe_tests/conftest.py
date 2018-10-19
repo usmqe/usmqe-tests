@@ -8,7 +8,7 @@ from usmqe.usmqeconfig import UsmConfig
 # initialize usmqe logging module
 LOGGER = pytest.get_logger("pytests_test")
 pytest.set_logger(LOGGER)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 # NOTE beware any usmqe import has to be after LOGGER is initialized not before
@@ -61,7 +61,7 @@ def logger_session():
     """
     Close logger on a session scope.
     """
-    log_level = config.config["tests"]["usm_log_level"]
+    log_level = CONF.config["usmqe"]["log_level"]
     LOGGER.setLevel(log_level)
     yield
     LOGGER.close()
@@ -96,7 +96,7 @@ def valid_admin_user_data(request):
         contains ``username`` and ``password`` as keys.
     """
     request.param["email"] = request.param["email"].replace(
-        "@example.com", "@" + config.inventory.get_groups_dict()["usm_client"][0])
+        "@example.com", "@" + CONF.inventory.get_groups_dict()["usm_client"][0])
     return request.param
 
 
@@ -105,16 +105,16 @@ def create_new_user(user_data):
     Create user from given user_data.
     """
     auth = login(
-        config.config["tests"]["usm_username"],
-        config.config["tests"]["usm_password"])
+        CONF.config["usmqe"]["username"],
+        CONF.config["usmqe"]["password"])
     admin = tendrlapi_user.ApiUser(auth=auth)
     admin.add_user(user_data)
 
     if user_data['email'].endswith(
-            config.inventory.get_groups_dict()["usm_client"][0]):
+            CONF.inventory.get_groups_dict()["usm_client"][0]):
         SSH = usmssh.get_ssh()
         useradd = 'useradd {}'.format(user_data['username'])
-        node_connection = SSH[config.inventory.get_groups_dict()["usm_client"][0]]
+        node_connection = SSH[CONF.inventory.get_groups_dict()["usm_client"][0]]
         node_connection.run(useradd)
         passwd = 'echo "{}" | passwd --stdin {}'.format(
             user_data['password'],
@@ -129,13 +129,13 @@ def delete_new_user(user_data):
     Delete user with given user_data.
     """
     auth = login(
-        config.config["tests"]["usm_username"],
-        config.config["tests"]["usm_password"])
+        CONF.config["usmqe"]["username"],
+        CONF.config["usmqe"]["password"])
     admin = tendrlapi_user.ApiUser(auth=auth)
     if user_data['email'].endswith(
-            config.inventory.get_groups_dict()["usm_client"][0]):
+            CONF.inventory.get_groups_dict()["usm_client"][0]):
         SSH = usmssh.get_ssh()
-        node_connection = SSH[config.inventory.get_groups_dict()["usm_client"][0]]
+        node_connection = SSH[CONF.inventory.get_groups_dict()["usm_client"][0]]
         userdel = 'userdel {}'.format(user_data['username'])
         userdel_response = node_connection.run(userdel)
         # userdel command returned 0 return code
@@ -173,7 +173,7 @@ def valid_normal_user_data(request):
         contains ``username`` and ``password`` as keys.
     """
     request.param["email"] = request.param["email"].replace(
-        "@example.com", "@" + config.inventory.get_groups_dict()["usm_client"][0])
+        "@example.com", "@" + CONF.inventory.get_groups_dict()["usm_client"][0])
     return request.param
 
 
@@ -248,7 +248,7 @@ def os_info():
     """
     SSH = usmssh.get_ssh()
     os_release = 'cat /etc/os-release'
-    node_connection = SSH[config.config["tests"]["usm_cluster_member"]]
+    node_connection = SSH[CONF.config["usmqe"]["cluster_member"]]
     f_content = node_connection.run(
         os_release)
     f_content = f_content[1].decode("utf-8").replace('"', '')
@@ -271,8 +271,8 @@ def workload_cpu_utilization(request):
         """
         # stress cpu for for 180 seconds
         run_time = 180
-        SSH = usmqe.usmssh.get_ssh()
-        host = config.config["tests"]["usm_cluster_member"]
+        SSH = usmssh.get_ssh()
+        host = CONF.config["usmqe"]["cluster_member"]
         processors_cmd = "grep -c ^processor /proc/cpuinfo"
         retcode, processors_count, _ = SSH[host].run(processors_cmd)
         stress_cmd = "stress-ng --cpu {} -l {} --timeout {}s".format(
@@ -299,7 +299,7 @@ def workload_memory_utilization(request):
         """
         # stress memory for for 240 seconds
         run_time = 240
-        SSH = usmqe.usmssh.get_ssh()
+        SSH = usmssh.get_ssh()
         host = pytest.config.getini("usm_cluster_member")
         stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
             1,

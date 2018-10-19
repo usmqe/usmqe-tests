@@ -26,7 +26,7 @@ from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('gluster_cluster', module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class GlusterCommon(object):
@@ -53,12 +53,12 @@ class GlusterCommon(object):
         last_error = None
         output = None
         if node is None:
-            node = config.config["tests"]["usm_cluster_member"]
+            node = CONF.config["usmqe"]["cluster_member"]
         if not node:
             raise GlusterCommandErrorException(
                 "Problem with gluster command '%s'.\n"
                 "Possible problem is no gluster-node (gluster_node list: %s)" %
-                (command, config.config["tests"]["usm_cluster_member"]))
+                (command, CONF.config["usmqe"]["cluster_member"]))
         if not executor:
             executor = self.cmd
         try:
@@ -84,8 +84,8 @@ class GlusterCommon(object):
         last_error = None
         output = None
         if nodes is None:
-            nodes = config.inventory.get_groups_dict()[
-                config.config["tests"]["usm_gluster_role"]]
+            nodes = CONF.inventory.get_groups_dict()[
+                CONF.config["usmqe"]["gluster_role"]]
         if not executor:
             executor = self.cmd
         for node in nodes:
@@ -108,8 +108,8 @@ class GlusterCommon(object):
                     "Possible problem is no gluster-node (gluster_node list: %s)" %
                     (
                         command,
-                        config.inventory.get_groups_dict()["usm_client"][
-                            config.config["tests"]["usm_gluster_role"]]))
+                        CONF.inventory.get_groups_dict()["usm_client"][
+                            CONF.config["usmqe"]["gluster_role"]]))
 
         if parse_output:
             output = parse_output(output)
@@ -130,7 +130,7 @@ class GlusterCommon(object):
         """
         # TODO change to right path to hostnames
         if host is None:
-            host = config.config["tests"]["usm_cluster_member"]
+            host = CONF.config["usmqe"]["cluster_member"]
         hosts = self.run_on_node(node=host, command="peer status").findall(
             "./peerStatus/peer/hostnames/hostname")
         hosts = [x.text for x in hosts]

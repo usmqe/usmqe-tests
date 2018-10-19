@@ -37,9 +37,11 @@ To access USM QE configuration, use standard pytest configuration functions:
 
 .. code-block:: python
 
-    import pytest
+    from usmqe.usmqeconfig import UsmConfig
 
-    config.config["tests"]["usm_username"]
+    CONF = UsmConfig()
+
+    username = CONF.config["usmqe"]["username"]
 
 Obviously this assumes that the ``usm_username`` option has been specified in
 USM QE config file (which is referenced via ``usm_config`` option). The minimal

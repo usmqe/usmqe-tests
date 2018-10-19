@@ -7,7 +7,7 @@ from usmqe.api.tendrlapi.common import TendrlApi
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("tendrlapi_ceph", module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class TendrlApiCeph(TendrlApi):
@@ -73,7 +73,7 @@ class TendrlApiCeph(TendrlApi):
         if quota_max_bytes:
             pool_data["Pool.quota_max_bytes"] = quota_max_bytes
         response = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -134,7 +134,7 @@ class TendrlApiCeph(TendrlApi):
             pool_data["Pool.quota_max_bytes"] = quota_max_bytes
 
         response = requests.put(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -160,7 +160,7 @@ class TendrlApiCeph(TendrlApi):
         """
         pattern = "{}/GetPoolList".format(cluster)
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response, asserts_in)
@@ -181,7 +181,7 @@ class TendrlApiCeph(TendrlApi):
         pattern = "{}/CephDeletePool".format(cluster)
         pool_data = {"Pool.pool_id": pool_id}
         response = requests.delete(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -213,7 +213,7 @@ class TendrlApiCeph(TendrlApi):
                      "Rbd.size": size
                      }
         response = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -245,7 +245,7 @@ class TendrlApiCeph(TendrlApi):
                      "Rbd.size": size
                      }
         response = requests.put(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -273,7 +273,7 @@ class TendrlApiCeph(TendrlApi):
         pattern = "{}/CephDeleteRbd".format(cluster)
         pool_data = {"Rbd.pool_id": pool_id, "Rbd.name": name}
         response = requests.delete(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -315,7 +315,7 @@ class TendrlApiCeph(TendrlApi):
                      "ECProfile.ruleset_failure_domain": ruleset_fail_dom,
                      }
         response = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {
@@ -342,7 +342,7 @@ class TendrlApiCeph(TendrlApi):
         pattern = "{}/CephDeleteECProfile".format(cluster)
         pool_data = {"ECProfile.name": name}
         response = requests.delete(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=pool_data,
             auth=self._auth)
         asserts_in = asserts_in or {

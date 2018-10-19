@@ -11,7 +11,7 @@ from usmqe.api.base import ApiBase
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("etcdapi", module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class EtcdApi(ApiBase):
@@ -60,14 +60,14 @@ class EtcdApi(ApiBase):
         """
 
         pattern = "keys/{}".format(key)
-        if config.config["tests"]["etcd_api_url"].startswith("https"):
+        if CONF.config["usmqe"]["etcd_api_url"].startswith("https"):
             response = requests.get(
-                config.config["tests"]["etcd_api_url"] + pattern,
+                CONF.config["usmqe"]["etcd_api_url"] + pattern,
                 cert=(
                     '/etc/pki/tls/certs/etcd.crt',
                     '/etc/pki/tls/private/etcd.key'),
                 verify='/etc/pki/tls/certs/ca-usmqe.crt')
         else:
-            response = requests.get(config.config["tests"]["etcd_api_url"] + pattern)
+            response = requests.get(CONF.config["usmqe"]["etcd_api_url"] + pattern)
         self.check_response(response)
         return response.json()

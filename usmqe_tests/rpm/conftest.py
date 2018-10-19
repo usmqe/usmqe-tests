@@ -15,7 +15,8 @@ from usmqe.usmqeconfig import UsmConfig
 from packagelist import list_packages
 from packagelist import reponame2gpgkey_confname, reponame2baseurl_confname
 
-config = UsmConfig()
+CONF = UsmConfig()
+
 
 @pytest.fixture(scope="module")
 def chroot_dir(tendrl_repos):
@@ -36,7 +37,7 @@ def chroot_dir(tendrl_repos):
     reponame2gpgkey_url = {}
     for name in tendrl_repos.keys():
         try:
-            gpgkey_url = config.config["tests"][reponame2gpgkey_confname[name]]
+            gpgkey_url = CONF.config["usmqe"][reponame2gpgkey_confname[name]]
             req = requests.get(gpgkey_url)
             assert req.status_code == 200
             gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
@@ -170,7 +171,7 @@ def get_baseurl(conf_name):
     """
     Retrieve (from usmqe config file) and validate baseurl for given repo.
     """
-    conf_value = config.config["tests"][conf_name]
+    conf_value = CONF.config["usmqe"][conf_name]
     baseurl = urllib.parse.urlparse(conf_value)
     # check remote url http://, https:// or ftp://
     if baseurl.scheme in ('http', 'https', 'ftp'):

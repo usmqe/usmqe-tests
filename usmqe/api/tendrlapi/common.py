@@ -11,7 +11,7 @@ from usmqe.api.base import ApiBase
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("commonapi", module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class TendrlAuth(requests.auth.AuthBase):
@@ -72,7 +72,7 @@ def login(username, password, asserts_in=None):
     pattern = "login"
     post_data = {"username": username, "password": password}
     request = requests.post(
-        config.config["tests"]["usm_api_url"] + pattern,
+        CONF.config["usmqe"]["api_url"] + pattern,
         data=json.dumps(post_data))
     ApiBase.print_req_info(request)
     ApiBase.check_response(request, asserts_in)
@@ -92,7 +92,7 @@ def logout(auth, asserts_in=None):
     """
     pattern = "logout"
     request = requests.delete(
-        config.config["tests"]["usm_api_url"] + pattern,
+        CONF.config["usmqe"]["api_url"] + pattern,
         auth=auth)
     ApiBase.print_req_info(request)
     ApiBase.check_response(request, asserts_in)
@@ -125,7 +125,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "jobs/{}".format(job_id)
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response)
@@ -146,7 +146,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "jobs/{}/messages".format(job_id)
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response)
@@ -219,7 +219,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "jobs"
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response, asserts_in)
@@ -233,7 +233,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "ping"
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth,)
         self.print_req_info(response)
         self.check_response(response, asserts_in)
@@ -248,7 +248,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "nodes"
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
@@ -314,7 +314,7 @@ class TendrlApi(ApiBase):
                 for x in nodes}
         }
         response = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             data=json.dumps(data),
             auth=self._auth)
         self.print_req_info(response)
@@ -349,7 +349,7 @@ class TendrlApi(ApiBase):
             "Cluster.volume_profiling_flag": profiling,
             "Cluster.short_name": short_name}
         response = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             data=json.dumps(data),
             auth=self._auth)
         self.print_req_info(response)
@@ -373,7 +373,7 @@ class TendrlApi(ApiBase):
             "status": 202}
         pattern = "clusters/{}/unmanage".format(cluster_id)
         response = requests.post(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response, asserts_in)
@@ -388,7 +388,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "clusters"
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
@@ -403,7 +403,7 @@ class TendrlApi(ApiBase):
         """
         pattern = "clusters/{}".format(cluster_id)
         response = requests.get(
-            config.config["tests"]["usm_api_url"] + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)

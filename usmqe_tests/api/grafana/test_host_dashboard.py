@@ -10,7 +10,7 @@ from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 @pytest.mark.author("fbalak@redhat.com")

@@ -11,7 +11,7 @@ from usmqe.api.base import ApiBase
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("grafanaapi", module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 class GrafanaApi(ApiBase):
@@ -25,7 +25,7 @@ class GrafanaApi(ApiBase):
         """
         pattern = "search"
         response = requests.get(
-            config.config["tests"]["grafana_api_url"] + pattern)
+            CONF.config["usmqe"]["grafana_api_url"] + pattern)
         self.check_response(response)
         return [
             dashboard["uri"].split("/")[1] for dashboard in response.json()
@@ -43,7 +43,7 @@ class GrafanaApi(ApiBase):
         """
         pattern = "dashboards/db/{}".format(slug)
         response = requests.get(
-            config.config["tests"]["grafana_api_url"] + pattern)
+            CONF.config["usmqe"]["grafana_api_url"] + pattern)
         self.check_response(response)
         return response.json()
 

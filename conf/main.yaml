@@ -1,0 +1,13 @@
+# List of configuration files loaded in usmqe test framework.
+# It is recomended to keep defaults.yaml configuration file and attach more
+# configuration files.
+#
+# Each item in list overwrites previous configuration file.
+#
+configuration_files:
+  - conf/defaults.yaml
+  - conf/example-usm1.yaml
+inventory_file:
+  - conf/example-usm1.hosts
+pytest_plugin:
+  ansible_playbooks_dir: "/home/usmqe/usmqe-setup"

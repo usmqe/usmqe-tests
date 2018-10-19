@@ -10,7 +10,7 @@ from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('cluster_dashboard', module=True)
-config = UsmConfig()
+CONF = UsmConfig()
 
 
 @pytest.mark.author("fbalak@redhat.com")
@@ -69,7 +69,7 @@ def test_hosts_panel_status(cluster_reuse):
         cluster_identifier = cluster_reuse["integration_id"]
     gluster = GlusterCommon()
     states = gluster.get_cluster_hosts_connection_states(
-        config.config["tests"]["usm_cluster_member"])
+        CONF.config["usmqe"]["cluster_member"])
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
     """
