@@ -2,7 +2,8 @@ from taretto.ui.core import TextInput, View
 from taretto.ui.patternfly import Button
 from widgetastic.widget import Checkbox, GenericLocatorWidget
 from widgetastic.widget import Text, TextInput, View, Select
-from taretto.ui.patternfly import NavDropdown
+from taretto.ui.patternfly import Dropdown
+from usmqe.base.application.widgets import NavDropdown
 
 class LoginPage(View):
     username = TextInput(id="username")

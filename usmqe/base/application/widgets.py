@@ -12,6 +12,7 @@ from widgetastic.widget import (
     Text,
     TextInput,
     Widget,
+    ClickableMixin
 )
 from widgetastic.xpath import quote
 from widgetastic_patternfly import (
@@ -79,4 +80,89 @@ class Kebab(Widget):
         finally:
             if close:
                 self.close()
+
+class NavDropdown(Widget, ClickableMixin):
+    """The dropdowns used eg. in navigation. Usually located in the top navbar."""
+
+    def __init__(self, parent, locator, logger=None):
+        Widget.__init__(self, parent, logger=logger)
+        self.locator = locator
+
+    def __locator__(self):
+        return self.locator
+
+    def read(self):
+        return self.text
+
+    @property
+    def expanded(self):
+        return 'open' in self.browser.classes(self)
+
+    @property
+    def collapsed(self):
+        return not self.expanded
+
+    def expand(self):
+        if not self.expanded:
+            self.click()
+#            if not self.expanded:
+#                raise Exception('Could not expand {}'.format(self.locator))
+#            else:
+#                self.logger.info('expanded')
+
+    def collapse(self):
+        if self.expanded:
+            self.click()
+            if self.expanded:
+                raise Exception('Could not collapse {}'.format(self.locator))
+            else:
+                self.logger.info('collapsed')
+
+    @property
+    def text(self):
+        try:
+            return self.browser.text('./a/p', parent=self)
+        except NoSuchElementException:
+            return None
+
+    @property
+    def icon(self):
+        try:
+            el = self.browser.element('./a/span[contains(@class, "pficon")]', parent=self)
+            for class_ in self.browser.classes(el):
+                if class_.startswith('pficon-'):
+                    return class_[7:]
+            else:
+                return None
+        except NoSuchElementException:
+            return None
+
+    @property
+    def items(self):
+        return [
+            self.browser.text(element)
+            for element
+            in self.browser.elements('./ul/li[not(contains(@class, "divider"))]', parent=self)]
+
+    def has_item(self, item):
+        return item in self.items
+
+    def item_enabled(self, item):
+        if not self.has_item(item):
+            raise ValueError('There is not such item {}'.format(item))
+        element = self.browser.element(
+            './ul/li[normalize-space(.)={}]'.format(quote(item)), parent=self)
+        return 'disabled' not in self.browser.classes(element)
+
+    def select_item(self, item):
+        if not self.item_enabled(item):
+            raise ValueError('Cannot click disabled item {}'.format(item))
+
+        self.expand()
+        self.logger.info('selecting item {}'.format(item))
+        self.browser.click('./ul/li[normalize-space(.)={}]'.format(quote(item)), parent=self)
+
+    def __repr__(self):
+        return '{}({!r})'.format(type(self).__name__, self.locator)
+
 

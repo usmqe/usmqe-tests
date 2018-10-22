@@ -18,9 +18,10 @@ class UsersCollection(BaseCollection):
 @ViaWebUI.register_destination_for(UsersCollection, "All")
 class UsersAll(TendrlNavigateStep):
     VIEW = UsersView
-    prerequisite = NavigateToAttribute("application.web_ui", "LoginScreen")
+    prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
+        self.parent.navbar.usermanagement.expand()
         self.parent.navbar.usermanagement.select_item("Users")
 
 
