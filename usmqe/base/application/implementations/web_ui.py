@@ -108,8 +108,7 @@ class ViaWebUI(Implementation):
     def open_login_page(self):
         self.widgetastic_browser.url = self.application.address
 
-    def do_login(self):
-        view = self.navigate_to(self, "LoginScreen")
+    def do_login(self, view):
         view.fill({
             "username": self.application.username,
             "password": self.application.password,
@@ -131,4 +130,4 @@ class LoggedIn(TendrlNavigateStep):
     prerequisite = NavigateToSibling("LoginScreen")
 
     def step(self):
-        self.obj.do_login()
+        self.obj.do_login(self.parent)
