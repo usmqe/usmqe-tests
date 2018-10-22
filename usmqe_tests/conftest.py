@@ -300,7 +300,7 @@ def workload_memory_utilization(request):
         # stress memory for for 240 seconds
         run_time = 240
         SSH = usmssh.get_ssh()
-        host = pytest.config.getini("usm_cluster_member")
+        host = CONF.config["usmqe"]["cluster_member"]
         stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
             1,
             request.param)
