@@ -81,6 +81,7 @@ class Kebab(Widget):
             if close:
                 self.close()
 
+
 class NavDropdown(Widget, ClickableMixin):
     """The dropdowns used eg. in navigation. Usually located in the top navbar."""
 
@@ -121,14 +122,14 @@ class NavDropdown(Widget, ClickableMixin):
     @property
     def text(self):
         try:
-            return self.browser.text('./a/p', parent=self)
+            return self.browser.text('./a/span', parent=self)
         except NoSuchElementException:
             return None
 
     @property
     def icon(self):
         try:
-            el = self.browser.element('./a/span[contains(@class, "pficon")]', parent=self)
+            el = self.browser.element('./a/i[contains(@class, "pficon")]')
             for class_ in self.browser.classes(el):
                 if class_.startswith('pficon-'):
                     return class_[7:]
@@ -142,7 +143,7 @@ class NavDropdown(Widget, ClickableMixin):
         return [
             self.browser.text(element)
             for element
-            in self.browser.elements('./ul/li[not(contains(@class, "divider"))]', parent=self)]
+            in self.browser.elements('.//a[@role="menuitem"]')]
 
     def has_item(self, item):
         return item in self.items
@@ -150,8 +151,7 @@ class NavDropdown(Widget, ClickableMixin):
     def item_enabled(self, item):
         if not self.has_item(item):
             raise ValueError('There is not such item {}'.format(item))
-        element = self.browser.element(
-            './ul/li[normalize-space(.)={}]'.format(quote(item)), parent=self)
+        element = self.browser.element('.//a[normalize-space(.)={}]'.format(quote(item)))
         return 'disabled' not in self.browser.classes(element)
 
     def select_item(self, item):
@@ -160,9 +160,7 @@ class NavDropdown(Widget, ClickableMixin):
 
         self.expand()
         self.logger.info('selecting item {}'.format(item))
-        self.browser.click('./ul/li[normalize-space(.)={}]'.format(quote(item)), parent=self)
+        self.browser.click('.//a[@role="menuitem" and normalize-space(.)={}]'.format(quote(item)))
 
     def __repr__(self):
         return '{}({!r})'.format(type(self).__name__, self.locator)
-
-
