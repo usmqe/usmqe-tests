@@ -2,7 +2,7 @@
 
 # All options in `usmqepytest` section will be loaded during pytest start
 # so that it will be available as if it were specified directly in pytest.ini
-# (see plugin/usmqe_config.py for details).
+# (see usmqe/usmqeconfig.py for details).
 usmqe:
   log_level: DEBUG
   username: admin
