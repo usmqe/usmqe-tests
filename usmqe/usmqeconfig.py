@@ -7,13 +7,26 @@ Pytest plugin to handle usmqe ini config files.
 """
 
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
+from copy import deepcopy
 import os
 import yaml
 
 from py.path import local
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
+
+
+def update_config(original_config, new_config):
+    """
+    Merges two dictionaries that contain more dictionaries.
+    """
+    for k, v in new_config.items():
+        dict_found = original_config.get(k)
+        if isinstance(v, Mapping) and isinstance(dict_found, Mapping):
+            update_config(dict_found, v)
+        else:
+            original_config[k] = deepcopy(v)
 
 
 class UsmConfig(object):
@@ -39,7 +52,7 @@ class UsmConfig(object):
             for new_config in self.config["configuration_files"]:
                 if not os.path.isabs(new_config):
                     new_config = os.path.join(str(base_path), new_config)
-                self.config.update(self.load_config(new_config))
+                update_config(self.config, self.load_config(new_config))
 
         # load inventory file to ansible interface
         # referenced in this class instance
