@@ -87,8 +87,8 @@ class GrafanaApi(ApiBase):
             if "$cluster_id" in target:
                 target = target.replace("$cluster_id", cluster_identifier)
             if "$host_name" in target:
-                target = target.replace("$host_name", pytest.config.getini(
-                    "usm_cluster_member").replace(".", "_"))
+                target = target.replace("$host_name", CONF.config["usmqe"][
+                    "cluster_member"].replace(".", "_"))
             targets_split = target.split(", ")
 
             target_output = []
