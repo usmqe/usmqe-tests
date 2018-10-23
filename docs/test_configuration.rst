@@ -100,10 +100,10 @@ Configuration options
 * *id_fqdn* - one of nodes from cluster which identifies cluster for re-use testing,
   see section :ref:`functional_tests`.
 
-
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
-.. _`conf/example_usm.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.yaml
-.. _`conf/example_usm.hosts`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.hosts
-.. _`conf/main.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/main.yaml
-.. _`conf/defaults.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/defaults.yaml
+.. TODO: fix locations to point to correct ones
+.. _`conf/example_usm.yaml`: https://github.com/usmqe/usmqe-tests
+.. _`conf/example_usm.hosts`: https://github.com/usmqe/usmqe-tests
+.. _`conf/main.yaml`: https://github.com/usmqe/usmqe-tests
+.. _`conf/defaults.yaml`: https://github.com/usmqe/usmqe-tests
