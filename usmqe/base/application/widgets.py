@@ -3,6 +3,7 @@ from widgetastic.exceptions import (
 
 
 from widgetastic.widget import (
+    BaseInput,
     Checkbox,
     do_not_read_this_widget,
     GenericLocatorWidget,
@@ -16,6 +17,7 @@ from widgetastic.widget import (
 )
 from widgetastic.xpath import quote
 from widgetastic_patternfly import (
+    BootstrapSwitch as VanillaBootstrapSwitch,
     FlashMessage,
     FlashMessages,
     VerticalNavigation,
@@ -164,3 +166,11 @@ class NavDropdown(Widget, ClickableMixin):
 
     def __repr__(self):
         return '{}({!r})'.format(type(self).__name__, self.locator)
+
+
+class BootstrapSwitch(VanillaBootstrapSwitch):
+
+    def __init__(self, parent, data_id=None, logger=None):
+        self.input = '//input[@data-id={}]'.format(quote(data_id))
+        self.label = ''
+        BaseInput.__init__(self, parent, locator=self.ROOT, logger=logger)
