@@ -3,6 +3,7 @@ from navmazing import NavigateToAttribute
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
+from usmqe.base.application.views.adduser import AddUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 
 def role_to_list(role):
@@ -28,7 +29,7 @@ class UsersCollection(BaseCollection):
         role_list = role_to_list(role)
         view = ViaWebUI.navigate_to(self, "All")
         view.adduser.click()
-        view = application.web_ui.create_view(UsersAddView)
+        view = ViaWebUI.create_view(AddUserView)
         changed = view.fill({"user_id": user_id, 
                              "users_name": name,
                              "email": email,
