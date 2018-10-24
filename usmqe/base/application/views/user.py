@@ -1,5 +1,6 @@
 from widgetastic.widget import (GenericLocatorWidget, ParametrizedLocator, ParametrizedView, Text,
                                 TextInput, Table)
+from widgetastic.exceptions import NoSuchElementException
 
 from usmqe.base.application.views.common import BaseLoggedInView
 from usmqe.base.application.widgets import Kebab
@@ -19,6 +20,7 @@ class UsersView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return (
-            self.logged_in and
-            self.pagename.text == "Users")
+        try:
+            return self.logged_in and self.pagename.text == "Users"
+        except NoSuchElementException:
+            return False

@@ -1,5 +1,6 @@
 import attr
 from navmazing import NavigateToAttribute
+from wait_for import wait_for
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
@@ -28,8 +29,9 @@ class UsersCollection(BaseCollection):
     def adduser(self, user_id, name, email, notifications_on, password, role):
         role_list = role_to_list(role)
         view = ViaWebUI.navigate_to(self, "All")
+        wait_for(lambda: view.is_displayed, timeout=5)
         view.adduser.click()
-        view = ViaWebUI.create_view(AddUserView)
+        view = self.application.web_ui.create_view(AddUserView)
         changed = view.fill({"user_id": user_id, 
                              "users_name": name,
                              "email": email,
