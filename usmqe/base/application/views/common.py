@@ -35,4 +35,8 @@ class BaseLoggedInView(View):
 
     @property
     def is_displayed(self):
+        return self.logged_in
+
+    @property
+    def logged_in(self):
         return self.navbar.is_displayed
