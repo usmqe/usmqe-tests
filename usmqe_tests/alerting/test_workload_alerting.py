@@ -28,10 +28,8 @@ def test_cpu_alerts(workload_cpu_utilization):
     # Get the fixture data and widen the interval for the messages to arrive
     from_timestamp = workload_cpu_utilization["start"].timestamp()
     until_timestamp = workload_cpu_utilization["end"].timestamp() + 30
-    LOGGER.debug("Fixture start timestamp: {}".format(from_timestamp))
-    LOGGER.debug("Fixture end timestamp: {}".format(until_timestamp))
-    LOGGER.debug("Fixture start time: {}".format(workload_cpu_utilization["start"]))
-    LOGGER.debug("Fixture end time: {}".format(workload_cpu_utilization["end"]))
+    LOGGER.debug("Fixture start timestamp: {} ({})".format(from_timestamp, workload_cpu_utilization["start"]))
+    LOGGER.debug("Fixture end timestamp: {} ({})".format(until_timestamp - 30, workload_cpu_utilization["end"]))
     LOGGER.debug("Fixture result is: {}".format(workload_cpu_utilization["result"]))
 
     # Wait until the messages surely arrive
