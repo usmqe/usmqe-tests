@@ -40,14 +40,15 @@ def create_mailbox_file(filename='mbox_file', content=''):
     return mbox_file_path
 
 
-def get_client_mail():
+def get_client_mail(host=None, user="root"):
     """
     Read mail from /var/mail/root on client machine.
     Return the contents of the mailbox as a string
     """
     SSH = usmqe.usmssh.get_ssh()
-    host = usmqe.inventory.role2hosts("usm_client")[0]
-    cat_mail_log_cmd = "cat /var/mail/root"
+    if host is None:
+        host = usmqe.inventory.role2hosts("usm_client")[0]
+    cat_mail_log_cmd = "cat /var/mail/" + user
     retcode, stdout, stderr = SSH[host].run(cat_mail_log_cmd)
     LOGGER.debug("Return code of 'cat /var/mail/root': {}".format(retcode))
     LOGGER.debug("Stderr of cat: ".format(stderr.decode()))
@@ -58,7 +59,7 @@ def get_client_mail():
     return stdout.decode()
 
 
-def get_msgs_by_time(start_timestamp=None, end_timestamp=None):
+def get_msgs_by_time(start_timestamp=None, end_timestamp=None, host=None, user="root"):
     """
     Get all the messages from /var/mail/root on the client machine.
     Choose the ones that came within the specified time interval.
@@ -66,7 +67,7 @@ def get_msgs_by_time(start_timestamp=None, end_timestamp=None):
     Return a mailbox object.
     """
     # Pretend we have a Date header; get the date from the Received header
-    client_mail = str(get_client_mail()).replace(';', '\nDate:')
+    client_mail = str(get_client_mail(host=host, user=user)).replace(';', '\nDate:')
 
     mailbox_instance = mailbox.mbox(create_mailbox_file(content=client_mail))
     relevant_messages = mailbox.mbox(create_mailbox_file())
