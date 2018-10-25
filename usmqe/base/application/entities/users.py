@@ -14,6 +14,21 @@ LOGGER = pytest.get_logger('ui_users_testing', module=True)
 @attr.s
 class User(BaseEntity):
     user_id = attr.ib()
+    name = attr.ib()
+    email = attr.ib()
+    notifications_on = attr.ib()
+    password = attr.ib()
+    role = attr.ib()
+
+
+    def delete(self):
+        view = ViaWebUI.navigate_to(UsersCollection, "All")
+        wait_for(lambda: view.is_displayed, timeout=5)
+        for row in view.users:
+            LOGGER.debug("Current User ID: ".format(row[0]))
+            if row[0] == self.user_id:
+                row["6"].select("Delete User", close=False)
+                wait_for(lambda: view.is_displayed, timeout=5)
 
 
 @attr.s
@@ -32,17 +47,9 @@ class UsersCollection(BaseCollection):
                              "password": password,
                              "confirm_password": password,
                              "role": role})
-        if changed:
-            view.save_button.click()
-
-    def delete_user(self, user_id):
-        view = ViaWebUI.navigate_to(self, "All")
-        wait_for(lambda: view.is_displayed, timeout=5)
-        for row in view.users:
-            LOGGER.debug("Current User ID: ".format(row[0]))
-            if row[0] == user_id:
-                row["6"].select("Delete User", close=False)
-                wait_for(lambda: view.is_displayed, timeout=5)
+        view.save_button.click()
+        user = self.instantiate(user_id, name, email, notifications_on, password, role)
+        return user
 
 
 @ViaWebUI.register_destination_for(UsersCollection, "All")
