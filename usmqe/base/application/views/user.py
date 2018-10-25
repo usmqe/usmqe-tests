@@ -21,6 +21,6 @@ class UsersView(BaseLoggedInView):
     @property
     def is_displayed(self):
         try:
-            return self.logged_in and self.pagename.text == "Users"
+            return self.pagename.text == "Users"
         except NoSuchElementException:
             return False
