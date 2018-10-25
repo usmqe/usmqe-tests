@@ -15,8 +15,8 @@ integration test cases. There are the following top level directories:
 
 * ``docs``: sphinx based documentation of usmqe integration tests and it's
   setup (you are reading it right now)
-* ``conf``: configuration files, only examples and `main.yaml`_ files are 
-  commited in the repository
+* ``conf``: configuration files, `main.yaml`_, `defaults.yaml`_ and example
+  configuration files are  commited in the repository
 * ``plugin``: custom pytest plugins
 * ``usmqe``: main usmqe python module
 * ``usmqe_tests``: usmqe tests code (uses pytest framework)
@@ -52,3 +52,4 @@ Machine deployment for Tendrl project in CentOS CI.
 
 .. TODO: fix the link
 .. _`main.yaml`: https://github.com/usmqe/usmqe-tests
+.. _`defaults.yaml`: https://github.com/usmqe/usmqe-tests

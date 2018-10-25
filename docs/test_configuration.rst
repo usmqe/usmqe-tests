@@ -18,11 +18,11 @@ scheme:
   `conf/main.yaml`_ should contain list of other configuration files that are
   used as test configuration. There should be linked `conf/defaults.yaml`_ at
   first place. After this there can be more configuration files that are
-  specific to testing enviroment (for more see `conf/example_usm.yaml`_).
+  specific to testing enviroment (for more see `conf/usm.yaml`_).
   `conf/defaults.yaml`_ file should contain test configuration that is not
   environment specific.
 
-* Ansible *host inventory file* (see an example in `conf/example_usm.hosts`_),
+* Ansible *host inventory file* (see an example in `conf/usm.hosts`_),
   which is used both by ansible and by USM QE inventory module to organize
   machines into groups by it's role in test cluster. Actual path of this file
   is configured in one of the ``YAML configuration files``
@@ -68,12 +68,8 @@ Now, you need to:
 
       [usmqe@qeserver ~]$ ansible -i conf/clustername.hosts -m ping -u root all
 
-* Initiate new *USM QE config file*: ``cp conf/example_usm.yaml conf/usm.yaml``
-  and check that this file is listed under ``configuration_files`` option of
-  ``main.yaml`` file.
-
-* Provide all mandatory options in *usm config file* initialized in a previous
-  step. This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
+* Provide all mandatory options in *usm config file* step.
+  This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
   ``id_fqdn``.
   The actual list depends on the test suite you are going to run (eg. api
   tests don't care about ``web_url`` while LDAP integration tests would need
@@ -103,7 +99,7 @@ Configuration options
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
 .. TODO: fix locations to point to correct ones
-.. _`conf/example_usm.yaml`: https://github.com/usmqe/usmqe-tests
-.. _`conf/example_usm.hosts`: https://github.com/usmqe/usmqe-tests
+.. _`conf/usm.yaml`: https://github.com/usmqe/usmqe-tests
+.. _`conf/usm.hosts`: https://github.com/usmqe/usmqe-tests
 .. _`conf/main.yaml`: https://github.com/usmqe/usmqe-tests
 .. _`conf/defaults.yaml`: https://github.com/usmqe/usmqe-tests

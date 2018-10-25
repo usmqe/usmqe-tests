@@ -6,9 +6,9 @@
 #
 configuration_files:
   - conf/defaults.yaml
-  - conf/example-usm1.yaml
+  - conf/usm.yaml
 inventory_file:
-  - conf/example-usm1.hosts
+  - conf/usm.hosts
 pytest_plugin:
   ansible_playbook_directory: "/home/usmqe/usmqe-setup"
-  ansible_playbook_inventory: "/home/usmqe/usmqe-tests/conf/example-usm1.hosts"
+  ansible_playbook_inventory: "/home/usmqe/usmqe-tests/conf/usm.hosts"
