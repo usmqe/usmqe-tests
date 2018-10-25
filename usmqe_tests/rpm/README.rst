@@ -12,28 +12,43 @@ Related Fedora Documentation:
 Related USMQE configuration options
 ===================================
 
-RPM tests have the following options:
+RPM tests have following structure of configuration::
 
-* ``usm_core_baseurl`` - base url of ``tendrl-core`` rpm repository, mandatory
-* ``usm_core_gpgkey_url`` - url of gpg key for ``tendrl-core`` repo, optional
-* ``usm_deps_baseurl`` - base url of ``tendrl-deps`` rpm repository, optional
-* ``usm_deps_gpgkey_url`` - url of gpg key for ``tendrl-deps`` repo, optional
+  usmqe:
+    rpm_repo:
+      core:
+        baseurl
+        gpgkey_url
+      deps:
+        baseurl
+        gpgkey_url
+
+RPM tests have the following options in YAML configuration:
+
+* ``usmqe -> rpm_repo -> core -> baseurl`` - base url of ``tendrl-core``
+  rpm repository, mandatory
+* ``usmqe -> rpm_repo -> core -> gpgkey_url`` - url of gpg key for
+  ``tendrl-core`` repo, optional
+* ``usmqe -> rpm_repo -> deps -> baseurl`` - base url of ``tendrl-deps``
+  rpm repository, optional
+* ``usmqe -> rpm_repo -> deps -> gpgkey_url`` - url of gpg key for 
+  ``tendrl-deps`` repo, optional
 
 So that you could specify all options to test rpm packages from official
 upstream copr::
 
-    usm_core_baseurl=https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/epel-7-x86_64/
-    usm_core_gpgkey_url=https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/pubkey.gpg
-    usm_deps_baseurl=https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/epel-7-x86_64/
-    usm_deps_gpgkey_url=https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/pubkey.gpg
+    usmqe -> rpm_repo -> core -> baseurl: https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/epel-7-x86_64/
+    usmqe -> rpm_repo -> core -> gpgkey_url: https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/pubkey.gpg
+    usmqe -> rpm_repo -> deps -> baseurl: https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/epel-7-x86_64/
+    usmqe -> rpm_repo -> deps -> gpgkey_url: https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/pubkey.gpg
 
-When ``usm_*gpgkey_url`` options are not specified, gpg keys are not validated.
+When ``gpgkey_url`` options are not specified, gpg keys are not validated.
 Moreover one can also use local mirror via ``file://`` protocol for base url::
 
-    usm_core_baseurl=file://mnt/tendrl/tendrl/epel-7-x86_64/
-    usm_deps_baseurl=file://mnt/tendrl/dependencies/epel-7-x86_64/
+    usmqe -> rpm_repo -> core -> baseurl: file://mnt/tendrl/tendrl/epel-7-x86_64/
+    usmqe -> rpm_repo -> deps -> baseurl: file://mnt/tendrl/dependencies/epel-7-x86_64/
 
-When ``usm_deps_baseurl`` is not specified, test code expects that all tendrl
-pacakges are available in single ``tendrl-core`` repo (as it used to work before
-introduction of new repo scheme in upstream tendrl copr, see
-https://github.com/usmqe/usmqe-tests/issues/68).
+When ``baseurl`` option for ``deps`` repo is not specified, test code expects
+that all tendrl pacakges are available in single ``tendrl-core`` repo
+(as it used to work before introduction of new repo scheme in upstream
+tendrl copr, see https://github.com/usmqe/usmqe-tests/issues/68).

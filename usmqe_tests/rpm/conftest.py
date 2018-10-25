@@ -13,7 +13,7 @@ import requests
 from usmqe.usmqeconfig import UsmConfig
 
 from packagelist import list_packages
-from packagelist import reponame2gpgkey_confname, reponame2baseurl_confname
+from packagelist import reponame2confname
 
 CONF = UsmConfig()
 
@@ -37,7 +37,8 @@ def chroot_dir(tendrl_repos):
     reponame2gpgkey_url = {}
     for name in tendrl_repos.keys():
         try:
-            gpgkey_url = CONF.config["usmqe"][reponame2gpgkey_confname[name]]
+            gpgkey_url = CONF.config["usmqe"]["rpm_repo"][
+                reponame2confname[name]]["gpgkey_url"]
             req = requests.get(gpgkey_url)
             assert req.status_code == 200
             gpgkey_path = os.path.join(tmpdirname, "tmp", name + ".gpg")
@@ -171,7 +172,7 @@ def get_baseurl(conf_name):
     """
     Retrieve (from usmqe config file) and validate baseurl for given repo.
     """
-    conf_value = CONF.config["usmqe"][conf_name]
+    conf_value = CONF.config["usmqe"]["rpm_repo"][conf_name]["baseurl"]
     baseurl = urllib.parse.urlparse(conf_value)
     # check remote url http://, https:// or ftp://
     if baseurl.scheme in ('http', 'https', 'ftp'):
@@ -195,9 +196,9 @@ def tendrl_repos():
     (instead of FAILED if we were checking this during test itself).
     """
     repo_dict = {
-        'tendrl-core': get_baseurl(reponame2baseurl_confname['tendrl-core'])}
+        'tendrl-core': get_baseurl(reponame2confname['tendrl-core'])}
     try:
-        deps_baseurl = get_baseurl(reponame2baseurl_confname['tendrl-deps'])
+        deps_baseurl = get_baseurl(reponame2confname['tendrl-deps'])
         repo_dict['tendrl-deps'] = deps_baseurl
     except ValueError as ex:
         # usm_deps_baseurl is optional

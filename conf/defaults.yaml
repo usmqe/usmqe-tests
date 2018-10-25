@@ -23,3 +23,10 @@ usmqe:
     displayname: None
     email: mail
     user_file: None
+  rpm_repo:
+    core:
+      baseurl: https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/epel-7-x86_64/
+      gpgkey_url: https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/pubkey.gpg
+    deps:
+      baseurl: https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/epel-7-x86_64/
+      gpgkey_url: https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/pubkey.gpg
