@@ -174,3 +174,52 @@ class BootstrapSwitch(VanillaBootstrapSwitch):
         self.input = '//input[@data-id={}]'.format(quote(data_id))
         self.label = ''
         BaseInput.__init__(self, parent, locator=self.ROOT, logger=logger)
+
+
+class RadioGroup(Widget):
+    """ Radio Group Control
+
+    .. code-block:: python
+
+        radio_group = RadioGroup(locator=".//div[./label[@for='role']]")
+        radio_group.select(radio_group.button_values()[-1])
+    """
+
+    ROOT = ParametrizedLocator('{@locator}')
+    BUTTONS = './/input[@type="radio"]'
+    BUTTON = './/input[@type="radio" and @value={}]'
+
+    def __init__(self, parent, locator, logger=None):
+        Widget.__init__(self, parent=parent, logger=logger)
+        self.locator = locator
+
+    @property
+    def button_values(self):
+        return [btn.get_attribute("value") for btn in self.browser.elements(self.BUTTONS)]
+
+    @property
+    def selected(self):
+
+        for btn in self.browser.elements(self.BUTTONS):
+            if (
+                "ng-valid-parse" in self.browser.classes(btn) or
+                btn.get_attribute("checked") is not None
+            ):
+                return btn.get_attribute("value")
+
+        else:
+            # radio button doesn't have any marks to make out which button is selected by default.
+            # so, returning first radio button's name
+            return self.button_values[0]
+
+    def select(self, value):
+        if self.selected != value:
+            self.browser.element(self.BUTTON.format(quote(value))).click()
+            return True
+        return False
+
+    def read(self):
+        return self.selected
+
+    def fill(self, name):
+        return self.select(name)
