@@ -10,4 +10,5 @@ configuration_files:
 inventory_file:
   - conf/example-usm1.hosts
 pytest_plugin:
-  ansible_playbooks_dir: "/home/usmqe/usmqe-setup"
+  ansible_playbook_directory: "/home/usmqe/usmqe-setup"
+  ansible_playbook_inventory: "/home/usmqe/usmqe-tests/conf/example-usm1.hosts"
