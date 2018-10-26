@@ -69,7 +69,7 @@ class Kebab(Widget):
         if self.is_opened:
             self.browser.click(self.BUTTON)
 
-    def select(self, item, close=True):
+    def select(self, item, close=True, handle_alert=None):
         """Select a specific item from the kebab.
         Args:
             item: Item to be selected.
@@ -79,6 +79,8 @@ class Kebab(Widget):
         try:
             self.open()
             self.browser.click(self.ITEM.format(quote(item)))
+            if handle_alert is not None:
+                self.browser.handle_alert(cancel=not handle_alert, wait=10.0)
         finally:
             if close:
                 self.close()

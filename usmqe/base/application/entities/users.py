@@ -16,11 +16,11 @@ class User(BaseEntity):
     password = attr.ib()
     role = attr.ib()
 
-    def delete(self):
+    def delete(self, cancel=False):
         view = ViaWebUI.navigate_to(self.parent, "All")
         for row in view.users:
             if row["User ID"].text == self.user_id:
-                row[6].widget.select("Delete User", close=False)
+                row[6].widget.select("Delete User", close=False, handle_alert=not cancel)
                 break
 
     @property
