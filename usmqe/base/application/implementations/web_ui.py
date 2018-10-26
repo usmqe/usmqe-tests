@@ -5,6 +5,7 @@ from selenium.common.exceptions import NoSuchElementException
 from taretto.navigate import Navigate, NavigateStep, NavigateToSibling
 from taretto.ui import Browser
 from webdriver_kaifuku import BrowserManager
+from wait_for import wait_for
 
 from usmqe.base.application.implementations import TendrlImplementationContext, Implementation
 from usmqe.base.application.views.common import BaseLoggedInView, LoginPage
@@ -56,6 +57,11 @@ class TendrlNavigateStep(NavigateStep):
         """
         super(TendrlNavigateStep, self).go(_tries=_tries, *args, **kwargs)
         view = self.view if self.VIEW is not None else None
+        if view:
+            wait_for(
+                self.am_i_here, num_sec=10,
+                message="Waiting for view [{}] to display".format(view.__class__.__name__)
+            )
         return view
 
 

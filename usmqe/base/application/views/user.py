@@ -13,14 +13,8 @@ class UsersView(BaseLoggedInView):
     filter_type = Dropdown("User ID")
     user_filter = TextInput(placeholder='Filter by User ID')
     adduser = Button("Add")
-    users = Table(
-        ".//table", column_widgets={
-            "5": Button("Edit"), 
-            "6": Kebab()})
+    users = Table(".//table", column_widgets={5: Button("Edit"), 6: Kebab()})
 
     @property
     def is_displayed(self):
-        try:
-            return self.pagename.text == "Users"
-        except NoSuchElementException:
-            return False
+        return self.pagename.text == "Users"
