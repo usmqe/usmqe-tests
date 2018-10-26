@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 
-import configparser
 import subprocess
 
 from usmqe.usmqeconfig import UsmConfig

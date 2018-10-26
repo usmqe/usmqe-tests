@@ -44,7 +44,7 @@ class UsmConfig(object):
         # get default configuration from conf/main.yaml
         try:
             config_file = os.path.join(str(base_path), "conf", "main.yaml")
-        except FileNotFoundError() as err:
+        except FileNotFoundError():
             print("conf/main.yaml configuration file does not exist.")
         self.config = self.load_config(config_file)
 
