@@ -3,6 +3,7 @@ import pytest
 import datetime
 import usmqe.usmssh as usmssh
 import usmqe.inventory
+from usmqe.base.application import Application
 
 
 # initialize usmqe logging module
@@ -267,3 +268,15 @@ def workload_cpu_utilization(request):
             raise OSError(stderr)
         return request.param
     return measure_operation(fill_cpu)
+
+
+@pytest.fixture(scope="session")
+def application():
+    app = Application(
+        hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+        scheme="http",
+        username="admin",
+        password="adminuser"
+    )
+    yield app
+    app.browser_manager.quit()

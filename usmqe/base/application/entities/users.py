@@ -1,14 +1,10 @@
 import attr
-import pytest
 from navmazing import NavigateToAttribute
-from wait_for import wait_for
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
 from usmqe.base.application.views.adduser import AddUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-
-LOGGER = pytest.get_logger('ui_users_testing', module=True)
 
 
 @attr.s
@@ -20,36 +16,38 @@ class User(BaseEntity):
     password = attr.ib()
     role = attr.ib()
 
-
     def delete(self):
-        view = ViaWebUI.navigate_to(UsersCollection, "All")
-        wait_for(lambda: view.is_displayed, timeout=5)
+        view = ViaWebUI.navigate_to(self.parent, "All")
         for row in view.users:
-            LOGGER.debug("Current User ID: ".format(row[0]))
-            if row[0] == self.user_id:
-                row["6"].select("Delete User", close=False)
-                wait_for(lambda: view.is_displayed, timeout=5)
+            if row["User ID"].text == self.user_id:
+                row[6].widget.select("Delete User", close=False)
+                break
+
+    @property
+    def exists(self):
+        view = ViaWebUI.navigate_to(self.parent, "All")
+        return bool(list(view.users.rows(user_id=self.user_id)))
 
 
 @attr.s
 class UsersCollection(BaseCollection):
     ENTITY = User
 
-    def adduser(self, user_id, name, email, notifications_on, password, role):
+    def create(self, user_id, name, email, notifications_on, password, role):
         view = ViaWebUI.navigate_to(self, "All")
-        wait_for(lambda: view.is_displayed, timeout=5)
         view.adduser.click()
         view = self.application.web_ui.create_view(AddUserView)
-        changed = view.fill({"user_id": user_id,
-                             "users_name": name,
-                             "email": email,
-                             "notifications_on": notifications_on,
-                             "password": password,
-                             "confirm_password": password,
-                             "role": role})
+        view.fill({
+            "user_id": user_id,
+            "users_name": name,
+            "email": email,
+            "notifications_on": notifications_on,
+            "password": password,
+            "confirm_password": password,
+            "role": role
+        })
         view.save_button.click()
-        user = self.instantiate(user_id, name, email, notifications_on, password, role)
-        return user
+        return self.instantiate(user_id, name, email, notifications_on, password, role)
 
 
 @ViaWebUI.register_destination_for(UsersCollection, "All")
