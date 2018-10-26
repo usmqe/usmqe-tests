@@ -28,7 +28,7 @@ def get_name(fname):
     """
     # take only function name with its parameters
     import re
-    fname = re.sub(".*'(?P<name>.*)'.*", '\g<name>', fname)
+    fname = re.sub(".*'(?P<name>.*)'.*", r'\g<name>', fname)
     # remove 'test_' from the beginning and
     # replace all underscores with spaces
     return fname[5:].replace('_', ' ')
