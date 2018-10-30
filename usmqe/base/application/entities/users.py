@@ -3,6 +3,7 @@ from navmazing import NavigateToAttribute
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
+from usmqe.base.application.views.common import DeleteConfirmationView
 from usmqe.base.application.views.adduser import AddUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 
@@ -20,7 +21,9 @@ class User(BaseEntity):
         view = ViaWebUI.navigate_to(self.parent, "All")
         for row in view.users:
             if row["User ID"].text == self.user_id:
-                row[6].widget.select("Delete User", close=False, handle_alert=not cancel)
+                row[6].widget.select("Delete User", close=False)
+                view = self.application.web_ui.create_view(DeleteConfirmationView)
+                view.delete.click()
                 break
 
     @property

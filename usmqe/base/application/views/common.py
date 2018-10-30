@@ -40,3 +40,11 @@ class BaseLoggedInView(View):
     @property
     def logged_in(self):
         return self.navbar.is_displayed
+
+
+class DeleteConfirmationView(View):
+    ROOT = ".//div[@class='modal-dialog']"
+    alert_name = Text(".//h4")
+    cancel = Button("Cancel")
+    delete = Button("Delete")
+    
