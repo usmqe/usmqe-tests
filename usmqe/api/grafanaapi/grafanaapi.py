@@ -78,8 +78,13 @@ class GrafanaApi(ApiBase):
             cluster_identifier (str): identifier of cluster to use withni
                 targets
         """
-        targets = [target["target"] for target in panel["targets"]
-                   if "hide" not in target.keys() or not target["hide"]]
+        targets = []
+        for target in panel["targets"]:
+            if "hide" not in target.keys() or not target["hide"]:
+                if "targetFull" in target.keys() and target["targetFull"]:
+                    targets.append(target["targetFull"])
+                else:
+                    targets.append(target["target"])
         output = []
         for target in targets:
             if "$cluster_id" in target:
