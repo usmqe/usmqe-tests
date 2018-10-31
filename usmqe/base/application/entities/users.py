@@ -24,6 +24,7 @@ class User(BaseEntity):
                 row[6].widget.select("Delete User", close=False)
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
                 view.delete.click()
+                view = ViaWebUI.navigate_to(self.parent, "All")
                 break
 
     @property
