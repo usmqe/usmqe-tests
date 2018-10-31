@@ -175,12 +175,12 @@ def test_swap_free(workload_swap_utilization, cluster_reuse):
     :step:
       Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
       where [target] is part of uri obtained from previous GRAFANA call.
-      There should be target for memory utilization of a host.
+      There should be target for swap utilization of a host.
       Compare number of hosts from Graphite with value retrieved from
-      ``workload_memory_utilization`` fixture.
+      ``workload_swap_utilization`` fixture.
     :result:
-      JSON structure containing data related to memory utilization is similar
-      to values set by ``workload_memory_utilization`` fixture in given time.
+      JSON structure containing data related to swap utilization is similar
+      to values set by ``workload_swap_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(swap_panel, cluster_identifier)
@@ -221,12 +221,12 @@ def test_swap_utilization(workload_swap_utilization, cluster_reuse):
     :step:
       Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
       where [target] is part of uri obtained from previous GRAFANA call.
-      There should be target for memory utilization of a host.
+      There should be target for swap utilization of a host.
       Compare number of hosts from Graphite with value retrieved from
-      ``workload_memory_utilization`` fixture.
+      ``workload_swap_utilization`` fixture.
     :result:
-      JSON structure containing data related to memory utilization is similar
-      to values set by ``workload_memory_utilization`` fixture in given time.
+      JSON structure containing data related to swap utilization is similar
+      to values set by ``workload_swap_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(swap_panel, cluster_identifier)
