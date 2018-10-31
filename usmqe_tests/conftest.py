@@ -313,7 +313,7 @@ def workload_memory_utilization(request):
     return measure_operation(fill_memory)
 
 
-@pytest.fixture(params=[60, 80])
+@pytest.fixture(params=[70, 95])
 def workload_swap_utilization(request):
     """
     Returns:
