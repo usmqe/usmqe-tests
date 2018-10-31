@@ -279,4 +279,4 @@ def application():
         password="adminuser"
     )
     yield app
-    app.browser_manager.quit()
+    app.web_ui.browser_manager.quit()
