@@ -43,8 +43,7 @@ class BaseLoggedInView(View):
 
 
 class DeleteConfirmationView(View):
-    ROOT = ".//div[@class='modal-dialog']"
+    ROOT = ".//pf-modal-overlay-content"
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
     delete = Button("Delete")
-    
