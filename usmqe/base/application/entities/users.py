@@ -5,8 +5,9 @@ from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
 from usmqe.base.application.views.common import DeleteConfirmationView
 from usmqe.base.application.views.adduser import AddUserView
+from usmqe.base.application.views.edituser import EditUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-
+import time
 
 @attr.s
 class User(BaseEntity):
@@ -24,7 +25,18 @@ class User(BaseEntity):
                 row[6].widget.select("Delete User", close=False)
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
                 view.delete.click()
+                time.sleep(1)
                 view = ViaWebUI.navigate_to(self.parent, "All")
+                break
+
+    def edit(self, new_values_dict, cancel=False):
+        view = ViaWebUI.navigate_to(self.parent, "All")
+        for row in view.users:
+            if row["User ID"].text == self.user_id:
+                row[5].click()
+                view = self.application.web_ui.create_view(EditUserView)
+                view.fill(new_values_dict)
+                view.save_button.click()
                 break
 
     @property
