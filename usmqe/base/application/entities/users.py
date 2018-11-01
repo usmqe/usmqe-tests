@@ -47,7 +47,9 @@ class User(BaseEntity):
         return bool(list(view.users.rows(user_id=self.user_id, 
                                          name=self.name,
                                          email=self.email,
-                                         role=self.role)))
+                                         # can't use role=self.role
+                                         # it's 'Read-Only' instead of 'Limited' in the table
+                                         )))
 
 
 @attr.s
