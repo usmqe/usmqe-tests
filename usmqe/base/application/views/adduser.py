@@ -21,4 +21,4 @@ class AddUserView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return False
+        return self.logged_in and self.page_breadcrumb.locations == ["Users", "Add User"]

@@ -1,5 +1,6 @@
 import attr
-from navmazing import NavigateToAttribute
+from navmazing import NavigateToAttribute, NavigateToSibling
+from wait_for import wait_for
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
@@ -7,7 +8,7 @@ from usmqe.base.application.views.common import DeleteConfirmationView
 from usmqe.base.application.views.adduser import AddUserView
 from usmqe.base.application.views.edituser import EditUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-import time
+
 
 @attr.s
 class User(BaseEntity):
@@ -24,9 +25,10 @@ class User(BaseEntity):
             if row["User ID"].text == self.user_id:
                 row[6].widget.select("Delete User", close=False)
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
+                wait_for(lambda: view.is_displayed, timeout=3)
                 view.delete.click()
-                time.sleep(1)
-                view = ViaWebUI.navigate_to(self.parent, "All")
+                # TODO this is a UI bug
+                view.browser.refresh()
                 break
 
     def edit(self, new_values_dict, cancel=False):
@@ -50,9 +52,7 @@ class UsersCollection(BaseCollection):
     ENTITY = User
 
     def create(self, user_id, name, email, notifications_on, password, role):
-        view = ViaWebUI.navigate_to(self, "All")
-        view.adduser.click()
-        view = self.application.web_ui.create_view(AddUserView)
+        view = ViaWebUI.navigate_to(self, "Add")
         view.fill({
             "user_id": user_id,
             "users_name": name,
@@ -73,3 +73,12 @@ class UsersAll(TendrlNavigateStep):
 
     def step(self):
         self.parent.navbar.usermanagement.select_item("Users")
+
+
+@ViaWebUI.register_destination_for(UsersCollection, "Add")
+class UsersAdd(TendrlNavigateStep):
+    VIEW = AddUserView
+    prerequisite = NavigateToSibling("All")
+
+    def step(self):
+        self.parent.adduser.click()
