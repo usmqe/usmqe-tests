@@ -22,6 +22,7 @@ def test_user_crud(application, role):
               "password": user.password,
               "confirm_password": user.password,
               })
+    assert not user.exists
     user.email = "edited_email_for_{}@tendrl.org".format(role)
     assert user.exists
     user.delete()

@@ -42,7 +42,10 @@ class User(BaseEntity):
     @property
     def exists(self):
         view = ViaWebUI.navigate_to(self.parent, "All")
-        return bool(list(view.users.rows(user_id=self.user_id)))
+        return bool(list(view.users.rows(user_id=self.user_id, 
+                                         name=self.name,
+                                         email=self.email,
+                                         role=self.role)))
 
 
 @attr.s
