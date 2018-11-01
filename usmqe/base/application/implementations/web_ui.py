@@ -121,6 +121,9 @@ class ViaWebUI(Implementation):
         })
         view.log_in.click()
 
+    def logout(self, view):
+        view.navbar.usermenu.select_item("Logout")
+
 
 @ViaWebUI.register_destination_for(ViaWebUI)
 class LoginScreen(TendrlNavigateStep):
