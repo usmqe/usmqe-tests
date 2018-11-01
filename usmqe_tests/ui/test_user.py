@@ -4,7 +4,7 @@ from usmqe.base.application.implementations.web_ui import ViaWebUI
 import time
 
 
-@pytest.mark.parametrize("role", ["normal", "admin", "limited"])
+@pytest.mark.parametrize("role", ["normal", "limited"])
 def test_user_crud(application, role):
     user = application.collections.users.create(
         user_id="{}_user_auto".format(role),
