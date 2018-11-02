@@ -8,7 +8,7 @@ usmqe:
   username: admin
   password: adminuser
   ca_cert: conf/tendrl_ca.crt
-  gluster_role: gluster-servers
+  gluster_role: gluster_servers
   brick_name: brick
   # this is just example of ldap setup, it's not currently used for anything
   ldap:
