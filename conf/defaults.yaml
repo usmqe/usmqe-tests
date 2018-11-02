@@ -1,8 +1,6 @@
-# This is example of USM QE configuration file.
+# This file serves as collection of default values used in usmqe testing 
+# framework
 
-# All options in `usmqepytest` section will be loaded during pytest start
-# so that it will be available as if it were specified directly in pytest.ini
-# (see usmqe/usmqeconfig.py for details).
 usmqe:
   log_level: DEBUG
   username: admin
