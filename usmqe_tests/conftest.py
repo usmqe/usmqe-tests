@@ -311,3 +311,40 @@ def workload_memory_utilization(request):
             raise OSError(stderr)
         return request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture(params=[60, 80])
+def workload_volume_utilization(request):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of dd
+            command and `result` as number presenting percentage of disk
+            utilization.
+    """
+    def fill_volume():
+        """
+        Use `dd` command to utilize mounted volume.
+        """
+        SSH = usmqe.usmssh.get_ssh()
+        # todo(fbalak): use new config
+        import usmqe.inventory
+        host = usmqe.inventory.role2hosts("usm_client")
+        mount_point_cmd = "mount | awk '/volume_beta_arbiter_2_plus_1x2/ {print $3}"
+        retcode, mount_point, stderr = SSH[host].run(mount_point_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+
+
+        disk_space_cmd = "mount | awk '/volume_beta_arbiter_2_plus_1x2/ {print $3}"
+        retcode, disk_space, stderr = SSH[host].run(disk_space_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+
+        stress_cmd = "dd if=/dev/null of={} count={} bs={}".format(
+            1,
+            request.param)
+        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+        return request.param
+    return measure_operation(fill_volume)
