@@ -68,7 +68,7 @@ Now, you need to:
 
       [usmqe@qeserver ~]$ ansible -i conf/clustername.hosts -m ping -u root all
 
-* Provide all mandatory options in *usm config file* step.
+* Provide all mandatory options in *usm config file*.
   This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
   ``id_fqdn``.
   The actual list depends on the test suite you are going to run (eg. api
