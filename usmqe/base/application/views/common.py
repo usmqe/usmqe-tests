@@ -47,3 +47,15 @@ class DeleteConfirmationView(View):
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
     delete = Button("Delete")
+
+
+class MySettingsView(View):
+    ROOT = ".//pf-modal-overlay-content"
+    popup_name = Text(".//h4")
+    users_name = TextInput(name="name")
+    password = TextInput(name="password")
+    confirm_password = TextInput(name="confirmPassword")
+    email = TextInput(name="userEmail")
+    # TODO: add notifications_on = Checkbox(something)
+    save_button = Button("Save")
+    cancel_button = Button("Cancel")
