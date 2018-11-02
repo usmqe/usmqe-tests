@@ -1,2 +1,3 @@
 [usmqe.application_collections]
 users = usmqe.base.application.entities.users:UsersCollection
+clusters = usmqe.base.application.entities.clusters:ClustersCollection
