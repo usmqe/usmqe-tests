@@ -50,6 +50,5 @@ Upstream: https://github.com/usmqe/usmqe-centos-ci
 
 Machine deployment for Tendrl project in CentOS CI.
 
-.. TODO: fix the link
-.. _`main.yaml`: https://github.com/usmqe/usmqe-tests
-.. _`defaults.yaml`: https://github.com/usmqe/usmqe-tests
+.. _`main.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/main.yaml
+.. _`defaults.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/defaults.yaml

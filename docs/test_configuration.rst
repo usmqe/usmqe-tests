@@ -98,8 +98,7 @@ Configuration options
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
-.. TODO: fix locations to point to correct ones
-.. _`conf/usm_example.yaml`: https://github.com/usmqe/usmqe-tests
-.. _`conf/usm_example.hosts`: https://github.com/usmqe/usmqe-tests
-.. _`conf/main.yaml`: https://github.com/usmqe/usmqe-tests
-.. _`conf/defaults.yaml`: https://github.com/usmqe/usmqe-tests
+.. _`conf/usm_example.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/usm_example.yaml
+.. _`conf/usm_example.hosts`: https://github.com/usmqe/usmqe-tests/blob/master/conf/usm_example.hosts
+.. _`conf/main.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/main.yaml
+.. _`conf/defaults.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/defaults.yaml
