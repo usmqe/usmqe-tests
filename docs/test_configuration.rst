@@ -2,8 +2,8 @@
  Test Configuration
 ====================
 
-Configuration of *USM QE integration tests* project uses ``YAML configuration
-files``, ``ansible hosts files`` and `pytest.ini`_ file.
+Configuration of *USM QE integration tests* project uses `YAML configuration
+files`, `ansible hosts files` and `pytest.ini`_ file.
 
 Configuration Scheme
 ====================
@@ -25,7 +25,7 @@ scheme:
 * Ansible *host inventory file* (see an example in `conf/usm_example.hosts`_),
   which is used both by ansible and by USM QE inventory module to organize
   machines into groups by it's role in test cluster. Actual path of this file
-  is configured in one of the ``YAML configuration files``
+  is configured in one of the `YAML configuration files`
   (see `conf/main.yaml`_).
 
 
@@ -50,7 +50,7 @@ We assume that:
   deployed (our deployment automation should generate the inventory file
   in the end of the process).
 
-* You are logged as ``usmqe`` user on the QE Server
+* You are logged as `usmqe` user on the QE Server
 
 Now, you need to:
 
@@ -78,22 +78,22 @@ Now, you need to:
 Configuration options
 ======================
 
-* *log_level* - Log level. It can be one of [DEBUG, INFO, WARNING,
-  ERROR, CRITICAL, FATAL]  
+* ``log_level`` - Log level. It can be one of [DEBUG, INFO, WARNING,
+                  ERROR, CRITICAL, FATAL]  
 
-* *username* - API and UI login
+* ``username`` - API and UI login
 
-* *password* - API and UI password
+* ``password`` - API and UI password
 
-* *web_url* - web UI url
+* ``web_url`` - web UI url
 
-* *api_url* - API url
+* ``api_url`` - API url
 
-* *etcd_api_url* - Etcd API url
+* ``etcd_api_url`` - Etcd API url
 
-* *ca_cert* - path to CA cert
+* ``ca_cert`` - path to CA cert
 
-* *id_fqdn* - one of nodes from cluster which identifies cluster for re-use testing,
+* ``id_fqdn`` - one of nodes from cluster which identifies cluster for re-use testing,
   see section :ref:`functional_tests`.
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
