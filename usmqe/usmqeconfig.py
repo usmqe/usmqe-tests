@@ -12,7 +12,6 @@ from copy import deepcopy
 import os
 import yaml
 
-from py.path import local
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
@@ -39,7 +38,8 @@ class UsmConfig(object):
     def __init__(self):
         self.config = {}
 
-        base_path = local(os.path.abspath(__file__)).new(basename='..')
+        base_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), os.pardir))
         # get default configuration from conf/main.yaml
         try:
             config_file = os.path.join(str(base_path), "conf", "main.yaml")
