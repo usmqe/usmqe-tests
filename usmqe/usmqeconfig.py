@@ -74,6 +74,7 @@ class UsmConfig(object):
             loader=loader,
             sources=inventory_file)
 
+    @classmethod
     def load_config(self, config_file):
         """
         Loads configuration from pytest.yaml file.
