@@ -37,7 +37,6 @@ class UsmConfig(object):
     """
 
     def __init__(self):
-        self.inventory = {}
         self.config = {}
 
         base_path = local(os.path.abspath(__file__)).new(basename='..')
