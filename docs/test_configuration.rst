@@ -2,25 +2,22 @@
  Test Configuration
 ====================
 
-Configuration of *USM QE integration tests* project uses `YAML configuration
-files` and `ansible hosts files`.
+This section describes configuration of *USM QE integration tests*.
+
 
 Configuration Scheme
 ====================
 
-Since there are `multiple ways to configure pytest`_, we defined the following
-scheme:
+Configuration for the tests is defined in:
 
-* Main *pytest config file* `pytest.ini`_ is committed in the root directory
-  of ``usmqe-tests`` repository. This file contains pytest configuration.
-
-* *YAML configuration files* are expected to contain actual configuration.
-  `conf/main.yaml`_ should contain list of other configuration files that are
-  used as test configuration. There should be linked `conf/defaults.yaml`_ at
+* *YAML configuration files* which contain most of actual test configuration.
+  File `conf/main.yaml`_ should contain list of other configuration files that
+  are used as test configuration. File `conf/defaults.yaml`_ should be linked
+  there at
   first place. After this there can be more configuration files that are
   specific to testing enviroment (for more see example configuration
-  `conf/usm_example.yaml`_). `conf/defaults.yaml`_ file should contain test
-  configuration that is not environment specific.
+  `conf/usm_example.yaml`_). File `conf/defaults.yaml`_ should contain
+  default configuration that is not environment specific.
 
 * Ansible *host inventory file* (see an example in `conf/usm_example.hosts`_),
   which is used both by ansible and by USM QE inventory module to organize
@@ -54,7 +51,7 @@ We assume that:
 
 Now, you need to:
 
-* Check that ``usmqe`` user can ssh to all nodes with his ssh key stored 
+* Check that ``usmqe`` user can ssh to all nodes with his ssh key stored
   in ``~/.ssh``. This can be configured in ``~/.ssh/config``.
   Public ssh key is deployed on all machines of test cluster.
 
@@ -78,23 +75,16 @@ Now, you need to:
 Configuration options
 ======================
 
-* ``log_level`` - Log level. It can be one of [DEBUG, INFO, WARNING,
-                  ERROR, CRITICAL, FATAL]  
-
+* ``log_level`` - Log level. It can be one of [DEBUG, INFO, WARNING, ERROR,
+  CRITICAL, FATAL]
 * ``username`` - API and UI login
-
 * ``password`` - API and UI password
-
 * ``web_url`` - web UI url
-
 * ``api_url`` - API url
-
 * ``etcd_api_url`` - Etcd API url
-
 * ``ca_cert`` - path to CA cert
-
-* ``cluster_member`` - one of nodes from cluster which identifies cluster for re-use testing,
-  see section :ref:`functional_tests`.
+* ``cluster_member`` - one of nodes from cluster which identifies cluster for
+  re-use testing, see section :ref:`functional_tests`.
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
