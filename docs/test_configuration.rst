@@ -3,7 +3,7 @@
 ====================
 
 Configuration of *USM QE integration tests* project uses `YAML configuration
-files`, `ansible hosts files` and `pytest.ini`_ file.
+files` and `ansible hosts files`.
 
 Configuration Scheme
 ====================
