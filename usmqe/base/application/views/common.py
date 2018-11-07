@@ -17,17 +17,29 @@ class LoginPage(View):
 
 
 class Navbar(View):
-    ROOT = ".//nav[@class='navbar-pf-vertical tendrl-header-container']"
+    ROOT = ".//nav[@class='navbar navbar-pf-vertical navbar-pf-contextselector tendrl-header-container']"
     title = Text(".//a[@class='navbar-brand']")
     clusters = Select(".//select[@id='repeatSelect']")
     #TODO: navbar for normal user is smaller
+    modal = NavDropdown(".//button[@id='aboutModalDropdown']/parent::li")
     usermanagement = NavDropdown(".//a[@id='usermanagement']/parent::li")
     alerts = NavDropdown(".//a[@id='notifications']/parent::li")
     usermenu = NavDropdown(".//a[@id='usermenu']/parent::li")
 
 
+# TODO: AdminNavbar is different
 #class AdminNavbar(Navbar):
 #    usermanagement = NavDropdown(".//a[@id='usermanagement']")
+
+
+# TODO: use VerticalNavigation
+#class VerticalNavbar(View):
+#    ROOT = ".//nav[@class='nav-pf-vertical nav-pf-vertical-with-secondary-nav hidden-icons-pf']"
+    # hosts = 
+    # volumes =
+    # tasks =
+    # events = 
+    # TODO: learn how to use sub-menu
 
 
 class BaseLoggedInView(View):
