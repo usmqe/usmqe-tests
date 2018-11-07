@@ -28,14 +28,6 @@ In the root dir of the repository, there are also:
 * ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
   :ref:`unit-tests-label` for details)
 
-usmqe-testdoc
-=============
-
-Upstream: https://github.com/usmqe/usmqe-testdoc
-
-Here you find description of usmqe testing strategy, environment and test
-cases.
-
 usmqe-setup
 ===========
 
