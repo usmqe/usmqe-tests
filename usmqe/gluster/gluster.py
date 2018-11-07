@@ -227,6 +227,13 @@ class GlusterVolume(GlusterCommon):
 
         LOGGER.debug("Volume_status: %s" % self.status)
 
+    def list(self):
+        """
+        Returns list of gluster volumes on machine.
+        """
+        xml = self.run_on_node('list')
+        return xml.findall('./volList/volume')
+
     def get_volume_id(self):
         """
         Returns id of volume with given name.
