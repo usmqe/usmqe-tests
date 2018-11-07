@@ -23,34 +23,28 @@ rule if readability is affected, assuming the line length doesn't go over
 Reading Configuration Values
 ============================
 
-To access data from the host inventory, use functions provided by
-``usmqe.inventory`` module:
-
-.. code-block:: python
-
-    import usmqe.inventory as inventory
-
-    for host in inventory.role2hosts("gluster"):
-        print("check storage server {0}".format(host))
-
 To access USM QE configuration, use standard pytest configuration functions:
 
 .. code-block:: python
 
-    import pytest
+    from usmqe.usmqeconfig import UsmConfig
 
-    pytest.config.getini("usm_username")
+    CONF = UsmConfig()
 
-Obviously this assumes that the ``usm_username`` option has been specified in
-USM QE config file (which is referenced via ``usm_config`` option). The minimal
-ini file for the previous example to work would look like this::
+    username = CONF.config["usmqe"]["username"]
 
-    [usmqepytest]
-    usm_username = admin
+Obviously this assumes that the ``username`` option has been specified in
+USM QE config file (which is referenced via ``usmqe`` key). The minimal
+yaml file for the previous example to work would look like this::
 
-Reading of both *USM QE config file* and *host inventory file* is implemented
-in ``plugin/usmqe_config.py`` module, while management of *host inventory file*
-is handled by ``usmqe/inventory.py`` module.
+    usmqe:
+      username: admin
+
+To access data from the host inventory, use functions provided by
+class ``InventoryManager`` from ``ansible.inventory.manager`` module.
+If ``inventory_file`` option is specified correctly in *USM QE config file*
+then instance of this class is available after loading the configuration under
+``inventory`` key, e.g. ``CONF.inventory``.
 
 
 .. _unit-tests-label:

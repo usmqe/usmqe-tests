@@ -9,6 +9,5 @@ import pytest
 
 # list custom usmqe plugins here
 pytest_plugins = (
-    'plugin.usmqe_config',
     'plugin.log_assert',
     )

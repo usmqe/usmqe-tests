@@ -6,9 +6,11 @@ import pytest
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
 from usmqe.gluster.gluster import GlusterCommon
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('cluster_dashboard', module=True)
+CONF = UsmConfig()
 
 
 @pytest.mark.author("fbalak@redhat.com")
@@ -67,7 +69,7 @@ def test_hosts_panel_status(cluster_reuse):
         cluster_identifier = cluster_reuse["integration_id"]
     gluster = GlusterCommon()
     states = gluster.get_cluster_hosts_connection_states(
-        pytest.config.getini("usm_cluster_member"))
+        CONF.config["usmqe"]["cluster_member"])
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
     """

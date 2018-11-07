@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
 
-import configparser
 import subprocess
+
+from usmqe.usmqeconfig import UsmConfig
 
 
 # list of all tendrl packages
@@ -24,13 +25,9 @@ tendrl_packages = [
 
 
 # name of usmqe config option (as in usm.ini file) for given tendrl reponame
-reponame2gpgkey_confname = {
-    "tendrl-core": "usm_core_gpgkey_url",
-    "tendrl-deps": "usm_deps_gpgkey_url",
-    }
-reponame2baseurl_confname = {
-    "tendrl-core": "usm_core_baseurl",
-    "tendrl-deps": "usm_deps_baseurl",
+reponame2confname = {
+    "tendrl-core": "core",
+    "tendrl-deps": "deps",
     }
 
 
@@ -42,19 +39,14 @@ def list_packages(reponame):
     # which is even more TERRIBLE HACK, but I can't help it as pytest.config is
     # not available during of fixture arguments ...
     # TODO: we may want to reconsider design of usmqe configuration
-    pytest_ini = configparser.ConfigParser()
-    pytest_ini.read_file(open("pytest.ini"))
-    usm_config_path = pytest_ini.get("pytest", "usm_config")
-    usm_config = configparser.ConfigParser()
-    usm_config.read_file(open(usm_config_path))
+    usm_config = UsmConfig()
     # if repo is not defined in config file, we have no packages to check ...
     if (
-            "usmqepytest" in usm_config and
-            reponame2baseurl_confname[reponame] in usm_config["usmqepytest"]
+            "usmqe" in usm_config.config and
+            "rpm_repo" in usm_config.config["usmqe"] and
+            reponame2confname[reponame] in usm_config.config["usmqe"]["rpm_repo"]
             ):
-        baseurl = usm_config.get(
-            "usmqepytest",
-            reponame2baseurl_confname[reponame])
+        baseurl = usm_config.config["usmqe"]["rpm_repo"][reponame2confname[reponame]]["baseurl"]
     else:
         return []
     # list all package names from given repo

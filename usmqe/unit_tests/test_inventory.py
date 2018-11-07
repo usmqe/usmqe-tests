@@ -1,46 +1,32 @@
 # -*- coding: utf-8 -*-
-# This is rather just an example than a serious unit test.
+# This test uses example inventory file conf/example-usm1.hosts, as defined in
+# conf/main.yaml config.
 
 
-import pytest
+from usmqe.usmqeconfig import UsmConfig
 
 
-@pytest.fixture
-def inventory_data():
-    data = []
-    data.append(("usm_server", "example-usm3-server.usmqe.tendrl.org"))
-    for i in range(1, 4):
-        node = "example-usm3-mon{0}.usmqe.tendrl.org".format(i)
-        data.append(("ceph_mon", node))
-        data.append(("usm_nodes", node))
-    for i in range(1, 9):
-        node = "example-usm3-node{0}.usmqe.tendrl.org".format(i)
-        data.append(("ceph_osd", node))
-        data.append(("usm_nodes", node))
-    return data
+def test_inventory_groups_exists():
+    CONF = UsmConfig()
+    gd = CONF.inventory.get_groups_dict()
+    assert "gluster_servers" in gd
+    assert "usm_nodes" in gd
+    assert "usm_server" in gd
+    assert "usm_client" in gd
 
 
-def test_host2roles_null(inventory_data):
-    import usmqe.inventory
-    for _, host in inventory_data:
-        assert usmqe.inventory.host2roles(host) is None
+def test_inventory_get_hosts():
+    CONF = UsmConfig()
+    gd = CONF.inventory.get_groups_dict()
+    example_server = "example-usm1-gl1.usmqe.tendrl.org"
+    assert len(gd["usm_nodes"]) == 6
+    assert len(gd["usm_server"]) == 1
 
 
-def test_role2hosts_null(inventory_data):
-    import usmqe.inventory
-    for role, _ in inventory_data:
-        assert usmqe.inventory.role2hosts(role) is None
-
-
-def test_get_all_hosts_null():
-    import usmqe.inventory
-    assert len(usmqe.inventory.get_all_hosts()) == 0
-
-
-def test_get_all_hosts(inventory_data):
-    import usmqe.inventory
-    assert len(usmqe.inventory.get_all_hosts()) == 0
-    for role, host in inventory_data:
-        usmqe.inventory.add_host_entry(role, host)
-    expected = sorted(list(set([host for _, host in inventory_data])))
-    assert sorted(list(usmqe.inventory.get_all_hosts())) == expected
+def test_inventory_get_hosts_gluster_is_node():
+    CONF = UsmConfig()
+    gd = CONF.inventory.get_groups_dict()
+    example_server = "example-usm1-gl1.usmqe.tendrl.org"
+    assert example_server in gd["usm_nodes"]
+    assert example_server in gd["gluster_servers"]
+    assert gd["usm_nodes"] == gd["gluster_servers"]
