@@ -28,7 +28,8 @@ class User(BaseEntity):
                 wait_for(lambda: view.is_displayed, timeout=3)
                 view.delete.click()
                 # TODO this is a UI bug
-                view.browser.refresh()
+                #view.browser.refresh()
+                view = ViaWebUI.navigate_to(self.parent, "All")
                 break
 
     def edit(self, new_values_dict, cancel=False):
