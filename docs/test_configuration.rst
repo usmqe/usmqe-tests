@@ -70,7 +70,7 @@ Now, you need to:
 
 * Provide all mandatory options in *usm config file*.
   This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
-  ``id_fqdn``.
+  ``cluster_member``.
   The actual list depends on the test suite you are going to run (eg. api
   tests don't care about ``web_url`` while LDAP integration tests would need
   to know address of the LDAP server).
@@ -93,7 +93,7 @@ Configuration options
 
 * ``ca_cert`` - path to CA cert
 
-* ``id_fqdn`` - one of nodes from cluster which identifies cluster for re-use testing,
+* ``cluster_member`` - one of nodes from cluster which identifies cluster for re-use testing,
   see section :ref:`functional_tests`.
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
