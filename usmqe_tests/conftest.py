@@ -201,7 +201,7 @@ def valid_limited_user_data(request):
 @pytest.fixture
 def valid_new_normal_user(valid_normal_user_data):
     """
-    Create user from valid_noramal_user_data fixture and return these data.
+    Create user from valid_normal_user_data fixture and return these data.
     At the end remove this user.
     """
     create_new_user(valid_normal_user_data)
@@ -212,7 +212,7 @@ def valid_new_normal_user(valid_normal_user_data):
 @pytest.fixture
 def valid_new_limited_user(valid_limited_user_data):
     """
-    Create user from valid_noramal_user_data fixture and return these data.
+    Create user from valid_limited_user_data fixture and return these data.
     At the end remove this user.
     """
     create_new_user(valid_limited_user_data)
