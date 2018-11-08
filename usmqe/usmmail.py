@@ -44,7 +44,7 @@ def create_mailbox_file(filename='mbox_file', content=''):
 
 def get_client_mail(host=None, user="root"):
     """
-    Read mail from /var/mail/root on client machine.
+    Read mail from /var/mail/{user} on the specified machine (by default client machine).
     Return the contents of the mailbox as a string
     """
     SSH = usmqe.usmssh.get_ssh()
@@ -52,7 +52,7 @@ def get_client_mail(host=None, user="root"):
         host = CONF.inventory.get_groups_dict()["usm_client"][0]
     cat_mail_log_cmd = "cat /var/mail/" + user
     retcode, stdout, stderr = SSH[host].run(cat_mail_log_cmd)
-    LOGGER.debug("Return code of 'cat /var/mail/root': {}".format(retcode))
+    LOGGER.debug("Return code of 'cat /var/mail/{}': {}".format(user, retcode))
     LOGGER.debug("Stderr of cat: ".format(stderr.decode()))
     if retcode != 0 and stderr.decode().count('No such file') > 0:
         return ''
@@ -63,7 +63,7 @@ def get_client_mail(host=None, user="root"):
 
 def get_msgs_by_time(start_timestamp=None, end_timestamp=None, host=None, user="root"):
     """
-    Get all the messages from /var/mail/root on the client machine.
+    Get all the messages from /var/mail/{user} on the client machine or the specified machine.
     Choose the ones that came within the specified time interval.
 
     Return a mailbox object.
