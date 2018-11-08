@@ -161,18 +161,33 @@ def valid_new_admin_user(valid_admin_user_data):
         "email": "jerry-normal@example.com",
         "role": "normal",
         "password": "jerrynormal1234",
-        "email_notifications": False},
-        {
+        "email_notifications": False}])
+def valid_normal_user_data(request):
+    """
+    Generate valid data that can be imported into tendrl as a new user with
+    normal role. `example.com` domain is replaced with hostname `usm_client`
+    inventory file role.
+
+    ``params`` parameter takes list of dictionaries where each dictionary
+        contains ``username`` and ``password`` as keys.
+    """
+    request.param["email"] = request.param["email"].replace(
+        "@example.com", "@" + usmqe.inventory.role2hosts("usm_client")[0])
+    return request.param
+
+
+@pytest.fixture(
+    params=[{
         "name": "Jerry Limited",
         "username": "jerry-limited",
         "email": "jerry-limited@example.com",
         "role": "limited",
         "password": "jerrylimited1234",
         "email_notifications": False}])
-def valid_normal_user_data(request):
+def valid_limited_user_data(request):
     """
     Generate valid data that can be imported into tendrl as a new user with
-    normal role. `example.com` domain is replaced with hostname `usm_client`
+    limited role. `example.com` domain is replaced with hostname `usm_client`
     inventory file role.
 
     ``params`` parameter takes list of dictionaries where each dictionary
@@ -192,6 +207,17 @@ def valid_new_normal_user(valid_normal_user_data):
     create_new_user(valid_normal_user_data)
     yield valid_normal_user_data
     delete_new_user(valid_normal_user_data)
+
+
+@pytest.fixture
+def valid_new_limited_user(valid_limited_user_data):
+    """
+    Create user from valid_noramal_user_data fixture and return these data.
+    At the end remove this user.
+    """
+    create_new_user(valid_limited_user_data)
+    yield valid_normal_user_data
+    delete_new_user(valid_limited_user_data)
 
 
 @pytest.fixture(params=[
