@@ -177,15 +177,48 @@ def valid_normal_user_data(request):
     return request.param
 
 
+@pytest.fixture(
+    params=[{
+        "name": "Jerry Limited",
+        "username": "jerry-limited",
+        "email": "jerry-limited@example.com",
+        "role": "limited",
+        "password": "jerrylimited1234",
+        "email_notifications": False}])
+def valid_limited_user_data(request):
+    """
+    Generate valid data that can be imported into tendrl as a new user with
+    limited role. `example.com` domain is replaced with hostname `usm_client`
+    inventory file role.
+
+    ``params`` parameter takes list of dictionaries where each dictionary
+        contains ``username`` and ``password`` as keys.
+    """
+    request.param["email"] = request.param["email"].replace(
+        "@example.com", "@" + CONF.inventory.get_groups_dict()["usm_client"][0])
+    return request.param
+
+
 @pytest.fixture
 def valid_new_normal_user(valid_normal_user_data):
     """
-    Create user from valid_noramal_user_data fixture and return these data.
+    Create user from valid_normal_user_data fixture and return these data.
     At the end remove this user.
     """
     create_new_user(valid_normal_user_data)
     yield valid_normal_user_data
     delete_new_user(valid_normal_user_data)
+
+
+@pytest.fixture
+def valid_new_limited_user(valid_limited_user_data):
+    """
+    Create user from valid_limited_user_data fixture and return these data.
+    At the end remove this user.
+    """
+    create_new_user(valid_limited_user_data)
+    yield valid_normal_user_data
+    delete_new_user(valid_limited_user_data)
 
 
 @pytest.fixture(params=[
