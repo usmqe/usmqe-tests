@@ -280,3 +280,17 @@ def application():
     )
     yield app
     app.web_ui.browser_manager.quit()
+
+
+@pytest.fixture(scope="session")
+def valid_session_credentials(request):
+    """
+    During setup phase, login default usmqe user account (username and password
+    comes from usm.ini config file) and return requests auth object.
+    Then during teardown logout the user to close the session.
+    """
+    auth = login(
+        pytest.config.getini("usm_username"),
+        pytest.config.getini("usm_password"))
+    yield auth
+    logout(auth=auth)
