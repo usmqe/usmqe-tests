@@ -27,9 +27,11 @@ import time
 import email.utils
 import os
 import tempfile
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('usmmail', module=True)
+CONF = UsmConfig()
 
 
 def create_mailbox_file(filename='mbox_file', content=''):
@@ -47,7 +49,7 @@ def get_client_mail(host=None, user="root"):
     """
     SSH = usmqe.usmssh.get_ssh()
     if host is None:
-        host = usmqe.inventory.role2hosts("usm_client")[0]
+        host = CONF.inventory.get_groups_dict()["usm_client"][0]
     cat_mail_log_cmd = "cat /var/mail/" + user
     retcode, stdout, stderr = SSH[host].run(cat_mail_log_cmd)
     LOGGER.debug("Return code of 'cat /var/mail/root': {}".format(retcode))
