@@ -6,9 +6,11 @@ import pytest
 import time
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('host_dashboard', module=True)
+CONF = UsmConfig()
 
 
 @pytest.mark.author("fbalak@redhat.com")
@@ -134,6 +136,7 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
       to values set by ``workload_memory_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
+
     targets = grafana.get_panel_chart_targets(memory_panel, cluster_identifier)
     targets_used = (targets[0][0], targets[1][0], targets[-1][0])
     for key, target_expected in enumerate((
