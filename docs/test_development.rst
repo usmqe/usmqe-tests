@@ -23,7 +23,7 @@ rule if readability is affected, assuming the line length doesn't go over
 Reading Configuration Values
 ============================
 
-To access USM QE configuration, use standard pytest configuration functions:
+To access USM QE configuration, use ``UsmConfig`` object:
 
 .. code-block:: python
 
@@ -34,7 +34,7 @@ To access USM QE configuration, use standard pytest configuration functions:
     username = CONF.config["usmqe"]["username"]
 
 Obviously this assumes that the ``username`` option has been specified in
-USM QE config file (which is referenced via ``usmqe`` key). The minimal
+a config file which is referenced in ``conf/main.yaml`` file. The minimal
 yaml file for the previous example to work would look like this::
 
     usmqe:
@@ -42,7 +42,7 @@ yaml file for the previous example to work would look like this::
 
 To access data from the host inventory, use functions provided by
 class ``InventoryManager`` from ``ansible.inventory.manager`` module.
-If ``inventory_file`` option is specified correctly in *USM QE config file*
+If ``inventory_file`` option is specified correctly in ``conf/main.yaml`` file,
 then instance of this class is available after loading the configuration under
 ``inventory`` key, e.g. ``CONF.inventory``.
 
