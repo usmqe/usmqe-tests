@@ -26,7 +26,7 @@ usmqe-centos-ci
 
 Upstream: https://github.com/usmqe/usmqe-centos-ci
 
-Machine deployment for Tendrl project and jenkins jobs in CentOS CI.
+Machine deployment for Tendrl project and Jenkins jobs in CentOS CI.
 
 .. _`main.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/main.yaml
 .. _`defaults.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/defaults.yaml
