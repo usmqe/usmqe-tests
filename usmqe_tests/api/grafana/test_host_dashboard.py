@@ -154,3 +154,95 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
         workload_memory_utilization["start"],
         workload_memory_utilization["end"],
         divergence=15)
+
+
+@pytest.mark.author("fbalak@redhat.com")
+def test_swap_free(workload_swap_utilization, cluster_reuse):
+    """
+    Check that Grafana panel *Swap Free* is showing correct values.
+    """
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
+
+    grafana = grafanaapi.GrafanaApi()
+    graphite = graphiteapi.GraphiteApi()
+
+    swap_panel = grafana.get_panel(
+        "Swap Free",
+        row_title="At-a-Glance",
+        dashboard="host-dashboard")
+
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for swap utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_swap_utilization`` fixture.
+    :result:
+      JSON structure containing data related to swap utilization is similar
+      to values set by ``workload_swap_utilization`` fixture in given time.
+    """
+    # get graphite target pointing at data containing number of host
+    targets = grafana.get_panel_chart_targets(swap_panel, cluster_identifier)
+    target_used = targets[0][0]
+    target_expected = 'swap.percent-free'
+    pytest.check(
+        target_used.endswith(target_expected),
+        "There is used target that ends with `{}`".format(target_expected))
+    # make sure that all data in graphite are saved
+    time.sleep(2)
+    graphite.compare_data_mean(
+        100 - int(workload_swap_utilization["result"]),
+        (target_used,),
+        workload_swap_utilization["start"],
+        workload_swap_utilization["end"],
+        divergence=15)
+
+
+@pytest.mark.author("fbalak@redhat.com")
+def test_swap_utilization(workload_swap_utilization, cluster_reuse):
+    """
+    Check that Grafana panel *Swap Utilization* is showing correct values.
+    """
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
+
+    grafana = grafanaapi.GrafanaApi()
+    graphite = graphiteapi.GraphiteApi()
+
+    swap_panel = grafana.get_panel(
+        "Swap Utilization",
+        row_title="At-a-Glance",
+        dashboard="host-dashboard")
+
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for swap utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_swap_utilization`` fixture.
+    :result:
+      JSON structure containing data related to swap utilization is similar
+      to values set by ``workload_swap_utilization`` fixture in given time.
+    """
+    # get graphite target pointing at data containing number of host
+    targets = grafana.get_panel_chart_targets(swap_panel, cluster_identifier)
+    target_used = targets[0][0]
+    target_expected = 'swap.percent-used'
+    pytest.check(
+        target_used.endswith(target_expected),
+        "There is used target that ends with `{}`".format(target_expected))
+    # make sure that all data in graphite are saved
+    time.sleep(2)
+    graphite.compare_data_mean(
+        workload_swap_utilization["result"],
+        (target_used,),
+        workload_swap_utilization["start"],
+        workload_swap_utilization["end"],
+        divergence=15)

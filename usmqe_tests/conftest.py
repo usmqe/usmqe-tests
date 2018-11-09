@@ -345,3 +345,45 @@ def workload_memory_utilization(request):
             raise OSError(stderr)
         return request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture(params=[70, 95])
+def workload_swap_utilization(request):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of stress-ng
+            command and its `result`
+    """
+    def fill_memory():
+        """
+        Use `stress-ng` tool to stress swap memory for 4 minutes to given
+        percentage
+        """
+        run_time = 240
+        SSH = usmssh.get_ssh()
+        host = pytest.config.getini("usm_cluster_member")
+
+        # get total and swap memory of machine via /proc/meminfo file
+        meminfo_cmd = """awk '{if ($1=="MemTotal:" || $1=="SwapTotal:") print $2}' /proc/meminfo"""
+        _, stdout, _ = SSH[host].run(meminfo_cmd)
+        mem_total, swap_total, _ = stdout.decode("utf-8").split("\n")
+
+        # how much memory is going to be consumed considered both normal memory
+        # and swap
+        memory_percent = 100 + (
+            int(swap_total)/int(mem_total) * int(request.param))
+
+        stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
+            1,
+            int(memory_percent))
+        stress_cmd += " --timeout {}s --vm-hang 0 --vm-keep --verify".format(
+            run_time)
+        stress_cmd += " --syslog"
+        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+
+        teardown_cmd = "sleep 3; swapoff -a && swapon -a; sleep 5"
+        SSH[host].run(teardown_cmd)
+        return request.param
+    return measure_operation(fill_memory)
