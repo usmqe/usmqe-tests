@@ -232,7 +232,7 @@ class GlusterVolume(GlusterCommon):
         Returns list of gluster volumes on machine.
         """
         xml = self.run_on_node('list')
-        return xml.findall('./volList/volume')
+        return [volume.text for volume in xml.findall('./volList/volume')]
 
     def get_volume_id(self):
         """
