@@ -326,7 +326,7 @@ def workload_swap_utilization(request):
         percentage
         """
         run_time = 240
-        SSH = usmqe.usmssh.get_ssh()
+        SSH = usmssh.get_ssh()
         host = pytest.config.getini("usm_cluster_member")
 
         # get total and swap memory of machine via /proc/meminfo file
