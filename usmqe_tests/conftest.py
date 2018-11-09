@@ -3,6 +3,7 @@ import pytest
 import datetime
 import usmqe.usmssh as usmssh
 import usmqe.inventory
+from usmqe.gluster.gluster import GlusterVolume
 
 
 # initialize usmqe logging module
@@ -313,38 +314,76 @@ def workload_memory_utilization(request):
     return measure_operation(fill_memory)
 
 
-@pytest.fixture(params=[60, 80])
-def workload_volume_utilization(request):
+@pytest.fixture
+def volume_mount_points():
+    """
+    Returns dictionary where keys are volume names in gluster and values
+    are directory paths to volume mount points.
+    """
+    SSH = usmssh.get_ssh()
+    # todo(fbalak): use new config
+    import usmqe.inventory
+    host = usmqe.inventory.role2hosts("usm_client")[0]
+    gluster_volume = GlusterVolume()
+    volumes = gluster_volume.list()
+    mount_points = {}
+
+    for volume in volumes:
+        mount_point_cmd = "mount | awk '/{}/ {{print $3}}'".format(volume)
+        retcode, mount_point, stderr = SSH[host].run(mount_point_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+        mount_points[volume] = mount_point.decode("utf-8")
+    return mount_points
+
+
+@pytest.fixture(params=[10])
+def workload_capacity_utilization(request, volume_mount_points):
     """
     Returns:
         dict: contains information about `start` and `stop` time of dd
             command and `result` as number presenting percentage of disk
             utilization.
     """
+    mount_point = list(volume_mount_points.values())[0].strip()
+    SSH = usmssh.get_ssh()
+    # todo(fbalak): use new config
+    import usmqe.inventory
+    host = usmqe.inventory.role2hosts("usm_client")[0]
     def fill_volume():
         """
         Use `dd` command to utilize mounted volume.
         """
-        SSH = usmqe.usmssh.get_ssh()
-        # todo(fbalak): use new config
-        import usmqe.inventory
-        host = usmqe.inventory.role2hosts("usm_client")
-        mount_point_cmd = "mount | awk '/volume_beta_arbiter_2_plus_1x2/ {print $3}"
-        retcode, mount_point, stderr = SSH[host].run(mount_point_cmd)
-        if retcode != 0:
-            raise OSError(stderr)
-
-
-        disk_space_cmd = "mount | awk '/volume_beta_arbiter_2_plus_1x2/ {print $3}"
+        disk_space_cmd = "df {0} --block-size=M | awk '/{1}/ {{print $3 \" \" $4}}'".format(
+            mount_point,
+            mount_point.split("/")[-1])
         retcode, disk_space, stderr = SSH[host].run(disk_space_cmd)
         if retcode != 0:
             raise OSError(stderr)
 
-        stress_cmd = "dd if=/dev/null of={} count={} bs={}".format(
-            1,
-            request.param)
-        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        disk_used, disk_available = [size.rstrip("\n").rstrip("M") for size in disk_space.decode("utf-8").split(" ")]
+
+        # block size = 10M
+        block_size = 10
+        # compute disk space that is going to be used and number of files
+        # to create with regard to already utilized space
+        file_count = int((
+            (int(disk_available) / 100 * request.param)
+            - int(disk_used)) / block_size)
+
+        stress_cmd = "for x in {{1..{}}}; do dd if=/dev/null of={}/test_file$x count=1 bs={}M; done".format(
+            file_count,
+            mount_point[:-1] if mount_point.endswith("/") else mount_point,
+            block_size)
+        retcode, _, stderr = SSH[host].run(stress_cmd)
         if retcode != 0:
             raise OSError(stderr)
         return request.param
-    return measure_operation(fill_volume)
+
+    yield measure_operation(fill_volume)
+
+    cleanup_cmd = "rm -f {}/test_file*".format(
+        mount_point[:-1] if mount_point.endswith("/") else mount_point)
+    retcode, _, stderr = SSH[host].run(cleanup_cmd)
+    if retcode != 0:
+        raise OSError(stderr)
