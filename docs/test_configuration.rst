@@ -2,7 +2,7 @@
  Test Configuration
 ====================
 
-This section describes configuration of *USM QE integration tests*.
+This article describes configuration of *USM QE integration tests*.
 
 
 Configuration Scheme
