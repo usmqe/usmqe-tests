@@ -1,6 +1,8 @@
 import configparser
-import pytest
 import datetime
+import pytest
+import time
+
 import usmqe.usmssh as usmssh
 import usmqe.inventory
 from usmqe.gluster.gluster import GlusterVolume
@@ -35,13 +37,15 @@ def get_name(fname):
     return fname[5:].replace('_', ' ')
 
 
-def measure_operation(operation):
+def measure_operation(operation, minimal_time=None):
     """
     Get dictionary with keys 'start', 'end' and 'result' that contain
     information about start and stop time of given function and its result.
 
     Args:
-        operation (function): Function to be performed.
+        operation (function): function to be performed.
+        minimal_time (int): minimal number of seconds to run, it can be more
+            based on given operation
 
     Returns:
         dict: contains information about `start` and `stop` time of given
@@ -49,6 +53,11 @@ def measure_operation(operation):
     """
     start_time = datetime.datetime.now()
     result = operation()
+    passed_time = datetime.datetime.now() - start_time
+    if minimal_time:
+        additional_time = minimal_time - passed_time.total_seconds()
+        if additional_time > 0:
+            time.sleep(additional_time)
     end_time = datetime.datetime.now()
     return {
         "start": start_time,
