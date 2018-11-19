@@ -332,7 +332,7 @@ def volume_mount_points():
         mount_point_cmd = "mount | awk '/{}/ {{print $3}}'".format(volume)
         retcode, mount_point, stderr = SSH[host].run(mount_point_cmd)
         if retcode != 0:
-            raise OSError(stderr)
+            raise OSError(stderr.decode("utf-8"))
         mount_points[volume] = mount_point.decode("utf-8")
     return mount_points
 
@@ -359,7 +359,7 @@ def workload_capacity_utilization(request, volume_mount_points):
             mount_point.split("/")[-1])
         retcode, disk_space, stderr = SSH[host].run(disk_space_cmd)
         if retcode != 0:
-            raise OSError(stderr)
+            raise OSError(stderr.decode("utf-8"))
 
         disk_used, disk_available = [size.rstrip("\n").rstrip("M") for size in disk_space.decode("utf-8").split(" ")]
 
@@ -377,7 +377,7 @@ def workload_capacity_utilization(request, volume_mount_points):
             block_size)
         retcode, _, stderr = SSH[host].run(stress_cmd)
         if retcode != 0:
-            raise OSError(stderr)
+            raise OSError(stderr.decode("utf-8"))
         return request.param
 
     yield measure_operation(fill_volume)
@@ -386,4 +386,4 @@ def workload_capacity_utilization(request, volume_mount_points):
         mount_point[:-1] if mount_point.endswith("/") else mount_point)
     retcode, _, stderr = SSH[host].run(cleanup_cmd)
     if retcode != 0:
-        raise OSError(stderr)
+        raise OSError(stderr.decode("utf-8"))
