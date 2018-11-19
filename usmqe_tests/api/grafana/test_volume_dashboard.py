@@ -77,9 +77,8 @@ def test_capacity_utilization_gauge(
     capacity_panel = grafana.get_panel(
         "Capacity Utilization",
         row_title="Capacity",
-        dashboard="volume-dashboard")
-    print(capacity_panel)
-    exit()
+        dashboard="volume-dashboard",
+        panel_type="singlestat")
 
     """
     :step:
@@ -94,7 +93,7 @@ def test_capacity_utilization_gauge(
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(capacity_panel, cluster_identifier)
-    targets_used = (targets[0][0], targets[1][0], targets[-1][0])
+    targets_used = (targets[0][0])
     for key, target_expected in enumerate((
             "capacity.percent-buffered",
             "capacity.percent-cached",
