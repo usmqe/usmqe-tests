@@ -93,11 +93,9 @@ def test_capacity_utilization_gauge(
     """
     # get graphite target pointing at data containing number of host
     targets = grafana.get_panel_chart_targets(capacity_panel, cluster_identifier)
-    targets_used = (targets[0][0])
+    targets_used = (targets[0][0],)
     for key, target_expected in enumerate((
-            "capacity.percent-buffered",
-            "capacity.percent-cached",
-            "capacity.percent-used")):
+            "pcnt_used",)):
         pytest.check(
             targets_used[key].endswith(target_expected),
             "There is used target that ends with `{}`".format(target_expected))
