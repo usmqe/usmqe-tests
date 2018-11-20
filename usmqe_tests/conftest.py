@@ -37,7 +37,8 @@ def get_name(fname):
     return fname[5:].replace('_', ' ')
 
 
-def measure_operation(operation, minimal_time=None, metadata=None):
+def measure_operation(
+        operation, minimal_time=None, metadata=None, measure_after=False):
     """
     Get dictionary with keys 'start', 'end' and 'result' that contain
     information about start and stop time of given function and its result.
@@ -48,13 +49,18 @@ def measure_operation(operation, minimal_time=None, metadata=None):
             based on given operation
         metadata (dict): this can contain dictionary object with information
             relevant to test (e.g. volume name, operating host, ...)
+        measure_after (bool): determine if time measurement is done before or
+            after the operation returns its state
 
     Returns:
         dict: contains information about `start` and `stop` time of given
             function and its `result`
     """
-    start_time = datetime.datetime.now()
+    if not measure_after:
+        start_time = datetime.datetime.now()
     result = operation()
+    if measure_after:
+        start_time = datetime.datetime.now()
     passed_time = datetime.datetime.now() - start_time
     if minimal_time:
         additional_time = minimal_time - passed_time.total_seconds()
