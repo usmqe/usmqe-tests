@@ -389,7 +389,8 @@ def workload_capacity_utilization(request, volume_mount_points):
             raise OSError(stderr.decode("utf-8"))
         return request.param
 
-    yield measure_operation(fill_volume)
+    time_to_measure = 180
+    yield measure_operation(fill_volume, minimal_time=time_to_measure)
 
     cleanup_cmd = "rm -f {}/test_file*".format(
         mount_point[:-1] if mount_point.endswith("/") else mount_point)
