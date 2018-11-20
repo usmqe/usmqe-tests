@@ -37,7 +37,7 @@ def get_name(fname):
     return fname[5:].replace('_', ' ')
 
 
-def measure_operation(operation, minimal_time=None):
+def measure_operation(operation, minimal_time=None, metadata=None):
     """
     Get dictionary with keys 'start', 'end' and 'result' that contain
     information about start and stop time of given function and its result.
@@ -46,6 +46,8 @@ def measure_operation(operation, minimal_time=None):
         operation (function): function to be performed.
         minimal_time (int): minimal number of seconds to run, it can be more
             based on given operation
+        metadata (dict): this can contain dictionary object with information
+            relevant to test (e.g. volume name, operating host, ...)
 
     Returns:
         dict: contains information about `start` and `stop` time of given
@@ -62,7 +64,8 @@ def measure_operation(operation, minimal_time=None):
     return {
         "start": start_time,
         "end": end_time,
-        "result": result}
+        "result": result,
+        "metadata": metadata}
 
 
 @pytest.fixture(scope="session", autouse=True)
