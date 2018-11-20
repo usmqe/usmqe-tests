@@ -355,7 +355,7 @@ def volume_mount_points():
     return mount_points
 
 
-@pytest.fixture(params=[10])
+@pytest.fixture(params=[76, 91])
 def workload_capacity_utilization(request, volume_mount_points):
     """
     Returns:
@@ -390,7 +390,7 @@ def workload_capacity_utilization(request, volume_mount_points):
             (int(disk_available) / 100 * request.param)
             - int(disk_used)) / block_size)
 
-        stress_cmd = "for x in {{1..{}}}; do dd if=/dev/null of={}/test_file$x count=1 bs={}M; done".format(
+        stress_cmd = "for x in {{1..{}}}; do dd if=/dev/zero of={}/test_file$x count=1 bs={}M; done".format(
             file_count,
             mount_point[:-1] if mount_point.endswith("/") else mount_point,
             block_size)
@@ -403,7 +403,8 @@ def workload_capacity_utilization(request, volume_mount_points):
     yield measure_operation(
         fill_volume,
         minimal_time=time_to_measure,
-        metadata = {"volume_name": volume_name})
+        metadata = {"volume_name": volume_name},
+        measure_after = True)
 
     cleanup_cmd = "rm -f {}/test_file*".format(
         mount_point[:-1] if mount_point.endswith("/") else mount_point)

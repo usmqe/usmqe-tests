@@ -109,4 +109,4 @@ def test_capacity_utilization_gauge(
         targets_used,
         workload_capacity_utilization["start"],
         workload_capacity_utilization["end"],
-        divergence=15)
+        divergence=5)
