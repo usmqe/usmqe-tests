@@ -357,7 +357,8 @@ def workload_capacity_utilization(request, volume_mount_points):
             command and `result` as number presenting percentage of disk
             utilization.
     """
-    mount_point = list(volume_mount_points.values())[0].strip()
+    volume_name = list(volume_mount_points.keys())[0]
+    mount_point = volume_mount_points[volume_name].strip()
     SSH = usmssh.get_ssh()
     # todo(fbalak): use new config
     import usmqe.inventory
@@ -393,7 +394,10 @@ def workload_capacity_utilization(request, volume_mount_points):
         return request.param
 
     time_to_measure = 180
-    yield measure_operation(fill_volume, minimal_time=time_to_measure)
+    yield measure_operation(
+        fill_volume,
+        minimal_time=time_to_measure,
+        metadata = {"volume_name": volume_name})
 
     cleanup_cmd = "rm -f {}/test_file*".format(
         mount_point[:-1] if mount_point.endswith("/") else mount_point)

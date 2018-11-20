@@ -92,7 +92,10 @@ def test_capacity_utilization_gauge(
       to values set by ``workload_capacity_utilization`` fixture in given time.
     """
     # get graphite target pointing at data containing number of host
-    targets = grafana.get_panel_chart_targets(capacity_panel, cluster_identifier)
+    targets = grafana.get_panel_chart_targets(
+        capacity_panel,
+        cluster_identifier,
+        workload_capacity_utilization["metadata"]["volume_name"])
     targets_used = (targets[0][0],)
     for key, target_expected in enumerate((
             "pcnt_used",)):

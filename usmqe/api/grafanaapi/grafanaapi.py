@@ -77,15 +77,20 @@ class GrafanaApi(ApiBase):
         assert len(found_panels) == 1
         return found_panels[0]
 
-    def get_panel_chart_targets(self, panel, cluster_identifier=""):
+    def get_panel_chart_targets(
+            self,
+            panel,
+            cluster_identifier="",
+            volume_name=""):
         """
         Get all targets from panel. Returns list of lists for each visible line
         in chart.
 
         Args:
             panel (object): panel object from *get_panel* function
-            cluster_identifier (str): identifier of cluster to use withni
+            cluster_identifier (str): identifier of cluster to use within
                 targets
+            volume_name (str): name of volume to use within targets
         """
         targets = [target["target"] for target in panel["targets"]
                    if "hide" not in target.keys() or not target["hide"]]
@@ -93,6 +98,8 @@ class GrafanaApi(ApiBase):
         for target in targets:
             if "$cluster_id" in target:
                 target = target.replace("$cluster_id", cluster_identifier)
+            if "$volume_name" in target:
+                target = target.replace("$volume_name", volume_name)
             if "$host_name" in target:
                 target = target.replace("$host_name", pytest.config.getini(
                     "usm_cluster_member").replace(".", "_"))
