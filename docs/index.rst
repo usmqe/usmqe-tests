@@ -14,9 +14,6 @@ This documentation provides all details needed for setting up and running
 automated integration tests, as well as instruction for test automation
 development.
 
-For a description of testing strategy and test cases itself, see `Tendrl Tests
-Documentation`_ instead.
-
 
 Contents
 ========
@@ -70,7 +67,6 @@ Indices and tables
 * :ref:`search`
 
 .. _`Tendrl project`: http://tendrl.org/
-.. _`Tendrl Tests Documentation`: https://github.com/usmqe/usmqe-testdoc
 .. _`usmqe-tests`: https://github.com/usmqe/usmqe-tests
 .. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html

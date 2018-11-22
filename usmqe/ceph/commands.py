@@ -7,11 +7,13 @@ Library for direct access to ceph commands.
 
 import pytest
 
+from usmqe.usmqeconfig import UsmConfig
 import usmqe.usmssh
 
 
 LOGGER = pytest.get_logger('usmceph.commands', module=True)
 SSH = usmqe.usmssh.get_ssh()
+CONF = UsmConfig()
 
 
 class CephCommand(object):

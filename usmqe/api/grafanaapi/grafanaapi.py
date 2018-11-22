@@ -8,8 +8,10 @@ import requests
 import pytest
 from difflib import Differ
 from usmqe.api.base import ApiBase
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("grafanaapi", module=True)
+CONF = UsmConfig()
 
 
 class GrafanaApi(ApiBase):
@@ -23,7 +25,7 @@ class GrafanaApi(ApiBase):
         """
         pattern = "search"
         response = requests.get(
-            pytest.config.getini("grafana_api_url") + pattern)
+            CONF.config["usmqe"]["grafana_api_url"] + pattern)
         self.check_response(response)
         return [
             dashboard["uri"].split("/")[1] for dashboard in response.json()
@@ -41,7 +43,7 @@ class GrafanaApi(ApiBase):
         """
         pattern = "dashboards/db/{}".format(slug)
         response = requests.get(
-            pytest.config.getini("grafana_api_url") + pattern)
+            CONF.config["usmqe"]["grafana_api_url"] + pattern)
         self.check_response(response)
         return response.json()
 
@@ -105,8 +107,8 @@ class GrafanaApi(ApiBase):
             if "$volume_name" in target:
                 target = target.replace("$volume_name", volume_name)
             if "$host_name" in target:
-                target = target.replace("$host_name", pytest.config.getini(
-                    "usm_cluster_member").replace(".", "_"))
+                target = target.replace("$host_name", CONF.config["usmqe"][
+                    "cluster_member"].replace(".", "_"))
             targets_split = target.split(", ")
 
             target_output = []
