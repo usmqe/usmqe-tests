@@ -49,7 +49,8 @@ class GraphiteApi(ApiBase):
             from_date=None,
             until_date=None,
             divergence=10,
-            sample_rate=1):
+            sample_rate=1,
+            operation='sum'):
         """
         Compare expected result with sum of means from graphite data from given targets.
 
@@ -60,8 +61,12 @@ class GraphiteApi(ApiBase):
             until_date: datetime string or timestamp to which date are records shown
             divergence (num): numeric value of divergence used in final comparison
             sample_rate (int): number of samples per minute
+            operation (str): this specifies operation that is done with data
+                when there are more targets available:
+                sum - summation of data
+                diff - subtraction of data
         """
-        graphite_data_mean_sum = 0
+        graphite_data_mean_all = 0
         if from_date and not isinstance(from_date, int):
             from_date = int(from_date.timestamp())
         if until_date and not isinstance(until_date, int):
@@ -87,17 +92,22 @@ class GraphiteApi(ApiBase):
                         expected_number_of_datapoints, len(graphite_data)))
             LOGGER.debug("mean of data from `{}` in Graphite: {}".format(
                 target, graphite_data_mean))
-            graphite_data_mean_sum += graphite_data_mean
+            if operation == 'sum' or graphite_data_mean_all == 0:
+                graphite_data_mean_all += graphite_data_mean
+            elif operation == 'diff':
+                graphite_data_mean_all -= graphite_data_mean
+            else:
+                raise ValueError("Operation '{0}' is not supported.".format(
+                    operation))
         LOGGER.debug("mean of all used data from Graphite: {}".format(
-            graphite_data_mean_sum))
+            graphite_data_mean_all))
         minimal_expected_result = expected_result - divergence
         maximal_expected_result = expected_result + divergence
         msg = "Data mean should be {}, data mean in Graphite is: {}, ".format(
             expected_result,
-            graphite_data_mean_sum)
-        print(type(msg))
+            graphite_data_mean_all)
         msg += "applicable divergence is {}".format(divergence)
         pytest.check(
             minimal_expected_result <
-            graphite_data_mean_sum < maximal_expected_result,
+            graphite_data_mean_all < maximal_expected_result,
             msg)
