@@ -171,7 +171,7 @@ def test_capacity_utilization_graph(
 def test_capacity_available(
         workload_capacity_utilization, cluster_reuse):
     """
-    Check that Grafana panel *Capacity Utilization* graph chart is showing
+    Check that Grafana panel *Capacity Available* is showing
     correct values.
     """
     # TODO(fbalak): get this number dynamically
