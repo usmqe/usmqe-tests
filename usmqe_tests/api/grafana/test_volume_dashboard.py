@@ -64,8 +64,6 @@ def test_capacity_utilization_gauge(
     Check that Grafana panel *Capacity Utilization* gauge chart is showing
     correct values.
     """
-    # TODO(fbalak): get this number dynamically
-    # number of samples from graphite target per minute
     if cluster_reuse["short_name"]:
         cluster_identifier = cluster_reuse["short_name"]
     else:
@@ -119,8 +117,6 @@ def test_capacity_utilization_graph(
     Check that Grafana panel *Capacity Utilization* graph chart is showing
     correct values.
     """
-    # TODO(fbalak): get this number dynamically
-    # number of samples from graphite target per minute
     if cluster_reuse["short_name"]:
         cluster_identifier = cluster_reuse["short_name"]
     else:
@@ -174,8 +170,6 @@ def test_capacity_available(
     Check that Grafana panel *Capacity Available* is showing
     correct values.
     """
-    # TODO(fbalak): get this number dynamically
-    # number of samples from graphite target per minute
     if cluster_reuse["short_name"]:
         cluster_identifier = cluster_reuse["short_name"]
     else:
