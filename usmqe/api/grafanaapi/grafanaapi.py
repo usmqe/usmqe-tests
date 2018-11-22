@@ -67,8 +67,7 @@ class GrafanaApi(ApiBase):
             found_panels = [
                 panel for panel in panels
                 if "title" in panel and
-                panel["title"] == panel_title
-                and panel["type"] == panel_type]
+                panel["title"] == panel_title and panel["type"] == panel_type]
         else:
             found_panels = [
                 panel for panel in panels
@@ -92,8 +91,13 @@ class GrafanaApi(ApiBase):
                 targets
             volume_name (str): name of volume to use within targets
         """
-        targets = [target["target"] for target in panel["targets"]
-                   if "hide" not in target.keys() or not target["hide"]]
+        targets = []
+        for target in panel["targets"]:
+            if "hide" not in target.keys() or not target["hide"]:
+                if "targetFull" in target.keys() and target["targetFull"]:
+                    targets.append(target["targetFull"])
+                else:
+                    targets.append(target["target"])
         output = []
         for target in targets:
             if "$cluster_id" in target:
@@ -117,8 +121,9 @@ class GrafanaApi(ApiBase):
                 except Exception:
                     target_options = None
                 if target_options:
-                    target_output.extend(["{}.{}".format(t, x.split("}", 1)[0]) for x
-                                          in target_options.split(",")])
+                    target_output.extend(["{}.{}".format(
+                        t, x.split("}", 1)[0]) for x in target_options.split(
+                            ",")])
                 else:
                     # drop target tendrl label
                     if t.startswith("tendrl."):
@@ -147,10 +152,12 @@ class GrafanaApi(ApiBase):
                 if panel["title"]:
                     structure_grafana[row["title"]].append(panel["title"])
                 elif "displayName" in panel.keys() and panel["displayName"]:
-                    structure_grafana[row["title"]].append(panel["displayName"])
+                    structure_grafana[row["title"]].append(
+                        panel["displayName"])
 
         LOGGER.debug("defined layout structure = {}".format(structure))
-        LOGGER.debug("layout structure in grafana = {}".format(structure_grafana))
+        LOGGER.debug("layout structure in grafana = {}".format(
+            structure_grafana))
         d = Differ()
         LOGGER.debug("reduced diff between the layouts: {}".format(
             "".join([x.strip() for x in d.compare(
@@ -158,4 +165,5 @@ class GrafanaApi(ApiBase):
                 json.dumps(structure_grafana, sort_keys=True))])))
         pytest.check(
             structure == structure_grafana,
-            "defined structure of panels should be equal to structure in grafana")
+            "defined structure of panels should " +
+            "be equal to structure in grafana")
