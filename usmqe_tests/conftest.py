@@ -5,6 +5,7 @@ import time
 
 import usmqe.usmssh as usmssh
 from usmqe.usmqeconfig import UsmConfig
+from usmqe.gluster.gluster import GlusterVolume
 
 
 # initialize usmqe logging module
@@ -372,7 +373,7 @@ def volume_mount_points():
     are directory paths to volume mount points.
     """
     SSH = usmssh.get_ssh()
-    CONF.inventory.get_groups_dict()["usm_client"][0]
+    host = CONF.inventory.get_groups_dict()["usm_client"][0]
     gluster_volume = GlusterVolume()
     volumes = gluster_volume.list()
     mount_points = {}
@@ -397,7 +398,7 @@ def workload_capacity_utilization(request, volume_mount_points):
     volume_name = list(volume_mount_points.keys())[0]
     mount_point = volume_mount_points[volume_name].strip()
     SSH = usmssh.get_ssh()
-    CONF.inventory.get_groups_dict()["usm_client"][0]
+    host = CONF.inventory.get_groups_dict()["usm_client"][0]
 
     def fill_volume():
         """
