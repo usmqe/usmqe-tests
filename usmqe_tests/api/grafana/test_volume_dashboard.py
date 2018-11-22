@@ -165,3 +165,64 @@ def test_capacity_utilization_graph(
         workload_capacity_utilization["start"],
         workload_capacity_utilization["end"],
         divergence=5)
+
+
+@pytest.mark.author("fbalak@redhat.com")
+def test_capacity_available(
+        workload_capacity_utilization, cluster_reuse):
+    """
+    Check that Grafana panel *Capacity Utilization* graph chart is showing
+    correct values.
+    """
+    # TODO(fbalak): get this number dynamically
+    # number of samples from graphite target per minute
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
+
+    grafana = grafanaapi.GrafanaApi()
+    graphite = graphiteapi.GraphiteApi()
+
+    capacity_panel = grafana.get_panel(
+        "Capacity Available",
+        row_title="Capacity",
+        dashboard="volume-dashboard")
+
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for capacity utilization of a host.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_capacity_utilization`` fixture.
+    :result:
+      JSON structure containing data related to capacity utilization is similar
+      to values set by ``workload_capacity_utilization`` fixture in given time.
+    """
+    # get graphite target pointing at data containing number of host
+    targets = grafana.get_panel_chart_targets(
+        capacity_panel,
+        cluster_identifier,
+        workload_capacity_utilization["metadata"]["volume_name"])
+    targets_used = (targets[0][0], targets[0][1])
+    for key, target_expected in enumerate((
+            "usable_capacity", "used_capacity")):
+        pytest.check(
+            targets_used[key].endswith(target_expected),
+            "There is used target that ends with `{}`".format(target_expected))
+    # make sure that all data in graphite are saved
+    time.sleep(2)
+
+    expected_available = workload_capacity_utilization["metadata"][
+        "total_capacity"] * (1 - workload_capacity_utilization[
+            "result"] * 0.01)
+    divergence = workload_capacity_utilization["metadata"][
+        "total_capacity"] * 0.05
+    graphite.compare_data_mean(
+        expected_available,
+        targets_used,
+        workload_capacity_utilization["start"],
+        workload_capacity_utilization["end"],
+        divergence=divergence,
+        operation='diff')
