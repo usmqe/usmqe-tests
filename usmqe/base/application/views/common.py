@@ -4,6 +4,7 @@ from widgetastic.widget import Checkbox, GenericLocatorWidget
 from widgetastic.widget import Text, TextInput, View, Select
 from taretto.ui.patternfly import Dropdown
 from usmqe.base.application.widgets import NavDropdown
+from widgetastic_patternfly import AboutModal
 
 
 class LoginPage(View):
@@ -71,3 +72,37 @@ class MySettingsView(View):
     # TODO: add notifications_on = Checkbox(something)
     save_button = Button("Save")
     cancel_button = Button("Cancel")
+
+
+class AboutModalView(View):
+    """
+    The view for the about modal
+    """
+    @property
+    def is_displayed(self):
+        return self.modal.is_open
+
+    modal = AboutModal(id='aboutModal')
+
+
+def get_detail(field):
+    """
+    Open the about modal and fetch the value for one of the fields
+    'title' and 'trademark' fields are allowed and get the header/footer values
+    Raises ElementOrBlockNotFound if the field isn't in the about modal
+    :param field: string label for the detail field
+    :return: string value from the requested field
+    """
+
+    view = navigate_to('About')
+
+    try:
+        if field.lower() in ['title', 'trademark']:
+            return getattr(view.modal, field.lower())
+        else:
+            return view.modal.items()[field]
+    except KeyError:
+        raise ElementOrBlockNotFound('No field named {} found in "About" modal.'.format(field))
+    finally:
+        # close since its a blocking modal and will break further navigation
+        view.modal.close()
