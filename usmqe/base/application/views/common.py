@@ -21,8 +21,9 @@ class Navbar(View):
     ROOT = ".//nav[@class='navbar navbar-pf-vertical navbar-pf-contextselector tendrl-header-container']"
     title = Text(".//a[@class='navbar-brand']")
     clusters = Select(".//select[@id='repeatSelect']")
-    #TODO: navbar for normal user is smaller
+    #maybe it's just a button?
     modal = NavDropdown(".//button[@id='aboutModalDropdown']/parent::li")
+    #TODO: navbar for normal user is smaller
     usermanagement = NavDropdown(".//a[@id='usermanagement']/parent::li")
     alerts = NavDropdown(".//a[@id='notifications']/parent::li")
     usermenu = NavDropdown(".//a[@id='usermenu']/parent::li")
@@ -45,6 +46,7 @@ class Navbar(View):
 
 class BaseLoggedInView(View):
     navbar = View.nested(Navbar)
+    modal = AboutModal(id='aboutModal') 
 
     @property
     def is_displayed(self):
@@ -53,6 +55,25 @@ class BaseLoggedInView(View):
     @property
     def logged_in(self):
         return self.navbar.is_displayed
+
+    def get_detail(self, field):
+        """
+        Open the about modal and fetch the value for one of the fields
+        'title' and 'trademark' fields are allowed and get the header/footer values
+        Raises ElementOrBlockNotFound if the field isn't in the about modal
+        :param field: string label for the detail field
+        :return: string value from the requested field
+        """
+
+        self.navbar.modal.click()
+
+        try:
+            return self.modal.items()[field]
+        except KeyError:
+            raise ElementOrBlockNotFound('No field named {} found in "About" modal.'.format(field))
+        finally:
+            # close since its a blocking modal and will break further navigation
+            self.modal.close()
 
 
 class DeleteConfirmationView(View):
