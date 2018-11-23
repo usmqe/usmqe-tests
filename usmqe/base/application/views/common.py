@@ -56,6 +56,9 @@ class BaseLoggedInView(View):
     def logged_in(self):
         return self.navbar.is_displayed
 
+    def log_out(self):
+        self.parent.navbar.usermenu.select_item("Logout")
+
     def get_detail(self, field):
         """
         Open the about modal and fetch the value for one of the fields
