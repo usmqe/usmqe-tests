@@ -74,7 +74,7 @@ class GraphiteApi(ApiBase):
         if until_date and not isinstance(until_date, int):
             until_date = int(until_date.timestamp())
 
-        for target in targets:
+        for idx, target in enumerate(targets):
             graphite_data = self.get_datapoints(
                 target, from_date=from_date, until_date=until_date)
             # drop empty data points
@@ -94,7 +94,7 @@ class GraphiteApi(ApiBase):
                         expected_number_of_datapoints, len(graphite_data)))
             LOGGER.debug("mean of data from `{}` in Graphite: {}".format(
                 target, graphite_data_mean))
-            if operation == 'sum' or graphite_data_mean_all == 0:
+            if operation == 'sum' or idx == 0:
                 graphite_data_mean_all += graphite_data_mean
             elif operation == 'diff':
                 graphite_data_mean_all -= graphite_data_mean
