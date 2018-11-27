@@ -9,6 +9,7 @@ from usmqe.api.grafanaapi import grafanaapi
 LOGGER = pytest.get_logger('brick_dashboard', module=True)
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 def test_brick_dashboard_layout():
     """
