@@ -291,7 +291,7 @@ def os_info():
     return dict(config['os_info'])
 
 
-@pytest.fixture(params=[60, 80, 95])
+@pytest.fixture(params=[60, 80, 95], scope="session")
 def workload_cpu_utilization(request):
     """
     Returns:
@@ -319,7 +319,7 @@ def workload_cpu_utilization(request):
     return measure_operation(fill_cpu)
 
 
-@pytest.fixture(params=[60, 80])
+@pytest.fixture(params=[60, 80], scope="session")
 def workload_memory_utilization(request):
     """
     Returns:
@@ -347,7 +347,7 @@ def workload_memory_utilization(request):
     return measure_operation(fill_memory)
 
 
-@pytest.fixture(params=[70, 95])
+@pytest.fixture(params=[70, 95], scope="session")
 def workload_swap_utilization(request):
     """
     Returns:
@@ -361,7 +361,7 @@ def workload_swap_utilization(request):
         """
         run_time = 240
         SSH = usmssh.get_ssh()
-        host = pytest.config.getini("usm_cluster_member")
+        host = CONF.config["usmqe"]["cluster_member"]
 
         # get total and swap memory of machine via /proc/meminfo file
         meminfo_cmd = """awk '{if ($1=="MemTotal:" || $1=="SwapTotal:") print $2}' /proc/meminfo"""

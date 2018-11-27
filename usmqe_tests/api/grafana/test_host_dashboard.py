@@ -13,6 +13,7 @@ LOGGER = pytest.get_logger('host_dashboard', module=True)
 CONF = UsmConfig()
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_host_dashboard_layout():
     """
@@ -58,6 +59,7 @@ def test_host_dashboard_layout():
     grafana.compare_structure(structure_defined, "host-dashboard")
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """
@@ -104,6 +106,7 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
         workload_cpu_utilization["end"])
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     """
@@ -156,6 +159,7 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
         divergence=15)
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_swap_free(workload_swap_utilization, cluster_reuse):
     """
@@ -202,6 +206,7 @@ def test_swap_free(workload_swap_utilization, cluster_reuse):
         divergence=15)
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_swap_utilization(workload_swap_utilization, cluster_reuse):
     """

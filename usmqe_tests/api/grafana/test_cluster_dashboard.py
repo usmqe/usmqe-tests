@@ -13,6 +13,7 @@ LOGGER = pytest.get_logger('cluster_dashboard', module=True)
 CONF = UsmConfig()
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_cluster_dashboard_layout():
     """
@@ -58,6 +59,7 @@ def test_cluster_dashboard_layout():
     grafana.compare_structure(structure_defined, "cluster-dashboard")
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_hosts_panel_status(cluster_reuse):
     """
