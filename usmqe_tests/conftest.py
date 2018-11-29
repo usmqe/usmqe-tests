@@ -234,6 +234,7 @@ def valid_password(request):
 
 
 @pytest.fixture(params=[
+        "",
         "a",
         "tooshort",
         "a" * 129,
