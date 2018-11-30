@@ -4,10 +4,11 @@ from wait_for import wait_for
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
-from usmqe.base.application.views.common import DeleteConfirmationView
+from usmqe.base.application.views.common import DeleteConfirmationView, MySettingsView
 from usmqe.base.application.views.adduser import AddUserView
 from usmqe.base.application.views.edituser import EditUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
+from usmqe.base.application.implementations.web_ui import ViaWebUI
 
 
 @attr.s
@@ -71,6 +72,12 @@ class UsersCollection(BaseCollection):
         view.save_button.click()
         return self.instantiate(user_id, name, email, notifications_on, password, role)
 
+    def edit_logged_in_user(self, 
+                            user_id, new_values_dict):
+        view = ViaWebUI.navigate_to(self, "MySettings")
+        view.fill(new_values_dict)
+        view.save_button.click()
+
 
 @ViaWebUI.register_destination_for(UsersCollection, "All")
 class UsersAll(TendrlNavigateStep):
@@ -88,3 +95,12 @@ class UsersAdd(TendrlNavigateStep):
 
     def step(self):
         self.parent.adduser.click()
+
+
+@ViaWebUI.register_destination_for(UsersCollection, "MySettings")
+class UsersSettings(TendrlNavigateStep):
+    VIEW = MySettingsView
+    prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
+
+    def step(self):
+        self.parent.navbar.usermenu.select_item("My Settings")
