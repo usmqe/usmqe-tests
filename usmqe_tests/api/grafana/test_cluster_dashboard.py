@@ -3,6 +3,7 @@ REST API test suite - Grafana dashboard cluster-dashboard
 """
 
 import pytest
+import time
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
 from usmqe.gluster.gluster import GlusterCommon
@@ -209,3 +210,68 @@ def test_hosts_panel_status(cluster_reuse):
         g_down == len(real_down),
         "Number of hosts that are down in graphite ({}) should be {}".format(
             g_down, len(real_down)))
+
+
+@pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
+@pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
+@pytest.mark.author("fbalak@redhat.com")
+def test_hosts(ansible_playbook, workload_stop_nodes, cluster_reuse):
+    """
+    Check that Grafana panel *Hosts* is showing correct values.
+    """
+    if cluster_reuse["short_name"]:
+        cluster_identifier = cluster_reuse["short_name"]
+    else:
+        cluster_identifier = cluster_reuse["integration_id"]
+
+    grafana = grafanaapi.GrafanaApi()
+    graphite = graphiteapi.GraphiteApi()
+
+    hosts_panel = grafana.get_panel(
+        "Hosts",
+        row_title="At-a-glance",
+        dashboard="cluster-dashboard")
+
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for statuses of a hosts.
+      Compare number of hosts from Graphite with value retrieved from
+      ``workload_stop_nodes`` fixture.
+    :result:
+      JSON structure containing data related to hosts status is similar
+      to values set by ``workload_stop_nodes`` fixture in given time.
+    """
+    # get graphite target pointing at data containing numbers of hosts
+    targets = grafana.get_panel_chart_targets(hosts_panel, cluster_identifier)
+    targets_used = (targets[0][0], targets[1][0], targets[2][0])
+    targets_expected = ('nodes_count.total', 'nodes_count.up', 'nodes_count.down')
+    for idx, target in enumerate(targets_used):
+        pytest.check(
+            target.endswith(targets_expected[idx]),
+            "There is used target that ends with `{}`".format(
+                targets_expected[idx]))
+    # make sure that all data in graphite are saved
+    time.sleep(20)
+    # check value *Total* of hosts
+    graphite.compare_data_mean(
+        workload_stop_nodes["result"],
+        (targets_used[0],),
+        workload_stop_nodes["start"],
+        workload_stop_nodes["end"],
+        divergence=0)
+    # check value *Up* of hosts
+    graphite.compare_data_mean(
+        0.0,
+        (targets_used[1],),
+        workload_stop_nodes["start"],
+        workload_stop_nodes["end"],
+        divergence=0)
+    # check value *Down* of hosts
+    graphite.compare_data_mean(
+        workload_stop_nodes["result"],
+        (targets_used[2],),
+        workload_stop_nodes["start"],
+        workload_stop_nodes["end"],
+        divergence=0)
