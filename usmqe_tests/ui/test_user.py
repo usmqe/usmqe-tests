@@ -9,7 +9,6 @@ from usmqe.api.tendrlapi import user as tendrlapi_user
 from usmqe.api.tendrlapi.common import login, logout
 
 
-
 @pytest.mark.parametrize("role", ["normal", "limited"])
 def test_user_crud(application, role, valid_session_credentials):
     user = application.collections.users.create(
@@ -67,3 +66,8 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
         "status": 404}
     not_found = test.get_user(user_data_password_invalid["username"], asserts_in=asserts)
     assert "Not found" in str(not_found)
+
+
+def test_admin_mysettings_edit(application):
+    new_data = {"email": "new@ya.ru", "password": "adminuser", "confirm_password": "adminuser"}
+    application.collections.users.edit_logged_in_user("admin", new_data)
