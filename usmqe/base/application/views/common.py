@@ -86,7 +86,7 @@ class DeleteConfirmationView(View):
     delete = Button("Delete")
 
 
-class MySettingsView(View):
+class MySettingsView(BaseLoggedInView):
     ROOT = ".//pf-modal-overlay-content"
     popup_name = Text(".//h4")
     users_name = TextInput(name="name")
@@ -96,6 +96,10 @@ class MySettingsView(View):
     # TODO: add notifications_on = Checkbox(something)
     save_button = Button("Save")
     cancel_button = Button("Cancel")
+
+    @property
+    def is_displayed(self):
+        return self.popup_name == "My Settings"
 
 
 class AboutModalView(View):
