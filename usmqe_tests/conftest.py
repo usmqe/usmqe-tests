@@ -1,6 +1,7 @@
 import configparser
 import pytest
 import datetime
+import time
 import usmqe.usmssh as usmssh
 from usmqe.usmqeconfig import UsmConfig
 
@@ -388,3 +389,22 @@ def workload_swap_utilization(request):
         SSH[host].run(teardown_cmd)
         return request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture
+def workload_stop_nodes():
+    """
+    Test ran with this fixture have to have use fixture `ansible_playbook`
+    and markers:
+
+    @pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
+    @pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
+
+    Returns:
+        dict: contains information about `start` and `stop` time of wait
+        procedure and as `result` is used number of nodes.
+    """
+    def wait():
+        time.sleep(120)
+        return len(CONF.inventory.get_groups_dict()["gluster_servers"])
+    return measure_operation(wait)
