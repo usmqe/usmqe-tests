@@ -59,25 +59,6 @@ class BaseLoggedInView(View):
     def log_out(self):
         self.parent.navbar.usermenu.select_item("Logout")
 
-    def get_detail(self, field):
-        """
-        Open the about modal and fetch the value for one of the fields
-        'title' and 'trademark' fields are allowed and get the header/footer values
-        Raises ElementOrBlockNotFound if the field isn't in the about modal
-        :param field: string label for the detail field
-        :return: string value from the requested field
-        """
-
-        self.navbar.modal.click()
-
-        try:
-            return self.modal.items()[field]
-        except KeyError:
-            raise ElementOrBlockNotFound('No field named {} found in "About" modal.'.format(field))
-        finally:
-            # close since its a blocking modal and will break further navigation
-            self.modal.close()
-
 
 class DeleteConfirmationView(View):
     ROOT = ".//pf-modal-overlay-content"
@@ -86,9 +67,9 @@ class DeleteConfirmationView(View):
     delete = Button("Delete")
 
 
-class MySettingsView(BaseLoggedInView):
-    ROOT = ".//pf-modal-overlay-content"
-    popup_name = Text(".//h4")
+class MySettingsView(View):
+    ROOT = ".//div[@id='userSettingModal']"
+    popup_name = Text(".//h4[@id='modalTitle']")
     users_name = TextInput(name="name")
     password = TextInput(name="password")
     confirm_password = TextInput(name="confirmPassword")
@@ -99,7 +80,7 @@ class MySettingsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.popup_name == "My Settings"
+        return self.popup_name.text == "My Settings"
 
 
 class AboutModalView(View):
