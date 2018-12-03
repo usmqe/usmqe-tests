@@ -7,6 +7,7 @@ import json
 
 from usmqe.api.tendrlapi import user as tendrlapi_user
 from usmqe.api.tendrlapi.common import login, logout
+from usmqe.base.application import Application
 
 
 @pytest.mark.parametrize("role", ["normal", "limited"])
@@ -68,6 +69,45 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
     assert "Not found" in str(not_found)
 
 
-def test_admin_mysettings_edit(application):
-    new_data = {"email": "new@ya.ru", "password": "adminuser", "confirm_password": "adminuser"}
-    application.collections.users.edit_logged_in_user("admin", new_data)
+def test_edit_email_password(valid_new_normal_user, valid_normal_user_data):
+    #new_data = {"email": "new_user_email@ya.ru"}
+    #application_normal_user.collections.users.edit_logged_in_user(valid_normal_user_data[username], new_data)
+    app1 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+                           scheme="http",
+                           username=valid_normal_user_data["username"],
+                           password=valid_normal_user_data["password"])
+    view = ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
+    new_data = {"email": "new_user_email@ya.ru", 
+                "password": valid_normal_user_data["password"],
+                "password_confirmation": valid_normal_user_data["password"] } 
+    app1.collections.users.edit_logged_in_user(valid_normal_user_data["username"], new_data)
+    app1.web_ui.browser_manager.quit()
+    app2 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+                           scheme="http",
+                           username=valid_normal_user_data["username"],
+                           password=valid_normal_user_data["password"])
+    view = ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
+    app2.web_ui.browser_manager.quit()
+
+
+def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
+    #new_data = {"email": "new_user_email@ya.ru"}
+    #application_normal_user.collections.users.edit_logged_in_user(valid_normal_user_data[username], new_data)
+    app1 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+                           scheme="http",
+                           username=valid_normal_user_data["username"],
+                           password=valid_normal_user_data["password"])
+    view = ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
+    new_data = {"email": "new_user_email@ya.ru"}
+    app1.collections.users.edit_logged_in_user(valid_normal_user_data["username"], new_data)
+    app1.web_ui.browser_manager.quit()
+    app2 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+                           scheme="http",
+                           username=valid_normal_user_data["username"],
+                           password=valid_normal_user_data["password"])
+    try:
+        view = ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
+        app2.web_ui.browser_manager.quit()
+    except:
+        pytest.check(False,
+                     issue='https://bugzilla.redhat.com/show_bug.cgi?id=1654623')
