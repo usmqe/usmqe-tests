@@ -22,17 +22,16 @@ def test_user_crud(application, role, valid_session_credentials):
         password="1234567890",
         role=role
     )
-    # assert user.exists
+    assert user.exists
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     user_data = {
-        "name": user.user_id,
-        "username": user.name,
+        "name": user.name,
+        "username": user.user_id,
         "email": user.email,
         "role": user.role,
-        "password": user.password,
         "email_notifications": user.notifications_on}
 
-    # test.check_user(user_data)
+    test.check_user(user_data)
 
     user.edit({
               "user_id": user.user_id,
