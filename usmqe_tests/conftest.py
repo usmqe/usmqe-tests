@@ -275,8 +275,8 @@ def application():
     app = Application(
         hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
         scheme="http",
-        username="admin",
-        password="adminuser"
+        username=pytest.config.getini("usm_username"),
+        password=pytest.config.getini("usm_password")
     )
     yield app
     app.web_ui.browser_manager.quit()
