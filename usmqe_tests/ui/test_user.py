@@ -14,6 +14,15 @@ from usmqe.base.application import Application
 @pytest.mark.happypath
 @pytest.mark.parametrize("role", ["normal", "limited"])
 def test_user_crud(application, role, valid_session_credentials):
+    """
+    Create, edit and delete normal and limited user.
+    """
+    """
+    :step:
+      Create user
+    :result:
+      User is created
+    """
     user = application.collections.users.create(
         user_id="{}_user_auto".format(role),
         name="{} user".format(role),
@@ -32,7 +41,12 @@ def test_user_crud(application, role, valid_session_credentials):
         "email_notifications": user.notifications_on}
 
     test.check_user(user_data)
-
+    """
+    :step:
+      Edit user's email address and notification settings
+    :step:
+      User is edited
+    """
     user.edit({
               "user_id": user.user_id,
               "users_name": user.name,
@@ -48,6 +62,12 @@ def test_user_crud(application, role, valid_session_credentials):
     user_data["email"] = "edited_email_for_{}@tendrl.org".format(role)
     user_data["email_notifications"] = True
     test.check_user(user_data)
+    """
+    :step:
+      Delete user
+    :result:
+      User is deleted
+    """
     user.delete()
     assert not user.exists
 
@@ -56,6 +76,15 @@ def test_user_crud(application, role, valid_session_credentials):
 @pytest.mark.negative
 def test_user_creation_password_invalid(application, valid_session_credentials, 
                                         valid_normal_user_data, invalid_password):
+    """
+    Attempt to create a user with an invalid password.
+    """
+    """
+    :step:
+      Attempt to add user with invalid password.
+    :result:
+      User is not created.
+    """
     user = application.collections.users.create(
         user_id=valid_normal_user_data["username"],
         name=valid_normal_user_data["name"],
@@ -136,7 +165,7 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     app1.web_ui.browser_manager.quit()
     """
     :step:
-      Log in using the old passord
+      Log in using the old password
     :result:
       User is able to log in with the old password. 
       Fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1654623
