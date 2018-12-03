@@ -12,8 +12,7 @@ class EditUserView(BaseLoggedInView):
     user_id = Text(".//p[class='ng-binding']")
     users_name = TextInput(name="name")
     email = TextInput(name="userEmail")
-    # notifications_on = BootstrapSwitch()
-    # TODO: fix the switch
+    notifications_on = BootstrapSwitch(ngmodel="editUserCntrl.user.notification")
     password = TextInput(name="password")
     confirm_password = TextInput(name="confirmPassword")
     role = RadioGroup(".//div[./label[@for='role']]")

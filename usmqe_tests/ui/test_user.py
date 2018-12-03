@@ -39,10 +39,15 @@ def test_user_crud(application, role, valid_session_credentials):
               "email": "edited_email_for_{}@tendrl.org".format(role),
               "password": user.password,
               "confirm_password": user.password,
+              "notifications_on": True
               })
     assert not user.exists
     user.email = "edited_email_for_{}@tendrl.org".format(role)
+    user.notifications_on = True
     assert user.exists
+    user_data["email"] = "edited_email_for_{}@tendrl.org".format(role)
+    user_data["email_notifications"] = True
+    test.check_user(user_data)
     user.delete()
     assert not user.exists
 

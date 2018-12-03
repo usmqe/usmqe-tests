@@ -12,7 +12,7 @@ class AddUserView(BaseLoggedInView):
     user_id = TextInput(name="username")
     users_name = TextInput(name="name")
     email = TextInput(name="userEmail")
-    notifications_on = BootstrapSwitch(data_id="email-notification")
+    notifications_on = BootstrapSwitch(ngmodel="addUserCntrl.user.notification")
     password = TextInput(name="password")
     confirm_password = TextInput(name="confirmPassword")
     role = RadioGroup(".//div[./label[@for='role']]")
