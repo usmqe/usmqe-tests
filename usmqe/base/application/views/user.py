@@ -8,6 +8,9 @@ from taretto.ui.patternfly import Button, Dropdown
 
 
 class UsersView(BaseLoggedInView):
+    """
+    View for Users page. Available to admin only
+    """
     # TODO: fix dropdown. If clicked, dropdown changes its name and won't be found anymore
     pagename = Text(".//h1")
     filter_type = Dropdown("User ID")

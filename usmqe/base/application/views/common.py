@@ -55,7 +55,7 @@ class BaseLoggedInView(View):
     def get_detail(self, field):
         """
         Open the about modal and fetch the value for one of the fields
-        Raises ElementOrBlockNotFound if the field isn't in the about modal
+        Raises KeyError if the field isn't in the about modal
         :param field: string label for the detail field
         :return: string value from the requested field
         """
