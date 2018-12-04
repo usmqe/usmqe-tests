@@ -125,7 +125,7 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
     new_data = {"email": "new_user_email@ya.ru",
                 "password": valid_password,
                 "confirm_password": valid_password}
-    app1.collections.users.edit_logged_in_user(valid_normal_user_data["username"], new_data)
+    app1.collections.users.edit_logged_in_user(new_data)
     """
     :step:
       Log in using the new passord
@@ -160,7 +160,7 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
                        password=valid_normal_user_data["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
     new_data = {"email": "new_user_email@ya.ru"}
-    app1.collections.users.edit_logged_in_user(valid_normal_user_data["username"], new_data)
+    app1.collections.users.edit_logged_in_user(new_data)
     app1.web_ui.browser_manager.quit()
     """
     :step:

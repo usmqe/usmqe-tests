@@ -71,8 +71,7 @@ class UsersCollection(BaseCollection):
         view.save_button.click()
         return self.instantiate(user_id, name, email, notifications_on, password, role)
 
-    def edit_logged_in_user(self,
-                            user_id, new_values_dict):
+    def edit_logged_in_user(self, new_values_dict):
         view = ViaWebUI.navigate_to(self, "MySettings")
         view.fill(new_values_dict)
         view.save_button.click()
