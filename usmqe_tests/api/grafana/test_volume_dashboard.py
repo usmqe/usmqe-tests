@@ -11,6 +11,7 @@ from usmqe.api.graphiteapi import graphiteapi
 LOGGER = pytest.get_logger('volume_dashboard', module=True)
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 def test_volume_dashboard_layout():
     """
