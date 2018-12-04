@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from usmqe.api.tendrlapi.common import TendrlAuth, login, logout, TendrlApi
+from usmqe.api.tendrlapi.common import TendrlAuth, TendrlApi
 
 
 @pytest.fixture(

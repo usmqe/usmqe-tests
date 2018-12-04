@@ -1,10 +1,7 @@
-from widgetastic.widget import (GenericLocatorWidget, ParametrizedLocator, ParametrizedView, Text,
-                                TextInput, Table, BaseInput)
-
+from widgetastic.widget import Text, TextInput
 from usmqe.base.application.views.common import BaseLoggedInView
-from usmqe.base.application.widgets import BootstrapSwitch, Kebab, RadioGroup
-
-from taretto.ui.patternfly import Button, Dropdown, BreadCrumb
+from usmqe.base.application.widgets import BootstrapSwitch, RadioGroup
+from taretto.ui.patternfly import Button, BreadCrumb
 
 
 class EditUserView(BaseLoggedInView):

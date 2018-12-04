@@ -1,10 +1,10 @@
-from widgetastic.widget import (GenericLocatorWidget, ParametrizedLocator, ParametrizedView, Text,
-                                TextInput, Table)
-from widgetastic.exceptions import NoSuchElementException
+from widgetastic.widget import (Text, TextInput)
 
 from usmqe.base.application.views.common import BaseLoggedInView
-from usmqe.base.application.widgets import Kebab
-from taretto.ui.patternfly import Button, Dropdown
+# from usmqe.base.application.widgets import Kebab
+from usmqe.base.application.widgets import ListGroup
+# from taretto.ui.patternfly import Button
+from taretto.ui.patternfly import Dropdown
 
 
 class ClustersView(BaseLoggedInView):
@@ -14,6 +14,9 @@ class ClustersView(BaseLoggedInView):
     user_filter = TextInput(placeholder='Filter by Name')
     # TODO: use new widget
     # users = Table(".//table", column_widgets={5: Button("Edit"), 6: Kebab()})
+    # temporary hack to import cluster
+    # import_button = Button("Import")
+    clusters = ListGroup('//div[@class="list-group list-view-pf list-view-pf-view ng-scope"]')
 
     @property
     def is_displayed(self):

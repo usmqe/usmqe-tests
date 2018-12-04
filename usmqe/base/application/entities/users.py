@@ -8,7 +8,6 @@ from usmqe.base.application.views.common import DeleteConfirmationView, MySettin
 from usmqe.base.application.views.adduser import AddUserView
 from usmqe.base.application.views.edituser import EditUserView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-from usmqe.base.application.implementations.web_ui import ViaWebUI
 
 
 @attr.s
@@ -30,7 +29,7 @@ class User(BaseEntity):
                 view.delete.click()
                 # TODO this is a UI bug
                 view.browser.refresh()
-                #view = ViaWebUI.navigate_to(self.parent, "All")
+                # view = ViaWebUI.navigate_to(self.parent, "All")
                 break
 
     def edit(self, new_values_dict, cancel=False):
@@ -46,7 +45,7 @@ class User(BaseEntity):
     @property
     def exists(self):
         view = ViaWebUI.navigate_to(self.parent, "All")
-        return bool(list(view.users.rows(user_id=self.user_id, 
+        return bool(list(view.users.rows(user_id=self.user_id,
                                          name=self.name,
                                          email=self.email,
                                          # can't use role=self.role
@@ -72,7 +71,7 @@ class UsersCollection(BaseCollection):
         view.save_button.click()
         return self.instantiate(user_id, name, email, notifications_on, password, role)
 
-    def edit_logged_in_user(self, 
+    def edit_logged_in_user(self,
                             user_id, new_values_dict):
         view = ViaWebUI.navigate_to(self, "MySettings")
         view.fill(new_values_dict)

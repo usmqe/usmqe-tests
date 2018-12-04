@@ -1,12 +1,11 @@
 import pytest
 from usmqe.base.application.implementations.web_ui import ViaWebUI
-#LOGGER = pytest.get_logger('ui_user_testing', module=True)
-import time
+# LOGGER = pytest.get_logger('ui_user_testing', module=True)
 import copy
-import json
+from wait_for import TimedOutError
 
 from usmqe.api.tendrlapi import user as tendrlapi_user
-from usmqe.api.tendrlapi.common import login, logout
+# from usmqe.api.tendrlapi.common import login, logout
 from usmqe.base.application import Application
 
 
@@ -74,7 +73,7 @@ def test_user_crud(application, role, valid_session_credentials):
 
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
-def test_user_creation_password_invalid(application, valid_session_credentials, 
+def test_user_creation_password_invalid(application, valid_session_credentials,
                                         valid_normal_user_data, invalid_password):
     """
     Attempt to create a user with an invalid password.
@@ -109,23 +108,23 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, valid_password):
-    """ 
+    """
     Change user's password and email in My Settings and login with new password.
     """
-    """ 
+    """
     :step:
       Log in and edit user's email and password in My Settings
     :result:
       User's email and password are changed
     """
     app1 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
-                           scheme="http",
-                           username=valid_normal_user_data["username"],
-                           password=valid_normal_user_data["password"])
-    view = ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
-    new_data = {"email": "new_user_email@ya.ru", 
+                       scheme="http",
+                       username=valid_normal_user_data["username"],
+                       password=valid_normal_user_data["password"])
+    ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
+    new_data = {"email": "new_user_email@ya.ru",
                 "password": valid_password,
-                "confirm_password": valid_password } 
+                "confirm_password": valid_password}
     app1.collections.users.edit_logged_in_user(valid_normal_user_data["username"], new_data)
     """
     :step:
@@ -135,20 +134,20 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
     """
     app1.web_ui.browser_manager.quit()
     app2 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
-                           scheme="http",
-                           username=valid_normal_user_data["username"],
-                           password=valid_password)
-    view = ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
+                       scheme="http",
+                       username=valid_normal_user_data["username"],
+                       password=valid_password)
+    ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
     app2.web_ui.browser_manager.quit()
 
 
 @pytest.mark.author("ebondare@redhat.com")
 def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
-    """ 
+    """
     Change user's email in My Settings and login again.
     Fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1654623
     """
-    """ 
+    """
     :step:
       Log in and edit user's email in My Settings
     :result:
@@ -156,10 +155,10 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     """
 
     app1 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
-                           scheme="http",
-                           username=valid_normal_user_data["username"],
-                           password=valid_normal_user_data["password"])
-    view = ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
+                       scheme="http",
+                       username=valid_normal_user_data["username"],
+                       password=valid_normal_user_data["password"])
+    ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
     new_data = {"email": "new_user_email@ya.ru"}
     app1.collections.users.edit_logged_in_user(valid_normal_user_data["username"], new_data)
     app1.web_ui.browser_manager.quit()
@@ -167,17 +166,17 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     :step:
       Log in using the old password
     :result:
-      User is able to log in with the old password. 
+      User is able to log in with the old password.
       Fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1654623
     """
 
     app2 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
-                           scheme="http",
-                           username=valid_normal_user_data["username"],
-                           password=valid_normal_user_data["password"])
+                       scheme="http",
+                       username=valid_normal_user_data["username"],
+                       password=valid_normal_user_data["password"])
     try:
-        view = ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
+        ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
         app2.web_ui.browser_manager.quit()
-    except:
+    except TimedOutError:
         pytest.check(False,
                      issue='https://bugzilla.redhat.com/show_bug.cgi?id=1654623')

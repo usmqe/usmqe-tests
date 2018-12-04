@@ -1,6 +1,6 @@
-from widgetastic.widget import (GenericLocatorWidget, ParametrizedLocator, ParametrizedView, Text,
-                                TextInput, Table)
-from widgetastic.exceptions import NoSuchElementException
+from widgetastic.widget import Text, TextInput, Table
+# from widgetastic.exceptions import NoSuchElementException
+# from widgetastic.widget import GenericLocatorWidget, ParametrizedLocator, ParametrizedView
 
 from usmqe.base.application.views.common import BaseLoggedInView
 from usmqe.base.application.widgets import Kebab

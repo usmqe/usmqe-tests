@@ -1,26 +1,26 @@
-from widgetastic.exceptions import (
-    NoSuchElementException, WidgetOperationFailed)
+from widgetastic.exceptions import NoSuchElementException
+# from widgetastic.exceptions import WidgetOperationFailed
 
 
 from widgetastic.widget import (
     BaseInput,
-    Checkbox,
-    do_not_read_this_widget,
-    GenericLocatorWidget,
+    # Checkbox,
+    # do_not_read_this_widget,
+    # GenericLocatorWidget,
     ParametrizedLocator,
-    Select,
-    Table,
-    Text,
-    TextInput,
+    # Select,
+    # Table,
+    # Text,
+    # TextInput,
     Widget,
     ClickableMixin
 )
 from widgetastic.xpath import quote
 from widgetastic_patternfly import (
     BootstrapSwitch as VanillaBootstrapSwitch,
-    FlashMessage,
-    FlashMessages,
-    VerticalNavigation,
+    # FlashMessage,
+    # FlashMessages,
+    # VerticalNavigation,
 )
 
 
@@ -226,6 +226,7 @@ class RadioGroup(Widget):
     def fill(self, name):
         return self.select(name)
 
+
 '''
 class ListGroupItem(Widget, ClickableMixin):
     """
@@ -249,6 +250,7 @@ class ListGroupItem(Widget, ClickableMixin):
         pass
 '''
 
+
 class ListGroup(Widget, ClickableMixin):
     """
     Represents the patternfly list-group widget.
@@ -268,8 +270,8 @@ class ListGroup(Widget, ClickableMixin):
             actions = self.browser.elements(self.ACTIONS_LOC, parent=item)
             description = self.browser.text(self.DESCRIPTION_LOC, parent=item)
             additional_info = self.browser.elements(self.ADDITIONAL_INFO_LOC, parent=item)
-            unnamed_info_counter = 0
-            #for info_item in additional_info:
-            #    try 
+            # unnamed_info_counter = 0
+            # for info_item in additional_info:
+            #    try
             items.update({description: (actions, additional_info)})
         return items

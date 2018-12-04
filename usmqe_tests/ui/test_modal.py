@@ -1,15 +1,6 @@
 import pytest
 from usmqe.base.application.implementations.web_ui import ViaWebUI
 from usmqe.base.application import Application
-#LOGGER = pytest.get_logger('ui_user_testing', module=True)
-import time
-import copy
-import json
-
-from usmqe.base.application.views.common import BaseLoggedInView
-
-from usmqe.api.tendrlapi import user as tendrlapi_user
-from usmqe.api.tendrlapi.common import login, logout
 
 
 def test_modal(application):
@@ -52,9 +43,9 @@ def test_modal_username_role(application, role, valid_session_credentials):
         notifications_on=False,
         password="1234567890",
         role=role)
-    temp_app = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com", 
-                           scheme="http", 
-                           username=user.user_id, 
+    temp_app = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+                           scheme="http",
+                           username=user.user_id,
                            password=user.password)
     """
     :step:

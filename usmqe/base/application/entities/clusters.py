@@ -1,10 +1,9 @@
 import attr
 from navmazing import NavigateToAttribute, NavigateToSibling
-from wait_for import wait_for
+# from wait_for import wait_for
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.cluster import ClustersView
-from usmqe.base.application.views.common import DeleteConfirmationView
 from usmqe.base.application.views.importcluster import ImportClusterView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 
@@ -21,7 +20,6 @@ class Cluster(BaseEntity):
     # alerts = attr.ib()
     # profiling = attr.ib()
 
-
     # def import(self, cancel=False):
     #    pass
     # import will belong to an individual cluster when the widget is ready
@@ -29,22 +27,20 @@ class Cluster(BaseEntity):
     def unmanage(self, cancel=False):
         pass
 
-
     def enable_profiling(self, cancel=False):
         pass
 
-
     def disable_profiling(self, cancel=False):
         pass
-
 
     def expand(self, cancel=False):
         pass
 
     @property
     def exists(self):
-        view = ViaWebUI.navigate_to(self.parent, "All")
-        #return bool(list(view.clusters.something(something)))
+        pass
+        # view = ViaWebUI.navigate_to(self.parent, "All")
+        # return bool(list(view.clusters.something(something)))
 
 
 @attr.s
@@ -59,7 +55,7 @@ class ClustersCollection(BaseCollection):
 
 
 @ViaWebUI.register_destination_for(ClustersCollection, "All")
-class UsersAll(TendrlNavigateStep):
+class ClustersAll(TendrlNavigateStep):
     VIEW = ClustersView
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
@@ -68,7 +64,7 @@ class UsersAll(TendrlNavigateStep):
 
 
 @ViaWebUI.register_destination_for(ClustersCollection, "Import")
-class UsersAll(TendrlNavigateStep):
+class ClustersImport(TendrlNavigateStep):
     VIEW = ImportClusterView
     prerequisite = NavigateToSibling("All")
 
