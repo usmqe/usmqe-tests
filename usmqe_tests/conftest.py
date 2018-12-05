@@ -395,7 +395,7 @@ def workload_swap_utilization(request):
 def workload_stop_nodes():
     """
     Test ran with this fixture have to have use fixture `ansible_playbook`
-    and markers:
+    and markers before this fixture is called:
 
     @pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
     @pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
@@ -404,6 +404,9 @@ def workload_stop_nodes():
         dict: contains information about `start` and `stop` time of wait
         procedure and as `result` is used number of nodes.
     """
+    # wait for tendrl to notice that nodes are down
+    time.sleep(240)
+
     def wait():
         time.sleep(120)
         return len(CONF.inventory.get_groups_dict()["gluster_servers"])

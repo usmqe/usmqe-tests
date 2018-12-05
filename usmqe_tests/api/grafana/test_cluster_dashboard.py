@@ -253,7 +253,7 @@ def test_hosts(ansible_playbook, workload_stop_nodes, cluster_reuse):
             "There is used target that ends with `{}`".format(
                 targets_expected[idx]))
     # make sure that all data in graphite are saved
-    time.sleep(20)
+    time.sleep(3)
     # check value *Total* of hosts
     graphite.compare_data_mean(
         workload_stop_nodes["result"],
