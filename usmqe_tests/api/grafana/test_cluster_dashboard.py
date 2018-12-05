@@ -6,66 +6,32 @@ import pytest
 from usmqe.api.grafanaapi import grafanaapi
 from usmqe.api.graphiteapi import graphiteapi
 from usmqe.gluster.gluster import GlusterCommon
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('cluster_dashboard', module=True)
-"""@pylatest default
-Setup
-=====
-
-Prepare USM cluster accordingly to documentation.
-``GRAFANA`` for this file stands for Grafana API url used by tested Tendrl
-server.
-``GRAPHITE`` for this file stands for Graphite API url used by tested Tendrl
-server.
-
-"""
-
-"""@pylatest default
-Teardown
-========
-"""
+CONF = UsmConfig()
 
 
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
 def test_cluster_dashboard_layout():
-    """@pylatest grafana/layout
-    API-grafana: layout
-    *******************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
+    """
     Check that layout of dashboard is according to specification:
     ``https://github.com/Tendrl/specifications/issues/222``
     """
-    api = grafanaapi.GrafanaApi()
-    """@pylatest grafana/layout
-    .. test_step:: 1
+    grafana = grafanaapi.GrafanaApi()
 
-        Send **GET** request to:
-        ``GRAFANA/dashboards/db/cluster-dashboard``.
-
-    .. test_result:: 1
-
-        JSON structure containing data related to layout is returned.
     """
-    layout = api.get_dashboard("cluster-dashboard")
-    pytest.check(
-        len(layout) > 0,
-        "cluster-dashboard layout should not be empty")
-
-    """@pylatest grafana/layout
-    .. test_step:: 2
-
-        Compare structure of panels and rows as defined in specification:
-        ``https://github.com/Tendrl/specifications/issues/222``
-
-    .. test_result:: 2
-
-        Defined structure and structure from Grafana API are equivalent.
+    :step:
+      Send **GET** request to:
+      ``GRAFANA/dashboards/db/cluster-dashboard`` and get layout structure.
+      Compare structure of panels and rows as defined in specification:
+      ``https://github.com/Tendrl/specifications/issues/222``
+    :result:
+      Defined structure and structure from Grafana API are equivalent.
     """
+
     structure_defined = {
         'Header': [],
         'Top Consumers': [
@@ -85,39 +51,18 @@ def test_cluster_dashboard_layout():
             'IOPS',
             'Capacity Utilization',
             'Capacity Available',
-            'Weekly Growth Rate',
-            'Weeks Remaining',
             'Throughput'],
         'Status': [
             'Volume Status',
             'Host Status',
             'Brick Status']}
-    structure = {}
-    for row in layout["dashboard"]["rows"]:
-        structure[row["title"]] = []
-        for panel in row["panels"]:
-            if panel["title"]:
-                structure[row["title"]].append(panel["title"])
-            elif "displayName" in panel.keys() and panel["displayName"]:
-                structure[row["title"]].append(panel["displayName"])
-
-    LOGGER.debug("defined layout structure = {}".format(structure_defined))
-    LOGGER.debug("layout structure in grafana = {}".format(structure))
-    pytest.check(
-        structure_defined == structure,
-        "defined structure of panels should equal to structure in grafana")
+    grafana.compare_structure(structure_defined, "cluster-dashboard")
 
 
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
 def test_hosts_panel_status(cluster_reuse):
-    """@pylatest grafana/status
-    API-grafana: hosts
-    *******************
-
-    .. test_metadata:: author fbalak@redhat.com
-
-    Description
-    ===========
-
+    """
     Check that Grafana panel *Hosts* is showing correct values.
     """
     if cluster_reuse["short_name"]:
@@ -126,18 +71,15 @@ def test_hosts_panel_status(cluster_reuse):
         cluster_identifier = cluster_reuse["integration_id"]
     gluster = GlusterCommon()
     states = gluster.get_cluster_hosts_connection_states(
-        pytest.config.getini("usm_cluster_member"))
+        CONF.config["usmqe"]["cluster_member"])
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
-    """@pylatest grafana/hosts
-    .. test_step:: 1
-
-        Send **GET** request to:
-        ``GRAFANA/dashboards/db/cluster-dashboard``.
-
-    .. test_result:: 1
-
-        JSON structure containing data related to layout is returned.
+    """
+    :step:
+      Send **GET** request to:
+      ``GRAFANA/dashboards/db/cluster-dashboard``.
+    :result:
+      JSON structure containing data related to layout is returned.
     """
 
     layout = grafana.get_dashboard("cluster-dashboard")
@@ -195,19 +137,16 @@ def test_hosts_panel_status(cluster_reuse):
         panel for panel in panels
         if "displayName" in panel and panel["displayName"] == "Hosts"
             ]
-    """@pylatest grafana/hosts
-    .. test_step:: 2
-
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for Total number of hosts.
-        Compare number of hosts from Graphite with value retrieved from gluster
-        command.
-
-    .. test_result:: 2
-
-        JSON structure containing data relatedo Total host count with last
-        value coresponding with output of gluster command.
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for Total number of hosts.
+      Compare number of hosts from Graphite with value retrieved from gluster
+      command.
+    :result:
+      JSON structure containing data relatedo Total host count with last
+      value coresponding with output of gluster command.
     """
     # get graphite target pointing at data containing number of host
     target = panel[0]["targets"][0]["target"]
@@ -219,19 +158,16 @@ def test_hosts_panel_status(cluster_reuse):
         "Number of total hosts in graphite ({}) should be {}".format(
             g_total, len(states)))
 
-    """@pylatest grafana/hosts
-    .. test_step:: 3
-
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for number of hosts that are Up.
-        Compare number of hosts from Graphite with value retrieved from gluster
-        command.
-
-    .. test_result:: 3
-
-        JSON structure containing data related to Up host count with last
-        value coresponding with output of gluster command.
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for number of hosts that are Up.
+      Compare number of hosts from Graphite with value retrieved from gluster
+      command.
+    :result:
+      JSON structure containing data related to Up host count with last
+      value coresponding with output of gluster command.
     """
     # get graphite target pointing at data containing number of host that are
     # up
@@ -248,19 +184,16 @@ def test_hosts_panel_status(cluster_reuse):
         "Number of hosts that are up in graphite ({}) should be {}".format(
             g_up, len(real_up)))
 
-    """@pylatest grafana/hosts
-    .. test_step:: 4
-
-        Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
-        where [target] is part of uri obtained from previous GRAFANA call.
-        There should be target for number of hosts that are Down.
-        Compare number of hosts from Graphite with value retrieved from gluster
-        command.
-
-    .. test_result:: 4
-
-        JSON structure containing data related to Down host count with last
-        value coresponding with output of gluster command.
+    """
+    :step:
+      Send **GET** request to ``GRAPHITE/render?target=[target]&format=json``
+      where [target] is part of uri obtained from previous GRAFANA call.
+      There should be target for number of hosts that are Down.
+      Compare number of hosts from Graphite with value retrieved from gluster
+      command.
+    :result:
+      JSON structure containing data related to Down host count with last
+      value coresponding with output of gluster command.
     """
     # get graphite target pointing at data containing number of host that are
     # down

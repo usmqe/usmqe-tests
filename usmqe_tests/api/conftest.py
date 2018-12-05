@@ -1,10 +1,13 @@
 # -*- coding: utf8 -*-
 
 import time
-
 import pytest
 
 from usmqe.api.tendrlapi.common import TendrlAuth, TendrlApi
+from usmqe.usmqeconfig import UsmConfig
+
+
+CONF = UsmConfig()
 
 
 @pytest.fixture(
@@ -20,7 +23,7 @@ def invalid_session_credentials(request):
     Return invalid access (for testing negative use cases), no login or logout
     is performed during setup or teardown.
     """
-    username = pytest.config.getini("usm_username")
+    username = CONF.config["usmqe"]["username"]
     invalid_token = request.param
     auth = TendrlAuth(token=invalid_token, username=username)
     return auth
@@ -36,7 +39,7 @@ def cluster_reuse(valid_session_credentials):
     is need to identify cluster directly by storage
     tools this function should be split.
     """
-    id_hostname = pytest.config.getini("usm_cluster_member")
+    id_hostname = CONF.config["usmqe"]["cluster_member"]
     api = TendrlApi(auth=valid_session_credentials)
     for _ in range(12):
         clusters = api.get_cluster_list()

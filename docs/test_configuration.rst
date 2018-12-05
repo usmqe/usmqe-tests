@@ -2,47 +2,28 @@
  Test Configuration
 ====================
 
-Configuration of *USM QE integration tests* project piggibacks/reuses pytest
-ini-options parser, so that all USM QE configuration options could be specified
-in ``pytest.ini`` file. To prevent a conflict with pytest ini-option names, we
-use ``usm_`` prefix in a name of every option.
+This article describes configuration of *USM QE integration tests*.
+
 
 Configuration Scheme
 ====================
 
-Since there are `multiple ways to configure pytest`_, we defined the following
-scheme:
+Configuration for the tests is defined in:
 
-* Main *pytest config file* `pytest.ini`_ is committed in the root directory
-  of ``usmqe-tests`` repository. This file contains pytest configuration
-  and *default values* for most important USM QE configuration options. Under
-  normal circumstances (configuring ``usmqe-tests`` before test run) one would
-  not need to change this file at all, because any default value specified here
-  can be reconfigured in USM QE config file (with the exception of
-  ``usm_config`` and ``usm_inventory`` options).
+* *YAML configuration files* which contain most of actual test configuration.
+  File `conf/main.yaml`_ should contain list of other configuration files that
+  are used as test configuration. File `conf/defaults.yaml`_ should be linked
+  there at
+  first place. After this there can be more configuration files that are
+  specific to testing enviroment (for more see example configuration
+  `conf/usm_example.yaml`_). File `conf/defaults.yaml`_ should contain
+  default configuration that is not environment specific.
 
-* *USM QE config file* is expected to contain actual configuration. See an
-  example in `conf/example_usm.ini`_, while the actual path of this file is
-  configured in ``usm_config`` option in main ``pytest.ini`` file. Any option
-  specified there overrides the default from main ``pytest.ini``. This is the
-  file one is supposed to create and change as needed. You need to provide
-  all important config values in this file to be able to run the tests.
-
-* Ansible *host inventory file* (see an example in `conf/example_usm.hosts`_),
+* Ansible *host inventory file* (see an example in `conf/usm_example.hosts`_),
   which is used both by ansible and by USM QE inventory module to organize
   machines into groups by it's role in test cluster. Actual path of this file
-  is configured in ``usm_inventory`` option in main ``pytest.ini`` file.
-
-* Moreover ad hoc reconfiguration of any USM QE option is possible via pytest
-  command line option ``--override-ini``. See an example how to use different
-  *host inventory file* for a particular test run:
-
-  .. code-block:: console
-
-      $ py.test -o=usm_inventory=conf/mbukatov01.hosts usmqe_tests/foo/bar
-
-  This is usefull for test runs started by hand during test development or
-  debugging.
+  is configured in one of the `YAML configuration files`
+  (see `conf/main.yaml`_).
 
 
 Details for Test Development
@@ -66,16 +47,16 @@ We assume that:
   deployed (our deployment automation should generate the inventory file
   in the end of the process).
 
-* You are logged as ``usmqe`` user on the QE Server
+* You are logged as `usmqe` user on the QE Server
 
 Now, you need to:
 
-* Check that ``usmqe`` user can ssh to all nodes with his ssh key stored 
+* Check that ``usmqe`` user can ssh to all nodes with his ssh key stored
   in ``~/.ssh``. This can be configured in ``~/.ssh/config``.
   Public ssh key is deployed on all machines of test cluster.
 
 * Store *host inventory file* in ``conf/clustername.hosts`` and specify this
-  path in ``usm_inventory`` option of ``pytest.ini``.
+  path in ``inventory_file`` option of `conf/main.yaml`_.
 
 * Verify that ssh and ansible are configured so that one can reach all machines
   from test cluster:
@@ -84,13 +65,9 @@ Now, you need to:
 
       [usmqe@qeserver ~]$ ansible -i conf/clustername.hosts -m ping -u root all
 
-* Initiate new *USM QE config file*: ``cp conf/example_usm.ini conf/usm.ini``
-  and check that ``usm_config`` option of ``pytest.ini`` file points to this
-  file.
-
-* Provide all mandatory options in *usm config file* initialized in a previous
-  step. This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
-  ``id_fqdn``.
+* Provide all mandatory options in *usm config file*.
+  This includes: ``username``, ``password``, ``web_url``, ``api_url`` and
+  ``cluster_member``.
   The actual list depends on the test suite you are going to run (eg. api
   tests don't care about ``web_url`` while LDAP integration tests would need
   to know address of the LDAP server).
@@ -98,26 +75,20 @@ Now, you need to:
 Configuration options
 ======================
 
-* *usm_log_level* - Log level. It can be one of [DEBUG, INFO, WARNING,
-  ERROR, CRITICAL, FATAL]  
-
-* *usm_username* - API and UI login
-
-* *usm_password* - API and UI password
-
-* *usm_web_url* - web UI url
-
-* *usm_api_url* - API url
-
-* *etcd_api_url* - Etcd API url
-
-* *usm_ca_cert* - path to CA cert
-
-* *usm_id_fqdn* - one of nodes from cluster which identifies cluster for re-use testing,
-  see section :ref:`functional_tests`.
-
+* ``log_level`` - Log level. It can be one of [DEBUG, INFO, WARNING, ERROR,
+  CRITICAL, FATAL]
+* ``username`` - API and UI login
+* ``password`` - API and UI password
+* ``web_url`` - web UI url
+* ``api_url`` - API url
+* ``etcd_api_url`` - Etcd API url
+* ``ca_cert`` - path to CA cert
+* ``cluster_member`` - one of nodes from cluster which identifies cluster for
+  re-use testing, see section :ref:`functional_tests`.
 
 .. _`multiple ways to configure pytest`: http://doc.pytest.org/en/latest/customize.html
 .. _`pytest.ini`: https://github.com/usmqe/usmqe-tests/blob/master/pytest.ini
-.. _`conf/example_usm.ini`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.ini
-.. _`conf/example_usm.hosts`: https://github.com/usmqe/usmqe-tests/blob/master/conf/example_usm.hosts
+.. _`conf/usm_example.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/usm_example.yaml
+.. _`conf/usm_example.hosts`: https://github.com/usmqe/usmqe-tests/blob/master/conf/usm_example.hosts
+.. _`conf/main.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/main.yaml
+.. _`conf/defaults.yaml`: https://github.com/usmqe/usmqe-tests/blob/master/conf/defaults.yaml

@@ -5,8 +5,10 @@ Tendrl REST API for gluster.
 import requests
 import pytest
 from usmqe.api.tendrlapi.common import TendrlApi
+from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger("glusterapi", module=True)
+CONF = UsmConfig()
 
 
 class TendrlApiGluster(TendrlApi):
@@ -41,7 +43,7 @@ class TendrlApiGluster(TendrlApi):
             node_identifier="ip",
             conf_overrides=conf_overrides,
             sds_type="gluster",
-            sds_version=pytest.config.getini("usm_gluster_version"),
+            sds_version=CONF.config["usmqe"]["gluster_version"],
             asserts_in=asserts_in)
 
     def get_node_list(self, cluster):
@@ -56,7 +58,7 @@ class TendrlApiGluster(TendrlApi):
         """
         pattern = "clusters/{}/nodes".format(cluster)
         response = requests.get(
-            pytest.config.getini("usm_api_url") + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
@@ -74,7 +76,7 @@ class TendrlApiGluster(TendrlApi):
         """
         pattern = "clusters/{}/volumes".format(cluster)
         response = requests.get(
-            pytest.config.getini("usm_api_url") + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
@@ -94,7 +96,7 @@ class TendrlApiGluster(TendrlApi):
         """
         pattern = "clusters/{}/volumes/{}/bricks".format(cluster, volume)
         response = requests.get(
-            pytest.config.getini("usm_api_url") + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             auth=self._auth)
         self.print_req_info(response)
         self.check_response(response)
@@ -121,7 +123,7 @@ class TendrlApiGluster(TendrlApi):
             } for node in nodes}
         }
         response = requests.post(
-            pytest.config.getini("usm_api_url") + pattern,
+            CONF.config["usmqe"]["api_url"] + pattern,
             json=data,
             auth=self._auth)
         asserts = asserts_in or {

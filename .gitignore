@@ -9,7 +9,9 @@ dist
 .tox
 *.html
 .cache
+.pytest_cache
 *.ini
 *.hosts
+*.yaml
 
 logs

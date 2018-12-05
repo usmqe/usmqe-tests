@@ -14,26 +14,22 @@ Overview of the repository structure
 
 Main top level directories:
 
-* ``docs``: documentation (sphinx) of usmqe integration tests and it's setup
-* ``conf``: configuration files, only examples are commited in the repository
+* ``conf``: configuration files for the tests
+* ``docs``: documentation (sphinx) of the tests and it's development and setup
 * ``plugin``: custom pytest plugins
-* ``usmqe``: main usmqe python module
-* ``usmqe_tests``: usmqe tests code (uses pytest framework)
+* ``usmqe``: python module with common helper functions
+* ``usmqe_tests``: code of the tests (uses pytest framework)
 
-In the root dir of the repository, there are also:
-
-* main pytest ``conftest.py`` file with core configuration of the pytest
-  framework (for running tests cases from ``usmqe_tests`` directory)
-* ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
-  details on unit tests of ``usmqe`` module below)
-
+Files stored in the root dir of the repository (eg. ``.travis.yml``,
+``conftest.py``, ``pytest.ini``, ...) should not be updated unless one need to
+change underlying pytest, tox or CI plumbing (eg. adding new pytest plugin).
 
 Unit Tests of usmqe module
 --------------------------
 
-Note that the purpose of ``tox.ini`` file in the root directory of this
-repository is to run unit tests of ``usmqe`` module. It has nothing to do with
-running of usm qe integration tests.
+Note that the purpose of ``tox.ini``  and ``setup.py`` files in the root
+directory of this repository is to run unit tests of ``usmqe`` module. It has
+nothing to do with running of the integration tests for Tendrl.
 
 The code and pytest configuration of the unit tests are stored in
 ``usmqe/unit_tests`` directory. For more details see the readme file there.
