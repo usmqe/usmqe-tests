@@ -212,8 +212,8 @@ def test_hosts_panel_status(cluster_reuse):
             g_down, len(real_down)))
 
 
-@pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
-@pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
+@pytest.mark.ansible_playbook_setup("test_setup.tendrl_services_stopped_on_nodes.yml")
+@pytest.mark.ansible_playbook_teardown("test_teardown.tendrl_services_stopped_on_nodes.yml")
 @pytest.mark.author("fbalak@redhat.com")
 def test_hosts(ansible_playbook, workload_stop_nodes, cluster_reuse):
     """
