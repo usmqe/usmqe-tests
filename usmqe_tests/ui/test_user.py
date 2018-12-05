@@ -7,6 +7,10 @@ from wait_for import TimedOutError
 from usmqe.api.tendrlapi import user as tendrlapi_user
 # from usmqe.api.tendrlapi.common import login, logout
 from usmqe.base.application import Application
+from usmqe.usmqeconfig import UsmConfig
+
+
+CONF = UsmConfig()
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -133,7 +137,7 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
       User is able to log in with the new password
     """
     app1.web_ui.browser_manager.quit()
-    app2 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+    app2 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
                        scheme="http",
                        username=valid_normal_user_data["username"],
                        password=valid_password)
@@ -154,7 +158,7 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
       User's email is changed
     """
 
-    app1 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+    app1 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
                        scheme="http",
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
@@ -170,7 +174,7 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
       Fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1654623
     """
 
-    app2 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
+    app2 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
                        scheme="http",
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
