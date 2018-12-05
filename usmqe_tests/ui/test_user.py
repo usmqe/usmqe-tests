@@ -96,7 +96,7 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
 
     user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
-    user_data_password_invalid["username"] = invalid_password
+    user_data_password_invalid["password"] = invalid_password
     asserts = {
         "ok": False,
         "reason": 'Not Found',
