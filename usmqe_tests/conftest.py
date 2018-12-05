@@ -343,7 +343,7 @@ def valid_session_credentials(request):
     """
     auth = login(
         CONF.config["usmqe"]["username"],
-        CONF.config["usmqe"]["password"]
+        CONF.config["usmqe"]["password"])
     yield auth
     logout(auth=auth)
 
