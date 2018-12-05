@@ -97,7 +97,6 @@ class GraphiteApi(ApiBase):
         msg = "Data mean should be {}, data mean in Graphite is: {}, ".format(
             expected_result,
             graphite_data_mean_sum)
-        print(type(msg))
         msg += "applicable divergence is {}".format(divergence)
         pytest.check(
             minimal_expected_result <
