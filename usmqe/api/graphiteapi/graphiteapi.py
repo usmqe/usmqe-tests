@@ -99,6 +99,6 @@ class GraphiteApi(ApiBase):
             graphite_data_mean_sum)
         msg += "applicable divergence is {}".format(divergence)
         pytest.check(
-            minimal_expected_result <
-            graphite_data_mean_sum < maximal_expected_result,
+            minimal_expected_result <=
+            graphite_data_mean_sum <= maximal_expected_result,
             msg)
