@@ -3,9 +3,13 @@ from string import Template
 import time
 from usmqe.usmqeconfig import UsmConfig
 import usmqe.usmmail
+import usmqe.usmssh
 
 LOGGER = pytest.get_logger('usmqe_alerting', module=True)
 CONF = UsmConfig()
+
+# seconds to wait until alerts are in place
+EXTRA_TIME = 30
 
 class Alerting(object):
     """
@@ -27,6 +31,8 @@ class Alerting(object):
         self.client = client or CONF.inventory.get_groups_dict()["usm_client"][0]
         self.server = server or CONF.inventory.get_groups_dict()["usm_server"][0]
         self.msg_templates = msg_templates or self.basic_messages()
+        # uses EXTRA_TIME if is set up
+        self.wait = True
 
     def basic_messages(self):
         """
@@ -81,28 +87,29 @@ class Alerting(object):
         message = Template(message + self.msg_templates[domain][subject])
         return message.safe_substitute(entities)
 
-    def search_mail(self, from_time, until_time, msg):
+    def search_mail(self, since, until, msg):
         """
         Args:
-            from_time (datetime): Datetime from which will be mail searched.
-            until_time (datetime): Datetime until which will be mail searched.
+            since (datetime): Datetime from which will be mail searched.
+            until (datetime): Datetime until which will be mail searched.
             msg (str): Message that will be searched.
 
         Returns:
             int: Number of found messages.
         """
-        EXTRA_TIME = 30
-        from_timestamp = from_time.timestamp()
-        until_timestamp = until_time.timestamp() + EXTRA_TIME
+        since_timestamp = since.timestamp()
+        if self.wait:
+            until_timestamp = until.timestamp() + EXTRA_TIME
+            time.sleep(EXTRA_TIME)
+            self.wait = False
+        else:
+            until_timestamp = until.timestamp()
 
-        # Wait until the messages surely arrive
-        time.sleep(EXTRA_TIME)
         messages = usmqe.usmmail.get_msgs_by_time(
-            start_timestamp=from_timestamp,
+            start_timestamp=since_timestamp,
             end_timestamp=until_timestamp,
             host=self.client,
             user=self.user)
-        LOGGER.debug("Selected messages count: {}".format(len(messages)))
 
         message_count = 0
         for message in messages:
@@ -116,5 +123,41 @@ class Alerting(object):
     def search_snmp():
         pass
 
-    def search_api(api, msg, ):
-        pass
+    def search_api(self, since, until, msg):
+        """
+        For this to work there have to be running test_setup.alerts_logger.yml`
+        from usmqe-setup repository.
+
+        Args:
+            since(datetime): Datetime from which will be mail searched.
+            until(datetime): Datetime until which will be mail searched.
+            msg (str): Message that will be searched.
+
+        Returns:
+            int: Number of found messages.
+        """
+        since_timestamp = since.timestamp()
+        if self.wait:
+            until_timestamp = until.timestamp() + EXTRA_TIME
+            time.sleep(EXTRA_TIME)
+            self.wait = False
+        else:
+            until_timestamp = until.timestamp()
+
+        SSH = usmqe.usmssh.get_ssh()
+        journal_cmd = "journalctl --since \"{}\" --until \"{}\"" \
+            " -u usmqe_alerts_logger@{}".format(
+                since_timestamp, until_timestamp, self.user)
+        rcode, stdout, stderr = SSH[self.client].run(journal_cmd)
+        if rcode != 0:
+            raise OSError(stderr.decode("utf-8"))
+
+        messages = stdout.decode("utf-8").split("\n")
+        message_count = 0
+        for message in messages:
+            LOGGER.debug("Message date: {}".format(message['Date']))
+            LOGGER.debug("Message subject: {}".format(message['Subject']))
+            LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
+            if message['Subject'].count(msg) > 0:
+                message_count += 1
+        return message_count
