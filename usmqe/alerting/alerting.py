@@ -1,6 +1,10 @@
+import pytest
 from string import Template
+import time
 from usmqe.usmqeconfig import UsmConfig
+import usmqe.usmmail
 
+LOGGER = pytest.get_logger('usmqe_alerting', module=True)
 CONF = UsmConfig()
 
 class Alerting(object):
@@ -77,11 +81,40 @@ class Alerting(object):
         message = Template(message + self.msg_templates[domain][subject])
         return message.safe_substitute(entities)
 
-    def check_mail():
+    def search_mail(self, from_time, until_time, msg):
+        """
+        Args:
+            from_time (datetime): Datetime from which will be mail searched.
+            until_time (datetime): Datetime until which will be mail searched.
+            msg (str): Message that will be searched.
+
+        Returns:
+            int: Number of found messages.
+        """
+        EXTRA_TIME = 30
+        from_timestamp = from_time.timestamp()
+        until_timestamp = until_time.timestamp() + EXTRA_TIME
+
+        # Wait until the messages surely arrive
+        time.sleep(EXTRA_TIME)
+        messages = usmqe.usmmail.get_msgs_by_time(
+            start_timestamp=from_timestamp,
+            end_timestamp=until_timestamp,
+            host=self.client,
+            user=self.user)
+        LOGGER.debug("Selected messages count: {}".format(len(messages)))
+
+        message_count = 0
+        for message in messages:
+            LOGGER.debug("Message date: {}".format(message['Date']))
+            LOGGER.debug("Message subject: {}".format(message['Subject']))
+            LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
+            if message['Subject'].count(msg) > 0:
+                message_count += 1
+        return message_count
+
+    def search_snmp():
         pass
 
-    def check_snmp():
-        pass
-
-    def check_api(api, msg, ):
+    def search_api(api, msg, ):
         pass
