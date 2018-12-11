@@ -120,8 +120,41 @@ class Alerting(object):
                 message_count += 1
         return message_count
 
-    def search_snmp():
-        pass
+    def search_snmp(self, since, until, msg):
+        """
+        Args:
+            since(datetime): Datetime from which will be mail searched.
+            until(datetime): Datetime until which will be mail searched.
+            msg (str): Message that will be searched.
+
+        Returns:
+            int: Number of found messages.
+        """
+        since_timestamp = since.timestamp()
+        if self.wait:
+            until_timestamp = until.timestamp() + EXTRA_TIME
+            time.sleep(EXTRA_TIME)
+            self.wait = False
+        else:
+            until_timestamp = until.timestamp()
+
+        SSH = usmqe.usmssh.get_ssh()
+        journal_cmd = "journalctl --since \"{}\" --until \"{}\"" \
+            " -u snmptrap".format(
+                since_timestamp, until_timestamp, self.user)
+        rcode, stdout, stderr = SSH[self.client].run(journal_cmd)
+        if rcode != 0:
+            raise OSError(stderr.decode("utf-8"))
+
+        messages = stdout.decode("utf-8").split("\n")
+        message_count = 0
+        for message in messages:
+            LOGGER.debug("Message date: {}".format(message['Date']))
+            LOGGER.debug("Message subject: {}".format(message['Subject']))
+            LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
+            if message['Subject'].count(msg) > 0:
+                message_count += 1
+        return message_count
 
     def search_api(self, since, until, msg):
         """
@@ -148,7 +181,7 @@ class Alerting(object):
         journal_cmd = "journalctl --since \"{}\" --until \"{}\"" \
             " -u usmqe_alerts_logger@{}".format(
                 since_timestamp, until_timestamp, self.user)
-        rcode, stdout, stderr = SSH[self.client].run(journal_cmd)
+        rcode, stdout, stderr = SSH[self.server].run(journal_cmd)
         if rcode != 0:
             raise OSError(stderr.decode("utf-8"))
 
