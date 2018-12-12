@@ -1,6 +1,7 @@
 import attr
 from navmazing import NavigateToAttribute, NavigateToSibling
 from wait_for import wait_for
+import time
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.user import UsersView
@@ -21,6 +22,7 @@ class User(BaseEntity):
 
     def delete(self, cancel=False):
         view = ViaWebUI.navigate_to(self.parent, "All")
+        time.sleep(1)
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[6].widget.select("Delete User", close=False)
@@ -34,6 +36,7 @@ class User(BaseEntity):
 
     def edit(self, new_values_dict, cancel=False):
         view = ViaWebUI.navigate_to(self.parent, "All")
+        time.sleep(1)
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[5].click()
@@ -59,6 +62,7 @@ class UsersCollection(BaseCollection):
 
     def create(self, user_id, name, email, notifications_on, password, role):
         view = ViaWebUI.navigate_to(self, "Add")
+        time.sleep(1)
         view.fill({
             "user_id": user_id,
             "users_name": name,
@@ -73,6 +77,7 @@ class UsersCollection(BaseCollection):
 
     def edit_logged_in_user(self, new_values_dict):
         view = ViaWebUI.navigate_to(self, "MySettings")
+        time.sleep(1)
         view.fill(new_values_dict)
         view.save_button.click()
 
@@ -83,6 +88,7 @@ class UsersAll(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
+        time.sleep(1)
         self.parent.navbar.usermanagement.select_item("Users")
 
 
@@ -92,6 +98,7 @@ class UsersAdd(TendrlNavigateStep):
     prerequisite = NavigateToSibling("All")
 
     def step(self):
+        time.sleep(1)
         self.parent.adduser.click()
 
 
