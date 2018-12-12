@@ -1,4 +1,5 @@
 import pytest
+import re
 from string import Template
 import time
 from usmqe.usmqeconfig import UsmConfig
@@ -18,14 +19,17 @@ class Alerting(object):
     server. This can be installled by `test_setup.alerts_logger.yml` from
     usmqe-setup repository.
     """
-    def __init__(self, user, client=None, server=None, msg_templates=None):
+    def __init__(self, user, client=None, server=None, msg_templates=None,
+            divergence=5.0):
         """
         Args:
             user (str): Tendrl user that receives alerts.
             client (str): Machine address with SNMP and SMTP client.
             server (str): Machine where Tendrl runs.
             msg_templates (dict): Tendrl messages can be overwritten but for
-            tendrl testing should be used `basic_messages()`.
+                tendrl testing should be used `basic_messages()`.
+            divergence (float): Applicable divergence for comparing messages
+                containing numeric values.
         """
         self.user = user
         self.client = client or CONF.inventory.get_groups_dict()["usm_client"][0]
@@ -33,6 +37,7 @@ class Alerting(object):
         self.msg_templates = msg_templates or self.basic_messages()
         # uses EXTRA_TIME if is set up
         self.wait = True
+        self.prc_pattern = re.compile("\d{1,3}(\.\d{1,2})")
 
     def basic_messages(self):
         """
@@ -60,7 +65,6 @@ class Alerting(object):
                 "running": "Volume:$volume is $value",
                 "status": "Status of volume: $volume in cluster $cluster changed $value"}}
 
-
     def generate_alert_msg(
             self,
             level,
@@ -87,7 +91,37 @@ class Alerting(object):
         message = Template(message + self.msg_templates[domain][subject])
         return message.safe_substitute(entities)
 
-    def search_mail(self, since, until, msg):
+    def compare_msg_prc(self, msg1, msg2):
+        """
+        Compares two messages if they have percentage values on the same spot
+        and if these values are identical (with applicable divergence).
+
+        Args:
+            msg1 (str): First message.
+            msg2 (str): Second message.
+
+        Returns:
+            bool: If values in messages are identical.
+        """
+        identical = True
+        matches = []
+        for match in self.prc_pattern.finditer(msg1):
+            matches.append((match.start(), match.group()))
+        for match in self.prc_pattern.finditer(msg2):
+            if len(matches) == 0:
+                identical = False
+                break
+            msg_start, value = matches.pop(0)
+            if msg_start != match.start():
+                identical = False
+                break
+            if not (float(value) - self.divergence <=
+                    float(match.group()) <= float(value) + self.divergence):
+                identical = False
+                break
+        return identical
+
+    def search_mail(self, msg, since, until):
         """
         Args:
             since (datetime): Datetime from which will be mail searched.
@@ -120,7 +154,7 @@ class Alerting(object):
                 message_count += 1
         return message_count
 
-    def search_snmp(self, since, until, msg):
+    def search_snmp(self, msg, since, until):
         """
         Args:
             since(datetime): Datetime from which will be mail searched.
@@ -156,7 +190,7 @@ class Alerting(object):
                 message_count += 1
         return message_count
 
-    def search_api(self, since, until, msg):
+    def search_api(self, msg, since, until):
         """
         For this to work there have to be running test_setup.alerts_logger.yml`
         from usmqe-setup repository.
