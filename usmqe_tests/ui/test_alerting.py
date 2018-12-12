@@ -1,13 +1,7 @@
 import pytest
-from usmqe.base.application.implementations.web_ui import ViaWebUI
-import copy
 import time
-from wait_for import TimedOutError
 import datetime
 
-from usmqe.api.tendrlapi import user as tendrlapi_user
-# from usmqe.api.tendrlapi.common import login, logout
-from usmqe.base.application import Application
 from usmqe.usmqeconfig import UsmConfig
 from usmqe import usmssh, usmmail
 
@@ -86,7 +80,7 @@ def test_alerting(application, receive_alerts, valid_normal_user_data):
     """
 
     messages = usmmail.get_msgs_by_time(start_timestamp=start_time,
-                                              end_timestamp=stop_time)
+                                        end_timestamp=stop_time)
     LOGGER.debug("Selected messages count: {}".format(len(messages)))
     alert_received = False
     for message in messages:
