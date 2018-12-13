@@ -59,7 +59,9 @@ class ApiUser(TendrlApi):
             json.dumps(data),
             auth=self._auth)
         self.print_req_info(request)
-        self.check_response(request, asserts_in,
+        self.check_response(
+            request,
+            asserts_in,
             issue="https://bugzilla.redhat.com/show_bug.cgi?id=1654743")
         return request.json(encoding='unicode')
 

@@ -123,7 +123,8 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         pass_length_error = "is too long" in str(response)
     else:
         pass_length_error = "is too short" in str(response)
-    pytest.check(pass_length_error,
+    pytest.check(
+        pass_length_error,
         issue="https://bugzilla.redhat.com/show_bug.cgi?id=1654743")
     """
     :step:
