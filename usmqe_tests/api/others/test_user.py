@@ -94,8 +94,6 @@ def test_user_change_password(valid_new_normal_user, valid_password):
 def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password):
     """
     Attempt to change password to invalid - either too long or too short.
-    Checks on 8-symbol password and on an extremely long password fail due to bug
-    https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     auth = login(
         valid_new_normal_user["username"],
@@ -109,7 +107,6 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
     :result:
       Error 422 Unprocessable Entity is returned. The response includes words
       "is too long" or "is too short" depending on the invalid password length.
-      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     new_email = "testmail@example.com"
     edit_data = {
@@ -126,7 +123,7 @@ def test_user_change_password_to_invalid(valid_new_normal_user, invalid_password
         pass_length_error = "is too long" in str(response)
     else:
         pass_length_error = "is too short" in str(response)
-    pytest.check(pass_length_error, issue='https://bugzilla.redhat.com/show_bug.cgi?id=1610947')
+    pytest.check(pass_length_error)
     """
     :step:
       Check if the response to the request in test_step 1 returned the expected error.
@@ -160,7 +157,6 @@ def test_add_user_invalid_password(valid_session_credentials,
     :result:
       User should not be created.
       Return code should be 422.
-      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_password_invalid["password"] = invalid_password
@@ -176,7 +172,6 @@ def test_add_user_invalid_password(valid_session_credentials,
     :result:
       User can not be found.
       Return code should be 404.
-      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
 
     """
     asserts = {
@@ -212,7 +207,6 @@ def test_add_user_invalid_username(valid_session_credentials,
     :result:
       User should not be created.
       Return code should be 422.
-      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     user_data_username_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_username_invalid["username"] = invalid_username
@@ -228,7 +222,6 @@ def test_add_user_invalid_username(valid_session_credentials,
     :result:
       User can not be found.
       Return code should be 404.
-      This check might fail due to https://bugzilla.redhat.com/show_bug.cgi?id=1610947
     """
     asserts = {
         "ok": False,
