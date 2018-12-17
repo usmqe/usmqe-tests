@@ -26,6 +26,7 @@ class User(BaseEntity):
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[6].widget.select("Delete User", close=False)
+                time.sleep(1)
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
                 wait_for(lambda: view.is_displayed, timeout=3)
                 view.delete.click()
