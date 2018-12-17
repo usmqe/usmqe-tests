@@ -17,7 +17,7 @@ params = {
 
 
 # `ansible_playbook_inventory` option is preprocessed
-if params['ansible_playbook_inventory']:
+if params['ansible_playbook_inventory'] is not None:
     if isinstance(params['ansible_playbook_inventory'], Iterable):
         params['ansible_playbook_inventory'] = params[
             'ansible_playbook_inventory'][0]
@@ -31,8 +31,8 @@ if not path.isabs(params['ansible_playbook_inventory']):
 
 
 predefined_params = " ".join(
-    ["--{}={}".format(key.replace("_", "-"), params[key])
-        for key in params.keys()])
+    ["--{}={}".format(key.replace("_", "-"), val)
+        for key, val in params.items()])
 
 command = "python3 -m pytest {} {}".format(
     predefined_params,
