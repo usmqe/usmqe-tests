@@ -1,5 +1,5 @@
 from taretto.ui.patternfly import Button
-# from widgetastic.widget import Checkbox, GenericLocatorWidget
+from widgetastic.widget import Checkbox
 from widgetastic.widget import Text, TextInput, View, Select
 # from taretto.ui.patternfly import Dropdown
 from usmqe.base.application.widgets import NavDropdown
@@ -83,7 +83,8 @@ class MySettingsView(View):
     password = TextInput(name="password")
     confirm_password = TextInput(name="confirmPassword")
     email = TextInput(name="userEmail")
-    # TODO: add notifications_on = Checkbox(something)
+    notifications_on = Checkbox(
+        locator=".//input[@ng-model='$ctrl.modalBodyScope.user.email_notifications']")
     save_button = Button("Save")
     cancel_button = Button("Cancel")
 
