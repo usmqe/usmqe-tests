@@ -21,13 +21,14 @@ params = {
 
 
 # `ansible_playbook_inventory` option is preprocessed
+# todo(fbalak): add inventory file concatenation or something
+# now is used first inventory file in UsmConfig
 if params['ansible_playbook_inventory'] is not None:
-    if isinstance(params['ansible_playbook_inventory'], Iterable):
-        params['ansible_playbook_inventory'] = params[
-            'ansible_playbook_inventory'][0]
-    else:
-        params['ansible_playbook_inventory'] = params[
-            'ansible_playbook_inventory']
+    if (not isinstance(params['ansible_playbook_inventory'], str)
+        and isinstance(params['ansible_playbook_inventory'], Iterable)):
+            params['ansible_playbook_inventory'] = params[
+                'ansible_playbook_inventory'][0]
+
 if not path.isabs(params['ansible_playbook_inventory']):
     base_path = path.abspath(path.dirname(__file__))
     params['ansible_playbook_inventory'] = path.join(
