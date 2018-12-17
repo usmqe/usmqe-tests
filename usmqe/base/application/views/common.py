@@ -91,14 +91,3 @@ class MySettingsView(View):
     @property
     def is_displayed(self):
         return self.popup_name.text == "My Settings"
-
-
-class AboutModalView(View):
-    """
-    The view for the about modal
-    """
-    @property
-    def is_displayed(self):
-        return self.modal.is_open
-
-    modal = AboutModal(id='aboutModal')
