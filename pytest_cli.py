@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from collections.abc import Iterable
 from os import pardir, path
 import subprocess
@@ -9,6 +11,8 @@ conf = UsmConfig()
 
 # This serves as predefined pytest plugin configuration.
 # There can be added new options required by pytest plugins.
+# Prefered way to execute this script is to call pytest_cli.py from terminal
+# instead of pytest command.
 params = {
     "ansible_playbook_directory": path.abspath(
         path.join(path.dirname(__file__), pardir, "usmqe-setup")),
@@ -36,6 +40,5 @@ predefined_params = " ".join(
 
 command = "python3 -m pytest {} {}".format(
     predefined_params,
-    " ".join(
-        sys.argv[1:] if sys.argv[0].startswith("python") else sys.argv[2:]))
+    " ".join(sys.argv[1:]))
 subprocess.call(command, shell=True)
