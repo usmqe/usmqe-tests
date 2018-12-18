@@ -4,7 +4,7 @@
  Test Execution
 ================
 
-This document briefly describes how to execute USM QE test.
+This document briefly describes how to execute USM QE tests.
 
 Preparation for running the tests
 =================================
@@ -14,7 +14,7 @@ Before running USM QE tests, you need to prepare:
 * QE Server machine as described in :ref:`qe-server-label`.
   The tests are executed under ``usmqe`` user account on this QE Server
   machine.
-* Machines for Tendrl/Gluster have beed deployed as described in
+* Machines for Tendrl/Gluster have been deployed as described in
   :ref:`test-enviroment-label`.
 * Configuration of USM QE tests has been done as explained in
   :ref:`config-before-testrun-label`.
@@ -31,7 +31,7 @@ QE Server as ``usmqe`` user:
    [root@mbukatov ~]# su - usmqe
    [usmqe@mbukatov ~]$
 
-Note that the setup plabyook prepared both setup and test repositories there:
+Note that the setup playbook prepared both setup and test repositories there:
 
 .. code-block:: console
 
@@ -43,7 +43,7 @@ You may consider updating these repositories (eg. running ``git pull``) before
 going on, but this depends on the task you are working on.
 
 Go to ``usmqe-tests`` repository and check that you have already updated the
-config file to match your enviroment (as noted in previous section):
+config file to match your environment (as noted in previous section):
 
 .. code-block:: console
 
@@ -82,7 +82,7 @@ This means that command to run the tests looks like this:
    [usmqe@mbukatov usmqe-tests]$ ./pytest_cli.py [pytest_options] usmqe_tests/[file_or_dir] ...
 
 Note that running all the tests (``./pytest_cli.py usmqe_tests``) is not a good
-idea (there are varios types of tests, including demo, and it never makes sense
+idea (there are various types of tests, including demo, and it never makes sense
 to just run them all), always specify at least directory or marker there.
 
 Useful `pytest options`_ one can use are:
@@ -90,8 +90,8 @@ Useful `pytest options`_ one can use are:
 * ``-m MARKEXPR`` only run tests matching given mark expression
 * ``--pdb`` start the interactive Python debugger on errors
 * ``-v`` verbose mode
-* ``-s`` turns off per-test capture logging, all logs are immediatelly
-  reported on console (which is usefull when developing new test code and
+* ``-s`` turns off per-test capture logging, all logs are immediately
+  reported on console (which is useful when developing new test code and
   immediate feedback is needed)
 
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
@@ -107,7 +107,7 @@ Get familiar with logging and test reporting
 
 To get basic idea how usm qe test runs and error reporting looks like, one can
 run ``usmqe_tests/demo`` test suite. This demo should work even with default
-example configuration commited in the repository.
+example configuration committed in the repository.
 
 First of all, you can use ``--collect-only`` option of pytest_ to get list of
 test cases in the demo test module:
