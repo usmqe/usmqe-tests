@@ -109,4 +109,5 @@ class UsersSettings(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
+        time.sleep(1)
         self.parent.navbar.usermenu.select_item("My Settings")
