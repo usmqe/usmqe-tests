@@ -87,12 +87,12 @@ to just run them all), always specify at least directory or marker there.
 
 Useful `pytest options`_ one can use are:
 
- * ``-m MARKEXPR`` only run tests matching given mark expression
- * ``--pdb`` start the interactive Python debugger on errors
- * ``-v`` verbose mode
- * ``-s`` turns off per-test capture logging, all logs are immediatelly
-   reported on console (which is usefull when developing new test code and
-   immediate feedback is needed)
+* ``-m MARKEXPR`` only run tests matching given mark expression
+* ``--pdb`` start the interactive Python debugger on errors
+* ``-v`` verbose mode
+* ``-s`` turns off per-test capture logging, all logs are immediatelly
+  reported on console (which is usefull when developing new test code and
+  immediate feedback is needed)
 
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
 .. _`pytest options`: https://docs.pytest.org/en/latest/usage.html
