@@ -4,6 +4,8 @@ import datetime
 
 from usmqe.usmqeconfig import UsmConfig
 from usmqe import usmssh, usmmail
+from usmqe.api.tendrlapi import user as tendrlapi_user
+# from usmqe.base.application.implementations.web_ui import ViaWebUI
 
 
 LOGGER = pytest.get_logger('ui_user_testing', module=True)
@@ -11,7 +13,7 @@ CONF = UsmConfig()
 
 
 @pytest.mark.author("ebondare@redhat.com")
-@pytest.mark.parametrize("receive_alerts", [True, False])
+@pytest.mark.parametrize("receive_alerts", [False, True])
 @pytest.mark.happypath
 def test_alerting(application, receive_alerts, valid_normal_user_data):
     """
@@ -94,3 +96,26 @@ def test_alerting(application, receive_alerts, valid_normal_user_data):
     else:
         pytest.check(not alert_received)
     user.delete()
+
+
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.parametrize("receive_alerts", [True, False])
+@pytest.mark.happypath
+def test_mysettings_alerting_switch(application, receive_alerts, valid_session_credentials):
+    admin_data = {
+        "email": "root@" + CONF.inventory.get_groups_dict()["usm_client"][0],
+        "password": CONF.config["usmqe"]["password"],
+        "confirm_password": CONF.config["usmqe"]["password"],
+        "notifications_on": receive_alerts
+        }
+    application.collections.users.edit_logged_in_user(admin_data)
+    test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
+    admin_data = {
+        "name": "Admin",
+        "username": "admin",
+        "email": "root@" + CONF.inventory.get_groups_dict()["usm_client"][0],
+        "role": "admin",
+        "email_notifications": receive_alerts
+        }
+    time.sleep(2)
+    test.check_user(admin_data)
