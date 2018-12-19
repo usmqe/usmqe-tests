@@ -35,11 +35,10 @@ if not path.isabs(params['ansible_playbook_inventory']):
         str(base_path), params['ansible_playbook_inventory'])
 
 
-predefined_params = " ".join(
-    ["--{}={}".format(key.replace("_", "-"), val)
-        for key, val in params.items()])
+predefined_params = ["--{}={}".format(key.replace("_", "-"), val)
+        for key, val in params.items()]
 
-command = "python3 -m pytest {} {}".format(
-    predefined_params,
-    " ".join(sys.argv[1:]))
-subprocess.call(command, shell=True)
+command = ["python3", "-m", "pytest"] + predefined_params + sys.argv[1:]
+print("COMMAND: {}".format(command))
+result = subprocess.run(command)
+sys.exit(result.returncode)
