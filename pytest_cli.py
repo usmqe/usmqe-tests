@@ -39,5 +39,6 @@ predefined_params = ["--{}={}".format(key.replace("_", "-"), val)
         for key, val in params.items()]
 
 command = ["python3", "-m", "pytest"] + predefined_params + sys.argv[1:]
+print("COMMAND: {}".format(command))
 result = subprocess.run(command)
 sys.exit(result.returncode)
