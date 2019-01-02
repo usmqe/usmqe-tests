@@ -47,24 +47,36 @@ def test_user_crud(application, role, valid_session_credentials):
     """
     :step:
       Edit user's email address and notification settings
-    :step:
+    :result:
       User is edited
     """
     user.edit({
               "user_id": user.user_id,
-              "users_name": user.name,
+              "name": user.name,
               "email": "edited_email_for_{}@tendrl.org".format(role),
               "password": user.password,
               "confirm_password": user.password,
               "notifications_on": True
               })
-    assert not user.exists
-    user.email = "edited_email_for_{}@tendrl.org".format(role)
-    user.notifications_on = True
     assert user.exists
+    assert user.email == "edited_email_for_{}@tendrl.org".format(role)
+    assert user.notifications_on == True
     user_data["email"] = "edited_email_for_{}@tendrl.org".format(role)
     user_data["email_notifications"] = True
     test.check_user(user_data)
+    """
+    :step:
+      Log in as the edited user
+    :result:
+      User can log in
+    """
+    app2 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
+                       scheme="http",
+                       username=user.user_id,
+                       password=user.password)
+    ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
+    app2.web_ui.browser_manager.quit()
+
     """
     :step:
       Delete user

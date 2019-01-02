@@ -45,6 +45,8 @@ class User(BaseEntity):
                 view.fill(new_values_dict)
                 view.save_button.click()
                 break
+        for key, value in new_values_dict.items():
+            setattr(self, key, value)
 
     @property
     def exists(self):
@@ -66,7 +68,7 @@ class UsersCollection(BaseCollection):
         time.sleep(1)
         view.fill({
             "user_id": user_id,
-            "users_name": name,
+            "name": name,
             "email": email,
             "notifications_on": notifications_on,
             "password": password,

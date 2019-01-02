@@ -9,7 +9,7 @@ from taretto.ui.patternfly import Button, BreadCrumb
 class AddUserView(BaseLoggedInView):
     page_breadcrumb = BreadCrumb()
     user_id = TextInput(name="username")
-    users_name = TextInput(name="name")
+    name = TextInput(name="name")
     email = TextInput(name="userEmail")
     notifications_on = BootstrapSwitch(ngmodel="addUserCntrl.user.notification")
     password = TextInput(name="password")
