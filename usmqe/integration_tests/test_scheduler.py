@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
+import pytest
+import time
+
 from usmqe.usmscheduler import Scheduler
 import usmqe.usmssh as usmssh
 from usmqe.usmqeconfig import UsmConfig
-import time
+
+LOGGER = pytest.get_logger('scheduler', module=True)
 
 def test_scheduler_workflow():
     conf = UsmConfig()
     nodes = conf.inventory.get_groups_dict()["gluster_servers"]
     scheduler = Scheduler(nodes)
-    scheduler.run_at('echo "1" > /tmp/test_task')
+    scheduler.run_at("echo '1' > /tmp/test_task")
     jobs = scheduler.jobs()
-    print(jobs)
-    assert len(jobs) == len (nodes)
+    LOGGER.info("Jobs: {}".format(jobs))
+    assert len(jobs) == len(nodes)
     time.sleep(60)
     for node in nodes:
         SSH = usmssh.get_ssh()
