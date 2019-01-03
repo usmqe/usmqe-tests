@@ -57,7 +57,7 @@ class Scheduler(object):
             file_name = "/tmp/schedulertask_{0}".format(
                 ''.join(random.sample(char_set*6, 6)))
             create_file_cmd = "echo '#!/bin/sh\n{0}' > {1}".format(
-                command.replace("'", "\\'"),
+                command,
                 file_name)
             retcode, _, stderr = self.ssh[node].run(create_file_cmd)
             if retcode != 0:
