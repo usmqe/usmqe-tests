@@ -8,6 +8,7 @@ from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger('scheduler', module=True)
 
+
 def test_scheduler_workflow():
     conf = UsmConfig()
     nodes = conf.inventory.get_groups_dict()["gluster_servers"]
