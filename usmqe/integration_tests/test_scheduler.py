@@ -21,3 +21,5 @@ def test_scheduler_workflow():
         SSH = usmssh.get_ssh()
         _, message, _ = SSH[node].run("cat /tmp/test_task")
         assert message.decode("utf-8").rstrip("\n") == "1"
+        # teardown
+        SSH[node].run("rm -f /tmp/test_task")
