@@ -73,6 +73,21 @@ To execute the unit tests, just run ``tox`` command in root directory of
 Moreover the unit tests are executed for `each new pull request via Travis
 CI`_.
 
+Integration Tests
+=================
+
+We have integration tests of ``usmqe-tests`` project itself, which covers some
+code in ``usmqe`` module. One is encouraged to add integration tests when 
+adding code into ``usmqe`` module and to run the tests before submitting
+a pull request. Among these tests can be tests that use global configuration
+via ``UsmConfig``.
+
+`usmqe/integration_tests`_ is directory that contains the code of integration
+tests.
+
+To execute the integration tests, just run ``pytest`` command in
+`usmqe/integration_tests`_ directory.
+
 .. _functional_tests:
 
 Structure of Functional Tests
@@ -161,6 +176,7 @@ cluster creation have extremly big resource needs.
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`python 3`: https://docs.python.org/3/whatsnew/3.0.html
 .. _`usmqe/unit_tests`: https://github.com/usmqe/usmqe-tests/tree/master/usmqe/unit_tests
+.. _`usmqe/integration_tests`: https://github.com/usmqe/usmqe-tests/tree/master/usmqe/integration_tests
 .. _`tox.ini`: https://github.com/usmqe/usmqe-tests/blob/master/tox.ini
 .. _`.travis.yml`: https://github.com/usmqe/usmqe-tests/blob/master/.travis.yml
 .. _`each new pull request via Travis CI`: https://travis-ci.org/usmqe/usmqe-tests/pull_requests
