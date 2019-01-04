@@ -1,5 +1,6 @@
 import attr
-from navmazing import NavigateToAttribute, NavigateToSibling
+import time
+from navmazing import NavigateToAttribute
 # from wait_for import wait_for
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
@@ -13,16 +14,20 @@ class Cluster(BaseEntity):
     name = attr.ib()
     version = attr.ib()
     managed = attr.ib()
-    # hosts_number = attr.ib()
+    hosts_number = attr.ib()
     status = attr.ib()
     # attributes below are not defined until cluster is imported
     # volumes = attr.ib()
     # alerts = attr.ib()
     # profiling = attr.ib()
 
-    # def import(self, cancel=False):
-    #    pass
-    # import will belong to an individual cluster when the widget is ready
+    def cluster_import(self, cluster_name=None):
+        view = ViaWebUI.navigate_to(self, "Import")
+        if cluster_name is not None:
+            view.fill({"cluster_name": cluster_name})
+            self.name = cluster_name
+        view.save_button.click()
+        # TODO: update cluster attributes
 
     def unmanage(self, cancel=False):
         pass
@@ -39,19 +44,28 @@ class Cluster(BaseEntity):
     @property
     def exists(self):
         pass
-        # view = ViaWebUI.navigate_to(self.parent, "All")
-        # return bool(list(view.clusters.something(something)))
 
 
 @attr.s
 class ClustersCollection(BaseCollection):
     ENTITY = Cluster
 
-    def cluster_import(self, cluster_name):
-        view = ViaWebUI.navigate_to(self, "Import")
-        view.fill({"cluster_name": cluster_name})
-        view.save_button.click()
-        return self.instantiate(cluster_name, "RHGS 3.4", "Yes", "Ready to Use")
+    def get_all_cluster_ids(self):
+        view = ViaWebUI.navigate_to(self, "All")
+        return view.all_ids
+
+    def get_clusters(self):
+        view = ViaWebUI.navigate_to(self, "All")
+        clusters_list = []
+        for cluster_id in self.get_all_cluster_ids():
+            cluster = self.instantiate(
+                cluster_id,
+                view.clusters(cluster_id).cluster_version,
+                view.clusters(cluster_id).managed,
+                view.clusters(cluster_id).hosts,
+                view.clusters(cluster_id).status)
+            clusters_list.append(cluster)
+        return clusters_list
 
 
 @ViaWebUI.register_destination_for(ClustersCollection, "All")
@@ -60,13 +74,15 @@ class ClustersAll(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
+        time.sleep(1)
         self.parent.navbar.clusters.select_item("All Clusters")
 
 
-@ViaWebUI.register_destination_for(ClustersCollection, "Import")
-class ClustersImport(TendrlNavigateStep):
+@ViaWebUI.register_destination_for(Cluster, "Import")
+class ClusterImport(TendrlNavigateStep):
     VIEW = ImportClusterView
-    prerequisite = NavigateToSibling("All")
+    prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self):
-        self.parent.import_button.click()
+        time.sleep(1)
+        self.object.import_button.click()
