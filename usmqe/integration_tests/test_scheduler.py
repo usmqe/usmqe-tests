@@ -17,7 +17,7 @@ def test_scheduler_workflow():
     jobs = scheduler.jobs()
     LOGGER.info("Jobs: {}".format(jobs))
     assert len(jobs) == len(nodes)
-    time.sleep(60)
+    time.sleep(70)
     for node in nodes:
         SSH = usmssh.get_ssh()
         _, message, _ = SSH[node].run("cat /tmp/test_task")

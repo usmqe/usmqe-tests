@@ -34,7 +34,9 @@ class Scheduler(object):
                 in next minute.
         """
         if not time:
-            time = datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
+            time = datetime.datetime.utcnow()
+            minute_delta = 2 if int(time.strftime("%S")) > 50 else 1
+            time += datetime.timedelta(minutes=minute_delta)
             time = time.strftime("%H:%M")
         files = self.create_job_file(command)
         for node in self.nodes:
