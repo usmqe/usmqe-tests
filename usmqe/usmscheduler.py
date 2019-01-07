@@ -34,11 +34,11 @@ class Scheduler(object):
                 in next minute.
         """
         if not time:
-            time = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            time = datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
             time = time.strftime("%H:%M")
         files = self.create_job_file(command)
         for node in self.nodes:
-            time_command = "at {0} -f {1} ".format(time, files[node])
+            time_command = "at $(date --date='TZ=\"UTC\" {0}' +%H:%M) -f {1} ".format(time, files[node])
             self.ssh[node].run(time_command)
 
     def create_job_file(self, command):
