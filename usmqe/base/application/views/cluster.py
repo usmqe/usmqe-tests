@@ -17,8 +17,8 @@ class ClustersView(BaseLoggedInView):
         ALL_CLUSTERS = ".//div[@class='list-group-item']"
         ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']/descendant-or-self::*/text()"
         ROOT = ParametrizedLocator(
-            ".//div[div[div[div[@class='list-view-pf-description' " +
-            "and contains(descendant-or-self::*/text(),{cluster_id|quote})]]]]")
+            "//div/*[text()[normalize-space(.)]={cluster_id|quote}]/ancestor-or-self::" +
+            "div[@class='list-group-item']")
 
         cluster_version = Text(".//div[text() = 'Cluster Version']/following-sibling::h5")
         managed = Text(".//div[text() = 'Managed']/following-sibling::h5")
@@ -35,7 +35,7 @@ class ClustersView(BaseLoggedInView):
         def all(cls, browser):
             return [(browser.text(e),) for e in browser.elements(cls.ALL_CLUSTER_IDS)]
 
-    ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']/descendant-or-self::*"
+    ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']"
 
     # TODO: fix dropdown. If clicked, dropdown changes its name and won't be found anymore
     pagename = Text(".//h1")

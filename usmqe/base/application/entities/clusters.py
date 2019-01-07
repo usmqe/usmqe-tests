@@ -60,10 +60,10 @@ class ClustersCollection(BaseCollection):
         for cluster_id in self.get_all_cluster_ids():
             cluster = self.instantiate(
                 cluster_id,
-                view.clusters(cluster_id).cluster_version,
-                view.clusters(cluster_id).managed,
-                view.clusters(cluster_id).hosts,
-                view.clusters(cluster_id).status)
+                view.clusters(cluster_id).cluster_version.text,
+                view.clusters(cluster_id).managed.text,
+                view.clusters(cluster_id).hosts.text,
+                view.clusters(cluster_id).status.text)
             clusters_list.append(cluster)
         return clusters_list
 
@@ -85,4 +85,4 @@ class ClusterImport(TendrlNavigateStep):
 
     def step(self):
         time.sleep(1)
-        self.object.import_button.click()
+        self.parent.clusters(self.obj.name).import_button.click()
