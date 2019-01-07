@@ -40,7 +40,8 @@ class Scheduler(object):
             time = time.strftime("%H:%M")
         files = self.create_job_file(command)
         for node in self.nodes:
-            time_command = "at $(date --date='TZ=\"UTC\" {0}' +%H:%M) -f {1} ".format(time, files[node])
+            time_command = "at $(date --date='TZ=\"UTC\" {0}' +%H:%M)"\
+                " -f {1} ".format(time, files[node])
             self.ssh[node].run(time_command)
 
     def create_job_file(self, command):
