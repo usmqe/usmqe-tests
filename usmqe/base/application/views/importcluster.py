@@ -18,9 +18,9 @@ class ImportClusterView(BaseLoggedInView):
     user_filter = TextInput(placeholder='Filter by Name')
 
     # TODO: try this hosts_number = Text(".//h3").split(' ')[0]
-    import_button = Button("Import")
+    confirm_import = Button("Import")
     cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.pagename == "Import Cluster"
+        return self.pagename.text == "Import Cluster"

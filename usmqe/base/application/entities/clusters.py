@@ -26,7 +26,7 @@ class Cluster(BaseEntity):
         if cluster_name is not None:
             view.fill({"cluster_name": cluster_name})
             self.name = cluster_name
-        view.save_button.click()
+        view.confirm_import.click()
         # TODO: update cluster attributes
 
     def unmanage(self, cancel=False):

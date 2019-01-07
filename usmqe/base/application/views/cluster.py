@@ -27,7 +27,7 @@ class ClustersView(BaseLoggedInView):
         alerts = Text(".//div[text() = 'Alerts']/following-sibling::h5")
         profiling = Text(".//div[text() = 'Volume Profiling']/following-sibling::h5")
         status = Text(".//div[@class='list-view-pf-additional-info-item cluster-text']")
-        import_button = Button("Import")
+        import_button = Button("contains", "Import")
         dashboard_button = Button("Dashboard")
         actions = Kebab()
 
