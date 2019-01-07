@@ -161,6 +161,8 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.cluster_unmanage_gluster
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_cluster_unmanage_valid(
         valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
     """
