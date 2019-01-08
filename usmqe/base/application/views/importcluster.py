@@ -1,8 +1,5 @@
 from widgetastic.widget import Text, TextInput
-
 from usmqe.base.application.views.common import BaseLoggedInView
-# from usmqe.base.application.widgets import BootstrapSwitch, Kebab, RadioGroup
-
 from taretto.ui.patternfly import Button, Dropdown, BreadCrumb
 
 
@@ -24,3 +21,13 @@ class ImportClusterView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.pagename.text == "Import Cluster"
+
+
+class ImportTaskSubmittedView(BaseLoggedInView):
+    pagename = Text(".//h1")
+    close_button = Button("Close")
+    view_progress = Button("View Task Progress")
+
+    @property
+    def is_displayed(self):
+        return self.pagename.text == "Import Cluster Task Submitted"
