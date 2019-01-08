@@ -8,4 +8,22 @@ def test_cluster_import(application):
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]
     test_cluster.cluster_import()
-    time.sleep(5)
+
+
+def test_cluster_disable_profiling(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.disable_profiling()
+
+
+def test_cluster_enable_profiling(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.enable_profiling()
+
+
+def test_cluster_unmanage(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.unmanage()
+    time.sleep(20)
