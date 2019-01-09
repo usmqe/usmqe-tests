@@ -76,7 +76,7 @@ class Cluster(BaseEntity):
         for _ in range(40):
             try:
                 self.update()
-                if self.managed =="No" and self.status == "Ready to Import":
+                if self.managed == "No" and self.status == "Ready to Import":
                     break
                 else:
                     time.sleep(5)
@@ -129,7 +129,7 @@ class ClustersCollection(BaseCollection):
     ENTITY = Cluster
 
     def get_all_cluster_ids(self):
-        view = self.application.web_ui.create_view(ClustersView) 
+        view = self.application.web_ui.create_view(ClustersView)
         return view.all_ids
 
     def get_clusters(self):

@@ -1,4 +1,5 @@
-from widgetastic.widget import (Text, TextInput, View)
+from widgetastic.widget import Text, View
+# from widgetastic.widget import TextInput
 
 from usmqe.base.application.views.common import BaseLoggedInView
 from usmqe.base.application.widgets import Kebab
@@ -55,7 +56,7 @@ class ClustersView(BaseLoggedInView):
 
 class UnmanageConfirmationView(View):
     ROOT = ".//pf-modal-overlay-content"
-    # close_alert = 
+    # close_alert =
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
     unmanage = Button("Unmanage")

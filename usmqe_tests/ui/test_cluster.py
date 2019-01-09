@@ -35,4 +35,3 @@ def test_cluster_import_naming(application):
     original_id = test_cluster.name
     test_cluster.cluster_import(cluster_name="TestClusterName")
     test_cluster.unmanage(original_id=original_id)
-

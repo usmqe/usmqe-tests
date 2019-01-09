@@ -34,4 +34,5 @@ class ImportTaskSubmittedView(BaseLoggedInView):
 
 
 class ImportProgressView(BaseLoggedInView):
-    status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']/following-sibling::label")
+    status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']"
+                  "/following-sibling::label")
