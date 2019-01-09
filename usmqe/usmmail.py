@@ -23,7 +23,6 @@ Usage::
 import pytest
 import usmqe.usmssh
 import mailbox
-import time
 import email.utils
 import os
 import tempfile
@@ -79,11 +78,8 @@ def get_msgs_by_time(start_timestamp=None, end_timestamp=None, host=None, user="
         LOGGER.debug("Message date: {}".format(message['Date']))
         LOGGER.debug("Message subject: {}".format(message['Subject']))
         LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-        msg_date_tuple = email.utils.parsedate(message['Date'])
-        # email.utils.parsedate doesn't get the timezone correctly
-        # parse "Wed, 19 Sep 2018 14:41:22 +0200 (CEST)" for the number of hours to adjust
-        msg_timezone_int = int(message['Date'].split(' ')[5][:3])
-        msg_timestamp = time.mktime(msg_date_tuple) - msg_timezone_int * 60 * 60
+        msg_date = email.utils.parsedate_tz(message['Date'])
+        msg_timestamp = email.utils.mktime_tz(msg_date)
         LOGGER.debug("Message timestamp: {}".format(msg_timestamp))
         if (start_timestamp is None or start_timestamp < msg_timestamp) and \
            (end_timestamp is None or end_timestamp > msg_timestamp):
