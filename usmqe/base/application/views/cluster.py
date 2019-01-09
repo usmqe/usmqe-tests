@@ -40,7 +40,8 @@ class ClustersView(BaseLoggedInView):
     # TODO: fix dropdown. If clicked, dropdown changes its name and won't be found anymore
     pagename = Text(".//h1")
     filter_type = Dropdown("Name")
-    user_filter = TextInput(placeholder='Filter by Name')
+    # TextInput can't be defined by placeholder
+    # user_filter = TextInput(placeholder='Filter by Name')
 
     @property
     def all_ids(self):
@@ -58,3 +59,13 @@ class UnmanageConfirmationView(View):
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
     unmanage = Button("Unmanage")
+
+
+class UnmanageTaskSubmittedView(View):
+    ROOT = ".//pf-modal-overlay-content"
+    CLOSE_LOC = './/div[@class="modal-header"]/button[@class="close ng-scope"]'
+    view_progress = Button("contains", "View Task Progress")
+
+    def close(self):
+        """Close the modal"""
+        self.browser.click(self.CLOSE_LOC, parent=self)
