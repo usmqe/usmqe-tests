@@ -10,9 +10,9 @@ class ImportClusterView(BaseLoggedInView):
     # volume_profiling = RadioGroup(".//div[./label[@for='role']]")
     # radio group for clusters has different structure. TODO: make it work
 
-    # TODO: check that filter works
+    # TODO: fix the filter. TextInput can't be defined by placeholder as of yet
     filter_type = Dropdown("Name")
-    user_filter = TextInput(placeholder='Filter by Name')
+    # user_filter = TextInput(placeholder='Filter by Name')
 
     # TODO: try this hosts_number = Text(".//h3").split(' ')[0]
     confirm_import = Button("Import")
@@ -31,3 +31,7 @@ class ImportTaskSubmittedView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.pagename.text == "Import Cluster Task Submitted"
+
+
+class ImportProgressView(BaseLoggedInView):
+    status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']/following-sibling::label")
