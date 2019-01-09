@@ -3,10 +3,11 @@ import time
 from navmazing import NavigateToAttribute
 from wait_for import wait_for
 import pytest
-
+from selenium.common.exceptions import NoSuchElementException
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.cluster import ClustersView, UnmanageConfirmationView
+from usmqe.base.application.views.cluster import UnmanageTaskSubmittedView
 from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 
@@ -50,36 +51,68 @@ class Cluster(BaseEntity):
         time.sleep(1)
         view = self.application.web_ui.create_view(ImportTaskSubmittedView)
         view.close_button.click()
-        time.sleep(180)
-        self.update()
+        time.sleep(60)
+        for _ in range(40):
+            self.update()
+            if self.managed == "Yes":
+                break
+            else:
+                time.sleep(5)
         LOGGER.debug("Cluster is managed: {}".format(self.managed))
         pytest.check(self.managed == "Yes")
+        LOGGER.debug("Cluster status: {}".format(self.status))
+        pytest.check(self.status == "Ready to Use")
 
-    def unmanage(self, cancel=False):
+    def unmanage(self, cancel=False, original_id=None):
         view = self.application.web_ui.create_view(ClustersView)
         view.clusters(self.name).actions.select("Unmanage")
         view = self.application.web_ui.create_view(UnmanageConfirmationView)
         wait_for(lambda: view.is_displayed, timeout=3)
         view.unmanage.click()
-        time.sleep(240)
-        self.update()
+        time.sleep(5)
+        view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
+        view.close()
+        time.sleep(60)
+        for _ in range(40):
+            try:
+                self.update()
+                if self.managed =="No" and self.status == "Ready to Import":
+                    break
+                else:
+                    time.sleep(5)
+            except NoSuchElementException:
+                if original_id is not None:
+                    self.name = original_id
+                    original_id = None
+                time.sleep(5)
         LOGGER.debug("Cluster is managed: {}".format(self.managed))
         pytest.check(self.managed == "No")
+        LOGGER.debug("Cluster status: {}".format(self.status))
+        pytest.check(self.status == "Ready to Import")
 
     def enable_profiling(self, cancel=False):
         view = self.application.web_ui.create_view(ClustersView)
         view.clusters(self.name).actions.select("Enable Profiling")
-        time.sleep(180)
-        self.update()
+        time.sleep(40)
+        for _ in range(40):
+            self.update()
+            if self.profiling == "Enabled":
+                break
+            else:
+                time.sleep(5)
         LOGGER.debug("Cluster profiling value: {}".format(self.profiling))
         pytest.check(self.profiling == "Enabled")
-
 
     def disable_profiling(self, cancel=False):
         view = self.application.web_ui.create_view(ClustersView)
         view.clusters(self.name).actions.select("Disable Profiling")
-        time.sleep(180)
-        self.update()
+        time.sleep(40)
+        for _ in range(40):
+            self.update()
+            if self.profiling == "Disabled":
+                break
+            else:
+                time.sleep(5)
         LOGGER.debug("Cluster profiling value: {}".format(self.profiling))
         pytest.check(self.profiling == "Disabled")
 
@@ -96,7 +129,7 @@ class ClustersCollection(BaseCollection):
     ENTITY = Cluster
 
     def get_all_cluster_ids(self):
-        view = ViaWebUI.navigate_to(self, "All")
+        view = self.application.web_ui.create_view(ClustersView) 
         return view.all_ids
 
     def get_clusters(self):
