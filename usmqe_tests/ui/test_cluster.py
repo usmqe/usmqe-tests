@@ -27,3 +27,12 @@ def test_cluster_unmanage(application):
     test_cluster = clusters[0]
     test_cluster.unmanage()
     time.sleep(20)
+
+
+def test_cluster_import_naming(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    original_id = test_cluster.name
+    test_cluster.cluster_import(cluster_name="TestClusterName")
+    test_cluster.unmanage(original_id=original_id)
+
