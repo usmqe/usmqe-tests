@@ -24,6 +24,21 @@ Files stored in the root dir of the repository (eg. ``.travis.yml``,
 ``conftest.py``, ``pytest.ini``, ...) should not be updated unless one need to
 change underlying pytest, tox or CI plumbing (eg. adding new pytest plugin).
 
+Overview of test cases
+----------------------
+
+To get a list of test cases automated in ``usmqe_tests`` (so that pytest
+parametrization is taken into account), run the following command in root
+directory of this repository::
+
+    $ tox -e testcaselist
+
+The total number of test cases is reported as ``collected X items`` line, which
+is followed by a list of all test cases grouped by python source code file.
+
+This ``testcaselist`` report is also run in Travis CI among unit tests of
+``usmqe`` module, see next section for more details.
+
 Unit Tests of usmqe module
 --------------------------
 

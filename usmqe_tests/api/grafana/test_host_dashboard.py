@@ -61,6 +61,8 @@ def test_host_dashboard_layout():
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
     """
     Check that Grafana panel *CPU Utilization* is showing correct values.
@@ -108,6 +110,8 @@ def test_cpu_utilization(workload_cpu_utilization, cluster_reuse):
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_memory_utilization(workload_memory_utilization, cluster_reuse):
     """
     Check that Grafana panel *memory Utilization* is showing correct values.
@@ -161,6 +165,8 @@ def test_memory_utilization(workload_memory_utilization, cluster_reuse):
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_swap_free(workload_swap_utilization, cluster_reuse):
     """
     Check that Grafana panel *Swap Free* is showing correct values.
@@ -208,6 +214,8 @@ def test_swap_free(workload_swap_utilization, cluster_reuse):
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_swap_utilization(workload_swap_utilization, cluster_reuse):
     """
     Check that Grafana panel *Swap Utilization* is showing correct values.

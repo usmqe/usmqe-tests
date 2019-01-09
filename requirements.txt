@@ -1,6 +1,8 @@
 mrglog
 plumbum
-pytest
+# WORKAROUND for https://github.com/usmqe/usmqe-tests/issues/227
+pytest == 4.0.2
+#pytest
 pytest-ansible-playbook
 requests
 taretto
