@@ -49,21 +49,43 @@ class Alerting(object):
         """
         return {
             "node":{
-                "status": "Peer $node in cluster $cluster is $value",
-                "cpu": "Cpu utilization on node $node in $cluster $value",
-                "memory": "Memory utilization on node $node in $cluster $value",
-                "swap": "Swap utilization on node $node in $cluster $value",
-                "georeplication": "Geo-replication between $node:$path and $volume is $value"},
+                "status": {
+                    "subject": "status changed",
+                    "body": "Peer $node in cluster $cluster is $value"},
+                "cpu": {
+                    "subject": "Cpu Utilization: threshold breached",
+                    "body": "Cpu utilization on node $node in $cluster $value"},
+                "memory": {
+                    "subject": "Memory Utilization: threshold breached",
+                    "body": "Memory utilization on node $node in $cluster $value"},
+                "swap": {
+                    "subject": "Swap Utilization: threshold breached",
+                    "body": "Swap utilization on node $node in $cluster $value"},
+                "georeplication": {
+                    "subject": "status changed",
+                    "body": "Geo-replication between $node:$path and $volume is $value"},},
             "brick": {
-                "status": "Brick:$node:$path in volume:$volume has $value",
-                "utilization": "Brick utilization on $node:$path in $volume $value"},
+                "status": {
+                    "subject": "status changed",
+                    "body": "Brick:$node:$path in volume:$volume has $value"},
+                "utilization": {
+                    "subject": "Brick Utilization: threshold breached",
+                    "body": "Brick utilization on $node:$path in $volume $value"},},
             "cluster": {
-                "status": "Cluster:$cluster is $value"},
+                "status": {
+                    "subject": "status changed",
+                    "body": "Cluster:$cluster is $value"},},
             "glustershd": {
-                "status": "Service: glustershd is $value in cluster $cluster"},
+                "status": {
+                    "subject": "status changed",
+                    "body": "Service: glustershd is $value in cluster $cluster"},},
             "volume": {
-                "running": "Volume:$volume is $value",
-                "status": "Status of volume: $volume in cluster $cluster changed $value"}}
+                "running": {
+                    "subject": "status changed",
+                    "body": "Volume:$volume is $value"},
+                "status": {
+                    "subject": "status changed",
+                    "body": "Status of volume: $volume in cluster $cluster changed $value"}}}
 
     def generate_alert_msg(
             self,
@@ -85,11 +107,13 @@ class Alerting(object):
                 templates.
 
         Returns:
-            str: Alert message.
+            tuple: Alert subject and alert message.
         """
         message = "[{0}] ".format(level)
-        message = Template(message + self.msg_templates[domain][subject])
-        return message.safe_substitute(entities)
+        message = Template(
+            message + self.msg_templates[domain][subject]['body'])
+        return self.msg_templates[
+                domain][subject]['subject'], message.safe_substitute(entities)
 
     def compare_msg_prc(self, msg1, msg2):
         """
