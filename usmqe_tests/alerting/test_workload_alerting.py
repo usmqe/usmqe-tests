@@ -3,15 +3,20 @@ Alerting test suite - workload
 """
 
 import pytest
-import time
-import usmqe.usmmail
+from usmqe.alerting.alerting import Alerting
 
 
 LOGGER = pytest.get_logger('workload_alerting', module=True)
 
 
 @pytest.mark.author("ebondare@redhat.com")
-def test_cpu_alerts(workload_cpu_utilization):
+@pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
+@pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
+@pytest.mark.ansible_playbook_setup('test_setup.stress_ng.yml')
+def test_cpu_utilization_mail_alert(
+        #ansible_playbook,
+        workload_cpu_utilization, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below 70,
     it sends CPU Utilization warnings if CPU Utilization is between 70 and 90
@@ -24,20 +29,36 @@ def test_cpu_alerts(workload_cpu_utilization):
     :result:
       The list of all relevant messages
     """
-    EXTRA_TIME = 30
-    from_timestamp = workload_cpu_utilization["start"].timestamp()
-    until_timestamp = workload_cpu_utilization["end"].timestamp() + EXTRA_TIME
-    LOGGER.debug("Fixture start timestamp: {} ({})".format(from_timestamp,
-                                                           workload_cpu_utilization["start"]))
-    LOGGER.debug("Fixture end timestamp: {} ({})".format(until_timestamp - EXTRA_TIME,
-                                                         workload_cpu_utilization["end"]))
-    LOGGER.debug("Fixture result is: {}".format(workload_cpu_utilization["result"]))
 
-    # Wait until the messages surely arrive
-    time.sleep(EXTRA_TIME)
-    messages = usmqe.usmmail.get_msgs_by_time(start_timestamp=from_timestamp,
-                                              end_timestamp=until_timestamp)
-    LOGGER.debug("Selected messages count: {}".format(len(messages)))
+    alerting = Alerting("root")
+    entities = default_entities
+    # todo(fbalak) use this when supported
+    # entities["volume"] = workload_cpu_utilization["metadata"]["volume_name"]
+    if (workload_cpu_utilization['result'] >= 75 and
+        workload_cpu_utilization['result'] < 90):
+            severity = "WARNING"
+            entities["value"] = "at $value and running out of cpu"
+    elif (workload_cpu_utilization['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of cpu"
+    else:
+        severity = "INFO"
+        entities["value"] = "back to normal"
+    mail_subject, mail_msg = alerting.generate_alert_msg(
+        level=severity,
+        domain="node",
+        subject="cpu",
+        entities=entities)
+    alert_count = alerting.search_mail(
+        mail_subject,
+        workload_cpu_utilization['start'],
+        workload_cpu_utilization['end'])
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\n{}\nThere is{}".format(
+            mail_subject, alert_count))
+    #todo(fbalak): check for clearing alert
+
 
     """
     :step:
@@ -45,22 +66,3 @@ def test_cpu_alerts(workload_cpu_utilization):
     :result:
       If the workload was low, there's no alert. If it's high, the correct alert was received.
     """
-    # Distinguish between warnings and critical alerts
-    cpu_warning = False
-    cpu_critical = False
-    for message in messages:
-        LOGGER.debug("Message date: {}".format(message['Date']))
-        LOGGER.debug("Message subject: {}".format(message['Subject']))
-        LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-        if message['Subject'].count("[WARNING] Cpu Utilization: threshold breached") > 0:
-            cpu_warning = True
-        if message['Subject'].count("[CRITICAL] Cpu Utilization: threshold breached") > 0:
-            cpu_critical = True
-
-    # Check if the number and type of alerts fits CPU Utilization
-    if workload_cpu_utilization["result"] < 70:
-        pytest.check(not cpu_warning and not cpu_critical)
-    elif workload_cpu_utilization["result"] < 90:
-        pytest.check(cpu_warning and not cpu_critical)
-    else:
-        pytest.check(cpu_critical and not cpu_warning)
