@@ -34,7 +34,7 @@ def test_user_crud(application, role, valid_session_credentials):
         password="1234567890",
         role=role
     )
-    assert user.exists
+    pytest.check(user.exists)
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     user_data = {
         "name": user.name,
@@ -58,9 +58,9 @@ def test_user_crud(application, role, valid_session_credentials):
               "confirm_password": user.password,
               "notifications_on": True
               })
-    assert user.exists
-    assert user.email == "edited_email_for_{}@tendrl.org".format(role)
-    assert user.notifications_on == True
+    pytest.check(user.exists)
+    pytest.check(user.email == "edited_email_for_{}@tendrl.org".format(role))
+    pytest.check(user.notifications_on)
     user_data["email"] = "edited_email_for_{}@tendrl.org".format(role)
     user_data["email_notifications"] = True
     test.check_user(user_data)
@@ -84,7 +84,7 @@ def test_user_crud(application, role, valid_session_credentials):
       User is deleted
     """
     user.delete()
-    assert not user.exists
+    pytest.check(not user.exists)
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -108,7 +108,7 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
         password=invalid_password,
         role=valid_normal_user_data["role"]
     )
-    assert not user.exists
+    pytest.check(user.exists)
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
 
     user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
@@ -118,7 +118,7 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
         "reason": 'Not Found',
         "status": 404}
     not_found = test.get_user(user_data_password_invalid["username"], asserts_in=asserts)
-    assert "Not found" in str(not_found)
+    pytest.check("Not found" in str(not_found))
 
 
 @pytest.mark.author("ebondare@redhat.com")
