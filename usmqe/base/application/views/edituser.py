@@ -5,6 +5,7 @@ from taretto.ui.patternfly import Button, BreadCrumb
 
 
 class EditUserView(BaseLoggedInView):
+    """View for user editing page"""
     page_breadcrumb = BreadCrumb()
     user_id = Text(".//p[class='ng-binding']")
     name = TextInput(name="name")

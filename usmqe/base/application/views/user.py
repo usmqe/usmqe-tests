@@ -14,7 +14,7 @@ class UsersView(BaseLoggedInView):
     # TODO: fix dropdown. If clicked, dropdown changes its name and won't be found anymore
     pagename = Text(".//h1")
     filter_type = Dropdown("User ID")
-    user_filter = TextInput(placeholder='Filter by User ID')
+    user_filter = TextInput(locator=".//input[@placeholder='Filter by User ID']")
     adduser = Button("Add")
     users = Table(".//table", column_widgets={5: Button("Edit"), 6: Kebab()})
 

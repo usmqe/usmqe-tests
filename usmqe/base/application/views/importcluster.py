@@ -4,6 +4,7 @@ from taretto.ui.patternfly import Button, Dropdown, BreadCrumb
 
 
 class ImportClusterView(BaseLoggedInView):
+    """View for cluster import page """
     page_breadcrumb = BreadCrumb()
     pagename = Text(".//h1")
     cluster_name = TextInput(name="clusterName")
@@ -24,6 +25,7 @@ class ImportClusterView(BaseLoggedInView):
 
 
 class ImportTaskSubmittedView(BaseLoggedInView):
+    """View for page that confirms Import task has beed submitted"""
     pagename = Text(".//h1")
     close_button = Button("Close")
     view_progress = Button("View Task Progress")
@@ -31,8 +33,3 @@ class ImportTaskSubmittedView(BaseLoggedInView):
     @property
     def is_displayed(self):
         return self.pagename.text == "Import Cluster Task Submitted"
-
-
-class ImportProgressView(BaseLoggedInView):
-    status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']"
-                  "/following-sibling::label")

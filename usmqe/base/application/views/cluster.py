@@ -14,11 +14,12 @@ class ClustersView(BaseLoggedInView):
 
     @ParametrizedView.nested
     class clusters(ParametrizedView):
+        """Nested view for each cluster"""
         PARAMETERS = ("cluster_id",)
         ALL_CLUSTERS = ".//div[@class='list-group-item']"
         ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']/descendant-or-self::*/text()"
         ROOT = ParametrizedLocator(
-            "//div/*[text()[normalize-space(.)]={cluster_id|quote}]/ancestor-or-self::" +
+            "//div/*[text()[normalize-space(.)]={cluster_id|quote}]/ancestor-or-self::"
             "div[@class='list-group-item']")
 
         cluster_version = Text(".//div[text() = 'Cluster Version']/following-sibling::h5")
@@ -34,7 +35,8 @@ class ClustersView(BaseLoggedInView):
 
         @classmethod
         def all(cls, browser):
-            return [(browser.text(e),) for e in browser.elements(cls.ALL_CLUSTER_IDS)]
+            return [self.browser.text(e) for e in self.browser.elements(self.ALL_CLUSTER_IDS)
+                if self.browser.text(e) is not None and self.browser.text(e) != '']
 
     ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']"
 
@@ -46,6 +48,7 @@ class ClustersView(BaseLoggedInView):
 
     @property
     def all_ids(self):
+        """Returns the list of all cluster ids in the clusters list """
         return [self.browser.text(e) for e in self.browser.elements(self.ALL_CLUSTER_IDS)
                 if self.browser.text(e) is not None and self.browser.text(e) != '']
 
@@ -55,6 +58,7 @@ class ClustersView(BaseLoggedInView):
 
 
 class UnmanageConfirmationView(View):
+    """View for cluster unmanage confirmation modal """
     ROOT = ".//pf-modal-overlay-content"
     # close_alert =
     alert_name = Text(".//h4")

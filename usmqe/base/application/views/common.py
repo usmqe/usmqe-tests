@@ -7,6 +7,7 @@ from widgetastic_patternfly import AboutModal
 
 
 class LoginPage(View):
+    """View for login page """
     username = TextInput(id="username")
     password = TextInput(id="password")
     log_in = Button("Log In")
@@ -17,11 +18,12 @@ class LoginPage(View):
 
 
 class Navbar(View):
+    """Navigation bar on top of every page except the login page.
+    usermanagement is only available to admins"""
     ROOT = ".//nav[contains(@class,'navbar-pf-contextselector tendrl-header-container')]"
     title = Text(".//a[@class='navbar-brand']")
     clusters = Select(".//select[@id='repeatSelect']")
     modal = NavDropdown(".//button[@id='aboutModalDropdown']/parent::li")
-    # TODO: navbar for normal user is smaller
     usermanagement = NavDropdown(".//a[@id='usermanagement']/parent::li")
     alerts = NavDropdown(".//a[@id='notifications']/parent::li")
     usermenu = NavDropdown(".//a[@id='usermenu']/parent::li")
@@ -38,6 +40,7 @@ class Navbar(View):
 
 
 class BaseLoggedInView(View):
+    """Base view so that every page will inherit navbar and about modal"""
     navbar = View.nested(Navbar)
     modal = AboutModal(id='aboutModal')
 
@@ -70,6 +73,7 @@ class BaseLoggedInView(View):
 
 
 class DeleteConfirmationView(View):
+    """View for delete confirmation modal """
     ROOT = ".//pf-modal-overlay-content"
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
@@ -77,6 +81,7 @@ class DeleteConfirmationView(View):
 
 
 class MySettingsView(View):
+    """View for My Settings modal """
     ROOT = ".//div[@id='userSettingModal']"
     popup_name = Text(".//h4[@id='modalTitle']")
     users_name = TextInput(name="name")

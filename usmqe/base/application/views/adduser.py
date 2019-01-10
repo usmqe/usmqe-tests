@@ -7,6 +7,7 @@ from taretto.ui.patternfly import Button, BreadCrumb
 
 
 class AddUserView(BaseLoggedInView):
+    """View for the page where the new user's information is filled """
     page_breadcrumb = BreadCrumb()
     user_id = TextInput(name="username")
     name = TextInput(name="name")
