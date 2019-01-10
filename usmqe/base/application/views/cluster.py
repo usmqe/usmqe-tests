@@ -35,8 +35,8 @@ class ClustersView(BaseLoggedInView):
 
         @classmethod
         def all(cls, browser):
-            return [self.browser.text(e) for e in self.browser.elements(self.ALL_CLUSTER_IDS)
-                if self.browser.text(e) is not None and self.browser.text(e) != '']
+            return [browser.text(e) for e in browser.elements(cls.ALL_CLUSTER_IDS)
+                    if browser.text(e) is not None and browser.text(e) != '']
 
     ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']"
 
