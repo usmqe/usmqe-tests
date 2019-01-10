@@ -250,3 +250,41 @@ class GlusterVolume(GlusterCommon):
         pytest.check(
             status == real_status,
             "Volume status is {}, should be {}".format(real_status, status))
+
+    def is_profiling_enabled(self):
+        """
+        Run gluster command" ``gluster volume profiling {volume name} info``
+        with volume name specified by class.
+        Return True if volume profiling is enabled and False otherwise.
+        """
+
+        xml = self.run_on_node('profile {} info'.format(self.name))
+        brick_profiling_info = xml.findtext(
+            "./volProfile/brick/brickName")
+        if brick_profiling_info is None:
+            return False
+        else:
+            return True
+
+    def get_clusterwide_profiling(self):
+        volumes_list = self.get_volume_names()
+        enabled_volumes = 0
+        disabled_volumes = 0
+        for volume_name in volumes_list:
+            volume = GlusterVolume(volume_name=volume_name)
+            vol_profiling = volume.is_profiling_enabled()
+            if vol_profiling:
+                enabled_volumes += 1
+                LOGGER.debug("volume {}: profiling enabled".format(volume_name))
+            else:
+                disabled_volumes += 1
+                LOGGER.debug("volume {}: profiling disabled".format(volume_name))
+        if enabled_volumes > 0 and disabled_volumes == 0:
+            LOGGER.debug("enabled volumes: {}".format(enabled_volumes))
+            return "enabled"
+        if disabled_volumes > 0 and enabled_volumes == 0:
+            return "disabled"
+        if enabled_volumes > 0 and disabled_volumes > 0:
+            return "mixed"
+        else:
+            return "No volumes found"
