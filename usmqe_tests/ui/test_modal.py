@@ -7,6 +7,9 @@ from usmqe.usmqeconfig import UsmConfig
 CONF = UsmConfig()
 
 
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
 def test_modal(application):
     """
     Test admin's About modal
@@ -26,9 +29,12 @@ def test_modal(application):
                   "Browser OS": "linux"}
     for key in modal_info:
         real_value = view.get_detail(key).lower()
-        assert real_value == modal_info[key]
+        pytest.check(real_value == modal_info[key])
 
 
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
 @pytest.mark.parametrize("role", ["normal", "limited"])
 def test_modal_username_role(application, role, valid_session_credentials):
     """
@@ -66,6 +72,5 @@ def test_modal_username_role(application, role, valid_session_credentials):
                   "Browser OS": "linux"}
     for key in modal_info:
         real_value = view.get_detail(key).lower()
-        assert real_value == modal_info[key]
+        pytest.check(real_value == modal_info[key])
     user.delete()
-    assert not user.exists

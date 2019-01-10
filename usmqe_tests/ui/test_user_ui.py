@@ -13,6 +13,7 @@ from usmqe.usmqeconfig import UsmConfig
 CONF = UsmConfig()
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.parametrize("role", ["normal", "limited"])
@@ -87,6 +88,7 @@ def test_user_crud(application, role, valid_session_credentials):
     pytest.check(not user.exists)
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.negative
 def test_user_creation_password_invalid(application, valid_session_credentials,
@@ -121,6 +123,7 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
     pytest.check("Not found" in str(not_found))
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, valid_password):
@@ -157,7 +160,9 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
     app2.web_ui.browser_manager.quit()
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
 def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     """
     Change user's email in My Settings and login again.

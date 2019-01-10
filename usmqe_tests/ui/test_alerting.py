@@ -5,13 +5,13 @@ import datetime
 from usmqe.usmqeconfig import UsmConfig
 from usmqe import usmssh, usmmail
 from usmqe.api.tendrlapi import user as tendrlapi_user
-# from usmqe.base.application.implementations.web_ui import ViaWebUI
 
 
 LOGGER = pytest.get_logger('ui_user_testing', module=True)
 CONF = UsmConfig()
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.parametrize("receive_alerts", [False, True])
 @pytest.mark.happypath
@@ -26,7 +26,6 @@ def test_alerting(application, receive_alerts, valid_normal_user_data):
     :result:
       Admin's email is changed
     """
-
     # create a user with the email address configured in ansible playbook
     new_data = {"email": "alerting_test" + str(receive_alerts) + "@ya.ru",
                 "password": CONF.config["usmqe"]["password"],
@@ -34,7 +33,8 @@ def test_alerting(application, receive_alerts, valid_normal_user_data):
     application.collections.users.edit_logged_in_user(new_data)
     """
     :step:
-      Create normal user with notifications switched on or off.
+      Create normal user with notifications switched on or off
+      and email configured in ansible playbook
     :result:
       Normal user is created
     """
@@ -102,6 +102,14 @@ def test_alerting(application, receive_alerts, valid_normal_user_data):
 @pytest.mark.parametrize("receive_alerts", [True, False])
 @pytest.mark.happypath
 def test_mysettings_alerting_switch(application, receive_alerts, valid_session_credentials):
+    """
+    Test switching alerts on and off in My Settings.
+    """
+    """
+    :step:
+      Change alert settings in My Settings (and password as well due to BZ1654623)
+    :result:
+    """
     admin_data = {
         "email": "root@" + CONF.inventory.get_groups_dict()["usm_client"][0],
         "password": CONF.config["usmqe"]["password"],
@@ -109,6 +117,11 @@ def test_mysettings_alerting_switch(application, receive_alerts, valid_session_c
         "notifications_on": receive_alerts
         }
     application.collections.users.edit_logged_in_user(admin_data)
+    """
+    :step:
+      Check that alert settings changed
+    :result:
+    """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     admin_data = {
         "name": "Admin",
