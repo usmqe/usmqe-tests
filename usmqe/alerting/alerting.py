@@ -20,7 +20,7 @@ class Alerting(object):
     usmqe-setup repository.
     """
     def __init__(self, user, client=None, server=None, msg_templates=None,
-            divergence=5.0):
+            divergence=15.0):
         """
         Args:
             user (str): Tendrl user that receives alerts.
@@ -38,6 +38,7 @@ class Alerting(object):
         # uses EXTRA_TIME if is set up
         self.wait = True
         self.prc_pattern = re.compile("\d{1,3}(\.\d{1,2})(\s\%)?")
+        self.divergence = divergence
 
     def basic_messages(self):
         """
@@ -118,43 +119,35 @@ class Alerting(object):
         LOGGER.debug("Generated message body: '{}'".format(message))
         return title, message
 
-    def compare_msg_prc(self, msg1, msg2):
+    def compare_prc(self, val, target):
         """
-        Compares two messages if they have percentage values on the same spot
-        and if these values are identical (with applicable divergence).
+        Compares two values if they are identical with regards of divergence.
 
         Args:
-            msg1 (str): First message.
-            msg2 (str): Second message.
+            val (str): Value from message.
+            target (float): Targeted value.
 
         Returns:
             bool: If values in messages are identical.
         """
-        identical = True
-        matches = []
-        for match in self.prc_pattern.finditer(msg1):
-            matches.append((match.start(), match.group()))
-        for match in self.prc_pattern.finditer(msg2):
-            if len(matches) == 0:
-                identical = False
-                break
-            msg_start, value = matches.pop(0)
-            if msg_start != match.start():
-                identical = False
-                break
-            if not (float(value) - self.divergence <=
-                    float(match.group()) <= float(value) + self.divergence):
-                identical = False
-                break
+        val = val.rstrip('%').rstrip(' ')
+        identical = False
+        LOGGER.debug("Compared value: {}".format(val))
+        LOGGER.debug("Divergence: {}".format(self.divergence))
+        if float(target) - self.divergence <= float(val) <= float(
+            target) + self.divergence:
+                identical = True
         return identical
 
-    def search_mail(self, title, msg, since, until):
+    def search_mail(self, title, msg, since, until, target=None):
         """
         Args:
             title (str): Message title that will be searched.
             msg (str): Message that will be searched.
             since (datetime): Datetime from which will be mail searched.
             until (datetime): Datetime until which will be mail searched.
+            target (float): Targeted value that will be compared with found
+                value in message.
 
         Returns:
             int: Number of found messages.
@@ -192,6 +185,11 @@ class Alerting(object):
             LOGGER.debug("Percent value: {}".format(prc_value))
             if message['Subject'].count(
                 title) == 1 and msg_payload.count(msg) == 1:
+                    if target:
+                        if not self.compare_prc(prc_value, target):
+                            LOGGER.debug("Message found but with wrong value:"\
+                                "'{}'".format(prc_value))
+                            message_count -= 1
                     message_count += 1
         return message_count
 

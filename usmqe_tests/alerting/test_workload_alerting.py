@@ -34,6 +34,7 @@ def test_cpu_utilization_mail_alert(
     entities = default_entities
     # todo(fbalak) use this when supported
     # entities["volume"] = workload_cpu_utilization["metadata"]["volume_name"]
+    target = workload_cpu_utilization['result']
     if (workload_cpu_utilization['result'] >= 75 and
         workload_cpu_utilization['result'] < 90):
             severity = "WARNING"
@@ -44,6 +45,7 @@ def test_cpu_utilization_mail_alert(
     else:
         severity = "INFO"
         entities["value"] = "back to normal"
+        target = None
     mail_subject, mail_msg = alerting.generate_alert_msg(
         level=severity,
         domain="node",
@@ -53,7 +55,8 @@ def test_cpu_utilization_mail_alert(
         mail_subject,
         mail_msg,
         workload_cpu_utilization['start'],
-        workload_cpu_utilization['end'])
+        workload_cpu_utilization['end'],
+        target=target)
     pytest.check(
         alert_count == 1,
         "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"\
