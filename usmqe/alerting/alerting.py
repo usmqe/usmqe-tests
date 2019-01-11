@@ -37,7 +37,7 @@ class Alerting(object):
         self.msg_templates = msg_templates or self.basic_messages()
         # uses EXTRA_TIME if is set up
         self.wait = True
-        self.prc_pattern = re.compile("\d{1,3}(\.\d{1,2})")
+        self.prc_pattern = re.compile("\d{1,3}(\.\d{1,2})(\s\%)?")
 
     def basic_messages(self):
         """
@@ -109,11 +109,14 @@ class Alerting(object):
         Returns:
             tuple: Alert subject and alert message.
         """
-        message = "[{0}] ".format(level)
+        title = "[{0}] {1}".format(level, self.msg_templates[
+            domain][subject]['subject'])
         message = Template(
-            message + self.msg_templates[domain][subject]['body'])
-        return self.msg_templates[
-                domain][subject]['subject'], message.safe_substitute(entities)
+            self.msg_templates[domain][subject]['body'])
+        message = message.safe_substitute(entities)
+        LOGGER.debug("Generated message subject: '{}'".format(title))
+        LOGGER.debug("Generated message body: '{}'".format(message))
+        return title, message
 
     def compare_msg_prc(self, msg1, msg2):
         """
@@ -145,12 +148,13 @@ class Alerting(object):
                 break
         return identical
 
-    def search_mail(self, msg, since, until):
+    def search_mail(self, title, msg, since, until):
         """
         Args:
+            title (str): Message title that will be searched.
+            msg (str): Message that will be searched.
             since (datetime): Datetime from which will be mail searched.
             until (datetime): Datetime until which will be mail searched.
-            msg (str): Message that will be searched.
 
         Returns:
             int: Number of found messages.
@@ -170,12 +174,25 @@ class Alerting(object):
             user=self.user)
 
         message_count = 0
+        matches = []
         for message in messages:
-            LOGGER.debug("Message date: {}".format(message['Date']))
-            LOGGER.debug("Message subject: {}".format(message['Subject']))
-            LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-            if message['Subject'].count(msg) > 0:
-                message_count += 1
+            LOGGER.debug("Message date: '{}'".format(message['Date']))
+            LOGGER.debug("Message subject: '{}'".format(message['Subject']))
+            msg_payload = message.get_payload(decode=True).decode("utf-8")
+            LOGGER.debug("Message body: '{}'".format(msg_payload))
+            def save_and_replace(match):
+                matches.append(match)
+                return '$value'
+            msg_payload = self.prc_pattern.sub(save_and_replace, msg_payload)
+            LOGGER.debug("Message body after sub: {}".format(msg_payload))
+            try:
+                prc_value = matches.pop().group(0)
+            except:
+                prc_value = None
+            LOGGER.debug("Percent value: {}".format(prc_value))
+            if message['Subject'].count(
+                title) == 1 and msg_payload.count(msg) == 1:
+                    message_count += 1
         return message_count
 
     def search_snmp(self, msg, since, until):
