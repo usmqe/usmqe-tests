@@ -51,12 +51,14 @@ def test_cpu_utilization_mail_alert(
         entities=entities)
     alert_count = alerting.search_mail(
         mail_subject,
+        mail_msg,
         workload_cpu_utilization['start'],
         workload_cpu_utilization['end'])
     pytest.check(
         alert_count == 1,
-        "There should be 1 alert:\n{}\nThere is{}".format(
-            mail_subject, alert_count))
+        "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"\
+        "There is {2}".format(
+            mail_subject, mail_msg, alert_count))
     #todo(fbalak): check for clearing alert
 
 
