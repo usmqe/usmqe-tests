@@ -59,14 +59,6 @@ def test_cpu_utilization_mail_alert(
         "There is {2}".format(
             mail_subject, mail_msg, alert_count))
 
-
-    """
-    :step:
-      Check that the type of alert corresponds to the workload
-    :result:
-      If the workload was low, there's no alert. If it's high, the correct alert was received.
-    """
-
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.stress_ng.yml')
@@ -114,11 +106,3 @@ def test_cpu_utilization_snmp_alert(
         "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"\
         "There is {2}".format(
             mail_subject, mail_msg, alert_count))
-
-
-    """
-    :step:
-      Check that the type of alert corresponds to the workload
-    :result:
-      If the workload was low, there's no alert. If it's high, the correct alert was received.
-    """
