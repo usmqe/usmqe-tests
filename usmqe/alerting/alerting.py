@@ -90,7 +90,6 @@ class Alerting(object):
 
     def generate_alert_msg(
             self,
-            level,
             domain,
             subject,
             entities=None):
@@ -98,7 +97,6 @@ class Alerting(object):
         Return alert message based on parameters.
 
         Args:
-            level (str): Severity of message (INFO|WARNING|CRITICAL).
             domain (str): Represents entity where is subject tested.
             subject (str): Subject that is tested.
                 For example cpu, memory, status...
@@ -110,8 +108,7 @@ class Alerting(object):
         Returns:
             tuple: Alert subject and alert message.
         """
-        title = "[{0}] {1}".format(level, self.msg_templates[
-            domain][subject]['subject'])
+        title = self.msg_templates[domain][subject]['subject']
         message = Template(
             self.msg_templates[domain][subject]['body'])
         message = message.safe_substitute(entities)
@@ -177,7 +174,6 @@ class Alerting(object):
                 matches.append(match)
                 return '$value'
             msg_payload = self.prc_pattern.sub(save_and_replace, msg_payload)
-            LOGGER.debug("Message body after sub: {}".format(msg_payload))
             try:
                 prc_value = matches.pop().group(0)
             except:
@@ -193,12 +189,14 @@ class Alerting(object):
                     message_count += 1
         return message_count
 
-    def search_snmp(self, msg, since, until):
+    def search_snmp(self, msg, since, until, target=None):
         """
         Args:
-            since(datetime): Datetime from which will be mail searched.
-            until(datetime): Datetime until which will be mail searched.
             msg (str): Message that will be searched.
+            since (datetime): Datetime from which will be message searched.
+            until (datetime): Datetime until which will be message searched.
+            target (float): Targeted value that will be compared with found
+                value in message.
 
         Returns:
             int: Number of found messages.
@@ -212,20 +210,39 @@ class Alerting(object):
             until_timestamp = until.timestamp()
 
         SSH = usmqe.usmssh.get_ssh()
-        journal_cmd = "journalctl --since \"{}\" --until \"{}\"" \
-            " -u snmptrap".format(
-                since_timestamp, until_timestamp, self.user)
+        journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
+            " @{})\" --until \"$(date \"+%Y-%m-%d %H:%M:%S\" -d @{})\"" \
+            " -u snmptrapd".format(
+                int(since_timestamp), int(until_timestamp), self.user)
         rcode, stdout, stderr = SSH[self.client].run(journal_cmd)
         if rcode != 0:
             raise OSError(stderr.decode("utf-8"))
-
         messages = stdout.decode("utf-8").split("\n")
+        # remove header from journalctl output
+        del messages[0]
+
         message_count = 0
+        matches = []
+        LOGGER.debug("SNMP message expected: '{}'".format(msg))
         for message in messages:
-            LOGGER.debug("Message date: {}".format(message['Date']))
-            LOGGER.debug("Message subject: {}".format(message['Subject']))
-            LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-            if message['Subject'].count(msg) > 0:
+            if message == '':
+                continue
+            LOGGER.debug("SNMP message: '{}'".format(message))
+            def save_and_replace(match):
+                matches.append(match)
+                return '$value'
+            msg_payload = self.prc_pattern.sub(save_and_replace, message)
+            try:
+                prc_value = matches.pop().group(0)
+            except:
+                prc_value = None
+            LOGGER.debug("Percent value: {}".format(prc_value))
+            if msg_payload.count(msg) == 1:
+                if target:
+                    if not self.compare_prc(prc_value, target):
+                        LOGGER.debug("Message found but with wrong value:"\
+                            "'{}'".format(prc_value))
+                        message_count -= 1
                 message_count += 1
         return message_count
 
