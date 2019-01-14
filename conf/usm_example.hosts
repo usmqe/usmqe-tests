@@ -6,11 +6,14 @@ example-usm1-gl4.usmqe.tendrl.org
 example-usm1-gl5.usmqe.tendrl.org
 example-usm1-gl6.usmqe.tendrl.org
 
+[tendrl_server]
+example-usm1-server.usmqe.tendrl.org
+
 [usm_nodes:children]
 gluster_servers
 
-[usm_server]
-example-usm1-server.usmqe.tendrl.org
+[usm_server:children]
+tendrl_server
 
 [usm_client]
 example-usm1-client.usmqe.tendrl.org
