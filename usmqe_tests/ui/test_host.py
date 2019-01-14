@@ -12,3 +12,11 @@ def test_host_attributes(application):
         # brick count depends on volume type
         # pytest.check(host.bricks == "5")
         pytest.check(host.alerts == "0")
+
+
+def test_host_dashboard(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    hosts = test_cluster.hosts.get_hosts()
+    test_host = hosts[3]
+    test_host.check_dashboard()
