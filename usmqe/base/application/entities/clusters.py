@@ -1,6 +1,6 @@
 import attr
 import time
-from navmazing import NavigateToAttribute
+from navmazing import NavigateToAttribute, NavigateToSibling
 from wait_for import wait_for
 import pytest
 from selenium.common.exceptions import NoSuchElementException
@@ -8,8 +8,11 @@ from selenium.common.exceptions import NoSuchElementException
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.views.cluster import ClustersView, UnmanageConfirmationView
 from usmqe.base.application.views.cluster import UnmanageTaskSubmittedView
+from usmqe.base.application.views.host import ClusterHostsView
+from usmqe.base.application.views.volume import ClusterVolumesView
 from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
+from usmqe.base.application.entities.hosts import HostsCollection
 
 
 LOGGER = pytest.get_logger('clusters', module=True)
@@ -20,18 +23,28 @@ class Cluster(BaseEntity):
     name = attr.ib()
     version = attr.ib()
     managed = attr.ib()
-    hosts = attr.ib()
+    hosts_number = attr.ib()
     status = attr.ib()
     # attributes below are not defined until cluster is imported
     volumes = attr.ib()
     alerts = attr.ib()
     profiling = attr.ib()
 
+    _collections = {'hosts': HostsCollection}
+
+    @property
+    def hosts(self):
+        return self.collections.hosts
+
+    # @property
+    # def volumes(self):
+    #    return self.collections.volumes
+
     def update(self):
         view = self.application.web_ui.create_view(ClustersView)
         self.version = view.clusters(self.name).cluster_version.text
         self.managed = view.clusters(self.name).managed.text
-        self.hosts = view.clusters(self.name).hosts.text
+        self.hosts_number = view.clusters(self.name).hosts.text
         self.status = view.clusters(self.name).status.text
         if self.managed == "Yes":
             self.volumes = view.clusters(self.name).volumes.text
@@ -179,3 +192,25 @@ class ClusterImport(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.clusters(self.obj.name).import_button.click()
+
+
+@ViaWebUI.register_destination_for(Cluster, "Hosts")
+class ClusterHosts(TendrlNavigateStep):
+    VIEW = ClusterHostsView
+    prerequisite = NavigateToAttribute("parent", "All")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.navbar.clusters.select_by_visible_text(self.obj.name)
+        time.sleep(2)
+
+
+@ViaWebUI.register_destination_for(Cluster, "Volumes")
+class ClusterVolumes(TendrlNavigateStep):
+    VIEW = ClusterVolumesView
+    prerequisite = NavigateToSibling("Hosts")
+
+    def step(self):
+        time.sleep(1)
+        # TODO: add what to click
+        # self.parent.

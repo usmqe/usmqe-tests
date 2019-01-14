@@ -22,21 +22,21 @@ class Navbar(View):
     usermanagement is only available to admins"""
     ROOT = ".//nav[contains(@class,'navbar-pf-contextselector tendrl-header-container')]"
     title = Text(".//a[@class='navbar-brand']")
-    clusters = Select(".//select[@id='repeatSelect']")
+    clusters = Select(".//select[contains(@ng-change, 'goToClusterPage')]")
     modal = NavDropdown(".//button[@id='aboutModalDropdown']/parent::li")
     usermanagement = NavDropdown(".//a[@id='usermanagement']/parent::li")
     alerts = NavDropdown(".//a[@id='notifications']/parent::li")
     usermenu = NavDropdown(".//a[@id='usermenu']/parent::li")
 
 
-# TODO: use VerticalNavigation
-# class VerticalNavbar(View):
-#    ROOT = ".//nav[@class='nav-pf-vertical nav-pf-vertical-with-secondary-nav hidden-icons-pf']"
-    # hosts =
-    # volumes =
-    # tasks =
-    # events =
-    # TODO: learn how to use sub-menu
+class VerticalNavbar(View):
+    """Vertical navigation bar for views where cluster is specified.
+    Can't use VerticalNavigation widget because Tasks item never gets attribute 'active'"""
+    ROOT = ".//nav[@class='nav-pf-vertical nav-pf-vertical-with-secondary-nav hidden-icons-pf']"
+    hosts = Text(".//li[@data-target='#Hosts']")
+    volumes = Text(".//li[@data-target='#Volumes']")
+    tasks = Text(".//li[@data-target='#Tasks']")
+    events = Text(".//li[@data-target='#Events']")
 
 
 class BaseLoggedInView(View):
@@ -70,6 +70,12 @@ class BaseLoggedInView(View):
         finally:
             # close since its a blocking modal and will break further navigation
             self.modal.close()
+
+
+class BaseClusterSpecifiedView(BaseLoggedInView):
+    """Base view for pages where cluster is specified: Hosts, Volumes, Tasks, Events"""
+    vertical_navbar = View.nested(VerticalNavbar)
+    cluster_name = Text(".//div[@class='nav contextselector-pf']/div/button/span")
 
 
 class DeleteConfirmationView(View):
