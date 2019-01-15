@@ -95,16 +95,26 @@ class GrafanaApi(ApiBase):
         """
         targets = []
         for target in panel["targets"]:
-            if "hide" not in target.keys() or not target["hide"]:
-                if "targetFull" in target.keys() and target["targetFull"]:
+            if "hide" not in target or not target["hide"]:
+                if target.get("targetFull"):
                     targets.append(target["targetFull"])
                 else:
                     targets.append(target["target"])
         output = []
         for target in targets:
             if "$cluster_id" in target:
+                if not cluster_identifier:
+                    LOGGER.info(
+                        "$cluster_id in target but no cluster_id provided:"\
+                            " {}".format(
+                                target))
                 target = target.replace("$cluster_id", cluster_identifier)
             if "$volume_name" in target:
+                if not cluster_identifier:
+                    LOGGER.info(
+                        "$volume_name in target but no volume_name provided:"\
+                            " {}".format(
+                                target))
                 target = target.replace("$volume_name", volume_name)
             if "$host_name" in target:
                 target = target.replace("$host_name", CONF.config["usmqe"][
@@ -123,9 +133,12 @@ class GrafanaApi(ApiBase):
                 except Exception:
                     target_options = None
                 if target_options:
-                    target_output.extend(["{}.{}".format(
+                    # connects target root and target options into sole targets
+                    # e.g. tendrl.$host_name.cpu.{percent-user,percent-system}
+                    constructed_targets = ["{}.{}".format(
                         t, x.split("}", 1)[0]) for x in target_options.split(
-                            ",")])
+                            ",")]
+                    target_output.extend(constructed_targets)
                 else:
                     # drop target tendrl label
                     if t.startswith("tendrl."):

@@ -101,8 +101,9 @@ class GraphiteApi(ApiBase):
             else:
                 raise ValueError("Operation '{0}' is not supported.".format(
                     operation))
-        LOGGER.debug("mean of all used data from Graphite: {}".format(
+        LOGGER.info("mean of all used data from Graphite: {}".format(
             graphite_data_mean_all))
+        LOGGER.info("used operation: {}".format(operation))
         minimal_expected_result = expected_result - divergence
         maximal_expected_result = expected_result + divergence
         msg = "Data mean should be {}, data mean in Graphite is: {}, ".format(
