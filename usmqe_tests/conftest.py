@@ -418,8 +418,8 @@ def workload_capacity_utilization(request, volume_mount_points):
             int(size.rstrip("\n")) / 1024 for size in disk_space.decode(
                 "utf-8").split(" ")]
 
-        # block size = 10M
-        block_size = 10
+        # block size = 100M
+        block_size = 100
         # compute disk space that is going to be used and number of files
         # to create with regard to already utilized space
         file_count = int((
