@@ -105,15 +105,15 @@ class GrafanaApi(ApiBase):
             if "$cluster_id" in target:
                 if not cluster_identifier:
                     LOGGER.info(
-                        "$cluster_id in target but no cluster_id provided:"\
-                            " {}".format(
+                        "$cluster_id in target but no cluster_id provided:"
+                        " {}".format(
                                 target))
                 target = target.replace("$cluster_id", cluster_identifier)
             if "$volume_name" in target:
                 if not cluster_identifier:
                     LOGGER.info(
-                        "$volume_name in target but no volume_name provided:"\
-                            " {}".format(
+                        "$volume_name in target but no volume_name provided:"
+                        " {}".format(
                                 target))
                 target = target.replace("$volume_name", volume_name)
             if "$host_name" in target:
