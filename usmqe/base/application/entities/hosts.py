@@ -8,7 +8,7 @@ from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, Vi
 from usmqe.base.application.views.host import ClusterHostsView, GrafanaHostDashboard
 
 
-LOGGER = pytest.get_logger('clusters', module=True)
+LOGGER = pytest.get_logger('hosts', module=True)
 
 
 @attr.s

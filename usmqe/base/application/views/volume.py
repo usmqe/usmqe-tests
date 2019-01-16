@@ -15,7 +15,7 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
         ROOT = ParametrizedLocator(
             ".//div/a[text()[normalize-space(.)]={volume_name|quote}]/ancestor-or-self::"
             "div[@class='ft-row list-group-item ng-scope']")
-        volume_type = Text("div[@class='pull-left vol-type ng-binding']")
+        volume_type = Text(".//div[@class='pull-left vol-type ng-binding']")
         bricks = Text(".//div[text() = 'Bricks']/following-sibling::div")
         running = Text(".//div[text() = 'Running']/following-sibling::div")
         rebalance = Text(".//div[text() = 'Rebalance']/following-sibling::div")
@@ -30,12 +30,12 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
             return [browser.text(e) for e in browser.elements(cls.ALL_HOSTNAMES)
                     if browser.text(e) is not None and browser.text(e) != '']
 
-    ALL_VOLUMES = ".//a[@class='volume-name ng-binding']"
+    ALL_VOLUMES = ".//a[contains(@class,'volume-name')]"
 
     pagename = Text(".//h1")
 
     @property
-    def all_volumes(self):
+    def all_volnames(self):
         """Returns the list of all volumes on the Volumes page"""
         return [self.browser.text(e) for e in self.browser.elements(self.ALL_VOLUMES)
                 if self.browser.text(e) is not None and self.browser.text(e) != '']

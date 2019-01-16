@@ -13,6 +13,7 @@ from usmqe.base.application.views.volume import ClusterVolumesView
 from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 from usmqe.base.application.entities.hosts import HostsCollection
+from usmqe.base.application.entities.volumes import VolumesCollection
 
 
 LOGGER = pytest.get_logger('clusters', module=True)
@@ -20,25 +21,26 @@ LOGGER = pytest.get_logger('clusters', module=True)
 
 @attr.s
 class Cluster(BaseEntity):
+    cluster_id = attr.ib()
     name = attr.ib()
     version = attr.ib()
     managed = attr.ib()
     hosts_number = attr.ib()
     status = attr.ib()
     # attributes below are not defined until cluster is imported
-    volumes = attr.ib()
+    volumes_number = attr.ib()
     alerts = attr.ib()
     profiling = attr.ib()
 
-    _collections = {'hosts': HostsCollection}
+    _collections = {'hosts': HostsCollection, 'volumes': VolumesCollection}
 
     @property
     def hosts(self):
         return self.collections.hosts
 
-    # @property
-    # def volumes(self):
-    #    return self.collections.volumes
+    @property
+    def volumes(self):
+        return self.collections.volumes
 
     def update(self):
         view = self.application.web_ui.create_view(ClustersView)
@@ -47,11 +49,11 @@ class Cluster(BaseEntity):
         self.hosts_number = view.clusters(self.name).hosts.text
         self.status = view.clusters(self.name).status.text
         if self.managed == "Yes":
-            self.volumes = view.clusters(self.name).volumes.text
+            self.volumes_number = view.clusters(self.name).volumes.text
             self.alerts = view.clusters(self.name).alerts.text
             self.profiling = view.clusters(self.name).profiling.text
         else:
-            self.volumes = None
+            self.volumes_number = None
             self.alerts = None
             self.profiling = None
 
@@ -77,6 +79,8 @@ class Cluster(BaseEntity):
         pytest.check(self.status == "Ready to Use")
 
     def unmanage(self, cancel=False, original_id=None):
+        if original_id is not None:
+            self.cluster_id = original_id
         view = self.application.web_ui.create_view(ClustersView)
         view.clusters(self.name).actions.select("Unmanage")
         view = self.application.web_ui.create_view(UnmanageConfirmationView)
@@ -94,9 +98,8 @@ class Cluster(BaseEntity):
                 else:
                     time.sleep(5)
             except NoSuchElementException:
-                if original_id is not None:
-                    self.name = original_id
-                    original_id = None
+                if self.cluster_id != self.name:
+                    self.name = self.cluster_id
                 time.sleep(5)
         LOGGER.debug("Cluster is managed: {}".format(self.managed))
         pytest.check(self.managed == "No")
@@ -152,6 +155,7 @@ class ClustersCollection(BaseCollection):
             if view.clusters(cluster_id).managed.text == "No":
                 cluster = self.instantiate(
                     cluster_id,
+                    cluster_id,
                     view.clusters(cluster_id).cluster_version.text,
                     view.clusters(cluster_id).managed.text,
                     view.clusters(cluster_id).hosts.text,
@@ -162,6 +166,7 @@ class ClustersCollection(BaseCollection):
                 clusters_list.append(cluster)
             else:
                 cluster = self.instantiate(
+                    cluster_id,
                     cluster_id,
                     view.clusters(cluster_id).cluster_version.text,
                     view.clusters(cluster_id).managed.text,
@@ -181,7 +186,8 @@ class ClustersAll(TendrlNavigateStep):
 
     def step(self):
         time.sleep(1)
-        self.parent.navbar.clusters.select_item("All Clusters")
+        self.parent.navbar.clusters.select_by_visible_text("All Clusters")
+        time.sleep(2)
 
 
 @ViaWebUI.register_destination_for(Cluster, "Import")
@@ -213,4 +219,4 @@ class ClusterVolumes(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         # TODO: add what to click
-        # self.parent.
+        self.parent.vertical_navbar.volumes.click()
