@@ -40,6 +40,7 @@ class HostsCollection(BaseCollection):
 
     def get_hosts(self):
         view = ViaWebUI.navigate_to(self.parent, "Hosts")
+        time.sleep(4)
         hosts_list = []
         for hostname in self.get_all_hostnames():
             host = self.instantiate(
