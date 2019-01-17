@@ -27,7 +27,7 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
 
         @classmethod
         def all(cls, browser):
-            return [browser.text(e) for e in browser.elements(cls.ALL_HOSTNAMES)
+            return [browser.text(e) for e in browser.elements(cls.ALL_VOLUMES)
                     if browser.text(e) is not None and browser.text(e) != '']
 
     ALL_VOLUMES = ".//a[contains(@class,'volume-name')]"
