@@ -10,10 +10,12 @@ from usmqe.base.application.views.cluster import ClustersView, UnmanageConfirmat
 from usmqe.base.application.views.cluster import UnmanageTaskSubmittedView
 from usmqe.base.application.views.host import ClusterHostsView
 from usmqe.base.application.views.volume import ClusterVolumesView
+from usmqe.base.application.views.task import ClusterTasksView
 from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 from usmqe.base.application.entities.hosts import HostsCollection
 from usmqe.base.application.entities.volumes import VolumesCollection
+from usmqe.base.application.entities.tasks import TasksCollection
 
 
 LOGGER = pytest.get_logger('clusters', module=True)
@@ -32,7 +34,9 @@ class Cluster(BaseEntity):
     alerts = attr.ib()
     profiling = attr.ib()
 
-    _collections = {'hosts': HostsCollection, 'volumes': VolumesCollection}
+    _collections = {'hosts': HostsCollection,
+                    'volumes': VolumesCollection,
+                    'tasks': TasksCollection}
 
     @property
     def hosts(self):
@@ -41,6 +45,10 @@ class Cluster(BaseEntity):
     @property
     def volumes(self):
         return self.collections.volumes
+
+    @property
+    def tasks(self):
+        return self.collections.tasks
 
     def update(self):
         view = self.application.web_ui.create_view(ClustersView)
@@ -220,3 +228,14 @@ class ClusterVolumes(TendrlNavigateStep):
         time.sleep(1)
         # TODO: add what to click
         self.parent.vertical_navbar.volumes.click()
+
+
+@ViaWebUI.register_destination_for(Cluster, "Tasks")
+class ClusterTasks(TendrlNavigateStep):
+    VIEW = ClusterTasksView
+    prerequisite = NavigateToSibling("Hosts")
+
+    def step(self):
+        time.sleep(1)
+        # TODO: add what to click
+        self.parent.vertical_navbar.tasks.click()
