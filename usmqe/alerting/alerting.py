@@ -9,8 +9,6 @@ import usmqe.usmssh
 LOGGER = pytest.get_logger('usmqe_alerting', module=True)
 CONF = UsmConfig()
 
-# seconds to wait until alerts are in place
-EXTRA_TIME = 30
 
 class Alerting(object):
     """
@@ -35,7 +33,7 @@ class Alerting(object):
         self.client = client or CONF.inventory.get_groups_dict()["usm_client"][0]
         self.server = server or CONF.inventory.get_groups_dict()["usm_server"][0]
         self.msg_templates = msg_templates or self.basic_messages()
-        # uses EXTRA_TIME if is set up
+        # uses some extra time if is set up
         self.wait = True
         self.prc_pattern = re.compile("\d{1,3}(\.\d{1,2})(\s\%)?")
         self.divergence = divergence
@@ -136,6 +134,27 @@ class Alerting(object):
                 identical = True
         return identical
 
+    def get_until_timestamp(self, until, extra_time=30):
+        """
+        Checks if alerting was already used. To make sure that all
+        fixtures are loaded there is added some extra time in case the alert
+        search is used for the first time. Provided time is converted into
+        timestamp.
+
+        Args:
+            until (datetime): Datetime until which will be mail searched.
+            extra_time (int): Time to be added to timestamp.
+
+        Returns:
+            int: timestamp.
+        """
+        if self.wait:
+            time.sleep(extra_time)
+            self.wait = False
+            return until.timestamp() + extra_time
+        else:
+            return until.timestamp()
+
     def search_mail(self, title, msg, since, until, target=None):
         """
         Args:
@@ -150,12 +169,7 @@ class Alerting(object):
             int: Number of found messages.
         """
         since_timestamp = since.timestamp()
-        if self.wait:
-            until_timestamp = until.timestamp() + EXTRA_TIME
-            time.sleep(EXTRA_TIME)
-            self.wait = False
-        else:
-            until_timestamp = until.timestamp()
+        until_timestamp = self.get_until_timestamp(until)
 
         messages = usmqe.usmmail.get_msgs_by_time(
             start_timestamp=since_timestamp,
@@ -202,12 +216,7 @@ class Alerting(object):
             int: Number of found messages.
         """
         since_timestamp = since.timestamp()
-        if self.wait:
-            until_timestamp = until.timestamp() + EXTRA_TIME
-            time.sleep(EXTRA_TIME)
-            self.wait = False
-        else:
-            until_timestamp = until.timestamp()
+        until_timestamp = self.get_until_timestamp(until)
 
         SSH = usmqe.usmssh.get_ssh()
         journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
@@ -263,12 +272,7 @@ class Alerting(object):
             int: Number of found messages.
         """
         since_timestamp = since.timestamp()
-        if self.wait:
-            until_timestamp = until.timestamp() + EXTRA_TIME
-            time.sleep(EXTRA_TIME)
-            self.wait = False
-        else:
-            until_timestamp = until.timestamp()
+        until_timestamp = self.get_until_timestamp(until)
 
         SSH = usmqe.usmssh.get_ssh()
         journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
