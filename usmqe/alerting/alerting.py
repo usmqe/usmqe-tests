@@ -19,8 +19,8 @@ class Alerting(object):
     server. This can be installled by `test_setup.alerts_logger.yml` from
     usmqe-setup repository.
     """
-    def __init__(self, user, client=None, server=None, msg_templates=None,
-            divergence=15.0):
+    def __init__(self, user="admin", client=None, server=None,
+            msg_templates=None, divergence=15.0):
         """
         Args:
             user (str): Tendrl user that receives alerts.
@@ -213,7 +213,7 @@ class Alerting(object):
         journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
             " @{})\" --until \"$(date \"+%Y-%m-%d %H:%M:%S\" -d @{})\"" \
             " -u snmptrapd".format(
-                int(since_timestamp), int(until_timestamp), self.user)
+                int(since_timestamp), int(until_timestamp))
         rcode, stdout, stderr = SSH[self.client].run(journal_cmd)
         if rcode != 0:
             raise OSError(stderr.decode("utf-8"))
@@ -246,15 +246,18 @@ class Alerting(object):
                 message_count += 1
         return message_count
 
-    def search_api(self, msg, since, until):
+    def search_api(self, severity, msg, since, until, target=None):
         """
         For this to work there have to be running test_setup.alerts_logger.yml`
         from usmqe-setup repository.
 
         Args:
-            since(datetime): Datetime from which will be mail searched.
-            until(datetime): Datetime until which will be mail searched.
+            severity (str): Alert severity.
             msg (str): Message that will be searched.
+            since(datetime): Datetime from which will be alert searched.
+            until(datetime): Datetime until which will be alert searched.
+            target (float): Targeted value that will be compared with found
+                value in message.
 
         Returns:
             int: Number of found messages.
@@ -268,19 +271,58 @@ class Alerting(object):
             until_timestamp = until.timestamp()
 
         SSH = usmqe.usmssh.get_ssh()
-        journal_cmd = "journalctl --since \"{}\" --until \"{}\"" \
+        journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
+            " @{})\" --until \"$(date \"+%Y-%m-%d %H:%M:%S\" -d @{})\"" \
             " -u usmqe_alerts_logger@{}".format(
-                since_timestamp, until_timestamp, self.user)
-        rcode, stdout, stderr = SSH[self.server].run(journal_cmd)
+                int(since_timestamp), int(until_timestamp), self.user)
+        rcode, stdout, stderr = SSH[self.client].run(journal_cmd)
         if rcode != 0:
             raise OSError(stderr.decode("utf-8"))
 
         messages = stdout.decode("utf-8").split("\n")
+        # remove header from journalctl output
+        del messages[0]
+
         message_count = 0
+        matches = []
+        LOGGER.debug("Api message expected: '{}'".format(msg))
+        severity_re = re.compile("severity': u'(.*?)'")
+        message_re = re.compile("message': u'(.*?)'")
         for message in messages:
-            LOGGER.debug("Message date: {}".format(message['Date']))
-            LOGGER.debug("Message subject: {}".format(message['Subject']))
-            LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-            if message['Subject'].count(msg) > 0:
-                message_count += 1
+            if message == '':
+                continue
+
+            LOGGER.debug("Api message: '{}'".format(message))
+            msg_severity = severity_re.findall(message)
+            if len(msg_severity) != 1:
+                LOGGER.info("Incorrect number of severity options: {}".format(
+                    msg_severity))
+                continue
+            msg_severity = msg_severity[0]
+            LOGGER.info("Found severity: {}".format(msg_severity))
+            msg_payload = message_re.findall(message)
+            if len(msg_payload) != 1:
+                LOGGER.info("Incorrect number message payloads: {}".format(
+                    msg_payload))
+                continue
+            msg_payload = msg_payload[0]
+            LOGGER.info("Found message: {}".format(msg_payload))
+
+            def save_and_replace(match):
+                matches.append(match)
+                return '$value'
+            msg_payload = self.prc_pattern.sub(save_and_replace, msg_payload)
+            try:
+                prc_value = matches.pop().group(0)
+            except:
+                prc_value = None
+            LOGGER.debug("Percent value: {}".format(prc_value))
+            if msg_severity == severity:
+                if msg_payload == msg:
+                    if target:
+                        if not self.compare_prc(prc_value, target):
+                            LOGGER.debug("Message found but with wrong value:"\
+                                "'{}'".format(prc_value))
+                            message_count -= 1
+                    message_count += 1
         return message_count
