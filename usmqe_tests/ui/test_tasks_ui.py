@@ -25,7 +25,6 @@ def test_task_attributes(application):
     :result:
       Attributes of all task in the task list are as expected.
     """
-
     pytest.check(tasks != [])
     for task in tasks:
         pytest.check(len(task.task_id) == 36)
@@ -35,3 +34,17 @@ def test_task_attributes(application):
         pytest.check(int(task.submitted_date.split(" ")[2]) < 2100)
         pytest.check(int(task.changed_date.split(" ")[2]) > 2010)
         pytest.check(int(task.changed_date.split(" ")[2]) < 2100)
+
+
+def test_task_log(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    tasks = test_cluster.tasks.get_tasks()
+    pytest.check(tasks != [])
+    for task in tasks:
+        events = task.task_events.get_events()
+        pytest.check(events != [])
+        for event in events:
+            pytest.check(event.event_type in {"info", "error"})
+            pytest.check(len(event.description) > 10)
+            pytest.check(int(event.date.split(" ")[2]) > 2010)

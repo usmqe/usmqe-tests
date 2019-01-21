@@ -6,11 +6,14 @@ from usmqe.base.application.views.common import BaseClusterSpecifiedView
 
 
 class ClusterTasksView(BaseClusterSpecifiedView):
-    """List of tasks of the given cluster
+    """
+    List of tasks of the given cluster
     """
     @ParametrizedView.nested
     class tasks(ParametrizedView):
-        """Nested view for each task"""
+        """
+        Nested view for each task
+        """
         PARAMETERS = ("task_id",)
         ROOT = ParametrizedLocator(
             ".//p[contains(text(), {task_id|quote})]/ancestor-or-self::"
@@ -31,7 +34,9 @@ class ClusterTasksView(BaseClusterSpecifiedView):
 
     @property
     def all_task_ids(self):
-        """Returns the list of all task IDs from the Tasks page"""
+        """
+        Returns the list of all task IDs from the Tasks page
+        """
         return [e.text.split(" ")[2] for e in self.browser.elements(self.ALL_IDS)]
 
     @property
@@ -39,8 +44,10 @@ class ClusterTasksView(BaseClusterSpecifiedView):
         return self.pagename.text == "Tasks"
 
 
-class TaskProgressView(BaseLoggedInView):
-    """View for task progress."""
+class TaskEventsView(BaseLoggedInView):
+    """
+    View for task progress.
+    """
     table_heading = Text(".//div[@class='row bold-text table-heading']")
     status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']"
                   "/following-sibling::label")
@@ -48,13 +55,26 @@ class TaskProgressView(BaseLoggedInView):
 
     @ParametrizedView.nested
     class events(ParametrizedView):
-        """Nested view for each event during the task completion"""
+        """
+        Nested view for each event during the task completion
+        """
         PARAMETERS = ("event_id",)
-        ALL_IDS = './/div[@class="row list-group-item logs ng-scope"]/@id'
+        ALL_IDS = './/div[@class="row list-group-item logs ng-scope"]'
         ROOT = ParametrizedLocator('.//div[@id={event_id|quote}]')
         event_type = Text(".//div[@class='col-md-1 ng-binding']")
-        event_text = Text(".//div[@class='col-md-6 ng-binding']")
-        event_date = Text(".//div[@class='col-md-2 ng-binding']")
+        description = Text(".//div[@class='col-md-6 ng-binding']")
+        date = Text(".//div[@class='col-md-2 ng-binding']")
+
+        @classmethod
+        def all(cls, browser):
+            return [e.text.split(" ")[2] for e in browser.elements(cls.ALL_IDS)
+                    if browser.text(e) is not None and browser.text(e) != '']
+
+    ALL_EVENTS = ".//div[@class='row list-group-item logs ng-scope']"
+
+    @property
+    def all_event_ids(self):
+        return [e.get_attribute("id") for e in self.browser.elements(self.ALL_EVENTS)]
 
     @property
     def is_displayed(self):
