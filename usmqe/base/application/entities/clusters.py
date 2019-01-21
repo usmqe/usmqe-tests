@@ -11,11 +11,13 @@ from usmqe.base.application.views.cluster import UnmanageTaskSubmittedView
 from usmqe.base.application.views.host import ClusterHostsView
 from usmqe.base.application.views.volume import ClusterVolumesView
 from usmqe.base.application.views.task import ClusterTasksView
+from usmqe.base.application.views.event import ClusterEventsView
 from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 from usmqe.base.application.entities.hosts import HostsCollection
 from usmqe.base.application.entities.volumes import VolumesCollection
 from usmqe.base.application.entities.tasks import TasksCollection
+from usmqe.base.application.entities.events import EventsCollection
 
 
 LOGGER = pytest.get_logger('clusters', module=True)
@@ -36,7 +38,8 @@ class Cluster(BaseEntity):
 
     _collections = {'hosts': HostsCollection,
                     'volumes': VolumesCollection,
-                    'tasks': TasksCollection}
+                    'tasks': TasksCollection,
+                    'events': EventsCollection}
 
     @property
     def hosts(self):
@@ -49,6 +52,10 @@ class Cluster(BaseEntity):
     @property
     def tasks(self):
         return self.collections.tasks
+
+    @property
+    def events(self):
+        return self.collections.events
 
     def update(self):
         view = self.application.web_ui.create_view(ClustersView)
@@ -226,7 +233,6 @@ class ClusterVolumes(TendrlNavigateStep):
 
     def step(self):
         time.sleep(1)
-        # TODO: add what to click
         self.parent.vertical_navbar.volumes.click()
 
 
@@ -237,5 +243,14 @@ class ClusterTasks(TendrlNavigateStep):
 
     def step(self):
         time.sleep(1)
-        # TODO: add what to click
         self.parent.vertical_navbar.tasks.click()
+
+
+@ViaWebUI.register_destination_for(Cluster, "Events")
+class ClusterEvents(TendrlNavigateStep):
+    VIEW = ClusterEventsView
+    prerequisite = NavigateToSibling("Hosts")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.vertical_navbar.events.click()
