@@ -504,7 +504,8 @@ def workload_swap_utilization(request):
 @pytest.fixture()
 def gluster_volume(request):
     """
-    This fixture checks that there is available at least number of volumes
+    Use this fixture when a test case needs at least one gluster volume. This
+    fixture checks that there is available at least number of volumes
     specified in configuration option `min_volume_count`. If this option is
     not provided or if it is set to `0` then tests that use this fixture will
     be skipped.
@@ -515,4 +516,5 @@ def gluster_volume(request):
         volumes = gluster_volume.list()
         assert len(volumes) >= CONF.config['usmqe']['min_volume_count']
     else:
-        pytest.skip("Test needs a volume. Option `min_volume_count` not set.")
+        pytest.skip('Test needs a volume and option `min_volume_count`'
+                    ' accordingly set.')
