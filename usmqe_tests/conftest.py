@@ -510,9 +510,9 @@ def gluster_volume(request):
     be skipped.
     """
     if 'min_volume_count' in CONF.config['usmqe'] and CONF.config[
-        'usmqe']['min_volume_count'] > 0:
-            gluster_volume = GlusterVolume()
-            volumes = gluster_volume.list()
-            assert len(volumes) >= CONF.config['usmqe']['min_volume_count']
+            'usmqe']['min_volume_count'] > 0:
+        gluster_volume = GlusterVolume()
+        volumes = gluster_volume.list()
+        assert len(volumes) >= CONF.config['usmqe']['min_volume_count']
     else:
         pytest.skip("Test needs a volume. Option `min_volume_count` not set.")
