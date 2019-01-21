@@ -1,6 +1,7 @@
 # WORKAROUND for https://github.com/usmqe/usmqe-tests/issues/227
-pytest == 4.0.2
-#pytest
+# pytest == 4.0.2
+# WORKAROUND for https://gitlab.com/mbukatov/pytest-ansible-playbook/issues/6#note_133366849
+pytest == 3.10.1
 pytest-ansible-playbook
 plumbum
 requests
