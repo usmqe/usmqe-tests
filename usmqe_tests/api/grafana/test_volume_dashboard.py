@@ -60,7 +60,7 @@ def test_volume_dashboard_layout():
 
 @pytest.mark.author("fbalak@redhat.com")
 def test_capacity_utilization_gauge(
-        workload_capacity_utilization, cluster_reuse):
+        workload_capacity_utilization, cluster_reuse, gluster_volume):
     """
     Check that Grafana panel *Capacity Utilization* gauge chart is showing
     correct values.
@@ -113,7 +113,7 @@ def test_capacity_utilization_gauge(
 
 @pytest.mark.author("fbalak@redhat.com")
 def test_capacity_utilization_graph(
-        workload_capacity_utilization, cluster_reuse):
+        workload_capacity_utilization, cluster_reuse, gluster_volume):
     """
     Check that Grafana panel *Capacity Utilization* graph chart is showing
     correct values.
@@ -166,7 +166,7 @@ def test_capacity_utilization_graph(
 
 @pytest.mark.author("fbalak@redhat.com")
 def test_capacity_available(
-        workload_capacity_utilization, cluster_reuse):
+        workload_capacity_utilization, cluster_reuse, gluster_volume):
     """
     Check that Grafana panel *Capacity Available* is showing
     correct values.
