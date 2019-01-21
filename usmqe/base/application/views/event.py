@@ -1,7 +1,6 @@
 from widgetastic.widget import Text
 
 from usmqe.base.application.views.common import BaseClusterSpecifiedView
-from taretto.ui.patternfly import Button
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
 
 
@@ -13,7 +12,8 @@ class ClusterEventsView(BaseClusterSpecifiedView):
     class events(ParametrizedView):
         """Nested view for each event"""
         PARAMETERS = ("event_id",)
-        ROOT = ParametrizedLocator("(.//div[@class='ft-row list-group-item'])[position() = {event_id|quote}]")
+        ROOT = ParametrizedLocator("(.//div[@class='ft-row list-group-item'])"
+                                   "[position() = {event_id|quote}]")
         description = Text(".//div[@class='ft-column ft-main event-desc']/div")
         date = Text(".//div[@class='ft-column']/div")
 
@@ -37,4 +37,3 @@ class ClusterEventsView(BaseClusterSpecifiedView):
     @property
     def is_displayed(self):
         return self.pagename.text == "Events"
-

@@ -41,10 +41,10 @@ class EventsCollection(BaseCollection):
             event_list.append(event)
         return event_list
 
+
 @attr.s
 class TaskEvent(Event):
     event_type = attr.ib()
-    # task_id = attr.ib()
 
 
 @attr.s
@@ -66,7 +66,6 @@ class TaskEventsCollection(BaseCollection):
                 view.events(event_id).date.text,
                 view.cluster_name.text,
                 view.events(event_id).event_type,
-                #TODO: include task_id
                 )
             event_list.append(event)
         return event_list
