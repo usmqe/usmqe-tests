@@ -499,3 +499,20 @@ def workload_swap_utilization(request):
         SSH[host].run(teardown_cmd)
         return request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture()
+def gluster_volume(request):
+    """
+    This fixture checks that there is available at least number of volumes
+    specified in configuration option `min_volume_count`. If this option is
+    not provided or if it is set to `0` then tests that use this fixture will
+    be skipped.
+    """
+    if 'min_volume_count' in CONF.config['usmqe'] and CONF.config[
+        'usmqe']['min_volume_count'] > 0:
+            gluster_volume = GlusterVolume()
+            volumes = gluster_volume.list()
+            assert len(volumes) >= CONF.config['usmqe']['min_volume_count']
+    else:
+        pytest.skip("Test needs a volume. Option `min_volume_count` not set.")
