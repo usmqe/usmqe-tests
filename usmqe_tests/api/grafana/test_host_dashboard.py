@@ -165,7 +165,6 @@ def test_memory_utilization(
         divergence=15)
 
 
-@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
@@ -215,7 +214,6 @@ def test_swap_free(
         divergence=15)
 
 
-@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
