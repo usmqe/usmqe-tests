@@ -52,6 +52,8 @@ class TaskEventsView(BaseLoggedInView):
     status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']"
                   "/following-sibling::label")
     cluster_details = Text(".//a[@ng-click='glbTaskDetailCntrl.goToClusterDetail()']")
+    task_name_and_id = Text(".//ul[@class='breadcrumb custom-breadcrumb ng-scope']"
+                            "/li[@class='ng-binding']")
 
     @ParametrizedView.nested
     class events(ParametrizedView):
@@ -78,4 +80,5 @@ class TaskEventsView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.table_heading.text == "Events"
+        return (self.table_heading.text == "Events" and
+                self.task_name_and_id.text.find(self.context["object"].task_id) > 0)
