@@ -37,10 +37,27 @@ def test_task_attributes(application):
 
 
 def test_task_log(application):
+    """
+    Test that clicking task name opens task log page
+    and all events in the log have expected attributes
+    """
+    """
+    :step:
+      Log in to Web UI and get the first cluster from the cluster list.
+      Get the list of tasks associated with this cluster.
+    :result:
+      Task objects are initiated and their attributes are read from Tasks page
+    """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]
     tasks = test_cluster.tasks.get_tasks()
     pytest.check(tasks != [])
+    """
+    :step:
+      For each task get its log and check the attributes of the events in the log
+    :result:
+      Attributes of all events in all task logs are as expected.
+    """
     for task in tasks:
         events = task.task_events.get_events()
         pytest.check(events != [])
