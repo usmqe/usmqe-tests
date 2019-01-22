@@ -6,4 +6,4 @@ usmqe:
   grafana_api_url: http://example-usm1-server.usmqe.tendrl.org:3000/api/
   cluster_member: example-usm1-gl1.usmqe.tendrl.org
   # if not provided then volume related tests will be skipped
-  min_volume_count: 1
+  volume_count: 1
