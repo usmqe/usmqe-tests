@@ -62,7 +62,9 @@ def test_cluster_dashboard_layout():
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-def test_hosts_panel_status(cluster_reuse):
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
+def test_hosts_panel_status(ansible_playbook, cluster_reuse):
     """
     Check that Grafana panel *Hosts* is showing correct values.
     """
