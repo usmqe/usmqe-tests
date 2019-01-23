@@ -6,7 +6,8 @@ from navmazing import NavigateToAttribute
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 from usmqe.base.application.views.host import ClusterHostsView, GrafanaHostDashboard
-
+from usmqe.base.application.views.brick import HostBricksView
+from usmqe.base.application.entities.bricks import HostBricksCollection
 
 LOGGER = pytest.get_logger('hosts', module=True)
 
@@ -17,16 +18,22 @@ class Host(BaseEntity):
     gluster_version = attr.ib()
     managed = attr.ib()
     role = attr.ib()
-    bricks = attr.ib()
+    bricks_count = attr.ib()
     alerts = attr.ib()
     cluster_name = attr.ib()
     # add host status
+
+    _collections = {'bricks': HostBricksCollection}
+
+    @property
+    def bricks(self):
+        return self.collections.bricks
 
     def check_dashboard(self):
         view = ViaWebUI.navigate_to(self, "Dashboard")
         pytest.check(view.cluster_name == self.custer_name)
         pytest.check(view.host_name == self.hostname)
-        pytest.check(view.bricks_total.split(" ")[-1] == self.bricks)
+        pytest.check(view.bricks_total.split(" ")[-1] == self.bricks_count)
         # check host status
 
 
@@ -63,3 +70,13 @@ class HostDashboard(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.hosts(self.obj.hostname).dashboard_button.click()
+
+
+@ViaWebUI.register_destination_for(Host, "Bricks")
+class HostBricks(TendrlNavigateStep):
+    VIEW = HostBricksView
+    prerequisite = NavigateToAttribute("parent.parent", "Hosts")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.hosts(self.obj.hostname).host_name.click()
