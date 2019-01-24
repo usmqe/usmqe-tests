@@ -68,13 +68,18 @@ class GrafanaApi(ApiBase):
         if panel_type:
             found_panels = [
                 panel for panel in panels
-                if "title" in panel and
-                panel["title"] == panel_title and panel["type"] == panel_type]
+                if ("title" in panel and
+                    panel["title"] == panel_title
+                    or "displayName" in panel and
+                    panel["displayName"] == panel_title)
+                and panel["type"] == panel_type]
         else:
             found_panels = [
                 panel for panel in panels
                 if "title" in panel and
-                panel["title"] == panel_title]
+                panel["title"] == panel_title
+                or "displayName" in panel and
+                panel["displayName"] == panel_title]
         assert len(found_panels) == 1
         return found_panels[0]
 
