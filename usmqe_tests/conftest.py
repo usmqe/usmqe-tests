@@ -51,6 +51,8 @@ def measure_operation(operation):
     start_time = datetime.datetime.now()
     result = operation()
     end_time = datetime.datetime.now()
+    LOGGER.info("Wait 10 seconds for graphite to load dataframes")
+    time.sleep(10)
     return {
         "start": start_time,
         "end": end_time,
@@ -394,7 +396,7 @@ def workload_swap_utilization(request):
 @pytest.fixture
 def workload_stop_nodes():
     """
-    Test ran with this fixture have to have use fixture `ansible_playbook`
+    Test ran with this fixture have to use fixture `ansible_playbook`
     and markers before this fixture is called:
 
     @pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
@@ -404,10 +406,11 @@ def workload_stop_nodes():
         dict: contains information about `start` and `stop` time of wait
         procedure and as `result` is used number of nodes.
     """
-    # wait for tendrl to notice that nodes are down
-    time.sleep(240)
+    LOGGER.info("Wait for tendrl to notice that nodes are down")
+    time.sleep(280)
 
     def wait():
+        LOGGER.info("Measure time when tendrl notices that nodes are down.")
         time.sleep(120)
         return len(CONF.inventory.get_groups_dict()["gluster_servers"])
     return measure_operation(wait)
