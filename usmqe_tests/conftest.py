@@ -361,7 +361,7 @@ def workload_cpu_utilization(request):
     return measure_operation(fill_cpu)
 
 
-@pytest.fixture(params=[60, 80], scope="session")
+@pytest.fixture(params=[80, 60], scope="session")
 def workload_memory_utilization(request):
     """
     Returns:
@@ -370,18 +370,19 @@ def workload_memory_utilization(request):
     """
     def fill_memory():
         """
-        Use `stress-ng` tool to stress memory for 4 minutes to given percentage
+        Use `stress` tool to stress memory for 4 minutes to given percentage
         """
         # stress memory for for 240 seconds
         run_time = 240
         SSH = usmssh.get_ssh()
         host = CONF.config["usmqe"]["cluster_member"]
-        stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
-            1,
-            request.param)
-        stress_cmd += " --timeout {}s --vm-hang 0 --vm-keep --verify".format(
+        stress_cmd = "stress --vm-bytes $(awk '/MemAvailable/{{printf "\
+        "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k --vm-keep "\
+        "-m {1}".format(
+            request.param,
+            1)
+        stress_cmd += " --timeout {}s".format(
             run_time)
-        stress_cmd += " --syslog"
         retcode, stdout, stderr = SSH[host].run(stress_cmd)
         if retcode != 0:
             raise OSError(stderr)
