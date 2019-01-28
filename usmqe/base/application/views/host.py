@@ -1,4 +1,4 @@
-from widgetastic.widget import Text, View
+from widgetastic.widget import Text
 
 from usmqe.base.application.views.common import BaseClusterSpecifiedView
 from taretto.ui.patternfly import Button
@@ -15,6 +15,7 @@ class ClusterHostsView(BaseClusterSpecifiedView):
         ROOT = ParametrizedLocator(
             ".//div/a[text()[normalize-space(.)]={hostname|quote}]/ancestor-or-self::"
             "div[@class='ft-row list-group-item ng-scope']")
+        host_name = Text(".//div[@class='ft-column ft-main host-name bold-text']/a")
         gluster_version = Text(".//div[text() = 'Gluster Version']/following-sibling::div")
         managed = Text(".//div[text() = 'Managed']/following-sibling::div")
         role = Text(".//div[text() = 'Role']/following-sibling::div")
@@ -40,17 +41,3 @@ class ClusterHostsView(BaseClusterSpecifiedView):
     @property
     def is_displayed(self):
         return self.pagename.text == "Hosts"
-
-
-class GrafanaHostDashboard(View):
-    dashboard_name = Text(".//a[@class='navbar-page-btn']")
-    cluster_name = Text(".//label[text() = 'Cluster Name']/parent::div/value-select-dropdown")
-    host_name = Text(".//label[text() = 'Host Name']/parent::div/value-select-dropdown")
-    host_health = Text(".//span[text() = 'Health']/ancestor::div[@class='panel-container']"
-                       "/descendant::span[@class='singlestat-panel-value']")
-    # brick total looks like " - 5" instead of "5"
-    bricks_total = Text(".//span[text() = 'Total']/following-sibling::span")
-
-    @property
-    def is_displayed(self):
-        return self.dashboard_name.text.find("Host Dashboard") >= 0

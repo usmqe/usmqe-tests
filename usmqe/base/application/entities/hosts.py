@@ -5,8 +5,9 @@ from navmazing import NavigateToAttribute
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-from usmqe.base.application.views.host import ClusterHostsView, GrafanaHostDashboard
+from usmqe.base.application.views.host import ClusterHostsView
 from usmqe.base.application.views.brick import HostBricksView
+from usmqe.base.application.views.grafana import GrafanaHostDashboard
 from usmqe.base.application.entities.bricks import HostBricksCollection
 
 LOGGER = pytest.get_logger('hosts', module=True)
@@ -31,10 +32,19 @@ class Host(BaseEntity):
 
     def check_dashboard(self):
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        pytest.check(view.cluster_name == self.custer_name)
-        pytest.check(view.host_name == self.hostname)
-        pytest.check(view.bricks_total.split(" ")[-1] == self.bricks_count)
-        # check host status
+        pytest.check(view.cluster_name.text == self.cluster_name)
+        LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
+        LOGGER.debug("Cluster name in main UI: {}".format(self.cluster_name))
+        pytest.check(view.host_name.text == self.hostname.replace(".", "_"))
+        LOGGER.debug("Hostname in grafana: '{}'".format(view.host_name.text))
+        LOGGER.debug("Hostname in main UI "
+                     "after dot replacement: '{}'".format(self.hostname.replace(".", "_")))
+        pytest.check(view.bricks_total.text.split(" ")[-1] == self.bricks_count)
+        LOGGER.debug("Brick count in grafana: {}".format(view.bricks_total.text.split(" ")[-1]))
+        LOGGER.debug("Brick count in main UI: {}".format(self.bricks_count))
+        # TODO: check host status
+        view.browser.selenium.close()
+        view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
 
 
 @attr.s
@@ -70,6 +80,9 @@ class HostDashboard(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.hosts(self.obj.hostname).dashboard_button.click()
+        time.sleep(1)
+        self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
+        time.sleep(1)
 
 
 @ViaWebUI.register_destination_for(Host, "Bricks")

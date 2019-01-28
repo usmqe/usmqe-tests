@@ -34,10 +34,9 @@ def test_host_bricks(application):
             pytest.check(int(brick.port) > 1000)
 
 
-'''
 def test_host_dashboard(application):
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]
     hosts = test_cluster.hosts.get_hosts()
-    test_host = hosts[3]
-    test_host.check_dashboard()'''
+    for host in hosts:
+        host.check_dashboard()
