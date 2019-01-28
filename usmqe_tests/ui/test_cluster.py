@@ -116,7 +116,7 @@ def test_cluster_dashboard(application):
       Log in to Web UI and get the first cluster from the cluster list.
       Click its Dashboard button and check cluster name, hosts and volumes count on the dashboard.
     :result:
-      Cluster dashboard shows the correct information 
+      Cluster dashboard shows the correct information
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]

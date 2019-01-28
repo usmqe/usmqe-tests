@@ -163,7 +163,6 @@ class Cluster(BaseEntity):
         view.browser.selenium.close()
         view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
 
-
     def expand(self, cancel=False):
         pass
 
