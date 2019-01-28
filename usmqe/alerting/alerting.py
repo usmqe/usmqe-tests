@@ -65,7 +65,7 @@ class Alerting(object):
                     "body": "Geo-replication between $node:$path and $volume is $value"},},
             "brick": {
                 "status": {
-                    "subject": "status changed",
+                    "subject": "Brick Status: status changed",
                     "body": "Brick:$node:$path in volume:$volume has $value"},
                 "utilization": {
                     "subject": "Brick Utilization: threshold breached",
@@ -80,10 +80,10 @@ class Alerting(object):
                     "body": "Service: glustershd is $value in cluster $cluster"},},
             "volume": {
                 "running": {
-                    "subject": "status changed",
+                    "subject": "Volume Status: status changed",
                     "body": "Volume:$volume is $value"},
                 "status": {
-                    "subject": "status changed",
+                    "subject": "Volume Status: status changed",
                     "body": "Status of volume: $volume in cluster $cluster changed $value"}}}
 
     def generate_alert_msg(
