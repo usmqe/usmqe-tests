@@ -1,10 +1,11 @@
 import attr
 import pytest
 import time
+from navmazing import NavigateToAttribute
 
 from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.implementations.web_ui import ViaWebUI
-
+from usmqe.base.application.implementations.web_ui import ViaWebUI, TendrlNavigateStep
+from usmqe.base.application.views.grafana import GrafanaVolumeDashboard
 from usmqe.base.application.views.volume import ClusterVolumesView
 
 
@@ -58,7 +59,19 @@ class Volume(BaseEntity):
         pytest.check(self.profiling == "Disabled")
 
     def check_dashboard(self):
-        pass
+        view = ViaWebUI.navigate_to(self, "Dashboard")
+        pytest.check(view.cluster_name.text == self.cluster_name)
+        LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
+        LOGGER.debug("Cluster name in main UI: {}".format(self.cluster_name))
+        pytest.check(view.volume_name.text == self.volname)
+        LOGGER.debug("Volume name in grafana: '{}'".format(view.volume_name))
+        LOGGER.debug("Volume name in main UI: '{}'".format(self.volname))
+        pytest.check(view.bricks_total.text.split(" ")[-1] == self.bricks_count)
+        LOGGER.debug("Bricks count in grafana: {}".format(view.bricks_total.text.split(" ")[-1]))
+        LOGGER.debug("Bricks count in main UI: {}".format(self.bricks_count))
+        # TODO: check volume health
+        view.browser.selenium.close()
+        view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
 
 
 @attr.s
@@ -87,3 +100,16 @@ class VolumesCollection(BaseCollection):
                 view.cluster_name.text)
             volumes_list.append(volume)
         return volumes_list
+
+
+@ViaWebUI.register_destination_for(Volume, "Dashboard")
+class VolumeDashboard(TendrlNavigateStep):
+    VIEW = GrafanaVolumeDashboard
+    prerequisite = NavigateToAttribute("parent.parent", "Volumes")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.volumes(self.obj.volname).dashboard_button.click()
+        time.sleep(1)
+        self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
+        time.sleep(1)

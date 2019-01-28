@@ -10,8 +10,10 @@ class BaseGrafanaDashboard(View):
 class GrafanaClusterDashboard(BaseGrafanaDashboard):
     cluster_health = Text(".//span[text() = 'Health']/ancestor::div[@class='panel-container']"
                           "/descendant::span[@class='singlestat-panel-value']")
+    # hosts total looks like " - 5" instead of "5"
     hosts_total = Text(".//h1/a[contains(text(), 'Hosts')]/ancestor::div[@class='bottom_section']"
                        "/descendant::span[text() = 'Total']/following-sibling::span")
+    # volumes total looks like " - 5" instead of "5"
     volumes_total = Text(".//h1/a[contains(text(), 'Volumes')]/ancestor::div[@class="
                          "'bottom_section']/descendant::span[text() = 'Total']"
                          "/following-sibling::span")
@@ -35,7 +37,17 @@ class GrafanaHostDashboard(BaseGrafanaDashboard):
 
 
 class GrafanaVolumeDashboard(BaseGrafanaDashboard):
-    pass
+    volume_name = Text(".//label[contains(text(), 'Volume Name')]"
+                       "/parent::div/value-select-dropdown")
+    volume_health = Text(".//span[text() = 'Health']/ancestor::div[@class='panel-container']"
+                         "/descendant::span[@class='singlestat-panel-value']")
+    # brick total looks like " - 5" instead of "5"
+    bricks_total = Text(".//h1/a[contains(text(), 'Bricks')]/ancestor::div[@class='bottom_"
+                        "section']/descendant::span[text() = 'Total']/following-sibling::span")
+
+    @property
+    def is_displayed(self):
+        return self.dashboard_name.text.find("Volume Dashboard") >= 0
 
 
 class GrafanaBrickDashboard(BaseGrafanaDashboard):

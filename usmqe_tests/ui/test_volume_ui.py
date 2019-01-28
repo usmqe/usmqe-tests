@@ -47,6 +47,34 @@ def test_volume_attributes(application, valid_session_credentials):
         pytest.check(volume.alerts == "0")
 
 
+@pytest.mark.testready
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+def test_volume_dashboard(application):
+    """
+    Check that dashboard button opens correct volume dashboard with correct data on bricks
+    """
+    """
+    :step:
+      Log in to Web UI and get the first cluster from the cluster list.
+      Get the list of its volumes.
+    :result:
+      Volume objects are initiated and their attributes are read from the page.
+    """
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    volumes = test_cluster.volumes.get_volumes()
+    """
+    :step:
+      For each volume in the volume list, click its Dashboard button and check
+      cluster name, volume name and bricks count
+    :result:
+      Volume dashboard shows the correct information
+    """
+    for volume in volumes:
+        volume.check_dashboard()
+
+
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
@@ -64,12 +92,6 @@ def test_volume_profiling_switch(application):
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]
     volumes = test_cluster.volumes.get_volumes()
-    """
-    :step:
-      For each volume in the volume list, disable profiling and check its profiling status
-      both in UI and using Gluster command.
-    :result:
-    """
     for volume in volumes:
         """
         :step:
