@@ -18,6 +18,7 @@ from usmqe.base.application.entities.hosts import HostsCollection
 from usmqe.base.application.entities.volumes import VolumesCollection
 from usmqe.base.application.entities.tasks import TasksCollection
 from usmqe.base.application.entities.events import EventsCollection
+from usmqe.base.application.views.grafana import GrafanaClusterDashboard
 
 
 LOGGER = pytest.get_logger('clusters', module=True)
@@ -147,6 +148,22 @@ class Cluster(BaseEntity):
         LOGGER.debug("Cluster profiling value: {}".format(self.profiling))
         pytest.check(self.profiling == "Disabled")
 
+    def check_dashboard(self):
+        view = ViaWebUI.navigate_to(self, "Dashboard")
+        pytest.check(view.cluster_name.text == self.name)
+        LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
+        LOGGER.debug("Cluster name in main UI: {}".format(self.name))
+        pytest.check(view.hosts_total.text.split(" ")[-1] == self.hosts_number)
+        LOGGER.debug("Hosts in grafana: '{}'".format(view.hosts_total.text.split(" ")[-1]))
+        LOGGER.debug("Hosts in main UI: '{}'".format(self.hosts_number))
+        pytest.check(view.volumes_total.text.split(" ")[-1] == self.volumes_number)
+        LOGGER.debug("Volumes in grafana: {}".format(view.volumes_total.text.split(" ")[-1]))
+        LOGGER.debug("Volumes in main UI: {}".format(self.volumes_number))
+        # TODO: check cluster health
+        view.browser.selenium.close()
+        view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
+
+
     def expand(self, cancel=False):
         pass
 
@@ -254,3 +271,16 @@ class ClusterEvents(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.vertical_navbar.events.click()
+
+
+@ViaWebUI.register_destination_for(Cluster, "Dashboard")
+class ClusterDashboard(TendrlNavigateStep):
+    VIEW = GrafanaClusterDashboard
+    prerequisite = NavigateToAttribute("parent", "All")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.clusters(self.obj.name).dashboard_button.click()
+        time.sleep(1)
+        self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
+        time.sleep(1)

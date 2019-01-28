@@ -104,6 +104,25 @@ def test_cluster_enable_profiling(application):
     pytest.check(gluster_cluster.get_clusterwide_profiling() == "enabled")
 
 
+@pytest.mark.testready
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+def test_cluster_dashboard(application):
+    """
+    Check that dashboard button opens cluster dashboard with correct data on hosts and volumes
+    """
+    """
+    :step:
+      Log in to Web UI and get the first cluster from the cluster list.
+      Click its Dashboard button and check cluster name, hosts and volumes count on the dashboard.
+    :result:
+      Cluster is in the correct state to start unmanage
+    """
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.check_dashboard()
+
+
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
