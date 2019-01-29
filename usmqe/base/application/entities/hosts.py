@@ -16,6 +16,7 @@ LOGGER = pytest.get_logger('hosts', module=True)
 @attr.s
 class Host(BaseEntity):
     hostname = attr.ib()
+    health = attr.ib()
     gluster_version = attr.ib()
     managed = attr.ib()
     role = attr.ib()
@@ -42,7 +43,9 @@ class Host(BaseEntity):
         pytest.check(view.bricks_total.text.split(" ")[-1] == self.bricks_count)
         LOGGER.debug("Brick count in grafana: {}".format(view.bricks_total.text.split(" ")[-1]))
         LOGGER.debug("Brick count in main UI: {}".format(self.bricks_count))
-        # TODO: check host status
+        pytest.check(view.host_health.text.lower() == self.health.lower())
+        LOGGER.debug("Host health in grafana: '{}'".format(view.host_health.text.lower()))
+        LOGGER.debug("Host health in main UI: '{}'".format(self.health.lower()))
         view.browser.selenium.close()
         view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
 
@@ -62,6 +65,7 @@ class HostsCollection(BaseCollection):
         for hostname in self.get_all_hostnames():
             host = self.instantiate(
                 hostname,
+                view.hosts(hostname).health,
                 view.hosts(hostname).gluster_version.text,
                 view.hosts(hostname).managed.text,
                 view.hosts(hostname).role.text,

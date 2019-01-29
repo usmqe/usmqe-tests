@@ -23,6 +23,11 @@ class ClusterHostsView(BaseClusterSpecifiedView):
         alerts = Text(".//div[text() = 'Alerts']/following-sibling::div")
         dashboard_button = Button("Dashboard")
 
+        @property
+        def health(self):
+            return self.browser.elements(".//div[@class='ft-column ft-icon']"
+                                         "/i")[0].get_attribute("uib-tooltip-html").strip("'")
+
         @classmethod
         def all(cls, browser):
             return [browser.text(e) for e in browser.elements(cls.ALL_HOSTNAMES)
