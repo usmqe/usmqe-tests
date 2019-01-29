@@ -21,7 +21,6 @@ class ClustersView(BaseLoggedInView):
         ROOT = ParametrizedLocator(
             "//div/*[text()[normalize-space(.)]={cluster_id|quote}]/ancestor-or-self::"
             "div[@class='list-group-item']")
-
         cluster_version = Text(".//div[text() = 'Cluster Version']/following-sibling::h5")
         managed = Text(".//div[text() = 'Managed']/following-sibling::h5")
         hosts = Text(".//div[text() = 'Hosts']/following-sibling::h5")
@@ -32,6 +31,11 @@ class ClustersView(BaseLoggedInView):
         import_button = Button("contains", "Import")
         dashboard_button = Button("Dashboard")
         actions = Kebab()
+
+        @property
+        def health(self):
+            return self.browser.elements(".//div[@class='list-view-pf-left']"
+                                         "/i")[0].get_attribute("uib-tooltip")
 
         @classmethod
         def all(cls, browser):

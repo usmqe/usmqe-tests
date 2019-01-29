@@ -28,6 +28,7 @@ LOGGER = pytest.get_logger('clusters', module=True)
 class Cluster(BaseEntity):
     cluster_id = attr.ib()
     name = attr.ib()
+    health = attr.ib()
     version = attr.ib()
     managed = attr.ib()
     hosts_number = attr.ib()
@@ -64,6 +65,7 @@ class Cluster(BaseEntity):
         self.managed = view.clusters(self.name).managed.text
         self.hosts_number = view.clusters(self.name).hosts.text
         self.status = view.clusters(self.name).status.text
+        self.health = view.clusters(self.name).health
         if self.managed == "Yes":
             self.volumes_number = view.clusters(self.name).volumes.text
             self.alerts = view.clusters(self.name).alerts.text
@@ -159,7 +161,9 @@ class Cluster(BaseEntity):
         pytest.check(view.volumes_total.text.split(" ")[-1] == self.volumes_number)
         LOGGER.debug("Volumes in grafana: {}".format(view.volumes_total.text.split(" ")[-1]))
         LOGGER.debug("Volumes in main UI: {}".format(self.volumes_number))
-        # TODO: check cluster health
+        pytest.check(view.cluster_health.text == self.health)
+        LOGGER.debug("Cluster health in grafana: '{}'".format(view.cluster_health.text))
+        LOGGER.debug("Cluster health in main UI: '{}'".format(self.health))
         view.browser.selenium.close()
         view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
 
@@ -187,6 +191,7 @@ class ClustersCollection(BaseCollection):
                 cluster = self.instantiate(
                     cluster_id,
                     cluster_id,
+                    view.clusters(cluster_id).health,
                     view.clusters(cluster_id).cluster_version.text,
                     view.clusters(cluster_id).managed.text,
                     view.clusters(cluster_id).hosts.text,
@@ -199,6 +204,7 @@ class ClustersCollection(BaseCollection):
                 cluster = self.instantiate(
                     cluster_id,
                     cluster_id,
+                    view.clusters(cluster_id).health,
                     view.clusters(cluster_id).cluster_version.text,
                     view.clusters(cluster_id).managed.text,
                     view.clusters(cluster_id).hosts.text,
