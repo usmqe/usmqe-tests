@@ -59,8 +59,10 @@ def test_volume_dashboard_layout():
 
 
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_capacity_utilization_gauge(
-        workload_capacity_utilization, cluster_reuse, gluster_volume):
+        ansible_playbook, workload_capacity_utilization, cluster_reuse, gluster_volume):
     """
     Check that Grafana panel *Capacity Utilization* gauge chart is showing
     correct values.
@@ -112,8 +114,10 @@ def test_capacity_utilization_gauge(
 
 
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_capacity_utilization_graph(
-        workload_capacity_utilization, cluster_reuse, gluster_volume):
+        ansible_playbook, workload_capacity_utilization, cluster_reuse, gluster_volume):
     """
     Check that Grafana panel *Capacity Utilization* graph chart is showing
     correct values.
@@ -165,8 +169,10 @@ def test_capacity_utilization_graph(
 
 
 @pytest.mark.author("fbalak@redhat.com")
+@pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_capacity_available(
-        workload_capacity_utilization, cluster_reuse, gluster_volume):
+        ansible_playbook, workload_capacity_utilization, cluster_reuse, gluster_volume):
     """
     Check that Grafana panel *Capacity Available* is showing
     correct values.
