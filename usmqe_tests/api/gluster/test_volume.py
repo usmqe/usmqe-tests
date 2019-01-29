@@ -16,8 +16,7 @@ LOGGER = pytest.get_logger('volume_test', module=True)
 def test_volumes_list(
         valid_session_credentials,
         cluster_reuse,
-        valid_trusted_pool_reuse,
-        gluster_volume):
+        valid_trusted_pool_reuse):
     """
     List volumes for given cluster via API.
 
@@ -54,8 +53,7 @@ def test_volumes_list(
 def test_volume_brick_list(
         valid_session_credentials,
         cluster_reuse,
-        valid_trusted_pool_reuse,
-        gluster_volume):
+        valid_trusted_pool_reuse):
     """
     List bricks for given volume via API.
 
