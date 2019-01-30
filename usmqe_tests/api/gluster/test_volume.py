@@ -4,9 +4,11 @@ REST API test suite - gluster volume
 import pytest
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('volume_test', module=True)
+CONF = UsmConfig()
 
 
 @pytest.mark.author("dahorak@redhat.com")
@@ -16,8 +18,7 @@ LOGGER = pytest.get_logger('volume_test', module=True)
 def test_volumes_list(
         valid_session_credentials,
         cluster_reuse,
-        valid_trusted_pool_reuse,
-        gluster_volume):
+        valid_trusted_pool_reuse):
     """
     List volumes for given cluster via API.
 
@@ -46,6 +47,13 @@ def test_volumes_list(
         t_volume_names == g_volume_names,
         "List of volumes from Gluster should be the same as from Tendrl API.")
 
+    pytest.check(
+        len(t_volume_names) == int(CONF.config["usmqe"]["volume_count"]),
+        "Number of volumes from Tendrl API: {}. "
+        "Expected number of volumes: {}.".format(
+            len(t_volume_names),
+            int(CONF.config["usmqe"]["volume_count"])))
+
 
 @pytest.mark.author("dahorak@redhat.com")
 @pytest.mark.happypath
@@ -54,8 +62,7 @@ def test_volumes_list(
 def test_volume_brick_list(
         valid_session_credentials,
         cluster_reuse,
-        valid_trusted_pool_reuse,
-        gluster_volume):
+        valid_trusted_pool_reuse):
     """
     List bricks for given volume via API.
 
