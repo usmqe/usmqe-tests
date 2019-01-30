@@ -2,14 +2,15 @@ from widgetastic.widget import Text, TextInput
 from usmqe.base.application.views.common import BaseLoggedInView
 from taretto.ui.patternfly import Button, Dropdown, BreadCrumb
 
+from usmqe.base.application.widgets import RadioGroup
+
 
 class ImportClusterView(BaseLoggedInView):
     """View for cluster import page """
     page_breadcrumb = BreadCrumb()
     pagename = Text(".//h1")
     cluster_name = TextInput(name="clusterName")
-    # volume_profiling = RadioGroup(".//div[./label[@for='role']]")
-    # radio group for clusters has different structure. TODO: make it work
+    profiling = RadioGroup(".//div[@class='col-sm-12 volume-profile']")
 
     # TODO: fix the filter. TextInput can't be defined by placeholder as of yet
     filter_type = Dropdown("Name")

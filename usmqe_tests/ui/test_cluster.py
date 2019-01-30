@@ -183,3 +183,37 @@ def test_cluster_import_naming(application):
       Its id is shown instead.
     """
     test_cluster.unmanage(original_id=original_id)
+
+
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
+def test_cluster_import_profiling_disabled(application):
+    """
+    Import cluster with profiling disabled. Then unmanage it.
+    """
+    """
+    :step:
+      Log in to Web UI and import the first cluster from the clusters list.
+      Set profiling to Disabled during import
+    :result:
+      Cluster is imported and its name is shown in the clusters list
+    """
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.cluster_import(profiling="disable")
+    """
+    :step:
+      Check that cluster profiling is disabled
+    :result:
+      Check fails due to BZ 1670389
+    """
+    pytest.check(test_cluster.profiling == "Disabled",
+                 issue='https://bugzilla.redhat.com/show_bug.cgi?id=1670389')
+    """
+    :step:
+      Unmanage the cluster
+    :result:
+      Cluster is unmanaged
+    """
+    test_cluster.unmanage()

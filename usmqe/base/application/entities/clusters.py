@@ -75,14 +75,23 @@ class Cluster(BaseEntity):
             self.alerts = None
             self.profiling = None
 
-    def cluster_import(self, cluster_name=None):
+    def cluster_import(self, cluster_name=None, profiling="enable"):
+        """
+        Cluster import function.
+        Valid cluster name contains only alphanumeric and underscore characters.
+        Possible profiling values are "enable", "disable" or "leaveAsIs".
+        """
         view = ViaWebUI.navigate_to(self, "Import")
         if cluster_name is not None:
-            view.fill({"cluster_name": cluster_name})
+            view.fill({"cluster_name": cluster_name,
+                       "profiling": profiling})
             self.name = cluster_name
+        else:
+            view.fill({"profiling": profiling})
         view.confirm_import.click()
         time.sleep(1)
         view = self.application.web_ui.create_view(ImportTaskSubmittedView)
+        time.sleep(2)
         view.close_button.click()
         time.sleep(60)
         for _ in range(40):
@@ -106,6 +115,7 @@ class Cluster(BaseEntity):
         view.unmanage.click()
         time.sleep(5)
         view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
+        time.sleep(2)
         view.close()
         time.sleep(60)
         for _ in range(40):
@@ -152,6 +162,7 @@ class Cluster(BaseEntity):
 
     def check_dashboard(self):
         view = ViaWebUI.navigate_to(self, "Dashboard")
+        time.sleep(3)
         pytest.check(view.cluster_name.text == self.name)
         LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
         LOGGER.debug("Cluster name in main UI: {}".format(self.name))
