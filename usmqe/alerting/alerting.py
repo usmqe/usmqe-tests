@@ -80,7 +80,7 @@ class Alerting(object):
                     "body": "Service: glustershd is $value in cluster $cluster"},},
             "volume": {
                 "running": {
-                    "subject": "Volume Status: status changed",
+                    "subject": "Volume State: status changed",
                     "body": "Volume:$volume is $value"},
                 "status": {
                     "subject": "Volume Status: status changed",
