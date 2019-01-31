@@ -10,7 +10,7 @@ from usmqe.base.application.views.cluster import ClustersView, UnmanageConfirmat
 from usmqe.base.application.views.cluster import UnmanageTaskSubmittedView
 from usmqe.base.application.views.host import ClusterHostsView
 from usmqe.base.application.views.volume import ClusterVolumesView
-from usmqe.base.application.views.task import ClusterTasksView
+from usmqe.base.application.views.task import ClusterTasksView, MainTaskEventsView
 from usmqe.base.application.views.event import ClusterEventsView
 from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
 from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
@@ -75,7 +75,7 @@ class Cluster(BaseEntity):
             self.alerts = None
             self.profiling = None
 
-    def cluster_import(self, cluster_name=None, profiling="enable"):
+    def cluster_import(self, cluster_name=None, profiling="enable", view_progress=False):
         """
         Cluster import function.
         Valid cluster name contains only alphanumeric and underscore characters.
@@ -92,8 +92,26 @@ class Cluster(BaseEntity):
         time.sleep(1)
         view = self.application.web_ui.create_view(ImportTaskSubmittedView)
         time.sleep(2)
-        view.close_button.click()
-        time.sleep(60)
+        if view_progress:
+            view.view_progress.click()
+            view = self.application.web_ui.create_view(MainTaskEventsView)
+            for _ in range(60):
+                time.sleep(5)
+                if view.import_status.text == "Completed":
+                    view.cluster_details.click()
+                    view = self.application.web_ui.create_view(ClusterHostsView)
+                    time.sleep(2)
+                    view.navbar.clusters.select_by_visible_text("All Clusters")
+                    view = self.application.web_ui.create_view(ClustersView)
+                    time.sleep(4)
+                    break
+                elif view.import_status.text == "Failed":
+                    LOGGER.debug("Cluster import failed")
+                    # TODO add something else here?
+                    break
+        else:
+            view.close_button.click()
+            time.sleep(60)
         for _ in range(40):
             self.update()
             if self.managed == "Yes":
@@ -105,7 +123,7 @@ class Cluster(BaseEntity):
         LOGGER.debug("Cluster status: {}".format(self.status))
         pytest.check(self.status == "Ready to Use")
 
-    def unmanage(self, cancel=False, original_id=None):
+    def unmanage(self, cancel=False, original_id=None, view_progress=False):
         if original_id is not None:
             self.cluster_id = original_id
         view = self.application.web_ui.create_view(ClustersView)
@@ -116,8 +134,23 @@ class Cluster(BaseEntity):
         time.sleep(5)
         view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
         time.sleep(2)
-        view.close()
-        time.sleep(60)
+        if view_progress:
+            view.view_progress.click()
+            view = self.application.web_ui.create_view(MainTaskEventsView)
+            for _ in range(60):
+                time.sleep(5)
+                if view.import_status.text == "Completed":
+                    view.navbar.clusters.select_by_visible_text("All Clusters")
+                    view = self.application.web_ui.create_view(ClustersView)
+                    time.sleep(2)
+                    break
+                elif view.import_status.text == "Failed":
+                    LOGGER.debug("Cluster unmanage failed")
+                    # TODO add something else here?
+                    break
+        else:
+            view.close()
+            time.sleep(60)
         for _ in range(40):
             try:
                 self.update()

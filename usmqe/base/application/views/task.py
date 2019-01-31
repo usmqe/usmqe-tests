@@ -44,7 +44,7 @@ class ClusterTasksView(BaseClusterSpecifiedView):
         return self.pagename.text == "Tasks"
 
 
-class TaskEventsView(BaseLoggedInView):
+class BaseEventsView(BaseLoggedInView):
     """
     View for task progress.
     """
@@ -78,7 +78,22 @@ class TaskEventsView(BaseLoggedInView):
     def all_event_ids(self):
         return [e.get_attribute("id") for e in self.browser.elements(self.ALL_EVENTS)]
 
+
+class TaskEventsView(BaseEventsView):
     @property
     def is_displayed(self):
         return (self.table_heading.text == "Events" and
                 self.task_name_and_id.text.find(self.context["object"].task_id) > 0)
+
+
+class MainTaskEventsView(BaseEventsView):
+    """
+    View for import and unmanage progress events.
+    cluster_details link is only available after cluster import is complete
+    """
+    import_status = Text(".//label[@class='col-sm-4 col-md-1 status-value ng-binding']")
+    cluster_details = Text(".//a[@ng-click='glbTaskDetailCntrl.goToClusterDetail()']")
+
+    @property
+    def is_displayed(self):
+        return (self.table_heading.text == "Events")
