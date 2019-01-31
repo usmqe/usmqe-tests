@@ -217,3 +217,29 @@ def test_cluster_import_profiling_disabled(application):
       Cluster is unmanaged
     """
     test_cluster.unmanage()
+
+
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
+def test_cluster_import_view_progress(application):
+    """
+    Import cluster and view import progress. Then unmanage the cluster and view unmanage progress.
+    """
+    """
+    :step:
+      Log in to Web UI.
+      Import the first cluster from the clusters list viewing import progress.
+    :result:
+      Cluster is imported and its name is shown in the clusters list
+    """
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.cluster_import(view_progress=True)
+    """
+    :step:
+      Unmanage the cluster and view unmanage progress.
+    :result:
+      Cluster is unmanaged
+    """
+    test_cluster.unmanage(view_progress=True)
