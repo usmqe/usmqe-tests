@@ -46,7 +46,7 @@ class ClusterTasksView(BaseClusterSpecifiedView):
 
 class BaseEventsView(BaseLoggedInView):
     """
-    View for task progress.
+    Base view for task progress. Is used in TaskEventsView and MainTaskEventsView.
     """
     table_heading = Text(".//div[@class='row bold-text table-heading']")
     status = Text(".//form/div/label[text()[normalize-space(.)]='Status:']"
@@ -80,6 +80,9 @@ class BaseEventsView(BaseLoggedInView):
 
 
 class TaskEventsView(BaseEventsView):
+    """
+    View for task progress of each task on the Tasks page.
+    """
     @property
     def is_displayed(self):
         return (self.table_heading.text == "Events" and
