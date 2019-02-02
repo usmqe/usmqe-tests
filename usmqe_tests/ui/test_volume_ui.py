@@ -114,3 +114,20 @@ def test_volume_profiling_switch(application):
         volume.enable_profiling()
         pytest.check(glv_cmd.is_profiling_enabled())
         pytest.check(volume.profiling == "Enabled")
+
+
+def test_volume_bricks(application):
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    volumes = test_cluster.volumes.get_volumes()
+    pytest.check(volumes != [])
+    for volume in volumes:
+        bricks = volume.bricks.get_bricks()
+        pytest.check(bricks != [])
+        pytest.check(len(bricks) == int(volume.bricks_count))
+        for brick in bricks:
+            assert brick.brick_path.find('/mnt/brick') == 0
+            pytest.check(brick.volume_name.split('_')[4] == 'plus')
+            pytest.check(brick.utilization.find('% U') > 0)
+            pytest.check(brick.disk_device_path.split('/')[1] == 'dev')
+            pytest.check(int(brick.port) > 1000)
