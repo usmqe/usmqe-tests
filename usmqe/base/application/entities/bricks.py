@@ -36,3 +36,27 @@ class HostBricksCollection(BaseCollection):
                 row[4].text)
             brick_list.append(brick)
         return brick_list
+
+
+@attr.s
+class VolumeBricksCollection(BaseCollection):
+    ENTITY = Brick
+
+    def get_bricks(self):
+        view = ViaWebUI.navigate_to(self.parent, "Bricks")
+        view.expand_all.click()
+        brick_list = []
+        assert view.all_part_ids != []
+        for part_id in view.all_part_ids:
+            bricks = view.volume_parts(part_id).bricks
+            assert bricks != []
+            for row in bricks:
+                brick = self.instantiate(
+                    row[1].text,
+                    row[0].text,
+                    view.volume_name.text,
+                    row[2].text,
+                    row[3].text,
+                    row[4].text)
+                brick_list.append(brick)
+        return brick_list

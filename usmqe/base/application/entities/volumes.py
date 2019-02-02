@@ -7,6 +7,8 @@ from usmqe.base.application.entities import BaseCollection, BaseEntity
 from usmqe.base.application.implementations.web_ui import ViaWebUI, TendrlNavigateStep
 from usmqe.base.application.views.grafana import GrafanaVolumeDashboard
 from usmqe.base.application.views.volume import ClusterVolumesView
+from usmqe.base.application.entities.bricks import VolumeBricksCollection
+from usmqe.base.application.views.brick import VolumeBricksView
 
 
 LOGGER = pytest.get_logger('volumes', module=True)
@@ -15,7 +17,7 @@ LOGGER = pytest.get_logger('volumes', module=True)
 @attr.s
 class Volume(BaseEntity):
     volname = attr.ib()
-    # add status
+    # health = attr.ib()
     volume_type = attr.ib()
     bricks_count = attr.ib()
     running = attr.ib()
@@ -23,6 +25,12 @@ class Volume(BaseEntity):
     profiling = attr.ib()
     alerts = attr.ib()
     cluster_name = attr.ib()
+
+    _collections = {'bricks': VolumeBricksCollection}
+
+    @property
+    def bricks(self):
+        return self.collections.bricks
 
     def update(self):
         view = self.application.web_ui.create_view(ClusterVolumesView)
@@ -113,3 +121,14 @@ class VolumeDashboard(TendrlNavigateStep):
         time.sleep(1)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
         time.sleep(1)
+
+
+@ViaWebUI.register_destination_for(Volume, "Bricks")
+class HostBricks(TendrlNavigateStep):
+    VIEW = VolumeBricksView
+    prerequisite = NavigateToAttribute("parent.parent", "Volumes")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.volumes(self.obj.volname).volname.click()
+        time.sleep(4)

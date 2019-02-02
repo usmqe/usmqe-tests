@@ -15,6 +15,7 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
         ROOT = ParametrizedLocator(
             ".//div/a[text()[normalize-space(.)]={volume_name|quote}]/ancestor-or-self::"
             "div[@class='ft-row list-group-item ng-scope']")
+        volname = Text(".//div[@class='bold-text long-volume-name']/a")
         volume_type = Text(".//div[@class='pull-left vol-type ng-binding']")
         bricks = Text(".//div[text() = 'Bricks']/following-sibling::div")
         running = Text(".//div[text() = 'Running']/following-sibling::div")
@@ -24,6 +25,15 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
         enable_profiling = Button("Enable Profiling")
         disable_profiling = Button("Disable Profiling")
         dashboard_button = Button("Dashboard")
+
+        @property
+        def is_ok(self):
+            """
+            Returns True if volume has green icon OK and False otherwise.
+            Would be better to have a list of all possible icons
+            """
+            return self.browser.elements(".//div[@class='ft-column ft-icon']"
+                                         "/i")[0].get_attribute("class") == "pficon pficon-ok"
 
         @classmethod
         def all(cls, browser):
