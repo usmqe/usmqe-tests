@@ -23,7 +23,6 @@ class Host(BaseEntity):
     bricks_count = attr.ib()
     alerts = attr.ib()
     cluster_name = attr.ib()
-    # add host status
 
     _collections = {'bricks': HostBricksCollection}
 
