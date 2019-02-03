@@ -1,4 +1,5 @@
 import pytest
+
 from usmqe.gluster import gluster
 
 
@@ -123,8 +124,13 @@ def test_volume_bricks(application):
     pytest.check(volumes != [])
     for volume in volumes:
         bricks = volume.bricks.get_bricks()
-        pytest.check(bricks != [])
         pytest.check(len(bricks) == int(volume.bricks_count))
+        glv_cmd = gluster.GlusterVolume(volume_name=volume.volname)
+        glv_cmd.info()
+        LOGGER.debug("Gluster bricks: {}".format(glv_cmd.bricks))
+        ui_brick_names = [b.hostname + ":" + b.brick_path for b in bricks]
+        LOGGER.debug("UI bricks: {}".format(ui_brick_names))
+        pytest.check(glv_cmd.bricks == ui_brick_names)
         for brick in bricks:
             assert brick.brick_path.find('/mnt/brick') == 0
             pytest.check(brick.volume_name.split('_')[4] == 'plus')
