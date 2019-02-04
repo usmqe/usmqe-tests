@@ -1,8 +1,8 @@
 from widgetastic.widget import Text, View
 # from widgetastic.widget import TextInput
 
-from usmqe.base.application.views.common import BaseLoggedInView
-from usmqe.base.application.widgets import Kebab
+from usmqe.web.application.views.common import BaseLoggedInView
+from usmqe.web.application.widgets import Kebab
 from taretto.ui.patternfly import Button, Dropdown
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
 

@@ -22,7 +22,7 @@ class EntityCollections(object):
 
     @classmethod
     def for_application(cls, application):
-        from usmqe.base.application import load_application_collections
+        from usmqe.web.application import load_application_collections
         return cls(
             parent=application, availiable_collections=load_application_collections()
         )

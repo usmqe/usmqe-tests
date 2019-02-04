@@ -1,8 +1,8 @@
 import attr
 import time
 
-from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.implementations.web_ui import ViaWebUI
+from usmqe.web.application.entities import BaseCollection, BaseEntity
+from usmqe.web.application.implementations.web_ui import ViaWebUI
 
 
 @attr.s

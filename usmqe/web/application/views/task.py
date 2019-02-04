@@ -1,8 +1,8 @@
 from widgetastic.widget import Text
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
 
-from usmqe.base.application.views.common import BaseLoggedInView
-from usmqe.base.application.views.common import BaseClusterSpecifiedView
+from usmqe.web.application.views.common import BaseLoggedInView
+from usmqe.web.application.views.common import BaseClusterSpecifiedView
 
 
 class ClusterTasksView(BaseClusterSpecifiedView):

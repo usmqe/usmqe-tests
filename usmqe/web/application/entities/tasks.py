@@ -3,12 +3,12 @@ import pytest
 import time
 from navmazing import NavigateToAttribute
 
-from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.implementations.web_ui import ViaWebUI
-from usmqe.base.application.entities.events import TaskEventsCollection
-from usmqe.base.application.views.task import ClusterTasksView
-from usmqe.base.application.implementations.web_ui import TendrlNavigateStep
-from usmqe.base.application.views.task import TaskEventsView
+from usmqe.web.application.entities import BaseCollection, BaseEntity
+from usmqe.web.application.implementations.web_ui import ViaWebUI
+from usmqe.web.application.entities.events import TaskEventsCollection
+from usmqe.web.application.views.task import ClusterTasksView
+from usmqe.web.application.implementations.web_ui import TendrlNavigateStep
+from usmqe.web.application.views.task import TaskEventsView
 
 
 LOGGER = pytest.get_logger('volumes', module=True)

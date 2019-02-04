@@ -1,9 +1,9 @@
 import importscan
 from pkg_resources import iter_entry_points
 
-from usmqe.base.application.implementations.web_ui import ViaWebUI
-from usmqe.base.application.implementations import TendrlImplementationContext
-from usmqe.base.application.entities import EntityCollections
+from usmqe.web.application.implementations.web_ui import ViaWebUI
+from usmqe.web.application.implementations import TendrlImplementationContext
+from usmqe.web.application.entities import EntityCollections
 
 
 class Application(object):
@@ -38,6 +38,6 @@ def load_application_collections():
     }
 
 
-from usmqe import base  # noqa
+from usmqe import web  # noqa
 
-importscan.scan(base)
+importscan.scan(web)

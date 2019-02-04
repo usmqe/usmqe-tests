@@ -7,8 +7,8 @@ from taretto.ui import Browser
 from webdriver_kaifuku import BrowserManager
 from wait_for import wait_for
 
-from usmqe.base.application.implementations import TendrlImplementationContext, Implementation
-from usmqe.base.application.views.common import BaseLoggedInView, LoginPage
+from usmqe.web.application.implementations import TendrlImplementationContext, Implementation
+from usmqe.web.application.views.common import BaseLoggedInView, LoginPage
 
 
 class TendrlNavigateStep(NavigateStep):

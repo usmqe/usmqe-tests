@@ -5,20 +5,20 @@ from wait_for import wait_for
 import pytest
 from selenium.common.exceptions import NoSuchElementException
 
-from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.views.cluster import ClustersView, UnmanageConfirmationView
-from usmqe.base.application.views.cluster import UnmanageTaskSubmittedView
-from usmqe.base.application.views.host import ClusterHostsView
-from usmqe.base.application.views.volume import ClusterVolumesView
-from usmqe.base.application.views.task import ClusterTasksView, MainTaskEventsView
-from usmqe.base.application.views.event import ClusterEventsView
-from usmqe.base.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
-from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-from usmqe.base.application.entities.hosts import HostsCollection
-from usmqe.base.application.entities.volumes import VolumesCollection
-from usmqe.base.application.entities.tasks import TasksCollection
-from usmqe.base.application.entities.events import EventsCollection
-from usmqe.base.application.views.grafana import GrafanaClusterDashboard
+from usmqe.web.application.entities import BaseCollection, BaseEntity
+from usmqe.web.application.views.cluster import ClustersView, UnmanageConfirmationView
+from usmqe.web.application.views.cluster import UnmanageTaskSubmittedView
+from usmqe.web.application.views.host import ClusterHostsView
+from usmqe.web.application.views.volume import ClusterVolumesView
+from usmqe.web.application.views.task import ClusterTasksView, MainTaskEventsView
+from usmqe.web.application.views.event import ClusterEventsView
+from usmqe.web.application.views.importcluster import ImportClusterView, ImportTaskSubmittedView
+from usmqe.web.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
+from usmqe.web.application.entities.hosts import HostsCollection
+from usmqe.web.application.entities.volumes import VolumesCollection
+from usmqe.web.application.entities.tasks import TasksCollection
+from usmqe.web.application.entities.events import EventsCollection
+from usmqe.web.application.views.grafana import GrafanaClusterDashboard
 
 
 LOGGER = pytest.get_logger('clusters', module=True)

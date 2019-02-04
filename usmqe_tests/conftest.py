@@ -2,7 +2,7 @@ import configparser
 import pytest
 import datetime
 import usmqe.usmssh as usmssh
-from usmqe.base.application import Application
+from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
 
 

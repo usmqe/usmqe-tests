@@ -3,12 +3,12 @@ import pytest
 import time
 from navmazing import NavigateToAttribute
 
-from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
-from usmqe.base.application.views.host import ClusterHostsView
-from usmqe.base.application.views.brick import HostBricksView
-from usmqe.base.application.views.grafana import GrafanaHostDashboard
-from usmqe.base.application.entities.bricks import HostBricksCollection
+from usmqe.web.application.entities import BaseCollection, BaseEntity
+from usmqe.web.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
+from usmqe.web.application.views.host import ClusterHostsView
+from usmqe.web.application.views.brick import HostBricksView
+from usmqe.web.application.views.grafana import GrafanaHostDashboard
+from usmqe.web.application.entities.bricks import HostBricksCollection
 
 LOGGER = pytest.get_logger('hosts', module=True)
 

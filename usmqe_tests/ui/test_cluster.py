@@ -1,5 +1,5 @@
 import pytest
-# from usmqe.base.application.implementations.web_ui import ViaWebUI
+# from usmqe.web.application.implementations.web_ui import ViaWebUI
 # LOGGER = pytest.get_logger('ui_user_testing', module=True)
 # import time
 

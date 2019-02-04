@@ -3,12 +3,12 @@ from navmazing import NavigateToAttribute, NavigateToSibling
 from wait_for import wait_for
 import time
 
-from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.views.user import UsersView
-from usmqe.base.application.views.common import DeleteConfirmationView, MySettingsView
-from usmqe.base.application.views.adduser import AddUserView
-from usmqe.base.application.views.edituser import EditUserView
-from usmqe.base.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
+from usmqe.web.application.entities import BaseCollection, BaseEntity
+from usmqe.web.application.views.user import UsersView
+from usmqe.web.application.views.common import DeleteConfirmationView, MySettingsView
+from usmqe.web.application.views.adduser import AddUserView
+from usmqe.web.application.views.edituser import EditUserView
+from usmqe.web.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 
 
 @attr.s

@@ -1,6 +1,6 @@
 from widgetastic.widget import Text
 
-from usmqe.base.application.views.common import BaseClusterSpecifiedView
+from usmqe.web.application.views.common import BaseClusterSpecifiedView
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
 
 

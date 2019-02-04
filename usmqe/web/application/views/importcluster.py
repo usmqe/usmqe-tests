@@ -1,8 +1,8 @@
 from widgetastic.widget import Text, TextInput
-from usmqe.base.application.views.common import BaseLoggedInView
+from usmqe.web.application.views.common import BaseLoggedInView
 from taretto.ui.patternfly import Button, Dropdown, BreadCrumb
 
-from usmqe.base.application.widgets import RadioGroup
+from usmqe.web.application.widgets import RadioGroup
 
 
 class ImportClusterView(BaseLoggedInView):

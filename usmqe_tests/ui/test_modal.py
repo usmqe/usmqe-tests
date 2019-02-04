@@ -1,6 +1,6 @@
 import pytest
-from usmqe.base.application.implementations.web_ui import ViaWebUI
-from usmqe.base.application import Application
+from usmqe.web.application.implementations.web_ui import ViaWebUI
+from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
 
 

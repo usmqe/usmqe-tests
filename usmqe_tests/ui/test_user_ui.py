@@ -1,12 +1,12 @@
 import pytest
-from usmqe.base.application.implementations.web_ui import ViaWebUI
+from usmqe.web.application.implementations.web_ui import ViaWebUI
 # LOGGER = pytest.get_logger('ui_user_testing', module=True)
 import copy
 from wait_for import TimedOutError
 
 from usmqe.api.tendrlapi import user as tendrlapi_user
 # from usmqe.api.tendrlapi.common import login, logout
-from usmqe.base.application import Application
+from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
 
 

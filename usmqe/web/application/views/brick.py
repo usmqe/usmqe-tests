@@ -1,6 +1,6 @@
 from widgetastic.widget import Text, Table
 
-from usmqe.base.application.views.common import BaseClusterSpecifiedView
+from usmqe.web.application.views.common import BaseClusterSpecifiedView
 from taretto.ui.patternfly import Button
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
 

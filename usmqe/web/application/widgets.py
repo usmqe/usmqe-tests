@@ -18,6 +18,7 @@ from widgetastic.widget import (
 from widgetastic.xpath import quote
 from widgetastic_patternfly import (
     BootstrapSwitch as VanillaBootstrapSwitch,
+    BreadCrumb
     # FlashMessage,
     # FlashMessages,
     # VerticalNavigation,
@@ -178,6 +179,11 @@ class BootstrapSwitch(VanillaBootstrapSwitch):
         BaseInput.__init__(self, parent, locator=self.ROOT, logger=logger)
 
 
+class UlBreadCrumb(BreadCrumb):
+
+    ROOT = '//ul[contains(@class, "breadcrumb")]'
+
+
 class RadioGroup(Widget):
     """ Radio Group Control
 
@@ -225,53 +231,3 @@ class RadioGroup(Widget):
 
     def fill(self, name):
         return self.select(name)
-
-
-'''
-class ListGroupItem(Widget, ClickableMixin):
-    """
-    Represents one item in the list-group widget.
-
-    Args:
-        index: Position of the item in the list-group.
-    """
-
-    def __init__(self, parent, index, logget=None):
-        Widget.__init__(self, parent, loggetr=logger)
-        self.index = index
-
-
-    @property
-    def listgroup(self):
-        return self.parent
-
-
-    def get_actions(self):
-        pass
-'''
-
-
-class ListGroup(Widget, ClickableMixin):
-    """
-    Represents the patternfly list-group widget.
-    """
-    ROOT = '//div[@class="list-group list-view-pf list-view-pf-view ng-scope"]'
-    ITEMS_LOC = './div[@class="list-group-item"]'
-    ACTIONS_LOC = './/div[@class="list-view-pf-actions"]/*'
-    DESCRIPTION_LOC = './/div[@class="list-view-pf-description"]/div/span'
-    ADDITIONAL_INFO_LOC = './/div[@class="list-view-pf-additional-info-item"]'
-    INFO_LABEL_LOC = './div[@class="bold-text"]'
-    INFO_ITEM_LOC = './h5|./p'
-
-    def get_items(self):
-        items = {}
-        list_items = self.browser.elements(self.ITEMS_LOC, parent=self)
-        for item in list_items:
-            actions = self.browser.elements(self.ACTIONS_LOC, parent=item)
-            description = self.browser.text(self.DESCRIPTION_LOC, parent=item)
-            additional_info = self.browser.elements(self.ADDITIONAL_INFO_LOC, parent=item)
-            # unnamed_info_counter = 0
-            # for info_item in additional_info:
-            #    try
-            items.update({description: (actions, additional_info)})
-        return items

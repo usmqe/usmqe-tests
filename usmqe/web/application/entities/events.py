@@ -2,11 +2,11 @@ import attr
 import pytest
 import time
 
-from usmqe.base.application.entities import BaseCollection, BaseEntity
-from usmqe.base.application.implementations.web_ui import ViaWebUI
+from usmqe.web.application.entities import BaseCollection, BaseEntity
+from usmqe.web.application.implementations.web_ui import ViaWebUI
 
-from usmqe.base.application.views.event import ClusterEventsView
-from usmqe.base.application.views.task import TaskEventsView
+from usmqe.web.application.views.event import ClusterEventsView
+from usmqe.web.application.views.task import TaskEventsView
 
 
 LOGGER = pytest.get_logger('events', module=True)

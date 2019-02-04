@@ -1,7 +1,7 @@
 from widgetastic.widget import TextInput
 
-from usmqe.base.application.views.common import BaseLoggedInView
-from usmqe.base.application.widgets import BootstrapSwitch, RadioGroup
+from usmqe.web.application.views.common import BaseLoggedInView
+from usmqe.web.application.widgets import BootstrapSwitch, RadioGroup
 
 from taretto.ui.patternfly import Button, BreadCrumb
 

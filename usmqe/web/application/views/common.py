@@ -2,7 +2,7 @@ from taretto.ui.patternfly import Button
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text, TextInput, View, Select
 # from taretto.ui.patternfly import Dropdown
-from usmqe.base.application.widgets import NavDropdown
+from usmqe.web.application.widgets import NavDropdown
 from widgetastic_patternfly import AboutModal
 
 
