@@ -25,7 +25,6 @@ def test_event_attributes(application):
     :result:
       Attributes of all events in the event list are as expected.
     """
-
     pytest.check(events != [])
     for event in events:
         pytest.check(len(event.description) > 15)

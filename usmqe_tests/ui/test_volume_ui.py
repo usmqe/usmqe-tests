@@ -117,6 +117,9 @@ def test_volume_profiling_switch(application):
         pytest.check(volume.profiling == "Enabled")
 
 
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
 def test_volume_parts(application):
     """
     Test replica set/subvolume names and expanding/collapsing.
@@ -204,6 +207,9 @@ def test_volume_parts(application):
             pytest.check(not part.is_expanded)
 
 
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
 def test_volume_bricks(application):
     """
     Test volume brick attributes and their division into replica sets/subvolumes.
