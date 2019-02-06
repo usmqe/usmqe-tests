@@ -43,6 +43,34 @@ def workload_stop_volumes():
     return measure_operation(wait)
 
 
+@pytest.fixture(params=[95, 80, 60])
+def workload_cpu_utilization(request):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of stress-ng
+            command and its `result`
+    """
+    def fill_cpu():
+        """
+        Use `stress-ng` tool to stress cpu for 3 minutes to given percentage
+        """
+        # stress cpu for for 180 seconds
+        run_time = 180
+        SSH = usmssh.get_ssh()
+        host = CONF.config["usmqe"]["cluster_member"]
+        processors_cmd = "grep -c ^processor /proc/cpuinfo"
+        retcode, processors_count, _ = SSH[host].run(processors_cmd)
+        stress_cmd = "stress-ng --cpu {} -l {} --timeout {}s".format(
+            int(processors_count),
+            request.param,
+            run_time)
+        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+        return request.param
+    return measure_operation(fill_cpu)
+
+
 @pytest.fixture(params=[80, 60])
 def workload_memory_utilization(request):
     """
