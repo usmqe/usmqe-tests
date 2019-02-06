@@ -49,7 +49,7 @@ class Alerting(object):
         return {
             "node":{
                 "status": {
-                    "subject": "status changed",
+                    "subject": "Peer Status: status changed",
                     "body": "Peer $node in cluster $cluster is $value"},
                 "cpu": {
                     "subject": "Cpu Utilization: threshold breached",
@@ -71,9 +71,9 @@ class Alerting(object):
                     "subject": "Brick Utilization: threshold breached",
                     "body": "Brick utilization on $node:$path in $volume $value"},},
             "cluster": {
-                "status": {
-                    "subject": "status changed",
-                    "body": "Cluster:$cluster is $value"},},
+                "health": {
+                    "subject": "Cluster Health Status: status changed",
+                    "body": "Cluster:$cluster moved to $value state"},},
             "glustershd": {
                 "status": {
                     "subject": "status changed",
