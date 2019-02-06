@@ -177,8 +177,8 @@ def test_volume_status_api_alert(
 
 
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_teardown('test_teardown.stop_tendrl_nodes.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stop_tendrl_nodes.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.tendrl_services_stopped_on_nodes.yml')
+@pytest.mark.ansible_playbook_setup('test_setup.tendrl_services_stopped_on_nodes.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
 def test_host_status_mail_alert(
         ansible_playbook,
@@ -234,8 +234,8 @@ def test_host_status_mail_alert(
 
 
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_teardown('test_teardown.stop_tendrl_nodes.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stop_tendrl_nodes.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.tendrl_services_stopped_on_nodes.yml')
+@pytest.mark.ansible_playbook_setup('test_setup.tendrl_services_stopped_on_nodes.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 def test_host_status_snmp_alert(
         ansible_playbook,
@@ -289,8 +289,8 @@ def test_host_status_snmp_alert(
 
 
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_teardown('test_teardown.stop_tendrl_nodes.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stop_tendrl_nodes.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.tendrl_services_stopped_on_nodes.yml')
+@pytest.mark.ansible_playbook_setup('test_setup.tendrl_services_stopped_on_nodes.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
 def test_host_status_api_alert(
         ansible_playbook,

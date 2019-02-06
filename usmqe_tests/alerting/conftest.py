@@ -48,8 +48,8 @@ def workload_stop_hosts():
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
     and markers before this fixture is called:
-    @pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
-    @pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
+    @pytest.mark.ansible_playbook_setup("test_setup.tendrl_services_stopped_on_nodes.yml")
+    @pytest.mark.ansible_playbook_teardown("test_teardown.tendrl_services_stopped_on_nodes.yml")
     Returns:
         dict: contains information about `start` and `stop` time of wait
         procedure and as `result` is used number of nodes.
