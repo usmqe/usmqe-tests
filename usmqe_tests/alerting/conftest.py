@@ -43,6 +43,24 @@ def workload_stop_volumes():
     return measure_operation(wait)
 
 
+@pytest.fixture
+def workload_stop_hosts():
+    """
+    Test ran with this fixture have to use fixture `ansible_playbook`
+    and markers before this fixture is called:
+    @pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
+    @pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
+    Returns:
+        dict: contains information about `start` and `stop` time of wait
+        procedure and as `result` is used number of nodes.
+    """
+    def wait():
+        LOGGER.info("Measure time when hosts are stopped.")
+        time.sleep(180)
+        return CONF.inventory.get_groups_dict()["gluster_servers"]
+    return measure_operation(wait)
+
+
 @pytest.fixture(params=[95, 80, 60])
 def workload_cpu_utilization(request):
     """
