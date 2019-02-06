@@ -1,4 +1,5 @@
 import attr
+import time
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import ViaWebUI
@@ -8,6 +9,9 @@ from usmqe.web.application.views.brick import VolumeBricksView
 
 @attr.s
 class VolumePart(BaseEntity):
+    """
+    Either replica set or subvolume.
+    """
     part_id = attr.ib()
     part_name = attr.ib()
     volume_name = attr.ib()
@@ -25,8 +29,12 @@ class VolumePart(BaseEntity):
         return view.volume_parts(self.part_id).is_expanded
 
     def expand_or_collapse(self):
+        """
+        Click on volume part name to expand or collapse detailed information on this part
+        """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.volume_parts(self.part_id).part_name.click()
+        time.sleep(1)
 
 
 @attr.s
@@ -49,7 +57,9 @@ class VolumePartsCollection(BaseCollection):
     def expand_all(self):
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.expand_all.click()
+        time.sleep(2)
 
     def collapse_all(self):
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.collapse_all.click()
+        time.sleep(2)
