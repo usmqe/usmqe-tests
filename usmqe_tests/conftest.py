@@ -345,14 +345,11 @@ def workload_stop_volumes():
         dict: contains information about `start` and `stop` time of wait
         procedure and as `result` is used number of nodes.
     """
-    LOGGER.info("Wait for tendrl to notice that volumes are stopped")
-    time.sleep(120)
-
     def wait():
         gl_volumes = gluster.GlusterVolume()
-        LOGGER.info("Measure time when tendrl notices that volumes stopped.")
-        time.sleep(120)
-        return len(gl_volumes.list())
+        LOGGER.info("Measure time when volumes stopped.")
+        time.sleep(240)
+        return gl_volumes.list()
     return measure_operation(wait)
 
 
