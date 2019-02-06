@@ -2,6 +2,7 @@ import pytest
 import time
 from usmqe.gluster import gluster
 from usmqe.usmqeconfig import UsmConfig
+import usmqe.usmssh as usmssh
 from usmqe_tests.conftest import measure_operation
 
 # initialize usmqe logging module
@@ -36,7 +37,36 @@ def workload_stop_volumes():
     """
     def wait():
         gl_volumes = gluster.GlusterVolume()
-        LOGGER.info("Measure time when volumes stopped.")
-        time.sleep(240)
+        LOGGER.info("Measure time when volumes are stopped.")
+        time.sleep(180)
         return gl_volumes.list()
     return measure_operation(wait)
+
+
+@pytest.fixture(params=[80, 60])
+def workload_memory_utilization(request):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of stress-ng
+            command and its `result`
+    """
+    def fill_memory():
+        """
+        Use `stress` tool to stress memory for 3 minutes to given percentage
+        """
+        # stress memory for for 180 seconds
+        run_time = 180
+        SSH = usmssh.get_ssh()
+        host = CONF.config["usmqe"]["cluster_member"]
+        stress_cmd = "stress --vm-bytes $(awk '/MemAvailable/{{printf "\
+        "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k --vm-keep "\
+        "-m {1}".format(
+            request.param,
+            1)
+        stress_cmd += " --timeout {}s".format(
+            run_time)
+        retcode, stdout, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr)
+        return request.param
+    return measure_operation(fill_memory)
