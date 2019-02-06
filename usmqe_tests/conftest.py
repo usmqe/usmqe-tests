@@ -4,7 +4,6 @@ import time
 import datetime
 import usmqe.usmssh as usmssh
 from usmqe.api.tendrlapi.common import login, logout, TendrlApi
-from usmqe.gluster import gluster
 from usmqe.usmqeconfig import UsmConfig
 
 
@@ -332,25 +331,6 @@ def os_info():
     config.read_string('[os_info]\n' + f_content)
     LOGGER.debug(config['os_info'])
     return dict(config['os_info'])
-
-
-@pytest.fixture
-def workload_stop_volumes():
-    """
-    Test ran with this fixture have to use fixture `ansible_playbook`
-    and markers before this fixture is called:
-    @pytest.mark.ansible_playbook_setup("test_setup.gluster_volume_stop.yml")
-    @pytest.mark.ansible_playbook_teardown("test_teardown.gluster_volume_stop.yml")
-    Returns:
-        dict: contains information about `start` and `stop` time of wait
-        procedure and as `result` is used number of nodes.
-    """
-    def wait():
-        gl_volumes = gluster.GlusterVolume()
-        LOGGER.info("Measure time when volumes stopped.")
-        time.sleep(240)
-        return gl_volumes.list()
-    return measure_operation(wait)
 
 
 @pytest.fixture(params=[60, 80, 95], scope="session")
