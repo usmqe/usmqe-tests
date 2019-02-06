@@ -7,9 +7,8 @@ from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import ViaWebUI, TendrlNavigateStep
 from usmqe.web.application.views.grafana import GrafanaVolumeDashboard
 from usmqe.web.application.views.volume import ClusterVolumesView
-from usmqe.web.application.entities.bricks import VolumeBricksCollection
 from usmqe.web.application.views.brick import VolumeBricksView
-
+from usmqe.web.application.entities.volume_parts import VolumePartsCollection
 
 LOGGER = pytest.get_logger('volumes', module=True)
 
@@ -26,11 +25,11 @@ class Volume(BaseEntity):
     alerts = attr.ib()
     cluster_name = attr.ib()
 
-    _collections = {'bricks': VolumeBricksCollection}
+    _collections = {'parts': VolumePartsCollection}
 
     @property
-    def bricks(self):
-        return self.collections.bricks
+    def parts(self):
+        return self.collections.parts
 
     def update(self):
         view = self.application.web_ui.create_view(ClusterVolumesView)
@@ -124,7 +123,7 @@ class VolumeDashboard(TendrlNavigateStep):
 
 
 @ViaWebUI.register_destination_for(Volume, "Bricks")
-class HostBricks(TendrlNavigateStep):
+class VolumeBricks(TendrlNavigateStep):
     VIEW = VolumeBricksView
     prerequisite = NavigateToAttribute("parent.parent", "Volumes")
 

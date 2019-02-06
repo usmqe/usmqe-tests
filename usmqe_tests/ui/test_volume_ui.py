@@ -123,17 +123,42 @@ def test_volume_bricks(application):
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [])
     for volume in volumes:
-        bricks = volume.bricks.get_bricks()
-        pytest.check(len(bricks) == int(volume.bricks_count))
+        all_bricks = []
+        volume_parts = volume.parts.get_parts()
+        pytest.check(volume_parts != [])
+        if volume.volname.split("_")[2] == "arbiter":
+            part_size = int(volume.volname.split("_")[3]) + \
+                        int(volume.volname.split("_")[5].split('x')[0])
+            part_name = "Replica Set "
+        elif volume.volname.split("_")[2] == "disperse":
+            part_size = int(volume.volname.split("_")[3]) + \
+                        int(volume.volname.split("_")[5].split('x')[0])
+            part_name = "Subvolume "
+        elif volume.volname.split("_")[2] == "distrep":
+            part_size = int(volume.volname.split("_")[3].split('x')[1])
+            part_name = "Replica Set "
+        else:
+            pytest.check(False)
+            LOGGER.debug("Unexpected volume type")
+            part_size = 0
+            part_name = ""
+        for part in volume_parts:
+            bricks = part.bricks.get_bricks()
+            pytest.check(len(bricks) == part_size)
+            pytest.check(part.part_name == part_name + str(int(part.part_id) - 1))
+            LOGGER.debug("Expected part name: {}".format(part_name + str(int(part.part_id) - 1)))
+            LOGGER.debug("Real part name: {}".format(part.part_name))
+            for brick in bricks:
+                assert brick.brick_path.find('/mnt/brick') == 0
+                # pytest.check(brick.volume_name.split('_')[4] == 'plus')
+                pytest.check(brick.utilization.find('% U') > 0)
+                pytest.check(brick.disk_device_path.split('/')[1] == 'dev')
+                pytest.check(int(brick.port) > 1000)
+            all_bricks = all_bricks + bricks
+
         glv_cmd = gluster.GlusterVolume(volume_name=volume.volname)
         glv_cmd.info()
         LOGGER.debug("Gluster bricks: {}".format(glv_cmd.bricks))
-        ui_brick_names = [b.hostname + ":" + b.brick_path for b in bricks]
+        ui_brick_names = [b.hostname + ":" + b.brick_path for b in all_bricks]
         LOGGER.debug("UI bricks: {}".format(ui_brick_names))
         pytest.check(glv_cmd.bricks == ui_brick_names)
-        for brick in bricks:
-            assert brick.brick_path.find('/mnt/brick') == 0
-            pytest.check(brick.volume_name.split('_')[4] == 'plus')
-            pytest.check(brick.utilization.find('% U') > 0)
-            pytest.check(brick.disk_device_path.split('/')[1] == 'dev')
-            pytest.check(int(brick.port) > 1000)

@@ -31,11 +31,20 @@ class VolumeBricksView(BaseClusterSpecifiedView):
         ROOT = ParametrizedLocator("(.//div[@class='list-group list-view-pf list-view-pf-view"
                                    " ng-scope'])[position() = {part_id|quote}]")
         bricks = Table(".//table", column_widgets={5: Button("Dashboard")})
+        part_name = Text(".//div[@class='list-group-item-heading "
+                         "bold-text sub-volume ng-binding']")
+        brick_count = Text(".//div[@class='list-view-pf-additional-info-item ng-binding']")
+        utilization = Text(".//utilisation-chart")
 
         @classmethod
         def all(cls, browser):
             return [browser.text(e) for e in browser.elements(cls.ALL_VOLUMES)
                     if browser.text(e) is not None and browser.text(e) != '']
+
+        @property
+        def is_expanded(self):
+            return self.browser.elements("div")[0].get_attribute("class").find("expand"
+                                                                               "-active") > 0
 
     ALL_VOLUME_PARTS = ".//div[@class='list-group list-view-pf list-view-pf-view ng-scope']"
 
