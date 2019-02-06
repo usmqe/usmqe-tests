@@ -51,4 +51,12 @@ class GrafanaVolumeDashboard(BaseGrafanaDashboard):
 
 
 class GrafanaBrickDashboard(BaseGrafanaDashboard):
-    pass
+    # in hostnames all dots are replaced with underscores
+    host_name = Text(".//label[contains(text(), 'Host Name')]/parent::div/value-select-dropdown")
+    path = Text(".//label[contains(text(), 'Brick Path')]/parent::div/value-select-dropdown")
+    status = Text(".//span[text() = 'Status']/ancestor::div[@class='panel-container']"
+                  "/descendant::span[@class='singlestat-panel-value']")
+
+    @property
+    def is_displayed(self):
+        return self.dashboard_name.text.find("Brick Dashboard") >= 0
