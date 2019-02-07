@@ -1,10 +1,9 @@
 import pytest
-# from usmqe.web.application.implementations.web_ui import ViaWebUI
-# LOGGER = pytest.get_logger('ui_user_testing', module=True)
-# import time
 
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
+
+LOGGER = pytest.get_logger('ui_cluster_testing', module=True)
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -120,7 +119,19 @@ def test_cluster_dashboard(application):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]
-    test_cluster.check_dashboard()
+    dashboard_values = test_cluster.get_values_from_dashboard()
+    pytest.check(dashboard_values["cluster_name"] == test_cluster.name)
+    LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
+    LOGGER.debug("Cluster name in main UI: {}".format(test_cluster.name))
+    pytest.check(dashboard_values["host_count"] == test_cluster.hosts_number)
+    LOGGER.debug("Hosts count in grafana: '{}'".format(dashboard_values["host_count"]))
+    LOGGER.debug("Hosts count in main UI: {}".format(test_cluster.hosts_number))
+    pytest.check(dashboard_values["volume_count"] == test_cluster.volumes_number)
+    LOGGER.debug("Volume count in grafana: {}".format(dashboard_values["volume_count"]))
+    LOGGER.debug("Volume count in main UI: {}".format(test_cluster.volumes_number))
+    pytest.check(dashboard_values["cluster_health"] == test_cluster.health)
+    LOGGER.debug("Cluster health in grafana: '{}'".format(dashboard_values["cluster_health"]))
+    LOGGER.debug("Cluster health in main UI: '{}'".format(test_cluster.health))
 
 
 @pytest.mark.author("ebondare@redhat.com")

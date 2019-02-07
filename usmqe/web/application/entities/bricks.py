@@ -30,6 +30,10 @@ class Brick(BaseEntity):
                                                "]")[0].get_attribute("uib-tooltip")
 
     def get_values_from_dashboard(self):
+        """
+        Click Dashboard button, read the selected data from Grafana dashboard,
+        close the window with Grafana dashboard and return to main UI
+        """
         view = ViaWebUI.navigate_to(self, "Dashboard")
         dashboard_values = {
             "cluster_name": view.cluster_name.text,

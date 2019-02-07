@@ -193,23 +193,20 @@ class Cluster(BaseEntity):
         LOGGER.debug("Cluster profiling value: {}".format(self.profiling))
         pytest.check(self.profiling == "Disabled")
 
-    def check_dashboard(self):
+    def get_values_from_dashboard(self):
+        """
+        Click Dashboard button, read the selected data from Grafana dashboard,
+        close the window with Grafana dashboard and return to main UI
+        """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        time.sleep(3)
-        pytest.check(view.cluster_name.text == self.name)
-        LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
-        LOGGER.debug("Cluster name in main UI: {}".format(self.name))
-        pytest.check(view.hosts_total.text.split(" ")[-1] == self.hosts_number)
-        LOGGER.debug("Hosts in grafana: '{}'".format(view.hosts_total.text.split(" ")[-1]))
-        LOGGER.debug("Hosts in main UI: '{}'".format(self.hosts_number))
-        pytest.check(view.volumes_total.text.split(" ")[-1] == self.volumes_number)
-        LOGGER.debug("Volumes in grafana: {}".format(view.volumes_total.text.split(" ")[-1]))
-        LOGGER.debug("Volumes in main UI: {}".format(self.volumes_number))
-        pytest.check(view.cluster_health.text == self.health)
-        LOGGER.debug("Cluster health in grafana: '{}'".format(view.cluster_health.text))
-        LOGGER.debug("Cluster health in main UI: '{}'".format(self.health))
+        dashboard_values = {
+            "cluster_name": view.cluster_name.text,
+            "host_count": view.hosts_total.text.split(" ")[-1],
+            "volume_count": view.volumes_total.text.split(" ")[-1],
+            "cluster_health": view.cluster_health.text}
         view.browser.selenium.close()
         view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
+        return dashboard_values
 
     def expand(self, cancel=False):
         pass

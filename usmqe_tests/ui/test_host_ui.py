@@ -111,6 +111,7 @@ def test_host_dashboard(application):
         LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
         LOGGER.debug("Cluster name in main UI: {}".format(host.cluster_name))
         pytest.check(dashboard_values["host_name"] == host.hostname.replace(".", "_"))
+        LOGGER.debug("Hostname in grafana: {}".format(dashboard_values["host_name"]))
         LOGGER.debug("Hostname in main UI "
                      "after dot replacement: '{}'".format(host.hostname.replace(".", "_")))
         pytest.check(dashboard_values["brick_count"] == host.bricks_count)
