@@ -3,7 +3,8 @@ from widgetastic.widget import Text, View
 
 class BaseGrafanaDashboard(View):
     dashboard_name = Text(".//a[@class='navbar-page-btn']")
-    cluster_name = Text(".//label[contains(text(), 'Cluster Name')]"
+    # It's either 'Cluster Name' or 'cluster Name'
+    cluster_name = Text(".//label[contains(text(), 'luster Name')]"
                         "/parent::div/value-select-dropdown")
 
 

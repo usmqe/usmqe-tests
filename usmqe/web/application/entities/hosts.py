@@ -30,23 +30,20 @@ class Host(BaseEntity):
     def bricks(self):
         return self.collections.bricks
 
-    def check_dashboard(self):
+    def get_values_from_dashboard(self):
+        """
+        Click Dashboard button, read the selected data from Grafana dashboard,
+        close the window with Grafana dashboard and return to main UI
+        """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        pytest.check(view.cluster_name.text == self.cluster_name)
-        LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
-        LOGGER.debug("Cluster name in main UI: {}".format(self.cluster_name))
-        pytest.check(view.host_name.text == self.hostname.replace(".", "_"))
-        LOGGER.debug("Hostname in grafana: '{}'".format(view.host_name.text))
-        LOGGER.debug("Hostname in main UI "
-                     "after dot replacement: '{}'".format(self.hostname.replace(".", "_")))
-        pytest.check(view.bricks_total.text.split(" ")[-1] == self.bricks_count)
-        LOGGER.debug("Brick count in grafana: {}".format(view.bricks_total.text.split(" ")[-1]))
-        LOGGER.debug("Brick count in main UI: {}".format(self.bricks_count))
-        pytest.check(view.host_health.text.lower() == self.health.lower())
-        LOGGER.debug("Host health in grafana: '{}'".format(view.host_health.text.lower()))
-        LOGGER.debug("Host health in main UI: '{}'".format(self.health.lower()))
+        dashboard_values = {
+            "cluster_name": view.cluster_name.text,
+            "host_name": view.host_name.text,
+            "brick_count": view.bricks_total.text.split(" ")[-1],
+            "host_health": view.host_health.text.lower()}
         view.browser.selenium.close()
         view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
+        return dashboard_values
 
 
 @attr.s
