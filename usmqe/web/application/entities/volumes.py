@@ -15,6 +15,10 @@ LOGGER = pytest.get_logger('volumes', module=True)
 
 @attr.s
 class Volume(BaseEntity):
+    """
+    Volume object is an item of a Cluster's VolumesCollection.
+    Each volume has its collection of VolumeParts that can be either replica sets or subvolumes.
+    """
     volname = attr.ib()
     health = attr.ib()
     volume_type = attr.ib()
@@ -32,6 +36,9 @@ class Volume(BaseEntity):
         return self.collections.parts
 
     def update(self):
+        """
+        Update volume attributes by reading them form Volumes page
+        """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         self.health = view.volumes(self.volname).health
         self.bricks_count = view.volumes(self.volname).bricks.text
@@ -41,6 +48,9 @@ class Volume(BaseEntity):
         self.alerts = view.volumes(self.volname).alerts.text
 
     def enable_profiling(self):
+        """
+        Click Enable Profiling button and wait for Volume Profiling attribute to change to Enabled
+        """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         view.volumes(self.volname).enable_profiling.click()
         time.sleep(40)
@@ -54,6 +64,9 @@ class Volume(BaseEntity):
         pytest.check(self.profiling == "Enabled")
 
     def disable_profiling(self):
+        """
+        Click Disable Profiling button and wait for Volume Profiling to change to Disabled
+        """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         view.volumes(self.volname).disable_profiling.click()
         time.sleep(40)
@@ -87,6 +100,9 @@ class VolumesCollection(BaseCollection):
     ENTITY = Volume
 
     def get_all_volnames(self):
+        """
+        Return the list of all volume names of this collection.
+        """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         time.sleep(2)
         volume_names = view.all_volnames
@@ -94,6 +110,9 @@ class VolumesCollection(BaseCollection):
         return volume_names
 
     def get_volumes(self):
+        """
+        Return the list of instantiated Volume objects, their attributes read from Volumes page.
+        """
         view = ViaWebUI.navigate_to(self.parent, "Volumes")
         volumes_list = []
         for volname in self.get_all_volnames():
@@ -113,6 +132,9 @@ class VolumesCollection(BaseCollection):
 
 @ViaWebUI.register_destination_for(Volume, "Dashboard")
 class VolumeDashboard(TendrlNavigateStep):
+    """
+    Navigate to each Volume's grafana dashboard by clicking Dashboard button.
+    """
     VIEW = GrafanaVolumeDashboard
     prerequisite = NavigateToAttribute("parent.parent", "Volumes")
 
@@ -126,6 +148,10 @@ class VolumeDashboard(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Volume, "Bricks")
 class VolumeBricks(TendrlNavigateStep):
+    """
+    Navigate to each Volumes's list of subvolumes/replica sets and bricks 
+    by clicking on volume name.
+    """
     VIEW = VolumeBricksView
     prerequisite = NavigateToAttribute("parent.parent", "Volumes")
 

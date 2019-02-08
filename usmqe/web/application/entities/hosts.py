@@ -15,6 +15,10 @@ LOGGER = pytest.get_logger('hosts', module=True)
 
 @attr.s
 class Host(BaseEntity):
+    """
+    Host object is an item of a Cluster's HostsCollection.
+    Each host has its own collection of Bricks.
+    """
     hostname = attr.ib()
     health = attr.ib()
     gluster_version = attr.ib()
@@ -51,12 +55,18 @@ class HostsCollection(BaseCollection):
     ENTITY = Host
 
     def get_all_hostnames(self):
+        """
+        Return the list of all hostnames of this collection.
+        """
         view = self.application.web_ui.create_view(ClusterHostsView)
         return view.all_hostnames
 
     def get_hosts(self):
+        """
+        Return the list of instantiated Host objects, their attributes read from Hosts page.
+        """
         view = ViaWebUI.navigate_to(self.parent, "Hosts")
-        time.sleep(4)
+        time.sleep(3)
         hosts_list = []
         for hostname in self.get_all_hostnames():
             host = self.instantiate(
@@ -74,6 +84,9 @@ class HostsCollection(BaseCollection):
 
 @ViaWebUI.register_destination_for(Host, "Dashboard")
 class HostDashboard(TendrlNavigateStep):
+    """
+    Navigate to each Host's grafana dashboard by clicking Dashboard button.
+    """
     VIEW = GrafanaHostDashboard
     prerequisite = NavigateToAttribute("parent.parent", "Hosts")
 
@@ -87,6 +100,9 @@ class HostDashboard(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Host, "Bricks")
 class HostBricks(TendrlNavigateStep):
+    """
+    Navigate to each Host's list of bricks by clicking on host name.
+    """
     VIEW = HostBricksView
     prerequisite = NavigateToAttribute("parent.parent", "Hosts")
 
