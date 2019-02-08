@@ -292,3 +292,55 @@ def test_volume_bricks(application):
         ui_brick_names = [b.hostname + ":" + b.brick_path for b in all_bricks]
         LOGGER.debug("UI bricks: {}".format(ui_brick_names))
         pytest.check(glv_cmd.bricks == ui_brick_names)
+
+
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
+def test_volume_brick_dashboards(application):
+    """
+    Test Dashboard button of each brick of each volume
+    """
+    """
+    :step:
+      Log in to Web UI and get the first cluster from the cluster list.
+      Get the list of its volumes.
+    :result:
+      Volume objects are initiated and their attributes are read from the page
+    """
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    volumes = test_cluster.volumes.get_volumes()
+    """
+    :step:
+      For each volume, get the list of its subvolumes/replica sets.
+      For each subvolume/replica set, get the list of its bricks.
+      For each brick, click its Dashboard button.
+      Check that the correct Grafana dashboard appears
+      and that it shows expected value of brick status.
+    :result:
+      Grafana dashboard is opened, checked for its values and closed.
+      Status check fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1668900
+    """
+    for volume in volumes:
+        volume_parts = volume.parts.get_parts()
+        pytest.check(volume_parts != [])
+        for part in volume_parts:
+            bricks = part.bricks.get_bricks()
+            for brick in bricks:
+                dashboard_values = brick.get_values_from_dashboard()
+                LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
+                LOGGER.debug("Cluster name in main UI: {}".format(brick.cluster_name))
+                pytest.check(dashboard_values["cluster_name"] == brick.cluster_name)
+                pytest.check(dashboard_values["host_name"] == brick.hostname.replace(".", "_"))
+                LOGGER.debug("Hostname in grafana: {}".format(dashboard_values["host_name"]))
+                LOGGER.debug("Hostname in main UI "
+                             "after dot replacement: '{}'".format(brick.hostname.replace(".", "_")))
+                pytest.check(dashboard_values["brick_path"] == brick.brick_path.replace("/", "|"))
+                LOGGER.debug("Brick path in grafana: {}".format(dashboard_values["brick_path"]))
+                LOGGER.debug("Brick path in main UI after slash "
+                             "replacement: {}".format(brick.brick_path.replace("/", "|")))
+                pytest.check(dashboard_values["brick_status"] == brick.status,
+                             issue="https://bugzilla.redhat.com/show_bug.cgi?id=1668900")
+                LOGGER.debug("Status in grafana: '{}'".format(dashboard_values["brick_status"]))
+                LOGGER.debug("Status in main UI: '{}'".format(brick.status))

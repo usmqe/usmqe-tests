@@ -149,7 +149,7 @@ class VolumeDashboard(TendrlNavigateStep):
 @ViaWebUI.register_destination_for(Volume, "Bricks")
 class VolumeBricks(TendrlNavigateStep):
     """
-    Navigate to each Volumes's list of subvolumes/replica sets and bricks 
+    Navigate to each Volumes's list of subvolumes/replica sets and bricks
     by clicking on volume name.
     """
     VIEW = VolumeBricksView

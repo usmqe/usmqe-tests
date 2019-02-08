@@ -8,7 +8,7 @@ from usmqe.web.application.implementations.web_ui import TendrlNavigateStep, Via
 from usmqe.web.application.views.grafana import GrafanaBrickDashboard
 from usmqe.web.application.views.brick import HostBricksView
 
-LOGGER = pytest.get_logger('hosts', module=True)
+LOGGER = pytest.get_logger('bricks', module=True)
 
 
 @attr.s
@@ -67,8 +67,21 @@ class HostBricksCollection(BaseCollection):
 
 
 @attr.s
+class VolumeBrick(Brick):
+    part_id = attr.ib()
+
+    @property
+    def status(self):
+        view = self.application.web_ui.create_view(HostBricksView)
+        for row in view.bricks:
+            if row["Brick Path"].text == self.brick_path:
+                return row[1].browser.elements(".//span[contains(@class, 'pficon')"
+                                               "]")[0].get_attribute("uib-tooltip")
+
+
+@attr.s
 class VolumeBricksCollection(BaseCollection):
-    ENTITY = Brick
+    ENTITY = VolumeBrick
 
     def get_bricks(self):
         view = ViaWebUI.navigate_to(self.parent.parent.parent, "Bricks")
@@ -85,7 +98,8 @@ class VolumeBricksCollection(BaseCollection):
                 row[2].text,
                 row[3].text,
                 row[4].text,
-                view.cluster_name.text)
+                view.cluster_name.text,
+                self.parent.part_id)
             brick_list.append(brick)
         return brick_list
 
@@ -99,6 +113,24 @@ class BrickDashboard(TendrlNavigateStep):
         time.sleep(1)
         for row in self.parent.bricks:
             if row["Brick Path"].text == self.obj.brick_path:
+                row[5].click()
+                break
+        time.sleep(1)
+        self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
+        time.sleep(1)
+
+
+@ViaWebUI.register_destination_for(VolumeBrick, "Dashboard")
+class VolumeBrickDashboard(TendrlNavigateStep):
+    VIEW = GrafanaBrickDashboard
+    prerequisite = NavigateToAttribute("parent.parent.parent.parent", "Bricks")
+
+    def step(self):
+        time.sleep(1)
+        self.parent.expand_all.click()
+        for row in self.parent.volume_parts(self.obj.part_id).bricks.rows():
+            if (row["Brick Path"].text == self.obj.brick_path and
+                    row["Host Name"].text == self.obj.hostname):
                 row[5].click()
                 break
         time.sleep(1)
