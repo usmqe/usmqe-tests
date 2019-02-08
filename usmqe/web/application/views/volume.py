@@ -27,13 +27,22 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
         dashboard_button = Button("Dashboard")
 
         @property
-        def is_ok(self):
+        def health(self):
             """
-            Returns True if volume has green icon OK and False otherwise.
-            Would be better to have a list of all possible icons
+            Returns the corresponding expected value of Grafana Health panel
             """
-            return self.browser.elements(".//div[@class='ft-column ft-icon']"
-                                         "/i")[0].get_attribute("class") == "pficon pficon-ok"
+            health = self.browser.elements(".//div[@class='ft-column ft-icon']"
+                                           "/i")[0].get_attribute("class")
+            if health == "pficon pficon-ok":
+                return "Up"
+            elif health == "pficon pficon-degraded icon-orange":
+                return "Up(Degraded)"
+            elif health == "pficon pficon-degraded icon-red":
+                return "Up(Partial)"
+            elif health == "fa ffont fa-question":
+                return "Unknown"
+            else:
+                return "Unexpected state"
 
         @classmethod
         def all(cls, browser):

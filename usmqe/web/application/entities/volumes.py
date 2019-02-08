@@ -16,7 +16,7 @@ LOGGER = pytest.get_logger('volumes', module=True)
 @attr.s
 class Volume(BaseEntity):
     volname = attr.ib()
-    # health = attr.ib()
+    health = attr.ib()
     volume_type = attr.ib()
     bricks_count = attr.ib()
     running = attr.ib()
@@ -33,6 +33,7 @@ class Volume(BaseEntity):
 
     def update(self):
         view = self.application.web_ui.create_view(ClusterVolumesView)
+        self.health = view.volumes(self.volname).health
         self.bricks_count = view.volumes(self.volname).bricks.text
         self.running = view.volumes(self.volname).running.text
         self.rebalance = view.volumes(self.volname).rebalance.text
@@ -65,20 +66,20 @@ class Volume(BaseEntity):
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Disabled")
 
-    def check_dashboard(self):
+    def get_values_from_dashboard(self):
+        """
+        Click Dashboard button, read the selected data from Grafana dashboard,
+        close the window with Grafana dashboard and return to main UI
+        """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        pytest.check(view.cluster_name.text == self.cluster_name)
-        LOGGER.debug("Cluster name in grafana: {}".format(view.cluster_name.text))
-        LOGGER.debug("Cluster name in main UI: {}".format(self.cluster_name))
-        pytest.check(view.volume_name.text == self.volname)
-        LOGGER.debug("Volume name in grafana: '{}'".format(view.volume_name))
-        LOGGER.debug("Volume name in main UI: '{}'".format(self.volname))
-        pytest.check(view.bricks_total.text.split(" ")[-1] == self.bricks_count)
-        LOGGER.debug("Bricks count in grafana: {}".format(view.bricks_total.text.split(" ")[-1]))
-        LOGGER.debug("Bricks count in main UI: {}".format(self.bricks_count))
-        # TODO: check volume health
+        dashboard_values = {
+            "cluster_name": view.cluster_name.text,
+            "volume_name": view.volume_name.text,
+            "brick_count": view.bricks_total.text.split(" ")[-1],
+            "volume_health": view.volume_health.text}
         view.browser.selenium.close()
         view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
+        return dashboard_values
 
 
 @attr.s
@@ -98,6 +99,7 @@ class VolumesCollection(BaseCollection):
         for volname in self.get_all_volnames():
             volume = self.instantiate(
                 volname,
+                view.volumes(volname).health,
                 view.volumes(volname).volume_type.text,
                 view.volumes(volname).bricks.text,
                 view.volumes(volname).running.text,

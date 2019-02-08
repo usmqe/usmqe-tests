@@ -68,12 +68,24 @@ def test_volume_dashboard(application):
     """
     :step:
       For each volume in the volume list, click its Dashboard button and check
-      cluster name, volume name and bricks count
+      cluster name, volume name, bricks count and volume health
     :result:
       Volume dashboard shows the correct information
     """
     for volume in volumes:
-        volume.check_dashboard()
+        dashboard_values = volume.get_values_from_dashboard()
+        LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
+        LOGGER.debug("Cluster name in main UI: {}".format(volume.cluster_name))
+        pytest.check(dashboard_values["cluster_name"] == volume.cluster_name)
+        LOGGER.debug("Volume name in grafana: {}".format(dashboard_values["volume_name"]))
+        LOGGER.debug("Volume name in main UI: {}".format(volume.volname))
+        pytest.check(dashboard_values["volume_name"] == volume.volname)
+        LOGGER.debug("Bricks count in grafana: {}".format(dashboard_values["brick_count"]))
+        LOGGER.debug("Bricks count in main UI: {}".format(volume.bricks_count))
+        pytest.check(dashboard_values["brick_count"] == volume.bricks_count)
+        LOGGER.debug("Volume health in grafana: {}".format(dashboard_values["volume_health"]))
+        LOGGER.debug("Volume health in main UI: {}".format(volume.health))
+        pytest.check(dashboard_values["volume_health"] == volume.health)
 
 
 @pytest.mark.author("ebondare@redhat.com")
