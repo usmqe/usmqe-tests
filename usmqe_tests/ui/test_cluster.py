@@ -129,9 +129,10 @@ def test_cluster_dashboard(application):
     pytest.check(dashboard_values["volume_count"] == test_cluster.volumes_number)
     LOGGER.debug("Volume count in grafana: {}".format(dashboard_values["volume_count"]))
     LOGGER.debug("Volume count in main UI: {}".format(test_cluster.volumes_number))
-    pytest.check(dashboard_values["cluster_health"] == test_cluster.health)
-    LOGGER.debug("Cluster health in grafana: '{}'".format(dashboard_values["cluster_health"]))
-    LOGGER.debug("Cluster health in main UI: '{}'".format(test_cluster.health))
+    pytest.check(dashboard_values["cluster_health"].lower() == test_cluster.health.lower())
+    LOGGER.debug("Cluster health in grafana (lowercase): '{}"
+                 "'".format(dashboard_values["cluster_health"].lower()))
+    LOGGER.debug("Cluster health in main UI (lowercase): '{}'".format(test_cluster.health.lower()))
 
 
 @pytest.mark.author("ebondare@redhat.com")

@@ -13,6 +13,9 @@ LOGGER = pytest.get_logger('bricks', module=True)
 
 @attr.s
 class Brick(BaseEntity):
+    """
+    Base Brick object for bricks that are part of HostBricksCollection or VolumeBricksCollection.
+    """
     brick_path = attr.ib()
     hostname = attr.ib()
     volume_name = attr.ib()
@@ -20,14 +23,6 @@ class Brick(BaseEntity):
     disk_device_path = attr.ib()
     port = attr.ib()
     cluster_name = attr.ib()
-
-    @property
-    def status(self):
-        view = self.application.web_ui.create_view(HostBricksView)
-        for row in view.bricks:
-            if row["Brick Path"].text == self.brick_path:
-                return row[0].browser.elements(".//span[contains(@class, 'pficon')"
-                                               "]")[0].get_attribute("uib-tooltip")
 
     def get_values_from_dashboard(self):
         """
@@ -46,10 +41,31 @@ class Brick(BaseEntity):
 
 
 @attr.s
+class HostBrick(Brick):
+    """
+    Brick object that is part of HostBricksCollection.
+    """
+    @property
+    def status(self):
+        """
+        Return 'uib-tooltip' attribute of Brick's status icon.
+        """
+        view = self.application.web_ui.create_view(HostBricksView)
+        for row in view.bricks:
+            if row["Brick Path"].text == self.brick_path:
+                return row[0].browser.elements(".//span[@uib-tooltip"
+                                               "]")[0].get_attribute("uib-tooltip")
+
+
+@attr.s
 class HostBricksCollection(BaseCollection):
-    ENTITY = Brick
+    ENTITY = HostBrick
 
     def get_bricks(self):
+        """
+        Navigate to Host's Brick list by clicking on hostname.
+        Return the list of initiated Brick objects.
+        """
         view = ViaWebUI.navigate_to(self.parent, "Bricks")
         time.sleep(4)
         brick_list = []
@@ -68,6 +84,9 @@ class HostBricksCollection(BaseCollection):
 
 @attr.s
 class VolumeBrick(Brick):
+    """
+    Brick object that is part of VolumeBricksCollection.
+    """
     part_id = attr.ib()
 
     @property
@@ -75,7 +94,7 @@ class VolumeBrick(Brick):
         view = self.application.web_ui.create_view(HostBricksView)
         for row in view.bricks:
             if row["Brick Path"].text == self.brick_path:
-                return row[1].browser.elements(".//span[contains(@class, 'pficon')"
+                return row[1].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
 
@@ -88,7 +107,6 @@ class VolumeBricksCollection(BaseCollection):
         if not self.parent.is_expanded:
             self.parent.expand_or_collapse()
         bricks = view.volume_parts(self.parent.part_id).bricks
-        assert bricks != []
         brick_list = []
         for row in bricks:
             brick = self.instantiate(
@@ -104,7 +122,7 @@ class VolumeBricksCollection(BaseCollection):
         return brick_list
 
 
-@ViaWebUI.register_destination_for(Brick, "Dashboard")
+@ViaWebUI.register_destination_for(HostBrick, "Dashboard")
 class BrickDashboard(TendrlNavigateStep):
     VIEW = GrafanaBrickDashboard
     prerequisite = NavigateToAttribute("parent.parent", "Bricks")
