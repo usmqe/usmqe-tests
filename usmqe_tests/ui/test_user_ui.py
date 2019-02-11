@@ -110,9 +110,14 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
         password=invalid_password,
         role=valid_normal_user_data["role"]
     )
-    pytest.check(user.exists)
+    pytest.check(not user.exists)
+    """
+    :step:
+      Check that user hasn't been created using API
+    :result:
+      There's no user with the specified username
+    """
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
-
     user_data_password_invalid = copy.deepcopy(valid_normal_user_data)
     user_data_password_invalid["password"] = invalid_password
     asserts = {
