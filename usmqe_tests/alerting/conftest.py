@@ -10,6 +10,7 @@ LOGGER = pytest.get_logger("pytests_test")
 pytest.set_logger(LOGGER)
 CONF = UsmConfig()
 
+
 @pytest.fixture(scope="function", autouse=True)
 def default_entities(cluster_reuse):
     """
@@ -61,7 +62,7 @@ def workload_stop_hosts():
     return measure_operation(wait)
 
 
-@pytest.fixture(params=[95, 80, 60])
+@pytest.fixture(params=[85, 60])
 def workload_cpu_utilization(request):
     """
     Returns:
@@ -89,7 +90,7 @@ def workload_cpu_utilization(request):
     return measure_operation(fill_cpu)
 
 
-@pytest.fixture(params=[80, 60])
+@pytest.fixture(params=[89, 60])
 def workload_memory_utilization(request):
     """
     Returns:
@@ -105,10 +106,8 @@ def workload_memory_utilization(request):
         SSH = usmssh.get_ssh()
         host = CONF.config["usmqe"]["cluster_member"]
         stress_cmd = "stress --vm-bytes $(awk '/MemAvailable/{{printf "\
-        "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k --vm-keep "\
-        "-m {1}".format(
-            request.param,
-            1)
+                     "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k "\
+                     "--vm-keep -m {1}".format(request.param, 1)
         stress_cmd += " --timeout {}s".format(
             run_time)
         retcode, stdout, stderr = SSH[host].run(stress_cmd)

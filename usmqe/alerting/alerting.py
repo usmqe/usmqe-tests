@@ -18,7 +18,7 @@ class Alerting(object):
     usmqe-setup repository.
     """
     def __init__(self, user="admin", client=None, server=None,
-            msg_templates=None, divergence=15.0):
+                 msg_templates=None, divergence=15.0):
         """
         Args:
             user (str): Tendrl user that receives alerts.
@@ -30,8 +30,10 @@ class Alerting(object):
                 containing numeric values.
         """
         self.user = user
-        self.client = client or CONF.inventory.get_groups_dict()["usm_client"][0]
-        self.server = server or CONF.inventory.get_groups_dict()["usm_server"][0]
+        self.client = client or CONF.inventory.get_groups_dict()[
+            "usm_client"][0]
+        self.server = server or CONF.inventory.get_groups_dict()[
+            "usm_server"][0]
         self.msg_templates = msg_templates or self.basic_messages()
         # uses some extra time if is set up
         self.wait = True
@@ -47,44 +49,51 @@ class Alerting(object):
                     node, cluster, volume, path, value
         """
         return {
-            "node":{
+            "node": {
                 "status": {
                     "subject": "Peer Status: status changed",
                     "body": "Peer $node in cluster $cluster is $value"},
                 "cpu": {
                     "subject": "Cpu Utilization: threshold breached",
-                    "body": "Cpu utilization on node $node in $cluster $value"},
+                    "body": "Cpu utilization on node $node in $cluster $value"
+                        },
                 "memory": {
                     "subject": "Memory Utilization: threshold breached",
-                    "body": "Memory utilization on node $node in $cluster $value"},
+                    "body": "Memory utilization on node $node in $cluster "
+                            "$value"},
                 "swap": {
                     "subject": "Swap Utilization: threshold breached",
-                    "body": "Swap utilization on node $node in $cluster $value"},
+                    "body": "Swap utilization on node $node in $cluster $value"
+                        },
                 "georeplication": {
                     "subject": "status changed",
-                    "body": "Geo-replication between $node:$path and $volume is $value"},},
+                    "body": "Geo-replication between $node:$path and $volume "
+                            "is $value"}, },
             "brick": {
                 "status": {
                     "subject": "Brick Status: status changed",
                     "body": "Brick:$node:$path in volume:$volume has $value"},
                 "utilization": {
                     "subject": "Brick Utilization: threshold breached",
-                    "body": "Brick utilization on $node:$path in $volume $value"},},
+                    "body": "Brick utilization on $node:$path in $volume "
+                            "$value"}, },
             "cluster": {
                 "health": {
                     "subject": "Cluster Health Status: status changed",
-                    "body": "Cluster:$cluster moved to $value state"},},
+                    "body": "Cluster:$cluster moved to $value state"}, },
             "glustershd": {
                 "status": {
                     "subject": "status changed",
-                    "body": "Service: glustershd is $value in cluster $cluster"},},
+                    "body": "Service: glustershd is $value in cluster $cluster"
+                        }, },
             "volume": {
                 "running": {
                     "subject": "Volume State: status changed",
                     "body": "Volume:$volume is $value"},
                 "status": {
                     "subject": "Volume Status: status changed",
-                    "body": "Status of volume: $volume in cluster $cluster changed $value"}}}
+                    "body": "Status of volume: $volume in cluster $cluster "
+                            "changed $value"}}}
 
     def generate_alert_msg(
             self,
@@ -130,7 +139,7 @@ class Alerting(object):
         LOGGER.debug("Compared value: {}".format(val))
         LOGGER.debug("Divergence: {}".format(self.divergence))
         if float(target) - self.divergence <= float(val) <= float(
-            target) + self.divergence:
+                target) + self.divergence:
                 identical = True
         return identical
 
@@ -171,6 +180,8 @@ class Alerting(object):
         since_timestamp = since.timestamp()
         until_timestamp = self.get_until_timestamp(until)
 
+        LOGGER.debug("Messages are searched from '{0}' until '{1}'".format(
+            since_timestamp, until_timestamp))
         messages = usmqe.usmmail.get_msgs_by_time(
             start_timestamp=since_timestamp,
             end_timestamp=until_timestamp,
@@ -184,6 +195,7 @@ class Alerting(object):
             LOGGER.debug("Message subject: '{}'".format(message['Subject']))
             msg_payload = message.get_payload(decode=True).decode("utf-8")
             LOGGER.debug("Message body: '{}'".format(msg_payload))
+
             def save_and_replace(match):
                 matches.append(match)
                 return '$value'
@@ -194,11 +206,11 @@ class Alerting(object):
                 prc_value = None
             LOGGER.debug("Percent value: {}".format(prc_value))
             if message['Subject'].count(
-                title) == 1 and msg_payload.count(msg) == 1:
+                    title) == 1 and msg_payload.count(msg) == 1:
                     if target:
                         if not self.compare_prc(prc_value, target):
-                            LOGGER.debug("Message found but with wrong value:"\
-                                "'{}'".format(prc_value))
+                            LOGGER.debug("Message found but with wrong value:"
+                                         "'{}'".format(prc_value))
                             message_count -= 1
                     message_count += 1
         return message_count
@@ -218,6 +230,8 @@ class Alerting(object):
         since_timestamp = since.timestamp()
         until_timestamp = self.get_until_timestamp(until)
 
+        LOGGER.debug("Messages are searched from '{0}' until '{1}'".format(
+            since_timestamp, until_timestamp))
         SSH = usmqe.usmssh.get_ssh()
         journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
             " @{})\" --until \"$(date \"+%Y-%m-%d %H:%M:%S\" -d @{})\"" \
@@ -237,6 +251,7 @@ class Alerting(object):
             if message == '':
                 continue
             LOGGER.debug("SNMP message: '{}'".format(message))
+
             def save_and_replace(match):
                 matches.append(match)
                 return '$value'
@@ -249,8 +264,8 @@ class Alerting(object):
             if msg_payload.count(msg) == 1:
                 if target:
                     if not self.compare_prc(prc_value, target):
-                        LOGGER.debug("Message found but with wrong value:"\
-                            "'{}'".format(prc_value))
+                        LOGGER.debug("Message found but with wrong value:"
+                                     "'{}'".format(prc_value))
                         message_count -= 1
                 message_count += 1
         return message_count
@@ -274,6 +289,8 @@ class Alerting(object):
         since_timestamp = since.timestamp()
         until_timestamp = self.get_until_timestamp(until)
 
+        LOGGER.debug("Messages are searched from '{0}' until '{1}'".format(
+            since_timestamp, until_timestamp))
         SSH = usmqe.usmssh.get_ssh()
         journal_cmd = "journalctl --since \"$(date \"+%Y-%m-%d %H:%M:%S\" -d"\
             " @{})\" --until \"$(date \"+%Y-%m-%d %H:%M:%S\" -d @{})\"" \
@@ -325,8 +342,8 @@ class Alerting(object):
                 if msg_payload == msg:
                     if target:
                         if not self.compare_prc(prc_value, target):
-                            LOGGER.debug("Message found but with wrong value:"\
-                                "'{}'".format(prc_value))
+                            LOGGER.debug("Message found but with wrong value:"
+                                         "'{}'".format(prc_value))
                             message_count -= 1
                     message_count += 1
         return message_count
