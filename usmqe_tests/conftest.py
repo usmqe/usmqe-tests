@@ -395,10 +395,8 @@ def workload_memory_utilization(request):
         SSH = usmssh.get_ssh()
         host = CONF.config["usmqe"]["cluster_member"]
         stress_cmd = "stress --vm-bytes $(awk '/MemAvailable/{{printf "\
-        "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k --vm-keep "\
-        "-m {1}".format(
-            request.param,
-            1)
+                     "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k "\
+                     "--vm-keep -m {1}".format(request.param, 1)
         stress_cmd += " --timeout {}s".format(
             run_time)
         retcode, stdout, stderr = SSH[host].run(stress_cmd)

@@ -37,7 +37,7 @@ class Alerting(object):
         self.msg_templates = msg_templates or self.basic_messages()
         # uses some extra time if is set up
         self.wait = True
-        self.prc_pattern = re.compile("\d{1,3}(\.\d{1,2})(\s\%)?")
+        self.prc_pattern = re.compile(r"\d{1,3}(\.\d{1,2})(\s\%)?")
         self.divergence = divergence
 
     def basic_messages(self):
@@ -140,7 +140,7 @@ class Alerting(object):
         LOGGER.debug("Divergence: {}".format(self.divergence))
         if float(target) - self.divergence <= float(val) <= float(
                 target) + self.divergence:
-                identical = True
+            identical = True
         return identical
 
     def get_until_timestamp(self, until, extra_time=30):
@@ -202,17 +202,17 @@ class Alerting(object):
             msg_payload = self.prc_pattern.sub(save_and_replace, msg_payload)
             try:
                 prc_value = matches.pop().group(0)
-            except:
+            except Exception:
                 prc_value = None
             LOGGER.debug("Percent value: {}".format(prc_value))
             if message['Subject'].count(
                     title) == 1 and msg_payload.count(msg) == 1:
-                    if target:
-                        if not self.compare_prc(prc_value, target):
-                            LOGGER.debug("Message found but with wrong value:"
-                                         "'{}'".format(prc_value))
-                            message_count -= 1
-                    message_count += 1
+                if target:
+                    if not self.compare_prc(prc_value, target):
+                        LOGGER.debug("Message found but with wrong value:"
+                                     "'{}'".format(prc_value))
+                        message_count -= 1
+                message_count += 1
         return message_count
 
     def search_snmp(self, msg, since, until, target=None):
@@ -258,7 +258,7 @@ class Alerting(object):
             msg_payload = self.prc_pattern.sub(save_and_replace, message)
             try:
                 prc_value = matches.pop().group(0)
-            except:
+            except Exception:
                 prc_value = None
             LOGGER.debug("Percent value: {}".format(prc_value))
             if msg_payload.count(msg) == 1:
@@ -335,7 +335,7 @@ class Alerting(object):
             msg_payload = self.prc_pattern.sub(save_and_replace, msg_payload)
             try:
                 prc_value = matches.pop().group(0)
-            except:
+            except Exception:
                 prc_value = None
             LOGGER.debug("Percent value: {}".format(prc_value))
             if msg_severity == severity:
