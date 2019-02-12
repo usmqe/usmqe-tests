@@ -1,10 +1,12 @@
 import configparser
+import datetime
 import pytest
 import time
-import datetime
+
 import usmqe.usmssh as usmssh
 from usmqe.api.tendrlapi.common import login, logout, TendrlApi
 from usmqe.usmqeconfig import UsmConfig
+from usmqe.gluster.gluster import GlusterVolume
 
 
 # initialize usmqe logging module
@@ -36,25 +38,41 @@ def get_name(fname):
     return fname[5:].replace('_', ' ')
 
 
-def measure_operation(operation):
+def measure_operation(
+        operation, minimal_time=None, metadata=None, measure_after=False):
     """
     Get dictionary with keys 'start', 'end' and 'result' that contain
     information about start and stop time of given function and its result.
 
     Args:
-        operation (function): Function to be performed.
+        operation (function): function to be performed.
+        minimal_time (int): minimal number of seconds to run, it can be more
+            based on given operation
+        metadata (dict): this can contain dictionary object with information
+            relevant to test (e.g. volume name, operating host, ...)
+        measure_after (bool): determine if time measurement is done before or
+            after the operation returns its state
 
     Returns:
         dict: contains information about `start` and `stop` time of given
             function and its `result`
     """
-    start_time = datetime.datetime.now()
+    if not measure_after:
+        start_time = datetime.datetime.now()
     result = operation()
+    if measure_after:
+        start_time = datetime.datetime.now()
+    passed_time = datetime.datetime.now() - start_time
+    if minimal_time:
+        additional_time = minimal_time - passed_time.total_seconds()
+        if additional_time > 0:
+            time.sleep(additional_time)
     end_time = datetime.datetime.now()
     return {
         "start": start_time,
         "end": end_time,
-        "result": result}
+        "result": result,
+        "metadata": metadata}
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -390,6 +408,98 @@ def workload_memory_utilization(request):
     return measure_operation(fill_memory)
 
 
+@pytest.fixture(scope="session")
+def volume_mount_points():
+    """
+    Returns dictionary where keys are volume names in gluster and values
+    are directory paths to volume mount points.
+    """
+    SSH = usmssh.get_ssh()
+    host = CONF.inventory.get_groups_dict()["usm_client"][0]
+    gluster_volume = GlusterVolume()
+    volumes = gluster_volume.list()
+    mount_points = {}
+
+    for volume in volumes:
+        mount_point_cmd = "mount | awk '/{}/ {{print $3}}'".format(volume)
+        retcode, mount_point, stderr = SSH[host].run(mount_point_cmd)
+        if retcode != 0:
+            raise OSError(stderr.decode("utf-8"))
+        mount_points[volume] = mount_point.decode("utf-8")
+    return mount_points
+
+
+@pytest.fixture(params=[76, 91], scope="session")
+def workload_capacity_utilization(request, volume_mount_points):
+    """
+    Returns:
+        dict: contains information about `start` and `stop` time of dd
+            command and `result` as number presenting percentage of disk
+            utilization.
+    """
+    volume_name = list(volume_mount_points.keys())[0]
+    mount_point = volume_mount_points[volume_name].strip()
+    SSH = usmssh.get_ssh()
+    host = CONF.inventory.get_groups_dict()["usm_client"][0]
+
+    def fill_volume():
+        """
+        Use `dd` command to utilize mounted volume.
+        """
+        disk_space_cmd = "df {0} | awk '/{1}/ " \
+            "{{print $3 \" \" $4}}'".format(
+                mount_point,
+                mount_point.split("/")[-1])
+        retcode, disk_space, stderr = SSH[host].run(disk_space_cmd)
+        if retcode != 0:
+            raise OSError(stderr.decode("utf-8"))
+
+        # disk values in M
+        disk_used, disk_available = [
+            int(size.rstrip("\n")) / 1024 for size in disk_space.decode(
+                "utf-8").split(" ")]
+
+        # block size = 100M
+        block_size = 100
+        # compute disk space that is going to be used and number of files
+        # to create with regard to already utilized space
+        file_count = int((
+            (int(disk_available) / 100 * request.param) - int(disk_used)
+                ) / block_size)
+
+        stress_cmd = "for x in {{1..{}}}; do dd if=/dev/zero" \
+            " of={}/test_file$x count=1 bs={}M; done".format(
+                file_count,
+                mount_point[:-1] if mount_point.endswith("/") else mount_point,
+                block_size)
+        retcode, _, stderr = SSH[host].run(stress_cmd)
+        if retcode != 0:
+            raise OSError(stderr.decode("utf-8"))
+        return request.param
+
+    disk_space_cmd = "df {0} | awk '/{1}/ {{print $2}}'".format(
+        mount_point,
+        mount_point.split("/")[-1])
+    retcode, disk_total, stderr = SSH[host].run(disk_space_cmd)
+    if retcode != 0:
+        raise OSError(stderr.decode("utf-8"))
+
+    time_to_measure = 180
+    yield measure_operation(
+        fill_volume,
+        minimal_time=time_to_measure,
+        metadata={
+            "volume_name": volume_name,
+            "total_capacity": int(disk_total.decode("utf-8").rstrip("\n"))},
+        measure_after=True)
+
+    cleanup_cmd = "rm -f {}/test_file*".format(
+        mount_point[:-1] if mount_point.endswith("/") else mount_point)
+    retcode, _, stderr = SSH[host].run(cleanup_cmd)
+    if retcode != 0:
+        raise OSError(stderr.decode("utf-8"))
+
+
 @pytest.fixture(params=[70, 95], scope="session")
 def workload_swap_utilization(request):
     """
@@ -430,3 +540,22 @@ def workload_swap_utilization(request):
         SSH[host].run(teardown_cmd)
         return request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture()
+def gluster_volume(request):
+    """
+    Use this fixture when a test case needs at least one gluster volume. This
+    fixture checks that there is available at least number of volumes
+    specified in configuration option `volume_count`. If this option is
+    not provided or if it is set to `0` then tests that use this fixture will
+    be skipped.
+    """
+    if 'volume_count' in CONF.config['usmqe'] and CONF.config[
+            'usmqe']['volume_count'] > 0:
+        gluster_volume = GlusterVolume()
+        volumes = gluster_volume.list()
+        assert len(volumes) >= CONF.config['usmqe']['volume_count']
+    else:
+        pytest.skip('Test needs a volume and an option `volume_count`'
+                    ' set accordingly.')
