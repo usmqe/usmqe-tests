@@ -45,7 +45,7 @@ def test_volume_attributes(application, valid_session_credentials):
         pytest.check(volume.volname.find("olume_") == 1)
         pytest.check(volume.running == "Yes")
         pytest.check(volume.rebalance == "Not Started")
-        pytest.check(volume.alerts == "0")
+        pytest.check(int(volume.alerts) >= 0)
 
 
 @pytest.mark.testready
@@ -336,11 +336,11 @@ def test_volume_brick_dashboards(application):
                 LOGGER.debug("Hostname in grafana: {}".format(dashboard_values["host_name"]))
                 LOGGER.debug("Hostname in main UI "
                              "after dot replacement: '{}'".format(brick.hostname.replace(".", "_")))
-                pytest.check(dashboard_values["brick_path"] == brick.brick_path.replace("/", "|"))
+                pytest.check(dashboard_values["brick_path"] == brick.brick_path.replace("/", ":"))
                 LOGGER.debug("Brick path in grafana: {}".format(dashboard_values["brick_path"]))
                 LOGGER.debug("Brick path in main UI after slash "
-                             "replacement: {}".format(brick.brick_path.replace("/", "|")))
-                pytest.check(dashboard_values["brick_status"] == brick.status,
-                             issue="https://bugzilla.redhat.com/show_bug.cgi?id=1668900")
+                             "replacement: {}".format(brick.brick_path.replace("/", ":")))
+                pytest.check(dashboard_values["brick_status"] == brick.status)
+                assert brick.status != "None" and brick.status is not None
                 LOGGER.debug("Status in grafana: '{}'".format(dashboard_values["brick_status"]))
                 LOGGER.debug("Status in main UI: '{}'".format(brick.status))

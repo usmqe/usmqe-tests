@@ -150,17 +150,17 @@ def test_brick_dashboard(application):
         bricks = host.bricks.get_bricks()
         for brick in bricks:
             dashboard_values = brick.get_values_from_dashboard()
+            brick_status = brick.status
             LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
             LOGGER.debug("Cluster name in main UI: {}".format(brick.cluster_name))
             pytest.check(dashboard_values["cluster_name"] == brick.cluster_name)
             pytest.check(dashboard_values["host_name"] == brick.hostname.replace(".", "_"))
             LOGGER.debug("Hostname in main UI "
                          "after dot replacement: '{}'".format(brick.hostname.replace(".", "_")))
-            pytest.check(dashboard_values["brick_path"] == brick.brick_path.replace("/", "|"))
+            pytest.check(dashboard_values["brick_path"] == brick.brick_path.replace("/", ":"))
             LOGGER.debug("Brick path in grafana: {}".format(dashboard_values["brick_path"]))
             LOGGER.debug("Brick path in main UI "
-                         "after slash replacement: {}".format(brick.brick_path.replace("/", "|")))
-            pytest.check(dashboard_values["brick_status"] == brick.status,
-                         issue="https://bugzilla.redhat.com/show_bug.cgi?id=1668900")
+                         "after slash replacement: {}".format(brick.brick_path.replace("/", ":")))
+            pytest.check(dashboard_values["brick_status"] == brick_status)
             LOGGER.debug("Brick status in grafana: '{}'".format(dashboard_values["brick_status"]))
-            LOGGER.debug("Brick status in main UI: '{}'".format(brick.status))
+            LOGGER.debug("Brick status in main UI: '{}'".format(brick_status))
