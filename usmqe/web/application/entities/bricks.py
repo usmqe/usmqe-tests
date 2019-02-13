@@ -7,6 +7,7 @@ from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import TendrlNavigateStep, ViaWebUI
 from usmqe.web.application.views.grafana import GrafanaBrickDashboard
 from usmqe.web.application.views.brick import HostBricksView
+from usmqe.web.application.views.brick import VolumeBricksView
 
 LOGGER = pytest.get_logger('bricks', module=True)
 
@@ -49,6 +50,7 @@ class HostBrick(Brick):
     def status(self):
         """
         Return 'uib-tooltip' attribute of Brick's status icon.
+        It should be either 'Started' or 'Stopped'.
         """
         view = self.application.web_ui.create_view(HostBricksView)
         for row in view.bricks:
@@ -91,18 +93,33 @@ class VolumeBrick(Brick):
 
     @property
     def status(self):
-        view = self.application.web_ui.create_view(HostBricksView)
-        for row in view.bricks:
-            if row["Brick Path"].text == self.brick_path:
+        """
+        Return 'uib-tooltip' attribute of Brick's status icon.
+        It should be either 'Started' or 'Stopped'.
+        """
+        view = self.application.web_ui.create_view(VolumeBricksView)
+        time.sleep(1)
+        if not view.volume_parts(self.part_id).is_expanded:
+            view.volume_parts(self.part_id).expand()
+        for row in view.volume_parts(self.part_id).bricks:
+            if (row["Brick Path"].text == self.brick_path and
+                    row["Host Name"].text == self.hostname):
                 return row[1].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
 
 @attr.s
 class VolumeBricksCollection(BaseCollection):
+    """
+    Collection of Volume's Bricks.
+    """
     ENTITY = VolumeBrick
 
     def get_bricks(self):
+        """
+        Navigate to Volume's Brick list by clicking on volume name.
+        Return the list of initiated Brick objects.
+        """
         view = ViaWebUI.navigate_to(self.parent.parent.parent, "Bricks")
         if not self.parent.is_expanded:
             self.parent.expand_or_collapse()
@@ -124,6 +141,9 @@ class VolumeBricksCollection(BaseCollection):
 
 @ViaWebUI.register_destination_for(HostBrick, "Dashboard")
 class BrickDashboard(TendrlNavigateStep):
+    """
+    Navigate to each Host Brick's grafana dashboard by clicking Dashboard button.
+    """
     VIEW = GrafanaBrickDashboard
     prerequisite = NavigateToAttribute("parent.parent", "Bricks")
 
@@ -133,24 +153,28 @@ class BrickDashboard(TendrlNavigateStep):
             if row["Brick Path"].text == self.obj.brick_path:
                 row[5].click()
                 break
-        time.sleep(1)
+        time.sleep(2)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(1)
+        time.sleep(2)
 
 
 @ViaWebUI.register_destination_for(VolumeBrick, "Dashboard")
 class VolumeBrickDashboard(TendrlNavigateStep):
+    """
+    Navigate to each Volume Brick's grafana dashboard by clicking Dashboard button.
+    """
     VIEW = GrafanaBrickDashboard
     prerequisite = NavigateToAttribute("parent.parent.parent.parent", "Bricks")
 
     def step(self):
         time.sleep(1)
         self.parent.expand_all.click()
+        time.sleep(1)
         for row in self.parent.volume_parts(self.obj.part_id).bricks.rows():
             if (row["Brick Path"].text == self.obj.brick_path and
                     row["Host Name"].text == self.obj.hostname):
                 row[5].click()
                 break
-        time.sleep(1)
+        time.sleep(2)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(1)
+        time.sleep(2)
