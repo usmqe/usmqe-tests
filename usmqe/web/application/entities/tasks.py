@@ -16,6 +16,10 @@ LOGGER = pytest.get_logger('volumes', module=True)
 
 @attr.s
 class Task(BaseEntity):
+    """
+    Task object is an item of a Cluster's TasksCollection.
+    Each task has its collection of Events.
+    """
     task_id = attr.ib()
     task_name = attr.ib()
     submitted_date = attr.ib()
@@ -35,10 +39,16 @@ class TasksCollection(BaseCollection):
     ENTITY = Task
 
     def get_all_task_ids(self):
+        """
+        Return the list of all task associated with the given cluster.
+        """
         view = self.application.web_ui.create_view(ClusterTasksView)
         return view.all_task_ids
 
     def get_tasks(self):
+        """
+        Return the list of instantiated Task objects, their attributes read from Tasks page.
+        """
         view = ViaWebUI.navigate_to(self.parent, "Tasks")
         task_list = []
         time.sleep(2)
@@ -56,6 +66,9 @@ class TasksCollection(BaseCollection):
 
 @ViaWebUI.register_destination_for(Task, "Events")
 class TaskEvents(TendrlNavigateStep):
+    """
+    Navigate to the task's event log by clicking on the task name.
+    """
     VIEW = TaskEventsView
     prerequisite = NavigateToAttribute("parent.parent", "Tasks")
 

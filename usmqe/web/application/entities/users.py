@@ -13,6 +13,9 @@ from usmqe.web.application.implementations.web_ui import TendrlNavigateStep, Via
 
 @attr.s
 class User(BaseEntity):
+    """
+    User object.
+    """
     user_id = attr.ib()
     name = attr.ib()
     email = attr.ib()
@@ -21,6 +24,9 @@ class User(BaseEntity):
     role = attr.ib()
 
     def delete(self, cancel=False):
+        """
+        Delete the user by choosing 'Delete User' option of Actions kebab.
+        """
         view = ViaWebUI.navigate_to(self.parent, "All")
         time.sleep(1)
         for row in view.users:
@@ -30,12 +36,15 @@ class User(BaseEntity):
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
                 wait_for(lambda: view.is_displayed, timeout=3)
                 view.delete.click()
-                # TODO this is a UI bug
+                # this is a UI bug
                 view.browser.refresh()
                 # view = ViaWebUI.navigate_to(self.parent, "All")
                 break
 
     def edit(self, new_values_dict, cancel=False):
+        """
+        Edit user.
+        """
         view = ViaWebUI.navigate_to(self.parent, "All")
         time.sleep(1)
         for row in view.users:

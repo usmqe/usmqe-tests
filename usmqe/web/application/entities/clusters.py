@@ -26,6 +26,9 @@ LOGGER = pytest.get_logger('clusters', module=True)
 
 @attr.s
 class Cluster(BaseEntity):
+    """
+    Each Cluster object has its own collections of hosts, volumes, tasks and events.
+    """
     cluster_id = attr.ib()
     name = attr.ib()
     health = attr.ib()
@@ -60,6 +63,9 @@ class Cluster(BaseEntity):
         return self.collections.events
 
     def update(self):
+        """
+        Update the cluster's attributes by reading them from Clusters list.
+        """
         view = self.application.web_ui.create_view(ClustersView)
         self.version = view.clusters(self.name).cluster_version.text
         self.managed = view.clusters(self.name).managed.text
@@ -77,7 +83,7 @@ class Cluster(BaseEntity):
 
     def cluster_import(self, cluster_name=None, profiling="enable", view_progress=False):
         """
-        Cluster import function.
+        Import the cluster and wait until it is listed as Ready to Use in the clusters list.
         Valid cluster name contains only alphanumeric and underscore characters.
         Possible profiling values are "enable", "disable" or "leaveAsIs".
         """
@@ -124,6 +130,11 @@ class Cluster(BaseEntity):
         pytest.check(self.status == "Ready to Use")
 
     def unmanage(self, cancel=False, original_id=None, view_progress=False):
+        """
+        Unmanage the cluster and wait until it's listed as Ready to Import in the clusters list.
+        If the cluster has custom name, its original id is need it to find it in the clusters list
+        after the unmanage.
+        """
         if original_id is not None:
             self.cluster_id = original_id
         view = self.application.web_ui.create_view(ClustersView)
@@ -168,6 +179,10 @@ class Cluster(BaseEntity):
         pytest.check(self.status == "Ready to Import")
 
     def enable_profiling(self, cancel=False):
+        """
+        Enable profiling for all volumes of the cluster and wait until cluster's Volume Profiling
+        attribute changes to Enabled.
+        """
         view = self.application.web_ui.create_view(ClustersView)
         view.clusters(self.name).actions.select("Enable Profiling")
         time.sleep(40)
@@ -181,6 +196,10 @@ class Cluster(BaseEntity):
         pytest.check(self.profiling == "Enabled")
 
     def disable_profiling(self, cancel=False):
+        """
+        Disable profiling for all volumes of the cluster and wait until cluster's Volume Profiling
+        attribute changes to Disabled.
+        """
         view = self.application.web_ui.create_view(ClustersView)
         view.clusters(self.name).actions.select("Disable Profiling")
         time.sleep(40)
@@ -221,10 +240,18 @@ class ClustersCollection(BaseCollection):
     ENTITY = Cluster
 
     def get_all_cluster_ids(self):
+        """
+        Return the list of all cluster names/ids in the clusters list.
+        """
         view = self.application.web_ui.create_view(ClustersView)
         return view.all_ids
 
     def get_clusters(self):
+        """
+        Return the list of instantiated Cluster objects, their attributes read from Clusters page.
+        If a cluster hasn't been imported, its volumes count, alerts count and profiling
+        attributes are set to None.
+        """
         view = ViaWebUI.navigate_to(self, "All")
         clusters_list = []
         for cluster_id in self.get_all_cluster_ids():
@@ -259,6 +286,9 @@ class ClustersCollection(BaseCollection):
 
 @ViaWebUI.register_destination_for(ClustersCollection, "All")
 class ClustersAll(TendrlNavigateStep):
+    """
+    Navigate to the list of clusters by choosing 'All clusters' in the context selector.
+    """
     VIEW = ClustersView
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
@@ -270,6 +300,9 @@ class ClustersAll(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Cluster, "Import")
 class ClusterImport(TendrlNavigateStep):
+    """
+    Navigate to Cluster Import page by choosing Import option of the Clusters's kebab.
+    """
     VIEW = ImportClusterView
     prerequisite = NavigateToAttribute("parent", "All")
 
@@ -280,6 +313,9 @@ class ClusterImport(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Cluster, "Hosts")
 class ClusterHosts(TendrlNavigateStep):
+    """
+    Navigate to Cluster's Host page by clicking on Cluster's name/id in the context selector.
+    """
     VIEW = ClusterHostsView
     prerequisite = NavigateToAttribute("parent", "All")
 
@@ -291,6 +327,9 @@ class ClusterHosts(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Cluster, "Volumes")
 class ClusterVolumes(TendrlNavigateStep):
+    """
+    Navigate to Cluster's Volumes page by clicking Volumes in the vertical navigation bar.
+    """
     VIEW = ClusterVolumesView
     prerequisite = NavigateToSibling("Hosts")
 
@@ -301,6 +340,9 @@ class ClusterVolumes(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Cluster, "Tasks")
 class ClusterTasks(TendrlNavigateStep):
+    """
+    Navigate to Cluster's Tasks page by clicking Tasks in the vertical navigation bar.
+    """
     VIEW = ClusterTasksView
     prerequisite = NavigateToSibling("Hosts")
 
@@ -311,6 +353,9 @@ class ClusterTasks(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Cluster, "Events")
 class ClusterEvents(TendrlNavigateStep):
+    """
+    Navigate to Cluster's Events page by clicking Events in the vertical navigation bar.
+    """
     VIEW = ClusterEventsView
     prerequisite = NavigateToSibling("Hosts")
 
@@ -321,6 +366,9 @@ class ClusterEvents(TendrlNavigateStep):
 
 @ViaWebUI.register_destination_for(Cluster, "Dashboard")
 class ClusterDashboard(TendrlNavigateStep):
+    """
+    Navigate to Cluster's grafana dashboard by clicking Dashboard button.
+    """
     VIEW = GrafanaClusterDashboard
     prerequisite = NavigateToAttribute("parent", "All")
 

@@ -11,6 +11,7 @@ from usmqe.web.application.views.brick import VolumeBricksView
 class VolumePart(BaseEntity):
     """
     Either replica set or subvolume.
+    Each Volume Part has its own collection of Bricks.
     """
     part_id = attr.ib()
     part_name = attr.ib()
@@ -30,7 +31,7 @@ class VolumePart(BaseEntity):
 
     def expand_or_collapse(self):
         """
-        Click on volume part name to expand or collapse detailed information on this part
+        Click on volume part name to expand or collapse this part's list of bricks
         """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.volume_parts(self.part_id).part_name.click()
@@ -42,6 +43,10 @@ class VolumePartsCollection(BaseCollection):
     ENTITY = VolumePart
 
     def get_parts(self):
+        """
+        Return the list of all Volume Part objects, their attributes read from the Volume's
+        Brick details page.
+        """
         view = ViaWebUI.navigate_to(self.parent, "Bricks")
         part_list = []
         assert view.all_part_ids != []
@@ -55,11 +60,17 @@ class VolumePartsCollection(BaseCollection):
         return part_list
 
     def expand_all(self):
+        """
+        Expand all lists of bricks by clicking "Expand All" link
+        """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.expand_all.click()
         time.sleep(2)
 
     def collapse_all(self):
+        """
+        Collapse all lists of bricks by clicking "Collapse All" link
+        """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.collapse_all.click()
         time.sleep(2)

@@ -8,13 +8,16 @@ from widgetastic.widget import ParametrizedLocator, ParametrizedView
 
 
 class ClustersView(BaseLoggedInView):
-    """List of clusters
+    """
+    List of clusters
     There's no list-group widget, so it had to be a parametrized view.
     """
 
     @ParametrizedView.nested
     class clusters(ParametrizedView):
-        """Nested view for each cluster"""
+        """
+        Nested view for each cluster
+        """
         PARAMETERS = ("cluster_id",)
         ALL_CLUSTERS = ".//div[@class='list-group-item']"
         ALL_CLUSTER_IDS = ".//div[@class='list-view-pf-description']/descendant-or-self::*/text()"
@@ -62,15 +65,19 @@ class ClustersView(BaseLoggedInView):
 
 
 class UnmanageConfirmationView(View):
-    """View for cluster unmanage confirmation modal """
+    """
+    View for cluster unmanage confirmation modal
+    """
     ROOT = ".//pf-modal-overlay-content"
-    # close_alert =
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
     unmanage = Button("Unmanage")
 
 
 class UnmanageTaskSubmittedView(View):
+    """
+    View for "Unmanage Task submitted" modal.
+    """
     ROOT = ".//pf-modal-overlay-content"
     CLOSE_LOC = './/div[@class="modal-header"]/button[@class="close ng-scope"]'
     view_progress = Button("contains", "View Task Progress")

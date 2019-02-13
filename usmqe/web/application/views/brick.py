@@ -20,6 +20,10 @@ class HostBricksView(BaseClusterSpecifiedView):
 
 
 class VolumeBricksView(BaseClusterSpecifiedView):
+    """
+    View for Brick details of a volume.
+    Each volume part (replica set or subvolume) has its own bricks table.
+    """
     pagename = Text(".//h1")
     volume_name = Text(".//ul[@class='breadcrumb custom-breadcrumb']/li[@class='ng-binding']")
     expand_all = Text(".//a[@ng-click='vm.expandAll()']")
@@ -27,6 +31,9 @@ class VolumeBricksView(BaseClusterSpecifiedView):
 
     @ParametrizedView.nested
     class volume_parts(ParametrizedView):
+        """
+        Nested view for each volume part.
+        """
         PARAMETERS = ("part_id",)
         ROOT = ParametrizedLocator("(.//div[@class='list-group list-view-pf list-view-pf-view"
                                    " ng-scope'])[position() = {part_id|quote}]")
@@ -52,7 +59,7 @@ class VolumeBricksView(BaseClusterSpecifiedView):
     def all_part_ids(self):
         """
         Returns the list of all subvolume/replica set IDs.
-        They will be used as XPATH indeces, so they should start with 1.
+        They will be used as XPATH indeces, so they should be strings and start with 1.
         """
         return [str(i + 1) for i in range(len(self.browser.elements(self.ALL_VOLUME_PARTS)))]
 

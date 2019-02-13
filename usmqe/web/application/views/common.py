@@ -7,7 +7,9 @@ from widgetastic_patternfly import AboutModal
 
 
 class LoginPage(View):
-    """View for login page """
+    """
+    View for login page
+    """
     username = TextInput(id="username")
     password = TextInput(id="password")
     log_in = Button("Log In")
@@ -18,8 +20,10 @@ class LoginPage(View):
 
 
 class Navbar(View):
-    """Navigation bar on top of every page except the login page.
-    usermanagement is only available to admins"""
+    """
+    Navigation bar on top of every page except the login page.
+    usermanagement is only available to admins
+    """
     ROOT = ".//nav[contains(@class,'navbar-pf-contextselector tendrl-header-container')]"
     title = Text(".//a[@class='navbar-brand']")
     clusters = Select(".//select[contains(@ng-change, 'goToClusterPage')]")
@@ -30,8 +34,10 @@ class Navbar(View):
 
 
 class VerticalNavbar(View):
-    """Vertical navigation bar for views where cluster is specified.
-    Can't use VerticalNavigation widget because Tasks item never gets attribute 'active'"""
+    """
+    Vertical navigation bar for views where cluster is specified.
+    Can't use VerticalNavigation widget because Tasks item never gets attribute 'active'
+    """
     ROOT = ".//nav[@class='nav-pf-vertical nav-pf-vertical-with-secondary-nav hidden-icons-pf']"
     hosts = Text(".//li[@data-target='#Hosts']")
     volumes = Text(".//li[@data-target='#Volumes']")
@@ -40,7 +46,9 @@ class VerticalNavbar(View):
 
 
 class BaseLoggedInView(View):
-    """Base view so that every page will inherit navbar and about modal"""
+    """
+    Base view so that every page will inherit navbar and about modal
+    """
     navbar = View.nested(Navbar)
     modal = AboutModal(id='aboutModal')
 
@@ -53,6 +61,9 @@ class BaseLoggedInView(View):
         return self.navbar.is_displayed
 
     def log_out(self):
+        """
+        Log out the current user.
+        """
         self.parent.navbar.usermenu.select_item("Logout")
 
     def get_detail(self, field):
@@ -61,6 +72,7 @@ class BaseLoggedInView(View):
         Raises KeyError if the field isn't in the about modal
         :param field: string label for the detail field
         :return: string value from the requested field
+
         """
         self.navbar.modal.click()
         try:
@@ -73,13 +85,17 @@ class BaseLoggedInView(View):
 
 
 class BaseClusterSpecifiedView(BaseLoggedInView):
-    """Base view for pages where cluster is specified: Hosts, Volumes, Tasks, Events"""
+    """
+    Base view for pages where cluster is specified: Hosts, Volumes, Tasks, Events
+    """
     vertical_navbar = View.nested(VerticalNavbar)
     cluster_name = Text(".//div[@class='nav contextselector-pf']/div/button/span")
 
 
 class DeleteConfirmationView(View):
-    """View for delete confirmation modal """
+    """
+    View for delete confirmation modal
+    """
     ROOT = ".//pf-modal-overlay-content"
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
@@ -87,7 +103,9 @@ class DeleteConfirmationView(View):
 
 
 class MySettingsView(View):
-    """View for My Settings modal """
+    """
+    View for My Settings modal
+    """
     ROOT = ".//div[@id='userSettingModal']"
     popup_name = Text(".//h4[@id='modalTitle']")
     users_name = TextInput(name="name")
