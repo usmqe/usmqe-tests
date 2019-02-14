@@ -5,8 +5,6 @@ Alerting test suite - workload
 import pytest
 from usmqe.alerting.alerting import Alerting
 
-import datetime
-
 
 LOGGER = pytest.get_logger('workload_alerting', module=True)
 
@@ -311,27 +309,3 @@ def test_memory_utilization_api_alert(
         "There should be 1 alert:\nBody: '{0}'\n"
         "There is {1}".format(
             msg, alert_count))
-
-
-def test_time(default_entities):
-
-    alerting = Alerting("root")
-    entities = default_entities
-    severity = "WARNING"
-    entities["value"] = "unhealthy"
-    target = None
-    mail_subject, mail_msg = alerting.generate_alert_msg(
-        domain="memory",
-        subject="utilization",
-        entities=entities)
-    alert_count = alerting.search_mail(
-        "[{0}] {1}".format(severity, mail_subject),
-        mail_msg,
-        datetime.datetime(2019, 2, 11, 9, 47),
-        datetime.datetime(2019, 2, 11, 9, 49),
-        target=target)
-    pytest.check(
-        alert_count == 1,
-        "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
-        "There is {2}".format(
-            mail_subject, mail_msg, alert_count))
