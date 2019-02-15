@@ -4,19 +4,21 @@ import pytest
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_event_attributes(application):
+def test_event_attributes(application, imported_cluster_reuse):
     """
     Check that all common event attributes are as expected
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of events associated with this cluster.
     :result:
       Event objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     events = test_cluster.events.get_events()
     """
     :step:

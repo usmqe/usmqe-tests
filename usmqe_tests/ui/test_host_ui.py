@@ -6,22 +6,34 @@ LOGGER = pytest.get_logger('hosts', module=True)
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_attributes(application):
+def test_host_attributes(application, imported_cluster_reuse):
     """
     Test that all hosts are listed on cluster's Hosts page.
     Check all common host attributes
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its hosts.
     :result:
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     hosts = test_cluster.hosts.get_hosts()
-    pytest.check(len(hosts) == 6)
+    """
+    :step:
+       Compare the set of hostnames in UI to set of nodes in API
+    :result:
+       UI shows the correct set of hostnames.
+    """
+    ui_hostnames = [host.hostname for host in hosts]
+    api_hostnames = [node["fqdn"] for node in imported_cluster_reuse["nodes"]]
+    LOGGER.debug("API cluster nodes: {}".format(api_hostnames))
+    LOGGER.debug("UI cluster nodes: {}".format(ui_hostnames))
+    pytest.check(set(ui_hostnames) == set(api_hostnames))
     """
     :step:
       Check common host attributes
@@ -34,25 +46,34 @@ def test_host_attributes(application):
         pytest.check(host.role == "Gluster Peer")
         pytest.check(int(host.alerts) < 1000)
         pytest.check(host.cluster_name == test_cluster.name)
+        for node in imported_cluster_reuse["nodes"]:
+            if node["fqdn"] == host.hostname:
+                pytest.check(node["status"] == host.health)
 
 
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_bricks(application):
+def test_host_bricks(application, imported_cluster_reuse):
     """
     Test that all hosts are listed on cluster's Hosts page.
-    Check all common host attributes
+    Check all common brick attributes
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its hosts.
     :result:
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    volume_bricks = []
+    for volume in test_cluster.volumes.get_volumes():
+        for part in volume.parts.get_parts():
+            volume_bricks += part.bricks.get_bricks()
     hosts = test_cluster.hosts.get_hosts()
     pytest.check(hosts != [])
     for host in hosts:
@@ -65,6 +86,19 @@ def test_host_bricks(application):
         """
         bricks = host.bricks.get_bricks()
         pytest.check(len(bricks) == int(host.bricks_count))
+        """
+        :step:
+          Check that bricks on the host's Brick details page are the same as
+          all this host's bricks on all volume brick details pages combined together.
+        :result:
+          Volume details and host details show the same set of bricks
+        """
+        bricks_from_volumes = [brick.brick_path for brick in volume_bricks
+                               if brick.hostname == host.hostname]
+        bricks_from_host = [brick.brick_path for brick in bricks]
+        LOGGER.debug("Host's bricks from volumes: {}".format(bricks_from_volumes))
+        LOGGER.debug("Host's bricks: {}".format(bricks_from_host))
+        pytest.check(set(bricks_from_host) == set(bricks_from_volumes))
         for brick in bricks:
             """
             :step:
@@ -83,19 +117,21 @@ def test_host_bricks(application):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_dashboard(application):
+def test_host_dashboard(application, imported_cluster_reuse):
     """
     Test each host's Dashboard button
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its hosts.
     :result:
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     hosts = test_cluster.hosts.get_hosts()
     """
     :step:
@@ -122,19 +158,21 @@ def test_host_dashboard(application):
         LOGGER.debug("Host health in main UI: '{}'".format(host.health.lower()))
 
 
-def test_brick_dashboard(application):
+def test_brick_dashboard(application, imported_cluster_reuse):
     """
     Test Dashboard button of each brick of each host
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its hosts.
     :result:
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     hosts = test_cluster.hosts.get_hosts()
     """
     :step:

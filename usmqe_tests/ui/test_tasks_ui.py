@@ -4,19 +4,21 @@ import pytest
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_task_attributes(application):
+def test_task_attributes(application, imported_cluster_reuse):
     """
     Check that all common task attributes are as expected
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of tasks associated with this cluster.
     :result:
       Task objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     tasks = test_cluster.tasks.get_tasks()
     """
     :step:
@@ -36,20 +38,22 @@ def test_task_attributes(application):
         pytest.check(int(task.changed_date.split(" ")[2]) < 2100)
 
 
-def test_task_log(application):
+def test_task_log(application, imported_cluster_reuse):
     """
     Test that clicking task name opens task log page
     and all events in the log have expected attributes
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of tasks associated with this cluster.
     :result:
       Task objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     tasks = test_cluster.tasks.get_tasks()
     pytest.check(tasks != [])
     """

@@ -9,20 +9,22 @@ LOGGER = pytest.get_logger('volume_test', module=True)
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_attributes(application, valid_session_credentials):
+def test_volume_attributes(application, valid_session_credentials, imported_cluster_reuse):
     """
     Test that all volumes are listed on cluster's Volumes page.
     Check all common volume attributes
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its volumes.
     :result:
       Volume objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     volumes = test_cluster.volumes.get_volumes()
     """
     :step:
@@ -51,19 +53,21 @@ def test_volume_attributes(application, valid_session_credentials):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_volume_dashboard(application):
+def test_volume_dashboard(application, imported_cluster_reuse):
     """
     Check that dashboard button opens correct volume dashboard with correct data on bricks
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its volumes.
     :result:
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     volumes = test_cluster.volumes.get_volumes()
     """
     :step:
@@ -91,19 +95,21 @@ def test_volume_dashboard(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_profiling_switch(application):
+def test_volume_profiling_switch(application, imported_cluster_reuse):
     """
     Test disabling and enabling volume profiling in UI
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its volumes.
     :result:
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     volumes = test_cluster.volumes.get_volumes()
     for volume in volumes:
         """
@@ -132,19 +138,21 @@ def test_volume_profiling_switch(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_parts(application):
+def test_volume_parts(application, imported_cluster_reuse):
     """
     Test replica set/subvolume names and expanding/collapsing.
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its volumes.
     :result:
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [])
     for volume in volumes:
@@ -222,19 +230,21 @@ def test_volume_parts(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_bricks(application):
+def test_volume_bricks(application, imported_cluster_reuse):
     """
     Test volume brick attributes and their division into replica sets/subvolumes.
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its volumes.
     :result:
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [])
     for volume in volumes:
@@ -297,19 +307,21 @@ def test_volume_bricks(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_brick_dashboards(application):
+def test_volume_brick_dashboards(application, imported_cluster_reuse):
     """
     Test Dashboard button of each brick of each volume
     """
     """
     :step:
-      Log in to Web UI and get the first cluster from the cluster list.
+      Log in to Web UI and get the cluster identified by cluster_member.
       Get the list of its volumes.
     :result:
       Volume objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     volumes = test_cluster.volumes.get_volumes()
     """
     :step:
