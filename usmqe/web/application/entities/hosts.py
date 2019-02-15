@@ -93,9 +93,9 @@ class HostDashboard(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.hosts(self.obj.hostname).dashboard_button.click()
-        time.sleep(1)
+        time.sleep(2)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(1)
+        time.sleep(2)
 
 
 @ViaWebUI.register_destination_for(Host, "Bricks")
