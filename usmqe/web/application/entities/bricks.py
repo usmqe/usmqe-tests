@@ -53,6 +53,7 @@ class HostBrick(Brick):
         It should be either 'Started' or 'Stopped'.
         """
         view = self.application.web_ui.create_view(HostBricksView)
+        time.sleep(1)
         for row in view.bricks:
             if row["Brick Path"].text == self.brick_path:
                 return row[0].browser.elements(".//span[@uib-tooltip"
@@ -101,6 +102,7 @@ class VolumeBrick(Brick):
         time.sleep(1)
         if not view.volume_parts(self.part_id).is_expanded:
             view.volume_parts(self.part_id).expand()
+        time.sleep(1)
         for row in view.volume_parts(self.part_id).bricks:
             if (row["Brick Path"].text == self.brick_path and
                     row["Host Name"].text == self.hostname):
@@ -153,9 +155,9 @@ class BrickDashboard(TendrlNavigateStep):
             if row["Brick Path"].text == self.obj.brick_path:
                 row[5].click()
                 break
-        time.sleep(2)
+        time.sleep(3)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(2)
+        time.sleep(3)
 
 
 @ViaWebUI.register_destination_for(VolumeBrick, "Dashboard")
@@ -175,6 +177,6 @@ class VolumeBrickDashboard(TendrlNavigateStep):
                     row["Host Name"].text == self.obj.hostname):
                 row[5].click()
                 break
-        time.sleep(2)
+        time.sleep(3)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(2)
+        time.sleep(3)

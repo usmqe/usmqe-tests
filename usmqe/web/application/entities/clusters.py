@@ -375,6 +375,6 @@ class ClusterDashboard(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.clusters(self.obj.name).dashboard_button.click()
-        time.sleep(1)
+        time.sleep(3)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(1)
+        time.sleep(3)

@@ -141,9 +141,9 @@ class VolumeDashboard(TendrlNavigateStep):
     def step(self):
         time.sleep(1)
         self.parent.volumes(self.obj.volname).dashboard_button.click()
-        time.sleep(1)
+        time.sleep(3)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(2)
+        time.sleep(3)
 
 
 @ViaWebUI.register_destination_for(Volume, "Bricks")

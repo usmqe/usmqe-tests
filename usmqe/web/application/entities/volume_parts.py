@@ -35,7 +35,7 @@ class VolumePart(BaseEntity):
         """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.volume_parts(self.part_id).part_name.click()
-        time.sleep(1)
+        time.sleep(2)
 
 
 @attr.s
