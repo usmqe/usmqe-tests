@@ -33,7 +33,7 @@ def imported_cluster_reuse():
         time.sleep(5)
     cluster_id = test_cluster["cluster_id"]
     if test_cluster["is_managed"] != "yes":
-        job_id = api.import_cluster(cluster_id)["job_id"]
+        job_id = api.import_cluster(cluster_id, profiling="enable")["job_id"]
         api.wait_for_job_status(job_id)
     clusters = api.get_cluster_list()
     clusters = [cluster for cluster in clusters
@@ -43,3 +43,4 @@ def imported_cluster_reuse():
     yield clusters[0]
     job_id = api.unmanage_cluster(cluster_id)["job_id"]
     api.wait_for_job_status(job_id)
+    time.sleep(30)

@@ -193,6 +193,7 @@ def test_brick_dashboard(application, imported_cluster_reuse):
             LOGGER.debug("Cluster name in main UI: {}".format(brick.cluster_name))
             pytest.check(dashboard_values["cluster_name"] == brick.cluster_name)
             pytest.check(dashboard_values["host_name"] == brick.hostname.replace(".", "_"))
+            LOGGER.debug("Hostname in grafana: {}".format(dashboard_values["host_name"]))
             LOGGER.debug("Hostname in main UI "
                          "after dot replacement: '{}'".format(brick.hostname.replace(".", "_")))
             pytest.check(dashboard_values["brick_path"] == brick.brick_path.replace("/", ":"))
