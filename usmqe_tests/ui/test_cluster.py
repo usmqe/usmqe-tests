@@ -255,3 +255,21 @@ def test_cluster_import_view_progress(application):
       Cluster is unmanaged
     """
     test_cluster.unmanage(view_progress=True)
+
+
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.cluster_expansion
+def test_cluster_expansion(application):
+    """
+    Expand cluster.
+    """
+    clusters = application.collections.clusters.get_clusters()
+    test_cluster = clusters[0]
+    test_cluster.expand()
+    LOGGER.debug("Cluster status: {}".format(test_cluster.status))
+    pytest.check(test_cluster.status == "Ready to Use")
+    hosts = test_cluster.hosts.get_hosts()
+    for host in hosts:
+        LOGGER.debug("{} host state: {}".format(host.hostname, host.health.lower()))
+        pytest.check(host.health.lower() == "up")

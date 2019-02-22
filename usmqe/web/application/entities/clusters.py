@@ -7,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.views.cluster import ClustersView, UnmanageConfirmationView
-from usmqe.web.application.views.cluster import UnmanageTaskSubmittedView
+from usmqe.web.application.views.cluster import UnmanageTaskSubmittedView, ExpandConfirmationView
 from usmqe.web.application.views.host import ClusterHostsView
 from usmqe.web.application.views.volume import ClusterVolumesView
 from usmqe.web.application.views.task import ClusterTasksView, MainTaskEventsView
@@ -228,11 +228,22 @@ class Cluster(BaseEntity):
         return dashboard_values
 
     def expand(self, cancel=False):
-        pass
-
-    @property
-    def exists(self):
-        pass
+        """
+        Expand cluster and wait until expansion process is complete.
+        """
+        view = self.application.web_ui.create_view(ClustersView)
+        view.clusters(self.name).actions.select("Expand")
+        view = self.application.web_ui.create_view(ExpandConfirmationView)
+        wait_for(lambda: view.is_displayed, timeout=3)
+        view.expand.click()
+        time.sleep(20)
+        for _ in range(40):
+            self.update()
+            if self.status == "Ready to Use":
+                break
+            else:
+                time.sleep(5)
+        pytest.check(self.status == "Ready to Use")
 
 
 @attr.s
