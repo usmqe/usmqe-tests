@@ -153,8 +153,8 @@ def test_cpu_utilization_api_alert(
         workload_cpu_utilization['end'],
         target=target)
     pytest.check(
-        alert_count == 1,
-        "There should be 1 alert:\nBody: '{0}'\n"
+        alert_count >= 1,
+        "There should be at least 1 alert:\nBody: '{0}'\n"
         "There is {1}".format(
             msg, alert_count))
 
@@ -305,7 +305,7 @@ def test_memory_utilization_api_alert(
         workload_memory_utilization['end'],
         target=target)
     pytest.check(
-        alert_count == 1,
-        "There should be 1 alert:\nBody: '{0}'\n"
+        alert_count >= 1,
+        "There should be at least 1 alert:\nBody: '{0}'\n"
         "There is {1}".format(
             msg, alert_count))

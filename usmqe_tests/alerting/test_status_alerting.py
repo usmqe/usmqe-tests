@@ -156,8 +156,8 @@ def test_volume_status_api_alert(
             workload_stop_volumes['start'],
             workload_stop_volumes['end'])
         pytest.check(
-            alert_count == 1,
-            "There should be 1 alert:\nBody: '{0}'\n"
+            alert_count >= 1,
+            "There should be at least 1 alert:\nBody: '{0}'\n"
             "There is {1}".format(
                 msg, alert_count))
 
@@ -172,8 +172,8 @@ def test_volume_status_api_alert(
             workload_stop_volumes['start'],
             workload_stop_volumes['end'])
         pytest.check(
-            alert_count == 1,
-            "There should be 1 alert:\nBody: '{0}'\n"
+            alert_count >= 1,
+            "There should be at least 1 alert:\nBody: '{0}'\n"
             "There is {1}".format(
                 msg, alert_count))
 
@@ -334,8 +334,8 @@ def test_host_status_api_alert(
             workload_stop_hosts['start'],
             workload_stop_hosts['end'])
         pytest.check(
-            alert_count == 1,
-            "There should be 1 alert:\nBody: '{0}'\n"
+            alert_count >= 1,
+            "There should be at least 1 alert:\nBody: '{0}'\n"
             "There is {1}".format(
                 msg, alert_count))
 
@@ -350,7 +350,7 @@ def test_host_status_api_alert(
         workload_stop_hosts['start'],
         workload_stop_hosts['end'])
     pytest.check(
-        alert_count == 1,
-        "There should be 1 alert:\nBody: '{0}'\n"
+        alert_count >= 1,
+        "There should be at least 1 alert:\nBody: '{0}'\n"
         "There is {1}".format(
             msg, alert_count))
