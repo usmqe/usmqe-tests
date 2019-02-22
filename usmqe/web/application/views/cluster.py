@@ -64,14 +64,27 @@ class ClustersView(BaseLoggedInView):
         return self.pagename.text == "Clusters"
 
 
-class UnmanageConfirmationView(View):
+class ConfirmationView(View):
     """
-    View for cluster unmanage confirmation modal
+    Base view for all confirmation modals
     """
     ROOT = ".//pf-modal-overlay-content"
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
+
+
+class UnmanageConfirmationView(ConfirmationView):
+    """
+    View for cluster unmanage confirmation modal
+    """
     unmanage = Button("Unmanage")
+
+
+class ExpandConfirmationView(ConfirmationView):
+    """
+    View for cluster expansion confirmation modal
+    """
+    expand = Button("Expand")
 
 
 class UnmanageTaskSubmittedView(View):

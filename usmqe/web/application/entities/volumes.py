@@ -85,6 +85,7 @@ class Volume(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
+        time.sleep(3)
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "volume_name": view.volume_name.text,

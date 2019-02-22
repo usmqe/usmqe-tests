@@ -30,6 +30,7 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
         def health(self):
             """
             Returns the corresponding expected value of Grafana Health panel
+            TODO: find out the icon for state 'Failed'
             """
             health = self.browser.elements(".//div[@class='ft-column ft-icon']"
                                            "/i")[0].get_attribute("class")
@@ -39,6 +40,8 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
                 return "Up(Degraded)"
             elif health == "pficon pficon-degraded icon-red":
                 return "Up(Partial)"
+            elif health == "fa ffont fa-arrow-circle-o-down":
+                return "Down"
             elif health == "fa ffont fa-question":
                 return "Unknown"
             else:
