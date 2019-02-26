@@ -56,6 +56,7 @@ class HostBrick(Brick):
         time.sleep(1)
         for row in view.bricks:
             if row["Brick Path"].text == self.brick_path:
+                time.sleep(1)
                 return row[0].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
@@ -106,6 +107,7 @@ class VolumeBrick(Brick):
         for row in view.volume_parts(self.part_id).bricks:
             if (row["Brick Path"].text == self.brick_path and
                     row["Host Name"].text == self.hostname):
+                time.sleep(1)
                 return row[1].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
