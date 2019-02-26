@@ -1,3 +1,4 @@
 [usmqe.application_collections]
 users = usmqe.web.application.entities.users:UsersCollection
 clusters = usmqe.web.application.entities.clusters:ClustersCollection
+alerts = usmqe.web.application.entities.alerts:AlertsCollection

@@ -15,7 +15,7 @@ CONF = UsmConfig()
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.parametrize("receive_alerts", [False, True])
 @pytest.mark.happypath
-def test_alerting(application, receive_alerts, valid_normal_user_data):
+def test_alerting_settings(application, receive_alerts, valid_normal_user_data):
     """
     Create normal user with email notifications switched on or off.
     Check that alerts appear in the mailbox according to notification settings.
@@ -132,3 +132,61 @@ def test_mysettings_alerting_switch(application, receive_alerts, valid_session_c
         }
     time.sleep(2)
     test.check_user(admin_data)
+
+
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+def test_ui_alerts(application, imported_cluster_reuse):
+    """
+    Test UI alert appearance and disapearance.
+    """
+    """
+    :step:
+      Stop glusterd on one of the cluster nodes.
+    :result:
+      After some time alerts appear in UI
+    """
+    SSH = usmssh.get_ssh()
+    host = CONF.config["usmqe"]["cluster_member"]
+    stop_cmd = "systemctl stop glusterd"
+    time.sleep(10)
+    retcode, stdout, stderr = SSH[host].run(stop_cmd)
+    if retcode != 0:
+        raise OSError(stderr)
+    time.sleep(40)
+    alert_found = False
+    alerts = application.collections.alerts.get_alerts()
+    for alert in alerts:
+        LOGGER.debug("Alert description: {}".format(alert.description))
+        LOGGER.debug("Alert date: {}".format(alert.date))
+        LOGGER.debug("Alert severity: {}".format(alert.severity))
+        if alert.description.find("is Disconnected") > 0 and alert.description.find(host) > 0:
+            alert_found = True
+            LOGGER.debug("Alert found: {}".format(alert_found))
+            pytest.check(alert.severity == "warning")
+            pytest.check(int(alert.date.split(" ")[2]) > 2018)
+    pytest.check(alert_found)
+    """
+    :step:
+      Restart glusterd.
+    :result:
+      After some time alerts disappear
+    """
+    restart_cmd = "systemctl restart glusterd"
+    time.sleep(10)
+    retcode, stdout, stderr = SSH[host].run(restart_cmd)
+    time.sleep(50)
+    if retcode != 0:
+        raise OSError(stderr)
+    alerts = application.collections.alerts.get_alerts()
+    alert_found = False
+    for alert in alerts:
+        LOGGER.debug("Alert description: {}".format(alert.description))
+        LOGGER.debug("Alert date: {}".format(alert.date))
+        LOGGER.debug("Alert severity: {}".format(alert.severity))
+        if alert.description.find("is Connected") > 0 and alert.description.find(host) > 0:
+            alert_found = True
+            LOGGER.debug("Alert found: {}".format(alert_found))
+            pytest.check(alert.severity == "info")
+            pytest.check(int(alert.date.split(" ")[2]) > 2018)
+    pytest.check(alert_found)

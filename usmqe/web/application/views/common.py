@@ -1,9 +1,10 @@
 from taretto.ui.patternfly import Button
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text, TextInput, View, Select
-# from taretto.ui.patternfly import Dropdown
-from usmqe.web.application.widgets import NavDropdown
 from widgetastic_patternfly import AboutModal
+from widgetastic.widget import ParametrizedLocator, ParametrizedView
+
+from usmqe.web.application.widgets import NavDropdown
 
 
 class LoginPage(View):
@@ -120,3 +121,43 @@ class MySettingsView(View):
     @property
     def is_displayed(self):
         return self.popup_name.text == "My Settings"
+
+
+class AlertsContainer(View):
+    ROOT = ".//div[@ng-if='header.showAlerts']"
+    container_name = Text(".//div[@class='alert-title text-center col-md-11']")
+
+    @ParametrizedView.nested
+    class alerts(ParametrizedView):
+        PARAMETERS = ("alert_id",)
+        ROOT = ParametrizedLocator("(.//div[@class='list-group-item'])"
+                                   "[position() = {alert_id|quote}]")
+        description = Text(".//p[@class='ng-binding']")
+        date = Text(".//p[@class='ng-binding']/following-sibling::div")
+
+        @classmethod
+        def all(cls, browser):
+            return [browser.text(e) for e in browser.elements(cls.ALL_VOLUMES)
+                    if browser.text(e) is not None and browser.text(e) != '']
+
+        @property
+        def severity(self):
+            return self.browser.elements(".//i[@data-toggle]")[0].get_attribute("title")
+
+    ALL_ALERTS = ".//div[@class='list-group-item']"
+
+    @property
+    def all_alert_ids(self):
+        """
+        Returns the list of alerts.
+        They will be used as XPATH indeces, so they should be strings and start with 1.
+        """
+        return [str(i + 1) for i in range(len(self.browser.elements(self.ALL_ALERTS)))]
+
+
+class AlertsView(BaseLoggedInView):
+    alerts = View.nested(AlertsContainer)
+
+    @property
+    def is_displayed(self):
+        return self.alerts.container_name.text == "Alerts"
