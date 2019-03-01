@@ -7,6 +7,10 @@ Script to find Tendrl *provisioner* node. It requires the same setup and
 configuration as our tests executed via ``pytest_cli.py`` wrapper (eg. to
 locate, authenticate and access etcd instance).
 
+You need to run `qe_server.ssl_ca_etcd.yml` playbook to be able to access etcd
+if tls client server auth is configured (which is the default in usmqe test
+deployments).
+
 TODO: move get_nodes_by_tag() into usmqe module
 """
 
