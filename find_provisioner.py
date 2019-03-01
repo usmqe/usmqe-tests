@@ -15,10 +15,9 @@ import argparse
 import json
 import sys
 
-import pytest
-
 # This is a terrible HACK, overcomming lack of code reusability and
 # entanglement of code in usmqe module :/
+import pytest
 import plugin.log_assert
 def _check(*args, **kwargs):
     pass
