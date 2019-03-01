@@ -39,9 +39,15 @@ def get_nodes_by_tag(tag):
     """
     etcd = EtcdApi()
     resp = etcd.get_key_value('/indexes/tags/{}/'.format(tag))
-    # TODO: WTF? Why?
-    nodes_str_val = resp['node']['nodes'][0]['value']
-    nodes = json.loads(nodes_str_val)
+    # note: we expect that given inner node (directory) in etcd contains one
+    # leaf node (file), with value (content) we are actually interested in ...
+    # see: https://coreos.com/etcd/docs/latest/v2/api.html
+    try:
+        nodes_str_val = resp['node']['nodes'][0]['value']
+        nodes = json.loads(nodes_str_val)
+    except Exception:
+        LOGGER.error("etcd data doesn't follow expected structure: can't get list of nodes for given tag")
+        nodes = []
     node_names = []
     for node_id in nodes:
         resp = etcd.get_key_value('/nodes/{}/NodeContext/fqdn'.format(node_id))
