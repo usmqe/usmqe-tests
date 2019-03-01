@@ -65,7 +65,7 @@ def main():
     else:
         LOGGER.setLevel("INFO")
 
-    LOGGER.info("loading UsmConfig")
+    LOGGER.debug("loading UsmConfig")
     conf = UsmConfig()
     LOGGER.info("url of etcd: %s", conf.config["usmqe"]["etcd_api_url"])
 
