@@ -22,9 +22,15 @@ import plugin.log_assert
 def _check(*args, **kwargs):
     pass
 pytest.get_logger = plugin.log_assert.get_logger
+pytest.set_logger = plugin.log_assert.set_logger
 pytest.check = _check
 
+# Another HACK: initialize mrglog module
+LOGGER = pytest.get_logger("find_provisioner")
+pytest.set_logger(LOGGER)
+
 from usmqe.api.etcdapi.etcdapi import EtcdApi
+from usmqe.usmqeconfig import UsmConfig
 
 
 def get_nodes_by_tag(tag):
@@ -45,12 +51,22 @@ def get_nodes_by_tag(tag):
 
 def main():
     ap = argparse.ArgumentParser(description="Find Tendrl provisioner node(s).")
-    ap.add_argument("-v", dest="verbose", action="store_true", help="verbose")
+    ap.add_argument("-v", dest="verbose", action="store_true", help="set LOGGER to DEBUG level")
     args = ap.parse_args()
 
-    for node_name in get_nodes_by_tag("provisioner"):
-        print(node_name)
+    if args.verbose:
+        LOGGER.setLevel("DEBUG")
+    else:
+        LOGGER.setLevel("INFO")
 
+    LOGGER.info("loading UsmConfig")
+    conf = UsmConfig()
+    LOGGER.info("url of etcd: %s", conf.config["usmqe"]["etcd_api_url"])
+
+    provisioner_nodes = get_nodes_by_tag("provisioner")
+    LOGGER.info("found %d provisioner node(s)", len(provisioner_nodes))
+    for node_name in provisioner_nodes:
+        LOGGER.info(node_name)
 
 if __name__ == '__main__':
     sys.exit(main())
