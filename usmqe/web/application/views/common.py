@@ -91,15 +91,26 @@ class BaseClusterSpecifiedView(BaseLoggedInView):
     """
     vertical_navbar = View.nested(VerticalNavbar)
     cluster_name = Text(".//div[@class='nav contextselector-pf']/div/button/span")
+    results = Text(".//div[contains(@class, 'toolbar-pf-results')]/div/h5")
 
 
-class DeleteConfirmationView(View):
+class ConfirmationView(View):
     """
-    View for delete confirmation modal
+    Base view for all confirmation modals
     """
     ROOT = ".//pf-modal-overlay-content"
     alert_name = Text(".//h4")
     cancel = Button("Cancel")
+
+    @property
+    def is_displayed(self):
+        return len(self.alert_name.text) > 0
+
+
+class DeleteConfirmationView(ConfirmationView):
+    """
+    View for delete confirmation modal
+    """
     delete = Button("Delete")
 
 

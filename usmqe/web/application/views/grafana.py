@@ -21,7 +21,9 @@ class GrafanaClusterDashboard(BaseGrafanaDashboard):
 
     @property
     def is_displayed(self):
-        return self.dashboard_name.text.find("Cluster") >= 0
+        return (self.dashboard_name.text.find("Cluster") >= 0 and
+                len(self.cluster_health.text) > 1 and
+                len(self.hosts_total.text) > 1)
 
 
 class GrafanaHostDashboard(BaseGrafanaDashboard):
@@ -34,7 +36,7 @@ class GrafanaHostDashboard(BaseGrafanaDashboard):
 
     @property
     def is_displayed(self):
-        return self.dashboard_name.text.find("Host") >= 0
+        return self.dashboard_name.text.find("Host") >= 0 and len(self.host_health.text) > 1
 
 
 class GrafanaVolumeDashboard(BaseGrafanaDashboard):
@@ -48,7 +50,9 @@ class GrafanaVolumeDashboard(BaseGrafanaDashboard):
 
     @property
     def is_displayed(self):
-        return self.dashboard_name.text.find("Volume Dashboard") >= 0
+        return (self.dashboard_name.text.find("Volume Dashboard") >= 0 and
+                len(self.volume_health.text) > 1 and
+                len(self.bricks_total.text) > 1)
 
 
 class GrafanaBrickDashboard(BaseGrafanaDashboard):
@@ -60,4 +64,4 @@ class GrafanaBrickDashboard(BaseGrafanaDashboard):
 
     @property
     def is_displayed(self):
-        return self.dashboard_name.text.find("Brick Dashboard") >= 0
+        return self.dashboard_name.text.find("Brick Dashboard") >= 0 and len(self.status.text) > 1

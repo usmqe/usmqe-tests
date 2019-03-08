@@ -3,6 +3,7 @@ from widgetastic.widget import Text, Table
 from usmqe.web.application.views.common import BaseClusterSpecifiedView
 from taretto.ui.patternfly import Button
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
+from usmqe.web import tools
 
 
 class HostBricksView(BaseClusterSpecifiedView):
@@ -16,7 +17,9 @@ class HostBricksView(BaseClusterSpecifiedView):
     @property
     def is_displayed(self):
         return (self.pagename.text == "Brick Details" and
-                self.hostname.text == self.context["object"].hostname)
+                self.hostname.text == self.context["object"].hostname and
+                len(self.results.text) > 3 and
+                tools.bricks_displayed(self, self.context["object"].bricks_count, None))
 
 
 class VolumeBricksView(BaseClusterSpecifiedView):
@@ -66,4 +69,5 @@ class VolumeBricksView(BaseClusterSpecifiedView):
     @property
     def is_displayed(self):
         return (self.pagename.text == "Brick Details" and
-                self.volume_name.text == self.context["object"].volname)
+                self.volume_name.text == self.context["object"].volname and
+                len(self.results.text) > 3)

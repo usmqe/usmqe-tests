@@ -64,4 +64,4 @@ class ClusterVolumesView(BaseClusterSpecifiedView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Volumes"
+        return self.pagename.text == "Volumes" and len(self.results.text) > 3

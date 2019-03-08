@@ -5,6 +5,7 @@ from usmqe.web.application.views.common import BaseLoggedInView
 from usmqe.web.application.widgets import Kebab
 from taretto.ui.patternfly import Button, Dropdown
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
+from usmqe.web.application.views.common import ConfirmationView
 
 
 class ClustersView(BaseLoggedInView):
@@ -52,6 +53,7 @@ class ClustersView(BaseLoggedInView):
     filter_type = Dropdown("Name")
     # TextInput can't be defined by placeholder
     # user_filter = TextInput(placeholder='Filter by Name')
+    results = Text(".//div[contains(@class, 'toolbar-pf-results')]/div/h5")
 
     @property
     def all_ids(self):
@@ -61,16 +63,7 @@ class ClustersView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Clusters"
-
-
-class ConfirmationView(View):
-    """
-    Base view for all confirmation modals
-    """
-    ROOT = ".//pf-modal-overlay-content"
-    alert_name = Text(".//h4")
-    cancel = Button("Cancel")
+        return self.pagename.text == "Clusters" and len(self.results.text) > 3
 
 
 class UnmanageConfirmationView(ConfirmationView):
@@ -92,9 +85,15 @@ class UnmanageTaskSubmittedView(View):
     View for "Unmanage Task submitted" modal.
     """
     ROOT = ".//pf-modal-overlay-content"
+    name = Text(".//h4")
     CLOSE_LOC = './/div[@class="modal-header"]/button[@class="close ng-scope"]'
     view_progress = Button("contains", "View Task Progress")
 
     def close(self):
         """Close the modal"""
         self.browser.click(self.CLOSE_LOC, parent=self)
+        self.browser.refresh()
+
+    @property
+    def is_displayed(self):
+        return len(self.name.text) > 3

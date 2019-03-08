@@ -45,4 +45,4 @@ class ClusterHostsView(BaseClusterSpecifiedView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Hosts"
+        return self.pagename.text == "Hosts" and len(self.results.text) > 3

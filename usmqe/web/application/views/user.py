@@ -20,4 +20,4 @@ class UsersView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Users"
+        return self.pagename.text == "Users" and len(self.users.row()[0].text) > 2

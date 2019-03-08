@@ -41,7 +41,7 @@ class ClusterTasksView(BaseClusterSpecifiedView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Tasks"
+        return self.pagename.text == "Tasks" and len(self.results.text) > 3
 
 
 class BaseEventsView(BaseLoggedInView):
