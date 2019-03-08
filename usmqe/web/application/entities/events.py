@@ -1,12 +1,9 @@
 import attr
 import pytest
-import time
+from wait_for import wait_for
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import ViaWebUI
-
-from usmqe.web.application.views.event import ClusterEventsView
-from usmqe.web.application.views.task import TaskEventsView
 
 
 LOGGER = pytest.get_logger('events', module=True)
@@ -34,21 +31,14 @@ class Event(BaseEvent):
 class EventsCollection(BaseCollection):
     ENTITY = Event
 
-    def get_all_event_ids(self):
-        """
-        Return the list of event ids of all events associated with the given cluster.
-        """
-        view = self.application.web_ui.create_view(ClusterEventsView)
-        time.sleep(2)
-        return view.all_event_ids
-
     def get_events(self):
         """
         Return the list of instantiated Event objects, their attributes read from Events page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Events")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         event_list = []
-        for event_id in self.get_all_event_ids():
+        for event_id in view.all_event_ids:
             event = self.instantiate(
                 event_id,
                 view.events(event_id).description.text,
@@ -72,21 +62,14 @@ class TaskEvent(BaseEvent):
 class TaskEventsCollection(BaseCollection):
     ENTITY = TaskEvent
 
-    def get_all_event_ids(self):
-        """
-        Return the list of event ids of all events that were related to the given Task.
-        """
-        view = self.application.web_ui.create_view(TaskEventsView)
-        time.sleep(2)
-        return view.all_event_ids
-
     def get_events(self):
         """
         Return the list of instantiated Event objects, their attributes read from the Task's log.
         """
         view = ViaWebUI.navigate_to(self.parent, "Events")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         event_list = []
-        for event_id in self.get_all_event_ids():
+        for event_id in view.all_event_ids:
             event = self.instantiate(
                 event_id,
                 view.events(event_id).description.text,

@@ -67,6 +67,7 @@ class Cluster(BaseEntity):
         Update the cluster's attributes by reading them from Clusters list.
         """
         view = self.application.web_ui.create_view(ClustersView)
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         self.version = view.clusters(self.name).cluster_version.text
         self.managed = view.clusters(self.name).managed.text
         self.hosts_number = view.clusters(self.name).hosts.text
@@ -80,6 +81,14 @@ class Cluster(BaseEntity):
             self.volumes_number = None
             self.alerts = None
             self.profiling = None
+        return (self.version,
+                self.managed,
+                self.hosts_number,
+                self.status,
+                self.health,
+                self.volumes_number,
+                self.alerts,
+                self.profiling)
 
     def cluster_import(self, cluster_name=None, profiling="enable", view_progress=False):
         """
@@ -88,6 +97,7 @@ class Cluster(BaseEntity):
         Possible profiling values are "enable", "disable" or "leaveAsIs".
         """
         view = ViaWebUI.navigate_to(self, "Import")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         if cluster_name is not None:
             view.fill({"cluster_name": cluster_name,
                        "profiling": profiling})
@@ -95,37 +105,39 @@ class Cluster(BaseEntity):
         else:
             view.fill({"profiling": profiling})
         view.confirm_import.click()
-        time.sleep(1)
         view = self.application.web_ui.create_view(ImportTaskSubmittedView)
-        time.sleep(2)
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         if view_progress:
             view.view_progress.click()
             view = self.application.web_ui.create_view(MainTaskEventsView)
-            for _ in range(60):
-                time.sleep(5)
-                if view.import_status.text == "Completed":
-                    view.cluster_details.click()
-                    view = self.application.web_ui.create_view(ClusterHostsView)
-                    time.sleep(2)
-                    view.navbar.clusters.select_by_visible_text("All Clusters")
-                    view = self.application.web_ui.create_view(ClustersView)
-                    time.sleep(4)
-                    break
-                elif view.import_status.text == "Failed":
-                    LOGGER.debug("Cluster import failed")
-                    # TODO add something else here?
-                    break
+            wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+            wait_for(lambda: view.import_status.text in {"Completed", "Failed"}, timeout=200)
+            if view.import_status.text == "Completed":
+                view.cluster_details.click()
+                view = self.application.web_ui.create_view(ClusterHostsView)
+                wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+                view.navbar.clusters.select_by_visible_text("All Clusters")
+                view = self.application.web_ui.create_view(ClustersView)
+                wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+            else:
+                LOGGER.debug("Cluster import failed")
+                # TODO add something else here?
         else:
             view.close_button.click()
-            time.sleep(60)
-        for _ in range(40):
-            self.update()
-            if self.managed == "Yes":
-                break
-            else:
-                time.sleep(5)
-        LOGGER.debug("Cluster is managed: {}".format(self.managed))
-        pytest.check(self.managed == "Yes")
+        LOGGER.debug("Before clustersView was created")
+        view.browser.refresh()
+        view = self.application.web_ui.create_view(ClustersView)
+        LOGGER.debug("ClustersView was created")
+        time.sleep(10)
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        LOGGER.debug("ClustersView was displayed")
+        time.sleep(10)
+        LOGGER.debug("Self.name: {}".format(self.name))
+        LOGGER.debug("Status: {}".format(view.clusters(self.name).status.text))
+        wait_for(lambda: len(view.clusters(self.name).status.text) > 2, timeout=10, delay=2)
+        LOGGER.debug("Cluster status was displayed")
+        wait_for(lambda: self.update()[1] == "Yes", timeout=200, delay=3)
+        LOGGER.debug("Cluster was updated")
         LOGGER.debug("Cluster status: {}".format(self.status))
         pytest.check(self.status == "Ready to Use")
 
@@ -138,34 +150,38 @@ class Cluster(BaseEntity):
         if original_id is not None:
             self.cluster_id = original_id
         view = self.application.web_ui.create_view(ClustersView)
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        hosts_number = self.hosts_number
         view.clusters(self.name).actions.select("Unmanage")
         view = self.application.web_ui.create_view(UnmanageConfirmationView)
         wait_for(lambda: view.is_displayed, timeout=3)
         view.unmanage.click()
-        time.sleep(5)
         view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
-        time.sleep(2)
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         if view_progress:
             view.view_progress.click()
             view = self.application.web_ui.create_view(MainTaskEventsView)
-            for _ in range(60):
-                time.sleep(5)
-                if view.import_status.text == "Completed":
-                    view.navbar.clusters.select_by_visible_text("All Clusters")
-                    view = self.application.web_ui.create_view(ClustersView)
-                    time.sleep(2)
-                    break
-                elif view.import_status.text == "Failed":
-                    LOGGER.debug("Cluster unmanage failed")
-                    # TODO add something else here?
-                    break
+            wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+            wait_for(lambda: view.import_status.text in {"Completed", "Failed"}, timeout=400)
+            if view.import_status.text == "Completed":
+                view.navbar.clusters.select_by_visible_text("All Clusters")
+                view = self.application.web_ui.create_view(ClustersView)
+                wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+            else:
+                LOGGER.debug("Cluster unmanage failed")
+                # TODO add something else here?
         else:
             view.close()
-            time.sleep(60)
+        view = self.application.web_ui.create_view(ClustersView)
+        time.sleep(5)
+        LOGGER.debug("Unmanage task was submitted")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         for _ in range(40):
             try:
                 self.update()
-                if self.managed == "No" and self.status == "Ready to Import":
+                if (self.managed == "No" and
+                        self.status == "Ready to Import"
+                        and self.hosts_number == hosts_number):
                     break
                 else:
                     time.sleep(5)
@@ -184,16 +200,11 @@ class Cluster(BaseEntity):
         attribute changes to Enabled.
         """
         view = self.application.web_ui.create_view(ClustersView)
+        wait_for(lambda: view.is_displayed, timeout=10)
         view.clusters(self.name).actions.select("Enable Profiling")
-        time.sleep(40)
-        for _ in range(40):
-            self.update()
-            if self.profiling == "Enabled":
-                break
-            else:
-                time.sleep(5)
-        LOGGER.debug("Cluster profiling value: {}".format(self.profiling))
-        pytest.check(self.profiling == "Enabled")
+        wait_for(lambda: self.update()[7] == "Enabled", timeout=200, delay=2)
+        # profiling enabling process might not be over by this time
+        time.sleep(5)
 
     def disable_profiling(self, cancel=False):
         """
@@ -201,16 +212,11 @@ class Cluster(BaseEntity):
         attribute changes to Disabled.
         """
         view = self.application.web_ui.create_view(ClustersView)
+        wait_for(lambda: view.is_displayed, timeout=10)
         view.clusters(self.name).actions.select("Disable Profiling")
-        time.sleep(40)
-        for _ in range(40):
-            self.update()
-            if self.profiling == "Disabled":
-                break
-            else:
-                time.sleep(5)
-        LOGGER.debug("Cluster profiling value: {}".format(self.profiling))
-        pytest.check(self.profiling == "Disabled")
+        wait_for(lambda: self.update()[7] == "Disabled", timeout=200, delay=2)
+        # profiling enabling process might not be over by this time
+        time.sleep(5)
 
     def get_values_from_dashboard(self):
         """
@@ -218,13 +224,15 @@ class Cluster(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "host_count": view.hosts_total.text.split(" ")[-1],
             "volume_count": view.volumes_total.text.split(" ")[-1],
             "cluster_health": view.cluster_health.text}
-        view.browser.selenium.close()
-        view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
+        while len(view.browser.selenium.window_handles) > 1:
+            view.browser.selenium.close()
+            view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[-1])
         return dashboard_values
 
     def expand(self, cancel=False):
@@ -250,13 +258,6 @@ class Cluster(BaseEntity):
 class ClustersCollection(BaseCollection):
     ENTITY = Cluster
 
-    def get_all_cluster_ids(self):
-        """
-        Return the list of all cluster names/ids in the clusters list.
-        """
-        view = self.application.web_ui.create_view(ClustersView)
-        return view.all_ids
-
     def get_clusters(self):
         """
         Return the list of instantiated Cluster objects, their attributes read from Clusters page.
@@ -264,8 +265,9 @@ class ClustersCollection(BaseCollection):
         attributes are set to None.
         """
         view = ViaWebUI.navigate_to(self, "All")
+        wait_for(lambda: view.is_displayed, timeout=10)
         clusters_list = []
-        for cluster_id in self.get_all_cluster_ids():
+        for cluster_id in view.all_ids:
             if view.clusters(cluster_id).managed.text == "No":
                 cluster = self.instantiate(
                     cluster_id,
@@ -304,9 +306,7 @@ class ClustersAll(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
-        time.sleep(1)
         self.parent.navbar.clusters.select_by_visible_text("All Clusters")
-        time.sleep(2)
 
 
 @ViaWebUI.register_destination_for(Cluster, "Import")
@@ -318,7 +318,6 @@ class ClusterImport(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self):
-        time.sleep(1)
         self.parent.clusters(self.obj.name).import_button.click()
 
 
@@ -331,9 +330,7 @@ class ClusterHosts(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self):
-        time.sleep(1)
         self.parent.navbar.clusters.select_by_visible_text(self.obj.name)
-        time.sleep(2)
 
 
 @ViaWebUI.register_destination_for(Cluster, "Volumes")
@@ -345,7 +342,6 @@ class ClusterVolumes(TendrlNavigateStep):
     prerequisite = NavigateToSibling("Hosts")
 
     def step(self):
-        time.sleep(1)
         self.parent.vertical_navbar.volumes.click()
 
 
@@ -358,7 +354,6 @@ class ClusterTasks(TendrlNavigateStep):
     prerequisite = NavigateToSibling("Hosts")
 
     def step(self):
-        time.sleep(1)
         self.parent.vertical_navbar.tasks.click()
 
 
@@ -371,7 +366,6 @@ class ClusterEvents(TendrlNavigateStep):
     prerequisite = NavigateToSibling("Hosts")
 
     def step(self):
-        time.sleep(1)
         self.parent.vertical_navbar.events.click()
 
 
@@ -384,8 +378,5 @@ class ClusterDashboard(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self):
-        time.sleep(1)
         self.parent.clusters(self.obj.name).dashboard_button.click()
-        time.sleep(3)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(3)

@@ -1,7 +1,6 @@
 import attr
 from navmazing import NavigateToAttribute, NavigateToSibling
 from wait_for import wait_for
-import time
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.views.user import UsersView
@@ -28,13 +27,12 @@ class User(BaseEntity):
         Delete the user by choosing 'Delete User' option of Actions kebab.
         """
         view = ViaWebUI.navigate_to(self.parent, "All")
-        time.sleep(1)
+        wait_for(lambda: view.is_displayed, timeout=5)
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[6].widget.select("Delete User", close=False)
-                time.sleep(1)
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
-                wait_for(lambda: view.is_displayed, timeout=3)
+                wait_for(lambda: view.is_displayed, timeout=5)
                 view.delete.click()
                 # this is a UI bug
                 view.browser.refresh()
@@ -46,11 +44,12 @@ class User(BaseEntity):
         Edit user.
         """
         view = ViaWebUI.navigate_to(self.parent, "All")
-        time.sleep(1)
+        wait_for(lambda: view.is_displayed, timeout=5)
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[5].click()
                 view = self.application.web_ui.create_view(EditUserView)
+                wait_for(lambda: view.is_displayed, timeout=5)
                 view.fill(new_values_dict)
                 view.save_button.click()
                 break
@@ -74,7 +73,7 @@ class UsersCollection(BaseCollection):
 
     def create(self, user_id, name, email, notifications_on, password, role):
         view = ViaWebUI.navigate_to(self, "Add")
-        time.sleep(1)
+        wait_for(lambda: view.is_displayed, timeout=5)
         view.fill({
             "user_id": user_id,
             "name": name,
@@ -89,7 +88,7 @@ class UsersCollection(BaseCollection):
 
     def edit_logged_in_user(self, new_values_dict):
         view = ViaWebUI.navigate_to(self, "MySettings")
-        time.sleep(1)
+        wait_for(lambda: view.is_displayed, timeout=5)
         view.fill(new_values_dict)
         view.save_button.click()
 
@@ -100,7 +99,6 @@ class UsersAll(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
-        time.sleep(1)
         self.parent.navbar.usermanagement.select_item("Users")
 
 
@@ -110,7 +108,6 @@ class UsersAdd(TendrlNavigateStep):
     prerequisite = NavigateToSibling("All")
 
     def step(self):
-        time.sleep(1)
         self.parent.adduser.click()
 
 
@@ -120,5 +117,4 @@ class UsersSettings(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
-        time.sleep(1)
         self.parent.navbar.usermenu.select_item("My Settings")

@@ -1,6 +1,6 @@
 import attr
-import time
 from navmazing import NavigateToAttribute
+from wait_for import wait_for
 
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
@@ -23,21 +23,14 @@ class Alert(BaseEntity):
 class AlertsCollection(BaseCollection):
     ENTITY = Alert
 
-    def get_all_alert_ids(self):
-        """
-        Return the list of alert ids of all alerts in UI.
-        """
-        view = self.application.web_ui.create_view(AlertsView)
-        time.sleep(2)
-        return view.alerts.all_alert_ids
-
     def get_alerts(self):
         """
         Return the list of instantiated Alert objects.
         """
         view = ViaWebUI.navigate_to(self, "All")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         alert_list = []
-        for alert_id in self.get_all_alert_ids():
+        for alert_id in view.alerts.all_alert_ids:
             alert = self.instantiate(
                 alert_id,
                 view.alerts.alerts(alert_id).description.text,
@@ -55,5 +48,4 @@ class AlertsAll(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("application.web_ui", "LoggedIn")
 
     def step(self):
-        time.sleep(1)
         self.parent.navbar.alerts.click()

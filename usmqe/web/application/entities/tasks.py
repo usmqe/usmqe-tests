@@ -1,12 +1,11 @@
 import attr
 import pytest
-import time
 from navmazing import NavigateToAttribute
+from wait_for import wait_for
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import ViaWebUI
 from usmqe.web.application.entities.events import TaskEventsCollection
-from usmqe.web.application.views.task import ClusterTasksView
 from usmqe.web.application.implementations.web_ui import TendrlNavigateStep
 from usmqe.web.application.views.task import TaskEventsView
 
@@ -38,21 +37,14 @@ class Task(BaseEntity):
 class TasksCollection(BaseCollection):
     ENTITY = Task
 
-    def get_all_task_ids(self):
-        """
-        Return the list of all task associated with the given cluster.
-        """
-        view = self.application.web_ui.create_view(ClusterTasksView)
-        return view.all_task_ids
-
     def get_tasks(self):
         """
         Return the list of instantiated Task objects, their attributes read from Tasks page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Tasks")
+        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
         task_list = []
-        time.sleep(2)
-        for task_id in self.get_all_task_ids():
+        for task_id in view.all_task_ids:
             task = self.instantiate(
                 task_id,
                 view.tasks(task_id).task_name.text,
@@ -73,5 +65,4 @@ class TaskEvents(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("parent.parent", "Tasks")
 
     def step(self):
-        time.sleep(2)
         self.parent.tasks(self.obj.task_id).task_name.click()

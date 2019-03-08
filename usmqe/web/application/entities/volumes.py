@@ -1,7 +1,7 @@
 import attr
 import pytest
-import time
 from navmazing import NavigateToAttribute
+from wait_for import wait_for
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import ViaWebUI, TendrlNavigateStep
@@ -9,6 +9,7 @@ from usmqe.web.application.views.grafana import GrafanaVolumeDashboard
 from usmqe.web.application.views.volume import ClusterVolumesView
 from usmqe.web.application.views.brick import VolumeBricksView
 from usmqe.web.application.entities.volume_parts import VolumePartsCollection
+from usmqe.web import tools
 
 LOGGER = pytest.get_logger('volumes', module=True)
 
@@ -46,6 +47,12 @@ class Volume(BaseEntity):
         self.rebalance = view.volumes(self.volname).rebalance.text
         self.profiling = view.volumes(self.volname).profiling.text
         self.alerts = view.volumes(self.volname).alerts.text
+        return (self.health,
+                self.bricks_count,
+                self.running,
+                self.rebalance,
+                self.profiling,
+                self.alerts)
 
     def enable_profiling(self):
         """
@@ -53,13 +60,7 @@ class Volume(BaseEntity):
         """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         view.volumes(self.volname).enable_profiling.click()
-        time.sleep(40)
-        for _ in range(40):
-            self.update()
-            if self.profiling == "Enabled":
-                break
-            else:
-                time.sleep(5)
+        wait_for(lambda: self.update()[4] == "Enabled", timeout=300, delay=5)
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Enabled")
 
@@ -69,13 +70,7 @@ class Volume(BaseEntity):
         """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         view.volumes(self.volname).disable_profiling.click()
-        time.sleep(40)
-        for _ in range(40):
-            self.update()
-            if self.profiling == "Disabled":
-                break
-            else:
-                time.sleep(5)
+        wait_for(lambda: self.update()[4] == "Disabled", timeout=300, delay=5)
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Disabled")
 
@@ -85,14 +80,13 @@ class Volume(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        time.sleep(10)
+        wait_for(lambda: view.is_displayed, timeout=10, delay=3)
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "volume_name": view.volume_name.text,
             "brick_count": view.bricks_total.text.split(" ")[-1],
             "volume_health": view.volume_health.text}
-        view.browser.selenium.close()
-        view.browser.selenium.switch_to.window(view.browser.selenium.window_handles[0])
+        tools.close_extra_windows(view)
         return dashboard_values
 
 
@@ -100,23 +94,14 @@ class Volume(BaseEntity):
 class VolumesCollection(BaseCollection):
     ENTITY = Volume
 
-    def get_all_volnames(self):
-        """
-        Return the list of all volume names of this collection.
-        """
-        view = self.application.web_ui.create_view(ClusterVolumesView)
-        time.sleep(2)
-        volume_names = view.all_volnames
-        LOGGER.debug("Volume names are: {}".format(volume_names))
-        return volume_names
-
     def get_volumes(self):
         """
         Return the list of instantiated Volume objects, their attributes read from Volumes page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Volumes")
         volumes_list = []
-        for volname in self.get_all_volnames():
+        LOGGER.debug("Volume names are: {}".format(view.all_volnames))
+        for volname in view.all_volnames:
             volume = self.instantiate(
                 volname,
                 view.volumes(volname).health,
@@ -140,11 +125,8 @@ class VolumeDashboard(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("parent.parent", "Volumes")
 
     def step(self):
-        time.sleep(1)
         self.parent.volumes(self.obj.volname).dashboard_button.click()
-        time.sleep(3)
         self.view.browser.selenium.switch_to.window(self.view.browser.selenium.window_handles[1])
-        time.sleep(3)
 
 
 @ViaWebUI.register_destination_for(Volume, "Bricks")
@@ -157,6 +139,4 @@ class VolumeBricks(TendrlNavigateStep):
     prerequisite = NavigateToAttribute("parent.parent", "Volumes")
 
     def step(self):
-        time.sleep(1)
         self.parent.volumes(self.obj.volname).volname.click()
-        time.sleep(4)
