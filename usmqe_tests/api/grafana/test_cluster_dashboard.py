@@ -214,6 +214,7 @@ def test_hosts_panel_status(ansible_playbook, cluster_reuse):
             g_down, len(real_down)))
 
 
+@pytest.mark.testready
 @pytest.mark.ansible_playbook_setup("test_setup.tendrl_services_stopped_on_nodes.yml")
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown("test_teardown.tendrl_services_stopped_on_nodes.yml")
