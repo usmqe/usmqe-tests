@@ -263,18 +263,21 @@ def test_hosts(ansible_playbook, workload_stop_nodes, cluster_reuse):
         (targets_used[0],),
         workload_stop_nodes["start"],
         workload_stop_nodes["end"],
-        divergence=1)
+        divergence=1,
+        issue="https://bugzilla.redhat.com/show_bug.cgi?id=1687333")
     # check value *Up* of hosts
     graphite.compare_data_mean(
         0.0,
         (targets_used[1],),
         workload_stop_nodes["start"],
         workload_stop_nodes["end"],
-        divergence=1)
+        divergence=1,
+        issue="https://bugzilla.redhat.com/show_bug.cgi?id=1687333")
     # check value *Down* of hosts
     graphite.compare_data_mean(
         workload_stop_nodes["result"],
         (targets_used[2],),
         workload_stop_nodes["start"],
         workload_stop_nodes["end"],
-        divergence=1)
+        divergence=1,
+        issue="https://bugzilla.redhat.com/show_bug.cgi?id=1687333")
