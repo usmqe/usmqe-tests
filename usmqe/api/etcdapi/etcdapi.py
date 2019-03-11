@@ -65,8 +65,8 @@ class EtcdApi(ApiBase):
             response = requests.get(
                 CONF.config["usmqe"]["etcd_api_url"] + pattern,
                 cert=(
-                    '/etc/pki/tls/certs/etcd.crt',
-                    '/etc/pki/tls/private/etcd.key'),
+                    '/etc/pki/tls/certs/qeserver.crt',
+                    '/etc/pki/tls/private/qeserver.key'),
                 verify='/etc/pki/tls/certs/ca-usmqe.crt')
         else:
             response = requests.get(CONF.config["usmqe"]["etcd_api_url"] + pattern)
