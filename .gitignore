@@ -12,5 +12,6 @@ dist
 .pytest_cache
 *.ini
 *.hosts
+*.yaml
 
 logs

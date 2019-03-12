@@ -14,29 +14,45 @@ Overview of the repository structure
 
 Main top level directories:
 
-* ``docs``: documentation (sphinx) of usmqe integration tests and it's setup
-* ``conf``: configuration files, only examples are commited in the repository
+* ``conf``: configuration files for the tests
+* ``docs``: documentation (sphinx) of the tests and it's development and setup
 * ``plugin``: custom pytest plugins
-* ``usmqe``: main usmqe python module
-* ``usmqe_tests``: usmqe tests code (uses pytest framework)
+* ``usmqe``: python module with common helper functions
+* ``usmqe_tests``: code of the tests (uses pytest framework)
 
-In the root dir of the repository, there are also:
+Files stored in the root dir of the repository (eg. ``.travis.yml``,
+``conftest.py``, ``pytest.ini``, ...) should not be updated unless one need to
+change underlying pytest, tox or CI plumbing (eg. adding new pytest plugin).
 
-* main pytest ``conftest.py`` file with core configuration of the pytest
-  framework (for running tests cases from ``usmqe_tests`` directory)
-* ``tox.ini`` and ``setup.py`` (for testing the usmqe module itself, see
-  details on unit tests of ``usmqe`` module below)
+Overview of test cases
+----------------------
 
+To get a list of test cases automated in ``usmqe_tests`` (so that pytest
+parametrization is taken into account), run the following command in root
+directory of this repository::
 
-Unit Tests of usmqe module
---------------------------
+    $ tox -e testcaselist
 
-Note that the purpose of ``tox.ini`` file in the root directory of this
-repository is to run unit tests of ``usmqe`` module. It has nothing to do with
-running of usm qe integration tests.
+The total number of test cases is reported as ``collected X items`` line, which
+is followed by a list of all test cases grouped by python source code file.
+
+This ``testcaselist`` report is also run in Travis CI among unit tests of
+``usmqe`` module, see next section for more details.
+
+Unit and Integration Tests of usmqe module
+------------------------------------------
+
+Note that the purpose of ``tox.ini``  and ``setup.py`` files in the root
+directory of this repository is to run unit tests of ``usmqe`` module. Beside
+unit tests there are also integration tests of usmqe module which are not
+triggered by ``tox`` but by ``pytest`` command. It has nothing to do with
+running of the integration tests for Tendrl.
 
 The code and pytest configuration of the unit tests are stored in
 ``usmqe/unit_tests`` directory. For more details see the readme file there.
+
+The same applies to integration tests which are stored in
+``usmqe/integration_tests``.
 
 .. image:: https://travis-ci.org/usmqe/usmqe-tests.svg?branch=master
     :target: https://travis-ci.org/usmqe/usmqe-tests

@@ -1,0 +1,30 @@
+# This file serves as collection of default values used in usmqe testing 
+# framework
+
+usmqe:
+  log_level: DEBUG
+  username: admin
+  password: adminuser
+  ca_cert: conf/tendrl_ca.crt
+  gluster_role: gluster_servers
+  brick_name: brick
+  # this is just example of ldap setup, it's not currently used for anything
+  ldap:
+    server: None
+    port: 389
+    base: None
+    domainadmin: None
+    password: None
+    uid: cn
+    firstname: displayName
+    lastname: sn
+    displayname: None
+    email: mail
+    user_file: None
+  rpm_repo:
+    core:
+      baseurl: https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/epel-7-x86_64/
+      gpgkey_url: https://copr-be.cloud.fedoraproject.org/results/tendrl/tendrl/pubkey.gpg
+    deps:
+      baseurl: https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/epel-7-x86_64/
+      gpgkey_url: https://copr-be.cloud.fedoraproject.org/results/tendrl/dependencies/pubkey.gpg
