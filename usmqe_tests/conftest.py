@@ -366,7 +366,15 @@ def workload_memory_utilization(request):
         if retcode != 0:
             raise OSError(stderr)
         return request.param
-    return measure_operation(fill_memory)
+    SSH = usmssh.get_ssh()
+    host = CONF.config["usmqe"]["cluster_member"]
+    meminfo_cmd = "free -b | awk '{if (NR==2) print $2}'"
+    retcode, stdout, stderr = SSH[host].run(meminfo_cmd)
+    if retcode != 0:
+        raise OSError(stderr)
+    mem_total = stdout.decode("utf-8")
+    return measure_operation(fill_memory, metadata={
+        'total_memory': mem_total})
 
 
 @pytest.fixture(scope="session")

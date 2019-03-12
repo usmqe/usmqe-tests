@@ -268,8 +268,7 @@ def test_swap_utilization(
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_memory_available(
         workload_memory_utilization,
-        cluster_reuse,
-        total_host_memory):
+        cluster_reuse):
     """
     Check that Grafana panel *Memory Available* is showing correct values.
     """
@@ -312,7 +311,8 @@ def test_memory_available(
     # make sure that all data in graphite are saved
     time.sleep(2)
     expected_available_mem = (
-        workload_memory_utilization["result"]/100) * int(total_host_memory)
+        workload_memory_utilization["result"]/100) * int(
+            workload_memory_utilization['metadata']['total_memory'])
 
     graphite.compare_data_mean(
         expected_available_mem,
