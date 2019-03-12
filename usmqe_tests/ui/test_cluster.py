@@ -54,7 +54,7 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_disable_profiling(application):
+def test_cluster_disable_profiling(application, cluster_reuse):
     """
     Disable cluster profiling in Web UI
     """
@@ -82,7 +82,7 @@ def test_cluster_disable_profiling(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_enable_profiling(application):
+def test_cluster_enable_profiling(application, cluster_reuse):
     """
     Enable cluster profiling in Web UI
     """
@@ -110,7 +110,7 @@ def test_cluster_enable_profiling(application):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_cluster_dashboard(application):
+def test_cluster_dashboard(application, cluster_reuse):
     """
     Check that dashboard button opens cluster dashboard with correct data on hosts and volumes
     """
@@ -142,7 +142,7 @@ def test_cluster_dashboard(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_unmanage(application, valid_session_credentials):
+def test_cluster_unmanage(application, valid_session_credentials, cluster_reuse):
     """
     Unmanage cluster in Web UI
     """
@@ -176,7 +176,7 @@ def test_cluster_unmanage(application, valid_session_credentials):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_naming(application):
+def test_cluster_import_naming(application, cluster_reuse):
     """
     Import cluster and give it a custom name. Then unmanage it.
     """
@@ -204,7 +204,7 @@ def test_cluster_import_naming(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_profiling_disabled(application):
+def test_cluster_import_profiling_disabled(application, cluster_reuse):
     """
     Import cluster with profiling disabled. Then unmanage it.
     """
@@ -238,7 +238,7 @@ def test_cluster_import_profiling_disabled(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_view_progress(application):
+def test_cluster_import_view_progress(application, cluster_reuse):
     """
     Import cluster and view import progress. Then unmanage the cluster and view unmanage progress.
     """
