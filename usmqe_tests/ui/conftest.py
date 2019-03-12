@@ -41,6 +41,3 @@ def imported_cluster_reuse():
                 [node["fqdn"] for node in cluster["nodes"]]
                 ]
     yield clusters[0]
-    job_id = api.unmanage_cluster(cluster_id)["job_id"]
-    api.wait_for_job_status(job_id)
-    time.sleep(30)
