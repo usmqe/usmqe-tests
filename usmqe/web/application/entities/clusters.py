@@ -67,7 +67,7 @@ class Cluster(BaseEntity):
         Update the cluster's attributes by reading them from Clusters list.
         """
         view = self.application.web_ui.create_view(ClustersView)
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=300, delay=2)
         self.version = view.clusters(self.name).cluster_version.text
         self.managed = view.clusters(self.name).managed.text
         self.hosts_number = view.clusters(self.name).hosts.text
@@ -97,7 +97,7 @@ class Cluster(BaseEntity):
         Possible profiling values are "enable", "disable" or "leaveAsIs".
         """
         view = ViaWebUI.navigate_to(self, "Import")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=30, delay=2)
         if cluster_name is not None:
             view.fill({"cluster_name": cluster_name,
                        "profiling": profiling})
@@ -117,12 +117,12 @@ class Cluster(BaseEntity):
                 LOGGER.debug("Import task was completed")
                 view.cluster_details.click()
                 view = self.application.web_ui.create_view(ClusterHostsView)
-                wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+                wait_for(lambda: view.is_displayed, timeout=30, delay=2)
                 LOGGER.debug("ClusterHostsView was displayed")
                 view.navbar.clusters.select_by_visible_text("All Clusters")
                 # time.sleep(5)
                 view = self.application.web_ui.create_view(ClustersView)
-                wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+                wait_for(lambda: view.is_displayed, timeout=30, delay=2)
                 LOGGER.debug("ClustersView was displayed")
             else:
                 LOGGER.debug("Cluster import failed")
@@ -153,17 +153,19 @@ class Cluster(BaseEntity):
         if original_id is not None:
             self.cluster_id = original_id
         view = self.application.web_ui.create_view(ClustersView)
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=30, delay=2)
         LOGGER.debug("ClustersView was displayed")
         hosts_number = self.hosts_number
         view.clusters(self.name).actions.select("Unmanage")
         view = self.application.web_ui.create_view(UnmanageConfirmationView)
-        wait_for(lambda: view.is_displayed, timeout=3)
+        wait_for(lambda: view.is_displayed, timeout=30)
         LOGGER.debug("UnmanageConfirmationView was displayed")
         view.unmanage.click()
         view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
-        wait_for(lambda: view.is_displayed, timeout=10)
+        wait_for(lambda: view.is_displayed, timeout=30)
         LOGGER.debug("UnmanageTaskSubmittedView was displayed")
+        if original_id is not None:
+            self.name = original_id
         if view_progress:
             view.view_progress.click()
             view = self.application.web_ui.create_view(MainTaskEventsView)
@@ -175,7 +177,7 @@ class Cluster(BaseEntity):
                 view.navbar.clusters.select_by_visible_text("All Clusters")
                 view = self.application.web_ui.create_view(ClustersView)
                 # time.sleep(5)
-                wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+                wait_for(lambda: view.is_displayed, timeout=30, delay=2)
             else:
                 LOGGER.debug("Cluster unmanage failed")
                 return False
@@ -183,7 +185,7 @@ class Cluster(BaseEntity):
             view.close()
         view = self.application.web_ui.create_view(ClustersView)
         LOGGER.debug("Unmanage task was submitted")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=30, delay=2)
         for _ in range(80):
             try:
                 self.update()
@@ -209,7 +211,7 @@ class Cluster(BaseEntity):
         attribute changes to Enabled.
         """
         view = self.application.web_ui.create_view(ClustersView)
-        wait_for(lambda: view.is_displayed, timeout=10)
+        wait_for(lambda: view.is_displayed, timeout=30)
         view.clusters(self.name).actions.select("Enable Profiling")
         wait_for(lambda: self.update()[7] == "Enabled", timeout=200, delay=2)
         # profiling enabling process might not be over by this time
@@ -221,7 +223,7 @@ class Cluster(BaseEntity):
         attribute changes to Disabled.
         """
         view = self.application.web_ui.create_view(ClustersView)
-        wait_for(lambda: view.is_displayed, timeout=10)
+        wait_for(lambda: view.is_displayed, timeout=30)
         view.clusters(self.name).actions.select("Disable Profiling")
         wait_for(lambda: self.update()[7] == "Disabled", timeout=200, delay=2)
         # profiling enabling process might not be over by this time
@@ -233,7 +235,7 @@ class Cluster(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=30, delay=2)
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "host_count": view.hosts_total.text.split(" ")[-1],
@@ -274,7 +276,7 @@ class ClustersCollection(BaseCollection):
         attributes are set to None.
         """
         view = ViaWebUI.navigate_to(self, "All")
-        wait_for(lambda: view.is_displayed, timeout=10)
+        wait_for(lambda: view.is_displayed, timeout=30)
         clusters_list = []
         for cluster_id in view.all_ids:
             if view.clusters(cluster_id).managed.text == "No":
