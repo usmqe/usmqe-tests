@@ -9,7 +9,7 @@ LOGGER = pytest.get_logger('ui_cluster_testing', module=True)
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import(application, valid_session_credentials):
+def test_cluster_import(application, valid_session_credentials, cluster_reuse):
     """
     Check that Import button really imports the cluster
     """
@@ -30,7 +30,7 @@ def test_cluster_import(application, valid_session_credentials):
       Cluster state in API is the same as in Web UI
     """
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    api_cluster = tendrl_api.get_cluster(test_cluster.name)
+    api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
         api_cluster["is_managed"] == "no",
         "is_managed: {}\nThere should be ``no``.".format(api_cluster["is_managed"]))
@@ -40,11 +40,15 @@ def test_cluster_import(application, valid_session_credentials):
     :result:
       Cluster is imported
     """
-    test_cluster.cluster_import()
-    api_cluster = tendrl_api.get_cluster(test_cluster.name)
-    pytest.check(
-        api_cluster["is_managed"] == "yes",
-        "is_managed: {}\nThere should be ``yes``.".format(api_cluster["is_managed"]))
+    import_success = test_cluster.cluster_import()
+    if import_success:
+        api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
+        pytest.check(
+            api_cluster["is_managed"] == "yes",
+            "is_managed: {}\nThere should be ``yes``.".format(api_cluster["is_managed"]))
+    else:
+        pytest.check(False, "Import failed")
+        test_cluster.unmanage()
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -152,7 +156,7 @@ def test_cluster_unmanage(application, valid_session_credentials):
     clusters = application.collections.clusters.get_clusters()
     test_cluster = clusters[0]
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    api_cluster = tendrl_api.get_cluster(test_cluster.name)
+    api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
         api_cluster["is_managed"] == "yes",
         "is_managed: {}\nThere should be ``yes``.".format(api_cluster["is_managed"]))
@@ -163,7 +167,7 @@ def test_cluster_unmanage(application, valid_session_credentials):
       Cluster is unmanaged
     """
     test_cluster.unmanage()
-    api_cluster = tendrl_api.get_cluster(test_cluster.name)
+    api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
         api_cluster["is_managed"] == "no",
         "is_managed: {}\nThere should be ``no``.".format(api_cluster["is_managed"]))
@@ -260,7 +264,7 @@ def test_cluster_import_view_progress(application):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.cluster_expansion
-def test_cluster_expansion(application):
+def not_yet_test_cluster_expansion(application):
     """
     Expand cluster.
     """
