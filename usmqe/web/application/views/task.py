@@ -99,4 +99,4 @@ class MainTaskEventsView(BaseEventsView):
 
     @property
     def is_displayed(self):
-        return (self.table_heading.text == "Events")
+        return self.table_heading.is_displayed and self.table_heading.text == "Events"

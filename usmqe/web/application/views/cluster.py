@@ -63,7 +63,9 @@ class ClustersView(BaseLoggedInView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Clusters" and len(self.results.text) > 3
+        return (self.results.is_displayed and
+                self.pagename.text == "Clusters" and
+                len(self.results.text) > 3)
 
 
 class UnmanageConfirmationView(ConfirmationView):
@@ -96,4 +98,4 @@ class UnmanageTaskSubmittedView(View):
 
     @property
     def is_displayed(self):
-        return len(self.name.text) > 3
+        return self.view_progress.is_displayed
