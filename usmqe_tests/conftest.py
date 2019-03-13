@@ -2,6 +2,8 @@ import configparser
 import pytest
 import datetime
 import time
+from urllib.parse import urlparse
+
 import usmqe.usmssh as usmssh
 from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
@@ -324,9 +326,10 @@ def workload_cpu_utilization(request):
 
 @pytest.fixture(scope="session")
 def application():
+    url = urlparse(CONF.config["usmqe"]["web_url"])
     app = Application(
-        hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
-        scheme="http",
+        hostname=url.hostname,
+        scheme=url.scheme,
         username=CONF.config["usmqe"]["username"],
         password=CONF.config["usmqe"]["password"]
     )

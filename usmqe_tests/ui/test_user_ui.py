@@ -1,11 +1,10 @@
 import pytest
 from usmqe.web.application.implementations.web_ui import ViaWebUI
-# LOGGER = pytest.get_logger('ui_user_testing', module=True)
 import copy
 from wait_for import TimedOutError
+from urllib.parse import urlparse
 
 from usmqe.api.tendrlapi import user as tendrlapi_user
-# from usmqe.api.tendrlapi.common import login, logout
 from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
 
@@ -71,8 +70,9 @@ def test_user_crud(application, role, valid_session_credentials):
     :result:
       User can log in
     """
-    app2 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
-                       scheme="http",
+    url = urlparse(CONF.config["usmqe"]["web_url"])
+    app2 = Application(hostname=url.hostname,
+                       scheme=url.scheme,
                        username=user.user_id,
                        password=user.password)
     ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
@@ -141,8 +141,9 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
     :result:
       User's email and password are changed
     """
-    app1 = Application(hostname="ebondare-usm1-server.usmqe.lab.eng.brq.redhat.com",
-                       scheme="http",
+    url = urlparse(CONF.config["usmqe"]["web_url"])
+    app1 = Application(hostname=url.hostname,
+                       scheme=url.scheme,
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
@@ -157,8 +158,8 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
       User is able to log in with the new password
     """
     app1.web_ui.browser_manager.quit()
-    app2 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
-                       scheme="http",
+    app2 = Application(hostname=url.hostname,
+                       scheme=url.scheme,
                        username=valid_normal_user_data["username"],
                        password=valid_password)
     ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
@@ -179,9 +180,9 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     :result:
       User's email is changed
     """
-
-    app1 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
-                       scheme="http",
+    url = urlparse(CONF.config["usmqe"]["web_url"])
+    app1 = Application(hostname=url.hostname,
+                       scheme=url.scheme,
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
@@ -195,9 +196,8 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
       User is able to log in with the old password.
       Fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1654623
     """
-
-    app2 = Application(hostname=CONF.config["usmqe"]["web_url"].split('/')[-1],
-                       scheme="http",
+    app2 = Application(hostname=url.hostname,
+                       scheme=url.scheme,
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
     try:
