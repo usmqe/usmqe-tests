@@ -21,8 +21,12 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
       Cluster is in the correct state to start import
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
-    pytest.check(test_cluster.managed == "No")
+    for cluster in clusters:
+        if cluster.cluster_id == cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    if test_cluster.managed == "Yes":
+        test_cluster.unmanage()
+    pytest.check(test_cluster.managed == "No", issue="No value in a freshly installed cluster")
     """
     :step:
       Get the cluster's details via API. Check that API shows the same state
@@ -54,7 +58,7 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_disable_profiling(application, cluster_reuse):
+def test_cluster_disable_profiling(application, imported_cluster_reuse):
     """
     Disable cluster profiling in Web UI
     """
@@ -66,7 +70,11 @@ def test_cluster_disable_profiling(application, cluster_reuse):
       Cluster is in the correct state to disable profiling
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    if test_cluster.profiling != "Enabled":
+        test_cluster.enable_profiling()
     gluster_cluster = gluster.GlusterVolume()
     pytest.check(gluster_cluster.get_clusterwide_profiling() == "enabled")
     """
@@ -82,7 +90,7 @@ def test_cluster_disable_profiling(application, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_enable_profiling(application, cluster_reuse):
+def test_cluster_enable_profiling(application, imported_cluster_reuse):
     """
     Enable cluster profiling in Web UI
     """
@@ -94,7 +102,11 @@ def test_cluster_enable_profiling(application, cluster_reuse):
       Cluster is in the correct state to enable profiling
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    if test_cluster.profiling != "Disabled":
+        test_cluster.disable_profiling()
     gluster_cluster = gluster.GlusterVolume()
     pytest.check(gluster_cluster.get_clusterwide_profiling() == "disabled")
     """
@@ -110,7 +122,7 @@ def test_cluster_enable_profiling(application, cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_cluster_dashboard(application, cluster_reuse):
+def test_cluster_dashboard(application, imported_cluster_reuse):
     """
     Check that dashboard button opens cluster dashboard with correct data on hosts and volumes
     """
@@ -122,7 +134,9 @@ def test_cluster_dashboard(application, cluster_reuse):
       Cluster dashboard shows the correct information
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     dashboard_values = test_cluster.get_values_from_dashboard()
     pytest.check(dashboard_values["cluster_name"] == test_cluster.name)
     LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
@@ -142,7 +156,7 @@ def test_cluster_dashboard(application, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_unmanage(application, valid_session_credentials, cluster_reuse):
+def test_cluster_unmanage(application, valid_session_credentials, imported_cluster_reuse):
     """
     Unmanage cluster in Web UI
     """
@@ -154,7 +168,9 @@ def test_cluster_unmanage(application, valid_session_credentials, cluster_reuse)
       Cluster is in the correct state to start unmanage
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
+            test_cluster = cluster
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
@@ -176,7 +192,7 @@ def test_cluster_unmanage(application, valid_session_credentials, cluster_reuse)
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_naming(application, cluster_reuse):
+def test_cluster_import_unmanage_naming(application, cluster_reuse):
     """
     Import cluster and give it a custom name. Then unmanage it.
     """
@@ -188,7 +204,11 @@ def test_cluster_import_naming(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    if test_cluster.managed == "Yes":
+        test_cluster.unmanage()
     original_id = test_cluster.name
     test_cluster.cluster_import(cluster_name="TestClusterName")
     """
@@ -204,7 +224,7 @@ def test_cluster_import_naming(application, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_profiling_disabled(application, cluster_reuse):
+def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
     """
     Import cluster with profiling disabled. Then unmanage it.
     """
@@ -216,7 +236,11 @@ def test_cluster_import_profiling_disabled(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    if test_cluster.managed == "Yes":
+        test_cluster.unmanage()
     test_cluster.cluster_import(profiling="disable")
     """
     :step:
@@ -238,7 +262,7 @@ def test_cluster_import_profiling_disabled(application, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_view_progress(application, cluster_reuse):
+def test_cluster_import_unmanage_view_progress(application, cluster_reuse):
     """
     Import cluster and view import progress. Then unmanage the cluster and view unmanage progress.
     """
@@ -250,7 +274,11 @@ def test_cluster_import_view_progress(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = clusters[0]
+    for cluster in clusters:
+        if cluster.cluster_id == cluster_reuse["cluster_id"]:
+            test_cluster = cluster
+    if test_cluster.managed == "Yes":
+        test_cluster.unmanage()
     test_cluster.cluster_import(view_progress=True)
     """
     :step:
