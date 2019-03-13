@@ -94,7 +94,6 @@ class UnmanageTaskSubmittedView(View):
     def close(self):
         """Close the modal"""
         self.browser.click(self.CLOSE_LOC, parent=self)
-        self.browser.refresh()
 
     @property
     def is_displayed(self):

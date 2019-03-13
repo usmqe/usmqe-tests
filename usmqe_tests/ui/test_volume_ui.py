@@ -215,7 +215,7 @@ def test_volume_parts(application, imported_cluster_reuse):
             :result:
               Subvolume/replica set is expanded.
             """
-            part.expand_or_collapse()
+            part.expand()
             pytest.check(part.is_expanded)
             """
             :step:
@@ -223,7 +223,7 @@ def test_volume_parts(application, imported_cluster_reuse):
             :result:
               Subvolume/replica set is collapsed.
             """
-            part.expand_or_collapse()
+            part.collapse()
             pytest.check(not part.is_expanded)
 
 

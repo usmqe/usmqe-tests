@@ -56,8 +56,9 @@ class HostBrick(Brick):
         view = self.application.web_ui.create_view(HostBricksView)
         for row in view.bricks:
             if row["Brick Path"].text == self.brick_path:
-                wait_for(lambda: len(row[0].browser.elements(".//span[@uib-tooltip]")) == 1,
-                         timeout=3)
+                wait_for(lambda: row[0].browser.elements(".//span[@uib-"
+                                                         "tooltip]")[0].is_displayed(),
+                         timeout=10)
                 return row[0].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
@@ -106,6 +107,9 @@ class VolumeBrick(Brick):
         for row in view.volume_parts(self.part_id).bricks:
             if (row["Brick Path"].text == self.brick_path and
                     row["Host Name"].text == self.hostname):
+                wait_for(lambda: row[1].browser.elements(".//span[@uib-"
+                                                         "tooltip]")[0].is_displayed(),
+                         timeout=10)
                 return row[1].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 

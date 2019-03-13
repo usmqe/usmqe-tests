@@ -153,16 +153,16 @@ class Cluster(BaseEntity):
         if original_id is not None:
             self.cluster_id = original_id
         view = self.application.web_ui.create_view(ClustersView)
-        wait_for(lambda: view.is_displayed, timeout=30, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=50, delay=2)
         LOGGER.debug("ClustersView was displayed")
         hosts_number = self.hosts_number
         view.clusters(self.name).actions.select("Unmanage")
         view = self.application.web_ui.create_view(UnmanageConfirmationView)
-        wait_for(lambda: view.is_displayed, timeout=30)
+        wait_for(lambda: view.is_displayed, timeout=50)
         LOGGER.debug("UnmanageConfirmationView was displayed")
         view.unmanage.click()
         view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
-        wait_for(lambda: view.is_displayed, timeout=30)
+        wait_for(lambda: view.is_displayed, timeout=200)
         LOGGER.debug("UnmanageTaskSubmittedView was displayed")
         if original_id is not None:
             self.name = original_id
@@ -177,7 +177,7 @@ class Cluster(BaseEntity):
                 view.navbar.clusters.select_by_visible_text("All Clusters")
                 view = self.application.web_ui.create_view(ClustersView)
                 # time.sleep(5)
-                wait_for(lambda: view.is_displayed, timeout=30, delay=2)
+                wait_for(lambda: view.is_displayed, timeout=100, delay=2)
             else:
                 LOGGER.debug("Cluster unmanage failed")
                 return False
@@ -235,7 +235,7 @@ class Cluster(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        wait_for(lambda: view.is_displayed, timeout=30, delay=2)
+        wait_for(lambda: view.is_displayed, timeout=300, delay=2)
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "host_count": view.hosts_total.text.split(" ")[-1],
