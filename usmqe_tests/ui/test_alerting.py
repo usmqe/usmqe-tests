@@ -11,11 +11,10 @@ LOGGER = pytest.get_logger('ui_user_testing', module=True)
 CONF = UsmConfig()
 
 
-@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.parametrize("receive_alerts", [False, True])
 @pytest.mark.happypath
-def test_alerting_settings(application, receive_alerts, valid_normal_user_data):
+def not_yet_test_alerting_settings(application, receive_alerts, valid_normal_user_data):
     """
     Create normal user with email notifications switched on or off.
     Check that alerts appear in the mailbox according to notification settings.
@@ -27,7 +26,7 @@ def test_alerting_settings(application, receive_alerts, valid_normal_user_data):
       Admin's email is changed
     """
     # create a user with the email address configured in ansible playbook
-    new_data = {"email": "alerting_test" + str(receive_alerts) + "@ya.ru",
+    new_data = {"email": "alerting_test" + str(receive_alerts) + "@example.com",
                 "password": CONF.config["usmqe"]["password"],
                 "confirm_password": CONF.config["usmqe"]["password"]}
     application.collections.users.edit_logged_in_user(new_data)
@@ -136,7 +135,7 @@ def test_mysettings_alerting_switch(application, receive_alerts, valid_session_c
 
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_ui_alerts(application, imported_cluster_reuse):
+def test_ui_alerts(application, cluster_reuse):
     """
     Test UI alert appearance and disapearance.
     """

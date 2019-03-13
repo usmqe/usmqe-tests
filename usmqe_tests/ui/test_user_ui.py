@@ -30,7 +30,7 @@ def test_user_crud(application, role, valid_session_credentials):
     user = application.collections.users.create(
         user_id="{}_user_auto".format(role),
         name="{} user".format(role),
-        email="{}user@tendrl.org".format(role),
+        email="{}user@example.com".format(role),
         notifications_on=False,
         password="1234567890",
         role=role
@@ -54,15 +54,15 @@ def test_user_crud(application, role, valid_session_credentials):
     user.edit({
               "user_id": user.user_id,
               "name": user.name,
-              "email": "edited_email_for_{}@tendrl.org".format(role),
+              "email": "edited_email_for_{}@example.com".format(role),
               "password": user.password,
               "confirm_password": user.password,
               "notifications_on": True
               })
     pytest.check(user.exists)
-    pytest.check(user.email == "edited_email_for_{}@tendrl.org".format(role))
+    pytest.check(user.email == "edited_email_for_{}@example.com".format(role))
     pytest.check(user.notifications_on)
-    user_data["email"] = "edited_email_for_{}@tendrl.org".format(role)
+    user_data["email"] = "edited_email_for_{}@example.com".format(role)
     user_data["email_notifications"] = True
     test.check_user(user_data)
     """
@@ -146,7 +146,7 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
-    new_data = {"email": "new_user_email@ya.ru",
+    new_data = {"email": "new_user_email@example.com",
                 "password": valid_password,
                 "confirm_password": valid_password}
     app1.collections.users.edit_logged_in_user(new_data)
@@ -185,7 +185,7 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
                        username=valid_normal_user_data["username"],
                        password=valid_normal_user_data["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
-    new_data = {"email": "new_user_email@ya.ru"}
+    new_data = {"email": "new_user_email@example.com"}
     app1.collections.users.edit_logged_in_user(new_data)
     app1.web_ui.browser_manager.quit()
     """

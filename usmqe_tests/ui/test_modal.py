@@ -49,7 +49,7 @@ def test_modal_username_role(application, role, valid_session_credentials):
     user = application.collections.users.create(
         user_id="{}_user_auto".format(role),
         name="{} user".format(role),
-        email="{}user@tendrl.org".format(role),
+        email="{}user@example.com".format(role),
         notifications_on=False,
         password="1234567890",
         role=role)
