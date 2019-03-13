@@ -3,7 +3,7 @@ Alerting test suite - workload
 """
 
 import pytest
-from usmqe.alerting.alerting import Alerting
+from usmqe.alerting import Alerting
 
 
 LOGGER = pytest.get_logger('workload_alerting', module=True)
