@@ -267,6 +267,7 @@ def test_swap_utilization(
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_memory_available(
+        ansible_playbook,
         workload_memory_utilization,
         cluster_reuse):
     """
@@ -311,7 +312,7 @@ def test_memory_available(
     # make sure that all data in graphite are saved
     time.sleep(2)
     expected_available_mem = (
-        workload_memory_utilization["result"]/100) * int(
+        1 - workload_memory_utilization["result"]/100) * int(
             workload_memory_utilization['metadata']['total_memory'])
 
     graphite.compare_data_mean(
@@ -319,4 +320,4 @@ def test_memory_available(
         targets_used,
         workload_memory_utilization["start"],
         workload_memory_utilization["end"],
-        divergence=15)
+        divergence=0.15*expected_available_mem)
