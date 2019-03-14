@@ -137,7 +137,11 @@ class Cluster(BaseEntity):
         LOGGER.debug("ClustersView was displayed")
         wait_for(lambda: view.clusters(self.name).status.is_displayed, timeout=40, delay=2)
         LOGGER.debug("Self.name: {}".format(self.name))
-        wait_for(lambda: self.update()[3] == "Ready to Use", timeout=400, delay=2)
+        wait_for(lambda: self.update()[3] in {"Ready to Use",
+                                              "Import Failed. View Details"}, timeout=400, delay=2)
+        if self.status == "Import Failed. View Details":
+            LOGGER.debug("Cluster import failed")
+            return False
         wait_for(lambda: self.update()[1] == "Yes", timeout=200, delay=3)
         LOGGER.debug("Cluster was updated")
         LOGGER.debug("Cluster status: {}".format(self.status))
@@ -169,14 +173,12 @@ class Cluster(BaseEntity):
         if view_progress:
             view.view_progress.click()
             view = self.application.web_ui.create_view(MainTaskEventsView)
-            # time.sleep(40)
             wait_for(lambda: view.is_displayed, timeout=200, delay=2)
             LOGGER.debug("MainTaskEventsView was displayed")
             wait_for(lambda: view.import_status.text in {"Completed", "Failed"}, timeout=400)
             if view.import_status.text == "Completed":
                 view.navbar.clusters.select_by_visible_text("All Clusters")
                 view = self.application.web_ui.create_view(ClustersView)
-                # time.sleep(5)
                 wait_for(lambda: view.is_displayed, timeout=100, delay=2)
             else:
                 LOGGER.debug("Cluster unmanage failed")
@@ -193,6 +195,9 @@ class Cluster(BaseEntity):
                         self.status == "Ready to Import"
                         and self.hosts_number == hosts_number):
                     break
+                elif self.status == "Unmanage Failed. View Details":
+                    LOGGER.debug("Cluster unmanage failed")
+                    return False
                 else:
                     time.sleep(5)
             except NoSuchElementException:

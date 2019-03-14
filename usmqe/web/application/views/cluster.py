@@ -89,7 +89,7 @@ class UnmanageTaskSubmittedView(View):
     ROOT = ".//pf-modal-overlay-content"
     name = Text(".//h4")
     CLOSE_LOC = './/div[@class="modal-header"]/button[@class="close ng-scope"]'
-    view_progress = Button("contains", "View Task Progress")
+    view_progress = Button("contains", "Progress")
 
     def close(self):
         """Close the modal"""

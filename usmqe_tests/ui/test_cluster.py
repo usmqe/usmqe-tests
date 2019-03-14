@@ -2,6 +2,7 @@ import pytest
 
 from usmqe.api.tendrlapi import glusterapi
 from usmqe.gluster import gluster
+from usmqe.web import tools
 
 LOGGER = pytest.get_logger('ui_cluster_testing', module=True)
 
@@ -21,9 +22,7 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
       Cluster is in the correct state to start import
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     pytest.check(test_cluster.managed == "No", issue="No value in a freshly installed cluster")
@@ -37,7 +36,8 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
     api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
         api_cluster["is_managed"] == "no",
-        "is_managed: {}\nThere should be ``no``.".format(api_cluster["is_managed"]))
+        "is_managed: {}\nThere should be ``no``.".format(api_cluster["is_managed"]),
+        issue="No value in a freshly installed cluster")
     """
     :step:
       Import the cluster in Web UI and check its state has changed in both Web UI and API
@@ -70,9 +70,7 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse):
       Cluster is in the correct state to disable profiling
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
     if test_cluster.profiling != "Enabled":
         test_cluster.enable_profiling()
     gluster_cluster = gluster.GlusterVolume()
@@ -102,9 +100,7 @@ def test_cluster_enable_profiling(application, imported_cluster_reuse):
       Cluster is in the correct state to enable profiling
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
     if test_cluster.profiling != "Disabled":
         test_cluster.disable_profiling()
     gluster_cluster = gluster.GlusterVolume()
@@ -134,9 +130,7 @@ def test_cluster_dashboard(application, imported_cluster_reuse):
       Cluster dashboard shows the correct information
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
     dashboard_values = test_cluster.get_values_from_dashboard()
     pytest.check(dashboard_values["cluster_name"] == test_cluster.name)
     LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
@@ -168,9 +162,7 @@ def test_cluster_unmanage(application, valid_session_credentials, imported_clust
       Cluster is in the correct state to start unmanage
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
@@ -182,11 +174,14 @@ def test_cluster_unmanage(application, valid_session_credentials, imported_clust
     :result:
       Cluster is unmanaged
     """
-    test_cluster.unmanage()
-    api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
-    pytest.check(
-        api_cluster["is_managed"] == "no",
-        "is_managed: {}\nThere should be ``no``.".format(api_cluster["is_managed"]))
+    unmanage_success = test_cluster.unmanage()
+    if not unmanage_success:
+        pytest.check(False, "Unmanage failed")
+        test_cluster.unmanage()
+    else:
+        api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
+        pytest.check(api_cluster["is_managed"] == "no",
+                     "is_managed: {}\nThere should be ``no``.".format(api_cluster["is_managed"]))
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -204,13 +199,13 @@ def test_cluster_import_unmanage_naming(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     original_id = test_cluster.name
-    test_cluster.cluster_import(cluster_name="TestClusterName")
+    import_success = test_cluster.cluster_import(cluster_name="TestClusterName")
+    if not import_success:
+        pytest.check(False, "Import failed")
     """
     :step:
       Unmanage the cluster
@@ -218,7 +213,10 @@ def test_cluster_import_unmanage_naming(application, cluster_reuse):
       Cluster is unmanaged and its name is no longer shown in the clusters list.
       Its id is shown instead.
     """
-    test_cluster.unmanage(original_id=original_id)
+    unmanage_success = test_cluster.unmanage(original_id=original_id)
+    if not unmanage_success:
+        pytest.check(False, "Unmanage failed")
+        test_cluster.unmanage()
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -236,12 +234,12 @@ def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
-    test_cluster.cluster_import(profiling="disable")
+    import_success = test_cluster.cluster_import(profiling="disable")
+    if not import_success:
+        pytest.check(False, "Import failed")
     """
     :step:
       Check that cluster profiling is disabled
@@ -256,7 +254,10 @@ def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
     :result:
       Cluster is unmanaged
     """
-    test_cluster.unmanage()
+    unmanage_success = test_cluster.unmanage()
+    if not unmanage_success:
+        pytest.check(False, "Unmanage failed")
+        test_cluster.unmanage()
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -274,19 +275,22 @@ def test_cluster_import_unmanage_view_progress(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
-    test_cluster.cluster_import(view_progress=True)
+    import_success = test_cluster.cluster_import(view_progress=True)
+    if not import_success:
+        pytest.check(False, "Import failed")
     """
     :step:
       Unmanage the cluster and view unmanage progress.
     :result:
       Cluster is unmanaged
     """
-    test_cluster.unmanage(view_progress=True)
+    unmanage_success = test_cluster.unmanage(view_progress=True)
+    if not unmanage_success:
+        pytest.check(False, "Unmanage failed")
+        test_cluster.unmanage()
 
 
 @pytest.mark.author("ebondare@redhat.com")

@@ -1,4 +1,8 @@
 # -*- coding: utf8 -*-
+import pytest
+
+
+LOGGER = pytest.get_logger('web_testing_tools', module=True)
 
 
 def close_extra_windows(view):
@@ -23,3 +27,15 @@ def bricks_displayed(view, bricks_count, part_id):
     else:
         return len(view.volume_parts(part_id).bricks.row()[1].
                    browser.elements(".//span[@uib-tooltip]")) == 1
+
+
+def choose_cluster(clusters_list, cluster_id):
+    """
+    Choose cluster with the correct cluster id from clusters_list
+    """
+    LOGGER.debug("Target cluster id: {}".format(cluster_id))
+    for cluster in clusters_list:
+        LOGGER.debug("Current cluster id: {}".format(cluster.cluster_id))
+        if cluster.cluster_id == cluster_id:
+            LOGGER.debug("Found cluster {}".format(cluster_id))
+            return cluster
