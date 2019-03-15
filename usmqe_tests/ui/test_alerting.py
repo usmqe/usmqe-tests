@@ -14,7 +14,11 @@ CONF = UsmConfig()
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.parametrize("receive_alerts", [False, True])
 @pytest.mark.happypath
-def not_yet_test_alerting_settings(application, receive_alerts, valid_normal_user_data):
+@pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
+@pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.smtp.yml')
+@pytest.mark.ansible_playbook_teardown('test_teardown.snmp.yml')
+def test_alerting_settings(application, receive_alerts, valid_normal_user_data):
     """
     Create normal user with email notifications switched on or off.
     Check that alerts appear in the mailbox according to notification settings.
@@ -100,6 +104,7 @@ def not_yet_test_alerting_settings(application, receive_alerts, valid_normal_use
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.parametrize("receive_alerts", [True, False])
 @pytest.mark.happypath
+@pytest.mark.testready
 def test_mysettings_alerting_switch(application, receive_alerts, valid_session_credentials):
     """
     Test switching alerts on and off in My Settings.
@@ -135,7 +140,8 @@ def test_mysettings_alerting_switch(application, receive_alerts, valid_session_c
 
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_ui_alerts(application, cluster_reuse):
+@pytest.mark.testready
+def test_ui_alerts(application, imported_cluster_reuse):
     """
     Test UI alert appearance and disapearance.
     """
