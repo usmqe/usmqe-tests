@@ -3,6 +3,7 @@ from widgetastic.widget import Checkbox
 from widgetastic.widget import Text, TextInput, View, Select
 from widgetastic_patternfly import AboutModal
 from widgetastic.widget import ParametrizedLocator, ParametrizedView
+from wait_for import wait_for, TimedOutError
 
 from usmqe.web.application.widgets import NavDropdown
 
@@ -83,6 +84,11 @@ class BaseLoggedInView(View):
         finally:
             # close since its a blocking modal and will break further navigation
             self.modal.close()
+            try:
+                wait_for(lambda: not self.modal.is_displayed, timeout=2)
+            except TimedOutError:
+                self.modal.close()
+                wait_for(lambda: not self.modal.is_displayed, timeout=2)
 
 
 class BaseClusterSpecifiedView(BaseLoggedInView):
