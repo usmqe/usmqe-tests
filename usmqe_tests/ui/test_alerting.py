@@ -95,9 +95,11 @@ def test_alerting_settings(application, receive_alerts, valid_normal_user_data):
         if message['Subject'].count("]"):
             alert_received = True
     if receive_alerts:
-        pytest.check(alert_received)
+        pytest.check(alert_received,
+                     "Check that alert has been received")
     else:
-        pytest.check(not alert_received)
+        pytest.check(not alert_received,
+                     "Check that alert hasn't been recieved")
     user.delete()
 
 
@@ -168,9 +170,12 @@ def test_ui_alerts(application, imported_cluster_reuse):
         if alert.description.find("is Disconnected") > 0 and alert.description.find(host) > 0:
             alert_found = True
             LOGGER.debug("Alert found: {}".format(alert_found))
-            pytest.check(alert.severity == "warning")
-            pytest.check(int(alert.date.split(" ")[2]) > 2018)
-    pytest.check(alert_found)
+            pytest.check(alert.severity == "warning",
+                         "Check that severity of alert about disconnection is ``warning``")
+            pytest.check(int(alert.date.split(" ")[2]) > 2018,
+                         "Check that the year in the alert date is integer, 2019 or greater")
+    pytest.check(alert_found,
+                 "Check that the alert about disconnection exists in the list of UI alerts")
     """
     :step:
       Restart glusterd.
@@ -192,6 +197,9 @@ def test_ui_alerts(application, imported_cluster_reuse):
         if alert.description.find("is Connected") > 0 and alert.description.find(host) > 0:
             alert_found = True
             LOGGER.debug("Alert found: {}".format(alert_found))
-            pytest.check(alert.severity == "info")
-            pytest.check(int(alert.date.split(" ")[2]) > 2018)
-    pytest.check(alert_found)
+            pytest.check(alert.severity == "info",
+                         "Check that severity of the alert about re-connection is ``info``")
+            pytest.check(int(alert.date.split(" ")[2]) > 2018,
+                         "Check that the year in the alert date is integer, 2019 or greater")
+    pytest.check(alert_found,
+                 "Check that the alert about re-connection exists in the list of UI alerts")

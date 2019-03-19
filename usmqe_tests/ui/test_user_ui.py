@@ -34,7 +34,8 @@ def test_user_crud(application, role, valid_session_credentials):
         password="1234567890",
         role=role
     )
-    pytest.check(user.exists)
+    pytest.check(user.exists,
+                 "Check that new user can be found on UI Users page")
     test = tendrlapi_user.ApiUser(auth=valid_session_credentials)
     user_data = {
         "name": user.name,
@@ -58,9 +59,12 @@ def test_user_crud(application, role, valid_session_credentials):
               "confirm_password": user.password,
               "notifications_on": True
               })
-    pytest.check(user.exists)
-    pytest.check(user.email == "edited_email_for_{}@example.com".format(role))
-    pytest.check(user.notifications_on)
+    pytest.check(user.exists,
+                 "Check that edited user can be found on UI Users page")
+    pytest.check(user.email == "edited_email_for_{}@example.com".format(role),
+                 "Check that user's e-mail has been edited")
+    pytest.check(user.notifications_on,
+                 "Check that user's notification settings have been edited")
     user_data["email"] = "edited_email_for_{}@example.com".format(role)
     user_data["email_notifications"] = True
     test.check_user(user_data)
@@ -85,7 +89,8 @@ def test_user_crud(application, role, valid_session_credentials):
       User is deleted
     """
     user.delete()
-    pytest.check(not user.exists)
+    pytest.check(not user.exists,
+                 "Check that user can't be found on UI Users page anymore.")
 
 
 @pytest.mark.testready
@@ -110,7 +115,8 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
         password=invalid_password,
         role=valid_normal_user_data["role"]
     )
-    pytest.check(not user.exists)
+    pytest.check(not user.exists,
+                 "Check that new user can't be found on UI Users page")
     """
     :step:
       Check that user hasn't been created using API
@@ -125,7 +131,8 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
         "reason": 'Not Found',
         "status": 404}
     not_found = test.get_user(user_data_password_invalid["username"], asserts_in=asserts)
-    pytest.check("Not found" in str(not_found))
+    pytest.check("Not found" in str(not_found),
+                 "Check that new user can't be found using API")
 
 
 @pytest.mark.testready

@@ -29,7 +29,8 @@ def test_modal(application):
                   "Browser OS": "linux"}
     for key in modal_info:
         real_value = view.get_detail(key).lower()
-        pytest.check(real_value == modal_info[key])
+        pytest.check(real_value == modal_info[key],
+                     "Modal info: {}. Should be {}".format(modal_info[key], real_value))
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -72,5 +73,6 @@ def test_modal_username_role(application, role, valid_session_credentials):
                   "Browser OS": "linux"}
     for key in modal_info:
         real_value = view.get_detail(key).lower()
-        pytest.check(real_value == modal_info[key])
+        pytest.check(real_value == modal_info[key],
+                     "Modal info: {}. Should be {}".format(modal_info[key], real_value))
     user.delete()

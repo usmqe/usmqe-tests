@@ -74,7 +74,8 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse):
     if test_cluster.profiling != "Enabled":
         test_cluster.enable_profiling()
     gluster_cluster = gluster.GlusterVolume()
-    pytest.check(gluster_cluster.get_clusterwide_profiling() == "enabled")
+    pytest.check(gluster_cluster.get_clusterwide_profiling() == "enabled",
+                 "Check that all volumes have profiling enabled according to gluster command")
     """
     :step:
       Disable profiling in Web UI and check its state has changed in both Web UI and API
@@ -82,7 +83,8 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse):
       Cluster profiling has been disabled
     """
     test_cluster.disable_profiling()
-    pytest.check(gluster_cluster.get_clusterwide_profiling() == "disabled")
+    pytest.check(gluster_cluster.get_clusterwide_profiling() == "disabled",
+                 "Check that all profiling has been disabled according to gluster command")
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -104,7 +106,8 @@ def test_cluster_enable_profiling(application, imported_cluster_reuse):
     if test_cluster.profiling != "Disabled":
         test_cluster.disable_profiling()
     gluster_cluster = gluster.GlusterVolume()
-    pytest.check(gluster_cluster.get_clusterwide_profiling() == "disabled")
+    pytest.check(gluster_cluster.get_clusterwide_profiling() == "disabled",
+                 "Check that all volumes have profiling disabled according to gluster command")
     """
     :step:
       Enable profiling in Web UI and check its state has changed in both Web UI and API
@@ -112,7 +115,8 @@ def test_cluster_enable_profiling(application, imported_cluster_reuse):
       Cluster profiling has been enabled
     """
     test_cluster.enable_profiling()
-    pytest.check(gluster_cluster.get_clusterwide_profiling() == "enabled")
+    pytest.check(gluster_cluster.get_clusterwide_profiling() == "enabled",
+                 "Check that all profiling has been enabled according to gluster command")
 
 
 @pytest.mark.testready
@@ -132,16 +136,20 @@ def test_cluster_dashboard(application, imported_cluster_reuse):
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
     dashboard_values = test_cluster.get_values_from_dashboard()
-    pytest.check(dashboard_values["cluster_name"] == test_cluster.name)
+    pytest.check(dashboard_values["cluster_name"] == test_cluster.name,
+                 "Check that cluster name in Grafana dashboard is as expected")
     LOGGER.debug("Cluster name in grafana: {}".format(dashboard_values["cluster_name"]))
     LOGGER.debug("Cluster name in main UI: {}".format(test_cluster.name))
-    pytest.check(dashboard_values["host_count"] == test_cluster.hosts_number)
+    pytest.check(dashboard_values["host_count"] == test_cluster.hosts_number,
+                 "Check that total number of cluster's hosts in Grafana is the same as in main UI")
     LOGGER.debug("Hosts count in grafana: '{}'".format(dashboard_values["host_count"]))
     LOGGER.debug("Hosts count in main UI: {}".format(test_cluster.hosts_number))
-    pytest.check(dashboard_values["volume_count"] == test_cluster.volumes_number)
+    pytest.check(dashboard_values["volume_count"] == test_cluster.volumes_number,
+                 "Check that total number of volumes in Grafana is the same as in main UI")
     LOGGER.debug("Volume count in grafana: {}".format(dashboard_values["volume_count"]))
     LOGGER.debug("Volume count in main UI: {}".format(test_cluster.volumes_number))
-    pytest.check(dashboard_values["cluster_health"].lower() == test_cluster.health.lower())
+    pytest.check(dashboard_values["cluster_health"].lower() == test_cluster.health.lower(),
+                 "Check that cluster's health in Grafana is the same as in main UI")
     LOGGER.debug("Cluster health in grafana (lowercase): '{}"
                  "'".format(dashboard_values["cluster_health"].lower()))
     LOGGER.debug("Cluster health in main UI (lowercase): '{}'".format(test_cluster.health.lower()))
@@ -304,8 +312,10 @@ def not_yet_test_cluster_expansion(application):
     test_cluster = clusters[0]
     test_cluster.expand()
     LOGGER.debug("Cluster status: {}".format(test_cluster.status))
-    pytest.check(test_cluster.status == "Ready to Use")
+    pytest.check(test_cluster.status == "Ready to Use",
+                 "Cluster is {} state. Should be ``Ready to use``".format(test_cluster.status))
     hosts = test_cluster.hosts.get_hosts()
     for host in hosts:
         LOGGER.debug("{} host state: {}".format(host.hostname, host.health.lower()))
-        pytest.check(host.health.lower() == "up")
+        pytest.check(host.health.lower() == "up",
+                     "Host health lowercase is {}. Should be ``up``".format(host.health.lower()))

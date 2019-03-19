@@ -1,5 +1,7 @@
 import pytest
 
+from usmqe.web import tools
+
 
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
@@ -16,9 +18,7 @@ def test_event_attributes(application, imported_cluster_reuse):
       Event objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    for cluster in clusters:
-        if cluster.cluster_id == imported_cluster_reuse["cluster_id"]:
-            test_cluster = cluster
+    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
     events = test_cluster.events.get_events()
     """
     :step:
@@ -27,8 +27,10 @@ def test_event_attributes(application, imported_cluster_reuse):
     :result:
       Attributes of all events in the event list are as expected.
     """
-    pytest.check(events != [])
+    pytest.check(events != [],
+                 "Check that events list in UI isn't empty")
     for event in events:
-        pytest.check(len(event.description) > 15)
-        pytest.check(int(event.date.split(" ")[2]) > 2010)
-        pytest.check(int(event.date.split(" ")[2]) < 2100)
+        pytest.check(len(event.description) > 15,
+                     "Description: {}. Should be more than 15 chars".format(event.description))
+        pytest.check(int(event.date.split(" ")[2]) > 2018,
+                     "Event date: {}. Year should be greater than 2018".format(event.date))
