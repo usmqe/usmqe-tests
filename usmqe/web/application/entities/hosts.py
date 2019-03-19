@@ -59,7 +59,10 @@ class HostsCollection(BaseCollection):
         Return the list of instantiated Host objects, their attributes read from Hosts page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Hosts")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=3)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=3,
+                 message="HostsView wasn't displayed")
         hosts_list = []
         for hostname in view.all_hostnames:
             host = self.instantiate(

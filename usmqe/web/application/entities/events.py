@@ -36,7 +36,10 @@ class EventsCollection(BaseCollection):
         Return the list of instantiated Event objects, their attributes read from Events page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Events")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=2,
+                 message="Events page hasn't been displayed in time")
         event_list = []
         for event_id in view.all_event_ids:
             event = self.instantiate(
@@ -67,7 +70,10 @@ class TaskEventsCollection(BaseCollection):
         Return the list of instantiated Event objects, their attributes read from the Task's log.
         """
         view = ViaWebUI.navigate_to(self.parent, "Events")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=2,
+                 message="Events page hasn't been displayed in time")
         event_list = []
         for event_id in view.all_event_ids:
             event = self.instantiate(

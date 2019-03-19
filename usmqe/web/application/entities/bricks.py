@@ -32,7 +32,10 @@ class Brick(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=3)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=3,
+                 message="BrickDashboard wasn't dispayed in time")
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "host_name": view.host_name.text,
@@ -58,7 +61,8 @@ class HostBrick(Brick):
             if row["Brick Path"].text == self.brick_path:
                 wait_for(lambda: row[0].browser.elements(".//span[@uib-"
                                                          "tooltip]")[0].is_displayed(),
-                         timeout=10)
+                         timeout=10,
+                         message="Brick: {} Status icon isn't available".format(self.brick_path))
                 return row[0].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
@@ -73,7 +77,10 @@ class HostBricksCollection(BaseCollection):
         Return the list of initiated Brick objects.
         """
         view = ViaWebUI.navigate_to(self.parent, "Bricks")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=3)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=3,
+                 message="Host's Brick Details weren't displayed in time")
         brick_list = []
         for row in view.bricks:
             brick = self.instantiate(
@@ -109,7 +116,8 @@ class VolumeBrick(Brick):
                     row["Host Name"].text == self.hostname):
                 wait_for(lambda: row[1].browser.elements(".//span[@uib-"
                                                          "tooltip]")[0].is_displayed(),
-                         timeout=10)
+                         timeout=10,
+                         message="Brick: {}. Could not read status icon".format(self.hostname))
                 return row[1].browser.elements(".//span[@uib-tooltip"
                                                "]")[0].get_attribute("uib-tooltip")
 
@@ -127,7 +135,10 @@ class VolumeBricksCollection(BaseCollection):
         Return the list of initiated Brick objects.
         """
         view = ViaWebUI.navigate_to(self.parent.parent.parent, "Bricks")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=3)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=3,
+                 message="Volume's Brick Details weren't displayed in time")
         if not self.parent.is_expanded:
             self.parent.expand()
         bricks = view.volume_parts(self.parent.part_id).bricks

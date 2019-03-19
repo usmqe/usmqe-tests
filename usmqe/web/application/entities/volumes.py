@@ -60,7 +60,10 @@ class Volume(BaseEntity):
         """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         view.volumes(self.volname).enable_profiling.click()
-        wait_for(lambda: self.update()[4] == "Enabled", timeout=300, delay=5)
+        wait_for(lambda: self.update()[4] == "Enabled",
+                 timeout=300,
+                 delay=5,
+                 message="Volume's profiling hasn't changed to Enabled in 300 seconds")
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Enabled")
 
@@ -70,7 +73,10 @@ class Volume(BaseEntity):
         """
         view = self.application.web_ui.create_view(ClusterVolumesView)
         view.volumes(self.volname).disable_profiling.click()
-        wait_for(lambda: self.update()[4] == "Disabled", timeout=300, delay=5)
+        wait_for(lambda: self.update()[4] == "Disabled",
+                 timeout=300,
+                 delay=5,
+                 message="Volume's profiling hasn't changed to Enabled in 300 seconds")
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Disabled")
 
@@ -80,7 +86,10 @@ class Volume(BaseEntity):
         close the window with Grafana dashboard and return to main UI
         """
         view = ViaWebUI.navigate_to(self, "Dashboard")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=3)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=3,
+                 message="Volume Dashboard wasn't displayed in time")
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "volume_name": view.volume_name.text,

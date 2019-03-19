@@ -42,7 +42,10 @@ class TasksCollection(BaseCollection):
         Return the list of instantiated Task objects, their attributes read from Tasks page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Tasks")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=2,
+                 message="Tasks page hasn't been displayed in time")
         task_list = []
         for task_id in view.all_task_ids:
             task = self.instantiate(

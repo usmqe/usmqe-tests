@@ -28,7 +28,10 @@ class AlertsCollection(BaseCollection):
         Return the list of instantiated Alert objects.
         """
         view = ViaWebUI.navigate_to(self, "All")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=2,
+                 message="AlertsView wasn't displayed in time")
         alert_list = []
         for alert_id in view.alerts.all_alert_ids:
             alert = self.instantiate(

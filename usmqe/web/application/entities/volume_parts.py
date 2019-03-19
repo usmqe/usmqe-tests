@@ -1,5 +1,5 @@
 import attr
-from wait_for import wait_for
+from wait_for import wait_for, TimedOutError
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.implementations.web_ui import ViaWebUI
@@ -37,7 +37,15 @@ class VolumePart(BaseEntity):
         """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.volume_parts(self.part_id).part_name.click()
-        wait_for(lambda: self.is_expanded, timeout=3)
+        try:
+            wait_for(lambda: self.is_expanded,
+                     timeout=2,
+                     message="Expanding part {} failed".format(self.part_name))
+        except TimedOutError:
+            view.volume_parts(self.part_id).part_name.click()
+            wait_for(lambda: self.is_expanded,
+                     timeout=3,
+                     message="Expanding part {} failed twice".format(self.part_name))
 
     def collapse(self):
         """
@@ -45,7 +53,9 @@ class VolumePart(BaseEntity):
         """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.volume_parts(self.part_id).part_name.click()
-        wait_for(lambda: (not self.is_expanded), timeout=3)
+        wait_for(lambda: (not self.is_expanded),
+                 timeout=3,
+                 message="Collapsing part {} failed".format(self.part_name))
 
 
 @attr.s
@@ -58,7 +68,10 @@ class VolumePartsCollection(BaseCollection):
         Brick details page.
         """
         view = ViaWebUI.navigate_to(self.parent, "Bricks")
-        wait_for(lambda: view.is_displayed, timeout=10, delay=2)
+        wait_for(lambda: view.is_displayed,
+                 timeout=10,
+                 delay=2,
+                 message="Brick details view wasn't displayed in time")
         part_list = []
         assert view.all_part_ids != []
         for part_id in view.all_part_ids:
@@ -90,7 +103,9 @@ class VolumePartsCollection(BaseCollection):
         """
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.expand_all.click()
-        wait_for(lambda: self.is_expanded, timeout=3)
+        wait_for(lambda: self.is_expanded,
+                 timeout=3,
+                 message="Expand All wasn't done in time")
 
     def collapse_all(self):
         """
@@ -99,4 +114,6 @@ class VolumePartsCollection(BaseCollection):
         view = self.application.web_ui.create_view(VolumeBricksView)
         view.browser.selenium.execute_script("window.scrollTo(0, -document.body.scrollHeight)")
         view.collapse_all.click()
-        wait_for(lambda: self.is_collapsed, timeout=3)
+        wait_for(lambda: self.is_collapsed,
+                 timeout=3,
+                 message="Collapse All wasn't done in time")

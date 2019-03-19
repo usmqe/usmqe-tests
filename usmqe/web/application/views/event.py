@@ -36,4 +36,6 @@ class ClusterEventsView(BaseClusterSpecifiedView):
 
     @property
     def is_displayed(self):
-        return self.pagename.text == "Events" and len(self.results.text) > 3
+        return (self.pagename.text == "Events" and
+                len(self.results.text) > 3 and
+                self.results.text[0] != '0')
