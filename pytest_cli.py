@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from collections.abc import Iterable
-from os import pardir, path
+from os import pardir, path, environ
 import subprocess
 import sys
 
@@ -37,6 +37,10 @@ if not path.isabs(params['ansible_playbook_inventory']):
 
 predefined_params = ["--{}={}".format(key.replace("_", "-"), val)
         for key, val in params.items()]
+
+# This will make requests library, which we use to make REST API calls, to use
+# CA installed in the operating system.
+environ['REQUESTS_CA_BUNDLE'] = "/etc/pki/tls/certs/ca-bundle.crt"
 
 command = ["python3", "-m", "pytest"] + predefined_params + sys.argv[1:]
 print("COMMAND: {}".format(command))

@@ -51,7 +51,9 @@ class GraphiteApi(ApiBase):
             from_date=None,
             until_date=None,
             divergence=10,
-            sample_rate=1):
+            sample_rate=1,
+            operation='sum',
+            issue=None):
         """
         Compare expected result with sum of means from graphite data from given targets.
 
@@ -62,18 +64,23 @@ class GraphiteApi(ApiBase):
             until_date: datetime string or timestamp to which date are records shown
             divergence (num): numeric value of divergence used in final comparison
             sample_rate (int): number of samples per minute
+            operation (str): this specifies operation that is done with data
+                when there are more targets available:
+                sum - summation of data
+                diff - subtraction of data
+            issue (str): known issue, log WAIVE
         """
-        graphite_data_mean_sum = 0
+        graphite_data_mean_all = 0
         if from_date and not isinstance(from_date, int):
             from_date = int(from_date.timestamp())
         if until_date and not isinstance(until_date, int):
             until_date = int(until_date.timestamp())
 
-        for target in targets:
+        for idx, target in enumerate(targets):
             graphite_data = self.get_datapoints(
                 target, from_date=from_date, until_date=until_date)
             # drop empty data points
-            graphite_data = [x for x in graphite_data if x[0]]
+            graphite_data = [x for x in graphite_data if x[0] is not None]
             # process data from graphite
             graphite_data_mean = sum(
                 [x[0] for x in graphite_data]) / max(
@@ -86,20 +93,30 @@ class GraphiteApi(ApiBase):
                     (len(graphite_data) == expected_number_of_datapoints) or
                     (len(graphite_data) == expected_number_of_datapoints - 1),
                     "Number of samples of used data should be {}, is {}.".format(
-                        expected_number_of_datapoints, len(graphite_data)))
+                        expected_number_of_datapoints, len(graphite_data)),
+                    issue=issue)
             LOGGER.debug("mean of data from `{}` in Graphite: {}".format(
                 target, graphite_data_mean))
-            graphite_data_mean_sum += graphite_data_mean
-        LOGGER.debug("mean of all used data from Graphite: {}".format(
-            graphite_data_mean_sum))
+            if operation == 'sum' or idx == 0:
+                graphite_data_mean_all += graphite_data_mean
+            elif operation == 'diff':
+                graphite_data_mean_all -= graphite_data_mean
+            else:
+                raise ValueError("Operation '{0}' is not supported.".format(
+                    operation))
+        LOGGER.info("mean of all used data from Graphite: {}".format(
+            graphite_data_mean_all))
+        LOGGER.info("used operation: {}".format(operation))
         minimal_expected_result = expected_result - divergence
         maximal_expected_result = expected_result + divergence
-        msg = "Data mean should be {}, data mean in Graphite is: {}, ".format(
-            expected_result,
-            graphite_data_mean_sum)
-        print(type(msg))
+        msg = "Data mean for target {}, "\
+              "should be {}, data mean in Graphite is: {}, ".format(
+                target,
+                expected_result,
+                graphite_data_mean_all)
         msg += "applicable divergence is {}".format(divergence)
         pytest.check(
-            minimal_expected_result <
-            graphite_data_mean_sum < maximal_expected_result,
-            msg)
+            minimal_expected_result <=
+            graphite_data_mean_all <= maximal_expected_result,
+            msg,
+            issue=issue)
