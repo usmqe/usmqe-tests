@@ -2,6 +2,7 @@ import configparser
 import datetime
 import time
 from urllib.parse import urlparse
+import pytest
 
 import usmqe.usmssh as usmssh
 from usmqe.web.application import Application
