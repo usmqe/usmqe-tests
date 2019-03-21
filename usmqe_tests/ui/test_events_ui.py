@@ -19,6 +19,7 @@ def test_event_attributes(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     events = test_cluster.events.get_events()
     """
     :step:

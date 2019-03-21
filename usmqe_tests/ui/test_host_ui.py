@@ -22,6 +22,7 @@ def test_host_attributes(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
     :step:
@@ -78,6 +79,7 @@ def test_host_bricks(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     volume_bricks = []
     for volume in test_cluster.volumes.get_volumes():
         for part in volume.parts.get_parts():
@@ -152,6 +154,7 @@ def test_host_dashboard(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
     :step:
@@ -199,6 +202,7 @@ def test_brick_dashboard(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
     :step:

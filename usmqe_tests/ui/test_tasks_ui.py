@@ -19,6 +19,7 @@ def test_task_attributes(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     tasks = test_cluster.tasks.get_tasks()
     """
     :step:
@@ -56,6 +57,7 @@ def test_task_log(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    assert test_cluster.managed == "Yes"
     tasks = test_cluster.tasks.get_tasks()
     pytest.check(tasks != [],
                  "Check that cluster's Tasks list isn't empty")
