@@ -15,4 +15,5 @@ Main modules available here are:
   storage type)
 
 Besides that, there is ``unit_tests`` directory, which contains unit tests of
-some components of this ``usmqe`` module.
+some components of this ``usmqe`` module and ``integration_tests`` directory,
+which contains integration tests related to ``usmqe`` module.

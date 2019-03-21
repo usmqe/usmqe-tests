@@ -47,12 +47,14 @@ class GrafanaApi(ApiBase):
         self.check_response(response)
         return response.json()
 
-    def get_panel(self, panel_title, row_title, dashboard):
+    def get_panel(self, panel_title, row_title, dashboard, panel_type=None):
         """
         Args:
-          panel_title (str): title of desired panel
-          row_title (str): title of row containing desired panel
-          dashboard (str): stub of dashboard containing desired panel
+            panel_title (str): title of desired panel
+            row_title (str): title of row containing desired panel
+            dashboard (str): stub of dashboard containing desired panel
+            panel_type (str): type of panel defined in grafana json
+                (graph, singlestat, ...)
         """
         layout = self.get_dashboard(dashboard)
         assert len(layout) > 0
@@ -63,29 +65,62 @@ class GrafanaApi(ApiBase):
             row["title"] == row_title]
         assert len(found_rows) == 1
         panels = found_rows[0]["panels"]
-        found_panels = [
-            panel for panel in panels
-            if "title" in panel and
-            panel["title"] == panel_title]
+        if panel_type:
+            found_panels = [
+                panel for panel in panels
+                if ("title" in panel and
+                    panel["title"] == panel_title
+                    or "displayName" in panel and
+                    panel["displayName"] == panel_title)
+                and panel["type"] == panel_type]
+        else:
+            found_panels = [
+                panel for panel in panels
+                if "title" in panel and
+                panel["title"] == panel_title
+                or "displayName" in panel and
+                panel["displayName"] == panel_title]
         assert len(found_panels) == 1
         return found_panels[0]
 
-    def get_panel_chart_targets(self, panel, cluster_identifier=""):
+    def get_panel_chart_targets(
+            self,
+            panel,
+            cluster_identifier="",
+            volume_name=""):
         """
         Get all targets from panel. Returns list of lists for each visible line
         in chart.
 
         Args:
             panel (object): panel object from *get_panel* function
-            cluster_identifier (str): identifier of cluster to use withni
+            cluster_identifier (str): identifier of cluster to use within
                 targets
+            volume_name (str): name of volume to use within targets
         """
-        targets = [target["target"] for target in panel["targets"]
-                   if "hide" not in target.keys() or not target["hide"]]
+        targets = []
+        for target in panel["targets"]:
+            if "hide" not in target or not target["hide"]:
+                if target.get("targetFull"):
+                    targets.append(target["targetFull"])
+                else:
+                    targets.append(target["target"])
         output = []
         for target in targets:
             if "$cluster_id" in target:
+                if not cluster_identifier:
+                    LOGGER.info(
+                        "$cluster_id in target but no cluster_id provided:"
+                        " {}".format(
+                                target))
                 target = target.replace("$cluster_id", cluster_identifier)
+            if "$volume_name" in target:
+                if not cluster_identifier:
+                    LOGGER.info(
+                        "$volume_name in target but no volume_name provided:"
+                        " {}".format(
+                                target))
+                target = target.replace("$volume_name", volume_name)
             if "$host_name" in target:
                 target = target.replace("$host_name", CONF.config["usmqe"][
                     "cluster_member"].replace(".", "_"))
@@ -103,8 +138,12 @@ class GrafanaApi(ApiBase):
                 except Exception:
                     target_options = None
                 if target_options:
-                    target_output.extend(["{}.{}".format(t, x.split("}", 1)[0]) for x
-                                          in target_options.split(",")])
+                    # connects target root and target options into sole targets
+                    # e.g. tendrl.$host_name.cpu.{percent-user,percent-system}
+                    constructed_targets = ["{}.{}".format(
+                        t, x.split("}", 1)[0]) for x in target_options.split(
+                            ",")]
+                    target_output.extend(constructed_targets)
                 else:
                     # drop target tendrl label
                     if t.startswith("tendrl."):
@@ -133,10 +172,12 @@ class GrafanaApi(ApiBase):
                 if panel["title"]:
                     structure_grafana[row["title"]].append(panel["title"])
                 elif "displayName" in panel.keys() and panel["displayName"]:
-                    structure_grafana[row["title"]].append(panel["displayName"])
+                    structure_grafana[row["title"]].append(
+                        panel["displayName"])
 
         LOGGER.debug("defined layout structure = {}".format(structure))
-        LOGGER.debug("layout structure in grafana = {}".format(structure_grafana))
+        LOGGER.debug("layout structure in grafana = {}".format(
+            structure_grafana))
         d = Differ()
         LOGGER.debug("reduced diff between the layouts: {}".format(
             "".join([x.strip() for x in d.compare(
@@ -144,4 +185,5 @@ class GrafanaApi(ApiBase):
                 json.dumps(structure_grafana, sort_keys=True))])))
         pytest.check(
             structure == structure_grafana,
-            "defined structure of panels should be equal to structure in grafana")
+            "defined structure of panels should " +
+            "be equal to structure in grafana")
