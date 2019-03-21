@@ -189,6 +189,9 @@ def test_host_dashboard(application, imported_cluster_reuse):
         LOGGER.debug("Host health in main UI: '{}'".format(host.health.lower()))
 
 
+@pytest.mark.testready
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
 def test_brick_dashboard(application, imported_cluster_reuse):
     """
     Test Dashboard button of each brick of each host
