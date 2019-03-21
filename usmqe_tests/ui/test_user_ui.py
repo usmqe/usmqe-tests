@@ -138,7 +138,7 @@ def test_user_creation_password_invalid(application, valid_session_credentials,
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, valid_password):
+def test_edit_email_password(valid_new_normal_user, valid_password):
     """
     Change user's password and email in My Settings and login with new password.
     """
@@ -151,8 +151,8 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
     url = urlparse(CONF.config["usmqe"]["web_url"])
     app1 = Application(hostname=url.hostname,
                        scheme=url.scheme,
-                       username=valid_normal_user_data["username"],
-                       password=valid_normal_user_data["password"])
+                       username=valid_new_normal_user["username"],
+                       password=valid_new_normal_user["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
     new_data = {"email": "new_user_email@example.com",
                 "password": valid_password,
@@ -167,7 +167,7 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
     app1.web_ui.browser_manager.quit()
     app2 = Application(hostname=url.hostname,
                        scheme=url.scheme,
-                       username=valid_normal_user_data["username"],
+                       username=valid_new_normal_user["username"],
                        password=valid_password)
     ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
     app2.web_ui.browser_manager.quit()
@@ -176,7 +176,7 @@ def test_edit_email_password(valid_new_normal_user, valid_normal_user_data, vali
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
+def test_edit_email_only(valid_new_normal_user):
     """
     Change user's email in My Settings and login again.
     Fails due to https://bugzilla.redhat.com/show_bug.cgi?id=1654623
@@ -190,8 +190,8 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     url = urlparse(CONF.config["usmqe"]["web_url"])
     app1 = Application(hostname=url.hostname,
                        scheme=url.scheme,
-                       username=valid_normal_user_data["username"],
-                       password=valid_normal_user_data["password"])
+                       username=valid_new_normal_user["username"],
+                       password=valid_new_normal_user["password"])
     ViaWebUI.navigate_to(app1.web_ui, "LoggedIn")
     new_data = {"email": "new_user_email@example.com"}
     app1.collections.users.edit_logged_in_user(new_data)
@@ -205,8 +205,8 @@ def test_edit_email_only(valid_new_normal_user, valid_normal_user_data):
     """
     app2 = Application(hostname=url.hostname,
                        scheme=url.scheme,
-                       username=valid_normal_user_data["username"],
-                       password=valid_normal_user_data["password"])
+                       username=valid_new_normal_user["username"],
+                       password=valid_new_normal_user["password"])
     try:
         ViaWebUI.navigate_to(app2.web_ui, "LoggedIn")
         app2.web_ui.browser_manager.quit()
