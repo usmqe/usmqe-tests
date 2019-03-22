@@ -43,10 +43,16 @@ def test_task_attributes(application, imported_cluster_reuse):
                      "Task changed on {}. Should be later than 2018".format(task.changed_date))
 
 
+@pytest.mark.author("ebondare@redhat.com")
+@pytest.mark.happypath
+@pytest.mark.testready
 def test_task_log(application, imported_cluster_reuse):
     """
     Test that clicking task name opens task log page
     and all events in the log have expected attributes
+
+    This test case expects that events list is not empty, which trivially holds
+    under normal circumstances in CI.
     """
     """
     :step:
