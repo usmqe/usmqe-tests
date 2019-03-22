@@ -50,6 +50,7 @@ class EtcdApi(ApiBase):
         """
         pattern = "queue/{}".format(job_id)
         response = self.get_key_value(pattern)
+        self.print_req_info(response)
         return json.loads(response["node"]["value"])[attribute]
 
     def get_key_value(self, key):
@@ -64,10 +65,11 @@ class EtcdApi(ApiBase):
             response = requests.get(
                 CONF.config["usmqe"]["etcd_api_url"] + pattern,
                 cert=(
-                    '/etc/pki/tls/certs/etcd.crt',
-                    '/etc/pki/tls/private/etcd.key'),
+                    '/etc/pki/tls/certs/qeserver.crt',
+                    '/etc/pki/tls/private/qeserver.key'),
                 verify='/etc/pki/tls/certs/ca-usmqe.crt')
         else:
             response = requests.get(CONF.config["usmqe"]["etcd_api_url"] + pattern)
+        self.print_req_info(response)
         self.check_response(response)
         return response.json()
