@@ -1,27 +1,13 @@
 # -*- coding: utf8 -*-
 
 import time
-
 import pytest
 
-from usmqe.api.tendrlapi.common import TendrlAuth, login, logout, TendrlApi
+from usmqe.api.tendrlapi.common import TendrlAuth, TendrlApi
 from usmqe.usmqeconfig import UsmConfig
 
+
 CONF = UsmConfig()
-
-
-@pytest.fixture(scope="session")
-def valid_session_credentials(request):
-    """
-    During setup phase, login default usmqe user account (username and password
-    comes from usm.ini config file) and return requests auth object.
-    Then during teardown logout the user to close the session.
-    """
-    auth = login(
-        CONF.config["usmqe"]["username"],
-        CONF.config["usmqe"]["password"])
-    yield auth
-    logout(auth=auth)
 
 
 @pytest.fixture(

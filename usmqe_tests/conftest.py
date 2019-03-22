@@ -1,10 +1,13 @@
 import configparser
 import datetime
-import pytest
 import time
+from urllib.parse import urlparse
+import pytest
 
 import usmqe.usmssh as usmssh
+from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
+from usmqe.api.tendrlapi.common import TendrlApi
 from usmqe.gluster.gluster import GlusterVolume
 
 
@@ -339,6 +342,59 @@ def workload_cpu_utilization(request):
             raise OSError(stderr)
         return request.param
     return measure_operation(fill_cpu)
+
+
+@pytest.fixture(scope="session")
+def application():
+    url = urlparse(CONF.config["usmqe"]["web_url"])
+    app = Application(
+        hostname=url.hostname,
+        scheme=url.scheme,
+        username=CONF.config["usmqe"]["username"],
+        password=CONF.config["usmqe"]["password"]
+    )
+    yield app
+    app.web_ui.browser_manager.quit()
+
+
+@pytest.fixture(scope="session")
+def valid_session_credentials(request):
+    """
+    During setup phase, login default usmqe user account (username and password
+    comes from usm.ini config file) and return requests auth object.
+    Then during teardown logout the user to close the session.
+    """
+    auth = login(
+        CONF.config["usmqe"]["username"],
+        CONF.config["usmqe"]["password"])
+    yield auth
+    logout(auth=auth)
+
+
+@pytest.fixture
+def cluster_reuse(valid_session_credentials):
+    """
+    Returns cluster identified by one of machines
+    from cluster.
+    Returned cluster can be used for further testing.
+    Function uses Tendrl API(clusters). In case there
+    is need to identify cluster directly by storage
+    tools this function should be split.
+    """
+    id_hostname = CONF.config["usmqe"]["cluster_member"]
+    api = TendrlApi(auth=valid_session_credentials)
+    for _ in range(12):
+        clusters = api.get_cluster_list()
+        clusters = [cluster for cluster in clusters
+                    if id_hostname in
+                    [node["fqdn"] for node in cluster["nodes"]]
+                    ]
+        if len(clusters) == 1:
+            return clusters[0]
+        time.sleep(5)
+
+    raise Exception("There is not one cluster which includes node"
+                    " with FQDN == {}.".format(id_hostname))
 
 
 @pytest.fixture(params=[60, 80], scope="session")
