@@ -73,8 +73,11 @@ class GraphiteApi(ApiBase):
         graphite_data_mean_all = 0
         if from_date and not isinstance(from_date, int):
             from_date = int(from_date.timestamp())
+        # drop data points that are too close to end of measurement
+        # (30% of sample rate)
         if until_date and not isinstance(until_date, int):
-            until_date = int(until_date.timestamp())
+            until_date = int(
+                until_date.timestamp()) - int(60 * sample_rate * 0.3)
 
         for idx, target in enumerate(targets):
             graphite_data = self.get_datapoints(
