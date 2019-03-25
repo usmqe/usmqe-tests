@@ -412,17 +412,24 @@ def workload_memory_utilization(request):
         run_time = 240
         SSH = usmssh.get_ssh()
         host = CONF.config["usmqe"]["cluster_member"]
-        stress_cmd = "stress-ng --vm-method flip --vm {} --vm-bytes {}%".format(
-            1,
-            request.param)
-        stress_cmd += " --timeout {}s --vm-hang 0 --vm-keep --verify".format(
+        stress_cmd = "stress --vm-bytes $(awk '/MemAvailable/{{printf "\
+                     "\"%d\\n\" , $2 * ({0}/100);}}' < /proc/meminfo)k "\
+                     "--vm-keep -m {1}".format(request.param, 1)
+        stress_cmd += " --timeout {}s".format(
             run_time)
-        stress_cmd += " --syslog"
         retcode, stdout, stderr = SSH[host].run(stress_cmd)
         if retcode != 0:
             raise OSError(stderr)
         return request.param
-    return measure_operation(fill_memory)
+    SSH = usmssh.get_ssh()
+    host = CONF.config["usmqe"]["cluster_member"]
+    meminfo_cmd = "free -b | awk '{if (NR==2) print $2}'"
+    retcode, stdout, stderr = SSH[host].run(meminfo_cmd)
+    if retcode != 0:
+        raise OSError(stderr)
+    mem_total = stdout.decode("utf-8")
+    return measure_operation(fill_memory, metadata={
+        'total_memory': mem_total})
 
 
 @pytest.fixture(scope="session")
