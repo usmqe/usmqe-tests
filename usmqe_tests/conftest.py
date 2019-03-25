@@ -1,11 +1,14 @@
 import configparser
 import datetime
-import pytest
 import time
+from urllib.parse import urlparse
+import pytest
 
 import usmqe.usmssh as usmssh
 from usmqe.api.tendrlapi.common import login, logout, TendrlApi
+from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
+from usmqe.api.tendrlapi.common import TendrlApi
 from usmqe.gluster.gluster import GlusterVolume
 
 
@@ -68,6 +71,8 @@ def measure_operation(
         if additional_time > 0:
             time.sleep(additional_time)
     end_time = datetime.datetime.now()
+    LOGGER.info("Wait 10 seconds for graphite to load dataframes")
+    time.sleep(10)
     return {
         "start": start_time,
         "end": end_time,
@@ -379,6 +384,59 @@ def workload_cpu_utilization(request):
     return measure_operation(fill_cpu)
 
 
+@pytest.fixture(scope="session")
+def application():
+    url = urlparse(CONF.config["usmqe"]["web_url"])
+    app = Application(
+        hostname=url.hostname,
+        scheme=url.scheme,
+        username=CONF.config["usmqe"]["username"],
+        password=CONF.config["usmqe"]["password"]
+    )
+    yield app
+    app.web_ui.browser_manager.quit()
+
+
+@pytest.fixture(scope="session")
+def valid_session_credentials(request):
+    """
+    During setup phase, login default usmqe user account (username and password
+    comes from usm.ini config file) and return requests auth object.
+    Then during teardown logout the user to close the session.
+    """
+    auth = login(
+        CONF.config["usmqe"]["username"],
+        CONF.config["usmqe"]["password"])
+    yield auth
+    logout(auth=auth)
+
+
+@pytest.fixture
+def cluster_reuse(valid_session_credentials):
+    """
+    Returns cluster identified by one of machines
+    from cluster.
+    Returned cluster can be used for further testing.
+    Function uses Tendrl API(clusters). In case there
+    is need to identify cluster directly by storage
+    tools this function should be split.
+    """
+    id_hostname = CONF.config["usmqe"]["cluster_member"]
+    api = TendrlApi(auth=valid_session_credentials)
+    for _ in range(12):
+        clusters = api.get_cluster_list()
+        clusters = [cluster for cluster in clusters
+                    if id_hostname in
+                    [node["fqdn"] for node in cluster["nodes"]]
+                    ]
+        if len(clusters) == 1:
+            return clusters[0]
+        time.sleep(5)
+
+    raise Exception("There is not one cluster which includes node"
+                    " with FQDN == {}.".format(id_hostname))
+
+
 @pytest.fixture(params=[80, 60], scope="session")
 def workload_memory_utilization(request):
     """
@@ -403,7 +461,15 @@ def workload_memory_utilization(request):
         if retcode != 0:
             raise OSError(stderr)
         return request.param
-    return measure_operation(fill_memory)
+    SSH = usmssh.get_ssh()
+    host = CONF.config["usmqe"]["cluster_member"]
+    meminfo_cmd = "free -b | awk '{if (NR==2) print $2}'"
+    retcode, stdout, stderr = SSH[host].run(meminfo_cmd)
+    if retcode != 0:
+        raise OSError(stderr)
+    mem_total = stdout.decode("utf-8")
+    return measure_operation(fill_memory, metadata={
+        'total_memory': mem_total})
 
 
 @pytest.fixture(scope="session")
@@ -538,6 +604,29 @@ def workload_swap_utilization(request):
         SSH[host].run(teardown_cmd)
         return request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture
+def workload_stop_nodes():
+    """
+    Test ran with this fixture have to use fixture `ansible_playbook`
+    and markers before this fixture is called:
+
+    @pytest.mark.ansible_playbook_setup("test_setup.stop_tendrl_nodes.yml")
+    @pytest.mark.ansible_playbook_teardown("test_teardown.stop_tendrl_nodes.yml")
+
+    Returns:
+        dict: contains information about `start` and `stop` time of wait
+        procedure and as `result` is used number of nodes.
+    """
+    LOGGER.info("Wait for tendrl to notice that nodes are down")
+    time.sleep(280)
+
+    def wait():
+        LOGGER.info("Measure time when tendrl notices that nodes are down.")
+        time.sleep(120)
+        return len(CONF.inventory.get_groups_dict()["gluster_servers"])
+    return measure_operation(wait)
 
 
 @pytest.fixture()
