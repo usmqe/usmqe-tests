@@ -42,6 +42,18 @@ predefined_params = ["--{}={}".format(key.replace("_", "-"), val)
 # CA installed in the operating system.
 environ['REQUESTS_CA_BUNDLE'] = "/etc/pki/tls/certs/ca-bundle.crt"
 
+# Fail immediately when DISPLAY variable is not defined and we are going to run
+# selenium based tests. This speeds up debugging of such problem significantly.
+testrun_needs_selenium = False
+for arg in sys.argv[1:]:
+    if "/ui" in arg:
+        testrun_needs_selenium = True
+        break
+if testrun_needs_selenium and environ.get("DISPLAY") is None:
+    msg = "To run selenium based tests, you need to define DISPLAY env var."
+    print("ERROR: " + msg)
+    sys.exit(1)
+
 command = ["python3", "-m", "pytest"] + predefined_params + sys.argv[1:]
 print("COMMAND: {}".format(command))
 result = subprocess.run(command)
