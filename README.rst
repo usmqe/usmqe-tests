@@ -42,7 +42,7 @@ This ``testcaselist`` report is also run in Travis CI among unit tests of
 Unit and Integration Tests of usmqe module
 ------------------------------------------
 
-Note that the purpose of ``tox.ini``  and ``setup.py`` files in the root
+Note that the purpose of ``tox.ini`` file in the root
 directory of this repository is to run unit tests of ``usmqe`` module. Beside
 unit tests there are also integration tests of usmqe module which are not
 triggered by ``tox`` but by ``pytest`` command. It has nothing to do with
