@@ -50,7 +50,8 @@ for arg in sys.argv[1:]:
         testrun_needs_selenium = True
         break
 if testrun_needs_selenium and environ.get("DISPLAY") is None:
-    print("To run selenium based tests, you need to define DISPLAY env var.")
+    msg = "To run selenium based tests, you need to define DISPLAY env var."
+    print("ERROR: " + msg)
     sys.exit(1)
 
 command = ["python3", "-m", "pytest"] + predefined_params + sys.argv[1:]
