@@ -71,7 +71,7 @@ def workload_stop_hosts(request):
         yield measure_operation(wait)
 
 
-@pytest.fixture(params=[85, 60])
+@pytest.fixture(params=[85, 40])
 def workload_cpu_utilization(request):
     """
     Returns:
@@ -99,7 +99,7 @@ def workload_cpu_utilization(request):
     return measure_operation(fill_cpu)
 
 
-@pytest.fixture(params=[89, 60])
+@pytest.fixture(params=[89, 40])
 def workload_memory_utilization(request):
     """
     Returns:
