@@ -18,7 +18,9 @@ def test_task_attributes(application, imported_cluster_reuse):
       Task objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     tasks = test_cluster.tasks.get_tasks()
     """
@@ -56,7 +58,9 @@ def test_task_log(application, imported_cluster_reuse):
       Task objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     tasks = test_cluster.tasks.get_tasks()
     pytest.check(tasks != [],

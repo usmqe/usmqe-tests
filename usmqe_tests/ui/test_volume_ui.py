@@ -23,7 +23,9 @@ def test_volume_attributes(application, valid_session_credentials, imported_clus
       Volume objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     """
@@ -70,7 +72,9 @@ def test_volume_dashboard(application, imported_cluster_reuse):
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     """
@@ -115,7 +119,9 @@ def test_volume_profiling_switch(application, imported_cluster_reuse):
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     for volume in volumes:
@@ -161,7 +167,9 @@ def test_volume_parts(application, imported_cluster_reuse):
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [],
@@ -261,7 +269,9 @@ def test_volume_bricks(application, imported_cluster_reuse):
       Volume objects are initiated and their attributes are read from the page.
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [],
@@ -346,7 +356,9 @@ def test_volume_brick_dashboards(application, imported_cluster_reuse):
       Volume objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     """

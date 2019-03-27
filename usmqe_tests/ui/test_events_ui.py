@@ -18,7 +18,9 @@ def test_event_attributes(application, imported_cluster_reuse):
       Event objects are initiated and their attributes are read from Tasks page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     events = test_cluster.events.get_events()
     """

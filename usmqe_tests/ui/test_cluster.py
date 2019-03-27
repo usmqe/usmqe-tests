@@ -22,10 +22,14 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
       Cluster is in the correct state to start import
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        cluster_reuse["cluster_id"],
+                                        cluster_reuse["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
-    pytest.check(test_cluster.managed == "No", issue="No value in a freshly installed cluster")
+    pytest.check(test_cluster.managed == "No",
+                 "Value of cluster's Managed attribute: {}".format(test_cluster.managed),
+                 issue="No value in a freshly installed cluster")
     """
     :step:
       Get the cluster's details via API. Check that API shows the same state
@@ -70,7 +74,9 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse):
       Cluster is in the correct state to disable profiling
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     if test_cluster.profiling != "Enabled":
         test_cluster.enable_profiling()
     gluster_cluster = gluster.GlusterVolume()
@@ -102,7 +108,9 @@ def test_cluster_enable_profiling(application, imported_cluster_reuse):
       Cluster is in the correct state to enable profiling
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     if test_cluster.profiling != "Disabled":
         test_cluster.disable_profiling()
     gluster_cluster = gluster.GlusterVolume()
@@ -134,7 +142,9 @@ def test_cluster_dashboard(application, imported_cluster_reuse):
       Cluster dashboard shows the correct information
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     dashboard_values = test_cluster.get_values_from_dashboard()
     pytest.check(dashboard_values["cluster_name"] == test_cluster.name,
                  "Check that cluster name in Grafana dashboard is as expected")
@@ -170,7 +180,9 @@ def test_cluster_unmanage(application, valid_session_credentials, imported_clust
       Cluster is in the correct state to start unmanage
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(
@@ -207,7 +219,9 @@ def test_cluster_import_unmanage_naming(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        cluster_reuse["cluster_id"],
+                                        cluster_reuse["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     original_id = test_cluster.name
@@ -242,7 +256,9 @@ def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        cluster_reuse["cluster_id"],
+                                        cluster_reuse["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     import_success = test_cluster.cluster_import(profiling="disable")
@@ -283,7 +299,9 @@ def test_cluster_import_unmanage_view_progress(application, cluster_reuse):
       Cluster is imported and its name is shown in the clusters list
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        cluster_reuse["cluster_id"],
+                                        cluster_reuse["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     import_success = test_cluster.cluster_import(view_progress=True)
