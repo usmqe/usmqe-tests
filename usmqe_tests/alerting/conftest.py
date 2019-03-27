@@ -4,6 +4,7 @@ from usmqe.gluster import gluster
 from usmqe.usmqeconfig import UsmConfig
 import usmqe.usmssh as usmssh
 from usmqe_tests.conftest import measure_operation
+from pytest_ansible_playbook import runner
 
 # initialize usmqe logging module
 LOGGER = pytest.get_logger("pytests_test")
@@ -25,8 +26,8 @@ def default_entities(cluster_reuse):
             "node": node}
 
 
-@pytest.fixture
-def workload_stop_volumes():
+@pytest.fixture(scope="session")
+def workload_stop_volumes(request):
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
     and markers before this fixture is called:
@@ -41,11 +42,15 @@ def workload_stop_volumes():
         LOGGER.info("Measure time when volumes are stopped.")
         time.sleep(180)
         return gl_volumes.list()
-    return measure_operation(wait)
+    with runner(
+            request,
+            ["test_setup.gluster_volume_stop.yml"],
+            ["test_teardown.gluster_volume_stop.yml"]):
+        yield measure_operation(wait)
 
 
-@pytest.fixture
-def workload_stop_hosts():
+@pytest.fixture(scope="session")
+def workload_stop_hosts(request):
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
     and markers before this fixture is called:
@@ -59,7 +64,11 @@ def workload_stop_hosts():
         LOGGER.info("Measure time when hosts are stopped.")
         time.sleep(180)
         return CONF.inventory.get_groups_dict()["gluster_servers"]
-    return measure_operation(wait)
+    with runner(
+            request,
+            ["test_setup.tendrl_services_stopped_on_nodes.yml"],
+            ["test_teardown.tendrl_services_stopped_on_nodes.yml"]):
+        yield measure_operation(wait)
 
 
 @pytest.fixture(params=[85, 60])
