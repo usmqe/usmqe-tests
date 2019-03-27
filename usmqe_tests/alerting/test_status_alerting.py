@@ -201,7 +201,7 @@ def test_host_status_mail_alert(
         entities["host"] = host
         LOGGER.debug("searching host: {0}".format(host))
 
-        entities["value"] = "Disconnected"
+        entities["value"] = "DOWN"
         mail_subject, mail_msg = alerting.generate_alert_msg(
             domain="node",
             subject="status",
@@ -257,7 +257,7 @@ def test_host_status_snmp_alert(
         LOGGER.debug("searching host: {0}".format(host))
         entities["host"] = host
 
-        entities["value"] = "Disconnected"
+        entities["value"] = "DOWN"
         mail_subject, mail_msg = alerting.generate_alert_msg(
             domain="node",
             subject="status",
@@ -308,10 +308,10 @@ def test_host_status_api_alert(
     entities = default_entities
     severity = "WARNING"
     for host in workload_stop_hosts["result"]:
-        entities["host"] = host
+        entities["node"] = host
         LOGGER.debug("searching host: {0}".format(host))
 
-        entities["value"] = "Disconnected"
+        entities["value"] = "DOWN"
         _, msg = alerting.generate_alert_msg(
             domain="node",
             subject="status",

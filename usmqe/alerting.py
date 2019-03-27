@@ -51,8 +51,8 @@ class Alerting(object):
         return {
             "node": {
                 "status": {
-                    "subject": "Peer Status: status changed",
-                    "body": "Peer $node in cluster $cluster is $value"},
+                    "subject": "Node Status: status changed",
+                    "body": "Node $node is $value"},
                 "cpu": {
                     "subject": "Cpu Utilization: threshold breached",
                     "body": "Cpu utilization on node $node in $cluster $value"
