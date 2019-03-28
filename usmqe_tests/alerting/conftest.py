@@ -26,7 +26,7 @@ def default_entities(cluster_reuse):
             "node": node}
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def workload_stop_volumes(request):
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
@@ -49,7 +49,7 @@ def workload_stop_volumes(request):
         yield measure_operation(wait)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def workload_stop_hosts(request):
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
