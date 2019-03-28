@@ -9,6 +9,7 @@ from usmqe.alerting import Alerting
 LOGGER = pytest.get_logger('workload_alerting', module=True)
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
@@ -60,6 +61,7 @@ def test_cpu_utilization_mail_alert(
             mail_subject, mail_msg, alert_count))
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
@@ -109,6 +111,7 @@ def test_cpu_utilization_snmp_alert(
             mail_subject, mail_msg, alert_count))
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
@@ -159,6 +162,7 @@ def test_cpu_utilization_api_alert(
             msg, alert_count))
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
@@ -210,6 +214,7 @@ def test_memory_utilization_mail_alert(
             mail_subject, mail_msg, alert_count))
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
@@ -260,6 +265,7 @@ def test_memory_utilization_snmp_alert(
             mail_subject, mail_msg, alert_count))
 
 
+@pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
