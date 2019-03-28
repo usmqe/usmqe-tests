@@ -67,7 +67,7 @@ def test_host_attributes(application, imported_cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_bricks(application, imported_cluster_reuse):
+def test_host_bricks(application, imported_cluster_reuse, gluster_volume):
     """
     Test that all hosts are listed on cluster's Hosts page.
     Check all common brick attributes
@@ -198,7 +198,7 @@ def test_host_dashboard(application, imported_cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_brick_dashboard(application, imported_cluster_reuse):
+def test_brick_dashboard(application, imported_cluster_reuse, gluster_volume):
     """
     Test Dashboard button of each brick of each host
     """
