@@ -4,6 +4,7 @@ from navmazing import NavigateToAttribute, NavigateToSibling
 from wait_for import wait_for
 import pytest
 from selenium.common.exceptions import NoSuchElementException
+from datetime import datetime
 
 from usmqe.web.application.entities import BaseCollection, BaseEntity
 from usmqe.web.application.views.cluster import ClustersView, UnmanageConfirmationView
@@ -98,6 +99,7 @@ class Cluster(BaseEntity):
         Import the cluster and wait until it is listed as Ready to Use in the clusters list.
         Valid cluster name contains only alphanumeric and underscore characters.
         Possible profiling values are "enable", "disable" or "leaveAsIs".
+        If import fails, save the screenshot of import log to ``screenshots`` directory.
         """
         view = ViaWebUI.navigate_to(self, "Import")
         wait_for(lambda: view.is_displayed,
@@ -141,6 +143,8 @@ class Cluster(BaseEntity):
                          message="ClustersView wasn't displayed in time")
             else:
                 LOGGER.debug("Cluster import failed")
+                now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
+                view.browser.selenium.get_screenshot_as_file("screenshots/import" + now + ".png")
                 return False
         else:
             view.close_button.click()
@@ -161,6 +165,19 @@ class Cluster(BaseEntity):
                  message="Cluster import couldn't reach Comleted or Failed state in time")
         if self.status == "Import Failed. View Details":
             LOGGER.debug("Cluster import failed")
+            view.clusters(self.name).task_details.click()
+            view = self.application.web_ui.create_view(MainTaskEventsView)
+            wait_for(lambda: view.is_displayed,
+                     timeout=100,
+                     message="MainTaskEventsView wasn't displayed in time")
+            now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
+            view.browser.selenium.get_screenshot_as_file("screenshots/import" + now + ".png")
+            view.all_clusters.click()
+            view = self.application.web_ui.create_view(ClustersView)
+            wait_for(lambda: view.is_displayed,
+                     timeout=30,
+                     delay=2,
+                     message="ClustersView wasn't displayed in time.")
             return False
         wait_for(lambda: self.update()[1] == "Yes",
                  timeout=200,
@@ -177,6 +194,7 @@ class Cluster(BaseEntity):
         Unmanage the cluster and wait until it's listed as Ready to Import in the clusters list.
         If the cluster has custom name, its original id is need it to find it in the clusters list
         after the unmanage.
+        If unmanage fails, save the screenshot of unmanage log to ``screenshots`` directory.
         """
         if original_id is not None:
             self.cluster_id = original_id
@@ -221,6 +239,8 @@ class Cluster(BaseEntity):
                          message="ClustersView wasn't displayed in time")
             else:
                 LOGGER.debug("Cluster unmanage failed")
+                now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
+                view.browser.selenium.get_screenshot_as_file("screenshots/unmanage" + now + ".png")
                 return False
         else:
             view.close()
@@ -239,6 +259,21 @@ class Cluster(BaseEntity):
                     break
                 elif self.status == "Unmanage Failed. View Details":
                     LOGGER.debug("Cluster unmanage failed")
+                    view.clusters(self.name).task_details.click()
+                    view = self.application.web_ui.create_view(MainTaskEventsView)
+                    wait_for(lambda: view.is_displayed,
+                             timeout=100,
+                             message="MainTaskEventsView wasn't displayed in time")
+                    now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
+                    view.browser.selenium.get_screenshot_as_file("screenshots/unmanage" +
+                                                                 now +
+                                                                 ".png")
+                    view.all_clusters.click()
+                    view = self.application.web_ui.create_view(ClustersView)
+                    wait_for(lambda: view.is_displayed,
+                             timeout=30,
+                             delay=2,
+                             message="ClustersView wasn't displayed in time.")
                     return False
                 else:
                     time.sleep(5)

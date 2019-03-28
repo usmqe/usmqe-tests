@@ -32,6 +32,7 @@ class ClustersView(BaseLoggedInView):
         alerts = Text(".//div[text() = 'Alerts']/following-sibling::h5")
         profiling = Text(".//div[text() = 'Volume Profiling']/following-sibling::h5")
         status = Text(".//div[@class='list-view-pf-additional-info-item cluster-text']")
+        task_details = Text(".//a[@ng-click='clusterCntrl.goToTaskDetail(cluster)']")
         import_button = Button("contains", "Import")
         dashboard_button = Button("Dashboard")
         actions = Kebab()
