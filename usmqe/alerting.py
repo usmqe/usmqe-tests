@@ -80,7 +80,7 @@ class Alerting(object):
             "cluster": {
                 "health": {
                     "subject": "Cluster Health Status: status changed",
-                    "body": "Cluster:$cluster moved to $value state"}, },
+                    "body": "Cluster:$cluster is $value"}, },
             "glustershd": {
                 "status": {
                     "subject": "status changed",
