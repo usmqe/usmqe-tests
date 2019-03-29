@@ -1,11 +1,13 @@
 import atexit
 
 from cached_property import cached_property
+from datetime import datetime
 from selenium.common.exceptions import NoSuchElementException
 from taretto.navigate import Navigate, NavigateStep, NavigateToSibling
 from taretto.ui import Browser
 from webdriver_kaifuku import BrowserManager
-from wait_for import wait_for
+from wait_for import wait_for, TimedOutError
+from navmazing import NavigationTriesExceeded
 
 from usmqe.web.application.implementations import TendrlImplementationContext, Implementation
 from usmqe.web.application.views.common import BaseLoggedInView, LoginPage
@@ -55,13 +57,21 @@ class TendrlNavigateStep(NavigateStep):
         :return: view instance if class attribute ``VIEW`` is set or ``None``
             otherwise
         """
-        super(TendrlNavigateStep, self).go(_tries=_tries, *args, **kwargs)
+        try:
+            super(TendrlNavigateStep, self).go(_tries=_tries, *args, **kwargs)
+        except NavigationTriesExceeded:
+            now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
+            self.view.browser.selenium.get_screenshot_as_file("screenshots/pre_nav" + now + ".png")
         view = self.view if self.VIEW is not None else None
         if view:
-            wait_for(
-                self.am_i_here, num_sec=10,
-                message="Waiting for view [{}] to display".format(view.__class__.__name__)
-            )
+            try:
+                wait_for(
+                    self.am_i_here, num_sec=10,
+                    message="Waiting for view [{}] to display".format(view.__class__.__name__)
+                )
+            except TimedOutError:
+                now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
+                view.browser.selenium.get_screenshot_as_file("screenshots/step" + now + ".png")
         return view
 
 

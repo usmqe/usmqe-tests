@@ -71,7 +71,8 @@ class VolumePartsCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=2,
-                 message="Brick details view wasn't displayed in time")
+                 message="Brick details view wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         part_list = []
         assert view.all_part_ids != []
         for part_id in view.all_part_ids:
@@ -105,7 +106,8 @@ class VolumePartsCollection(BaseCollection):
         view.expand_all.click()
         wait_for(lambda: self.is_expanded,
                  timeout=3,
-                 message="Expand All wasn't done in time")
+                 message="Expand All wasn't done in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
 
     def collapse_all(self):
         """
@@ -116,4 +118,5 @@ class VolumePartsCollection(BaseCollection):
         view.collapse_all.click()
         wait_for(lambda: self.is_collapsed,
                  timeout=3,
-                 message="Collapse All wasn't done in time")
+                 message="Collapse All wasn't done in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))

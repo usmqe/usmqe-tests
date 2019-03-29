@@ -62,7 +62,8 @@ class HostsCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=3,
-                 message="HostsView wasn't displayed")
+                 message="HostsView wasn't displayed\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         hosts_list = []
         for hostname in view.all_hostnames:
             host = self.instantiate(
