@@ -21,7 +21,9 @@ def test_host_attributes(application, imported_cluster_reuse):
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
@@ -65,7 +67,7 @@ def test_host_attributes(application, imported_cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_bricks(application, imported_cluster_reuse):
+def test_host_bricks(application, imported_cluster_reuse, gluster_volume):
     """
     Test that all hosts are listed on cluster's Hosts page.
     Check all common brick attributes
@@ -78,7 +80,9 @@ def test_host_bricks(application, imported_cluster_reuse):
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     volume_bricks = []
     for volume in test_cluster.volumes.get_volumes():
@@ -153,7 +157,9 @@ def test_host_dashboard(application, imported_cluster_reuse):
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
@@ -192,7 +198,7 @@ def test_host_dashboard(application, imported_cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_brick_dashboard(application, imported_cluster_reuse):
+def test_brick_dashboard(application, imported_cluster_reuse, gluster_volume):
     """
     Test Dashboard button of each brick of each host
     """
@@ -204,7 +210,9 @@ def test_brick_dashboard(application, imported_cluster_reuse):
       Host objects are initiated and their attributes are read from the page
     """
     clusters = application.collections.clusters.get_clusters()
-    test_cluster = tools.choose_cluster(clusters, imported_cluster_reuse["cluster_id"])
+    test_cluster = tools.choose_cluster(clusters,
+                                        imported_cluster_reuse["cluster_id"],
+                                        imported_cluster_reuse["short_name"])
     assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """

@@ -29,13 +29,23 @@ def bricks_displayed(view, bricks_count, part_id):
                    browser.elements(".//span[@uib-tooltip]")) == 1
 
 
-def choose_cluster(clusters_list, cluster_id):
+def choose_cluster(clusters_list, cluster_id, cluster_name):
     """
-    Choose cluster with the correct cluster id from clusters_list
+    Choose cluster with the correct identifier from clusters_list
+    If the cluster has a name, use it as identifier, else use cluster_id
     """
+    LOGGER.debug("Name provided: {}".format(cluster_name))
+    if not cluster_name:
+        identifier = cluster_id
+    else:
+        identifier = cluster_name
+        LOGGER.debug("Cluster identified by name: {}".format(identifier))
     LOGGER.debug("Target cluster id: {}".format(cluster_id))
     for cluster in clusters_list:
         LOGGER.debug("Current cluster id: {}".format(cluster.cluster_id))
-        if cluster.cluster_id == cluster_id:
+        LOGGER.debug("Current cluster name: {}".format(cluster.name))
+        LOGGER.debug("Identifier: {}".format(identifier))
+        if cluster.name == identifier:
             LOGGER.debug("Found cluster {}".format(cluster_id))
+            cluster.cluster_id = cluster_id
             return cluster
