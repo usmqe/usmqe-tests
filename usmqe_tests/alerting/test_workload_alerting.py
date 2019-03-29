@@ -16,7 +16,7 @@ LOGGER = pytest.get_logger('workload_alerting', module=True)
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_cpu_utilization_mail_alert(
         ansible_playbook,
-        workload_cpu_utilization, default_entities):
+        workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
     70, it sends CPU Utilization warnings if CPU Utilization is between 70 and
@@ -32,12 +32,12 @@ def test_cpu_utilization_mail_alert(
 
     alerting = Alerting("root")
     entities = default_entities
-    target = workload_cpu_utilization['result']
-    if (workload_cpu_utilization['result'] >= 75 and
-            workload_cpu_utilization['result'] < 90):
+    target = workload_cpu_utilization_alerts['result']
+    if (workload_cpu_utilization_alerts['result'] >= 75 and
+            workload_cpu_utilization_alerts['result'] < 90):
         severity = "WARNING"
         entities["value"] = "at $value and running out of cpu"
-    elif (workload_cpu_utilization['result'] >= 90):
+    elif (workload_cpu_utilization_alerts['result'] >= 90):
         severity = "CRITICAL"
         entities["value"] = "at $value and running out of cpu"
     else:
@@ -51,8 +51,8 @@ def test_cpu_utilization_mail_alert(
     alert_count = alerting.search_mail(
         "[{0}] {1}".format(severity, mail_subject),
         mail_msg,
-        workload_cpu_utilization['start'],
-        workload_cpu_utilization['end'],
+        workload_cpu_utilization_alerts['start'],
+        workload_cpu_utilization_alerts['end'],
         target=target)
     pytest.check(
         alert_count == 1,
@@ -67,7 +67,7 @@ def test_cpu_utilization_mail_alert(
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_cpu_utilization_snmp_alert(
         ansible_playbook,
-        workload_cpu_utilization, default_entities):
+        workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
     70, it sends CPU Utilization warnings if CPU Utilization is between 70 and
@@ -83,12 +83,12 @@ def test_cpu_utilization_snmp_alert(
 
     alerting = Alerting("root")
     entities = default_entities
-    target = workload_cpu_utilization['result']
-    if (workload_cpu_utilization['result'] >= 75 and
-            workload_cpu_utilization['result'] < 90):
+    target = workload_cpu_utilization_alerts['result']
+    if (workload_cpu_utilization_alerts['result'] >= 75 and
+            workload_cpu_utilization_alerts['result'] < 90):
         severity = "WARNING"
         entities["value"] = "at $value and running out of cpu"
-    elif (workload_cpu_utilization['result'] >= 90):
+    elif (workload_cpu_utilization_alerts['result'] >= 90):
         severity = "CRITICAL"
         entities["value"] = "at $value and running out of cpu"
     else:
@@ -101,8 +101,8 @@ def test_cpu_utilization_snmp_alert(
         entities=entities)
     alert_count = alerting.search_snmp(
         "[{0}], {1}-{2}".format(severity, mail_subject, mail_msg),
-        workload_cpu_utilization['start'],
-        workload_cpu_utilization['end'],
+        workload_cpu_utilization_alerts['start'],
+        workload_cpu_utilization_alerts['end'],
         target=target)
     pytest.check(
         alert_count == 1,
@@ -117,7 +117,7 @@ def test_cpu_utilization_snmp_alert(
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_cpu_utilization_api_alert(
         ansible_playbook,
-        workload_cpu_utilization, default_entities):
+        workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
     70, it sends CPU Utilization warnings if CPU Utilization is between 70 and
@@ -133,12 +133,12 @@ def test_cpu_utilization_api_alert(
 
     alerting = Alerting()
     entities = default_entities
-    target = workload_cpu_utilization['result']
-    if (workload_cpu_utilization['result'] >= 75 and
-            workload_cpu_utilization['result'] < 90):
+    target = workload_cpu_utilization_alerts['result']
+    if (workload_cpu_utilization_alerts['result'] >= 75 and
+            workload_cpu_utilization_alerts['result'] < 90):
         severity = "WARNING"
         entities["value"] = "at $value and running out of cpu"
-    elif (workload_cpu_utilization['result'] >= 90):
+    elif (workload_cpu_utilization_alerts['result'] >= 90):
         severity = "CRITICAL"
         entities["value"] = "at $value and running out of cpu"
     else:
@@ -152,8 +152,8 @@ def test_cpu_utilization_api_alert(
     alert_count = alerting.search_api(
         severity,
         msg,
-        workload_cpu_utilization['start'],
-        workload_cpu_utilization['end'],
+        workload_cpu_utilization_alerts['start'],
+        workload_cpu_utilization_alerts['end'],
         target=target)
     pytest.check(
         alert_count >= 1,
@@ -168,7 +168,7 @@ def test_cpu_utilization_api_alert(
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_memory_utilization_mail_alert(
         ansible_playbook,
-        workload_memory_utilization, default_entities):
+        workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
     below 70, it sends memory Utilization warnings if memory Utilization is
@@ -185,12 +185,12 @@ def test_memory_utilization_mail_alert(
 
     alerting = Alerting("root")
     entities = default_entities
-    target = workload_memory_utilization['result']
-    if (workload_memory_utilization['result'] >= 75 and
-            workload_memory_utilization['result'] < 90):
+    target = workload_memory_utilization_alerts['result']
+    if (workload_memory_utilization_alerts['result'] >= 75 and
+            workload_memory_utilization_alerts['result'] < 90):
         severity = "WARNING"
         entities["value"] = "at $value and running out of memory"
-    elif (workload_memory_utilization['result'] >= 90):
+    elif (workload_memory_utilization_alerts['result'] >= 90):
         severity = "CRITICAL"
         entities["value"] = "at $value and running out of memory"
     else:
@@ -204,8 +204,8 @@ def test_memory_utilization_mail_alert(
     alert_count = alerting.search_mail(
         "[{0}] {1}".format(severity, mail_subject),
         mail_msg,
-        workload_memory_utilization['start'],
-        workload_memory_utilization['end'],
+        workload_memory_utilization_alerts['start'],
+        workload_memory_utilization_alerts['end'],
         target=target)
     pytest.check(
         alert_count == 1,
@@ -220,7 +220,7 @@ def test_memory_utilization_mail_alert(
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_memory_utilization_snmp_alert(
         ansible_playbook,
-        workload_memory_utilization, default_entities):
+        workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
     below 70, it sends memory Utilization warnings if memory Utilization is
@@ -237,12 +237,12 @@ def test_memory_utilization_snmp_alert(
 
     alerting = Alerting("root")
     entities = default_entities
-    target = workload_memory_utilization['result']
-    if (workload_memory_utilization['result'] >= 75 and
-            workload_memory_utilization['result'] < 90):
+    target = workload_memory_utilization_alerts['result']
+    if (workload_memory_utilization_alerts['result'] >= 75 and
+            workload_memory_utilization_alerts['result'] < 90):
         severity = "WARNING"
         entities["value"] = "at $value and running out of memory"
-    elif (workload_memory_utilization['result'] >= 90):
+    elif (workload_memory_utilization_alerts['result'] >= 90):
         severity = "CRITICAL"
         entities["value"] = "at $value and running out of memory"
     else:
@@ -255,8 +255,8 @@ def test_memory_utilization_snmp_alert(
         entities=entities)
     alert_count = alerting.search_snmp(
         "[{0}], {1}-{2}".format(severity, mail_subject, mail_msg),
-        workload_memory_utilization['start'],
-        workload_memory_utilization['end'],
+        workload_memory_utilization_alerts['start'],
+        workload_memory_utilization_alerts['end'],
         target=target)
     pytest.check(
         alert_count == 1,
@@ -271,7 +271,7 @@ def test_memory_utilization_snmp_alert(
 @pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_memory_utilization_api_alert(
         ansible_playbook,
-        workload_memory_utilization, default_entities):
+        workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
     below 70, it sends memory Utilization warnings if memory Utilization is
@@ -288,12 +288,12 @@ def test_memory_utilization_api_alert(
 
     alerting = Alerting()
     entities = default_entities
-    target = workload_memory_utilization['result']
-    if (workload_memory_utilization['result'] >= 75 and
-            workload_memory_utilization['result'] < 90):
+    target = workload_memory_utilization_alerts['result']
+    if (workload_memory_utilization_alerts['result'] >= 75 and
+            workload_memory_utilization_alerts['result'] < 90):
         severity = "WARNING"
         entities["value"] = "at $value and running out of memory"
-    elif (workload_memory_utilization['result'] >= 90):
+    elif (workload_memory_utilization_alerts['result'] >= 90):
         severity = "CRITICAL"
         entities["value"] = "at $value and running out of memory"
     else:
@@ -307,8 +307,8 @@ def test_memory_utilization_api_alert(
     alert_count = alerting.search_api(
         severity,
         msg,
-        workload_memory_utilization['start'],
-        workload_memory_utilization['end'],
+        workload_memory_utilization_alerts['start'],
+        workload_memory_utilization_alerts['end'],
         target=target)
     pytest.check(
         alert_count >= 1,
