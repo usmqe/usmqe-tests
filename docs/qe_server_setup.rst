@@ -29,7 +29,9 @@ Quick Example of QE Server deployment
 
 You need a RHEL 7 or CentOS 7 machine for the QE Server. For the purpose of this
 example, we are going to quickly create one virtual machine via `virt-builder`_
-tool.
+tool (to use this tool as shown below, you need to install at least
+``libguestfs-tools-c`` and ``libguestfs-xfs`` packages, see also `libguestfs
+Fedora package page`_).
 
 First we build a vm image (uploading ssh authorized keys like this would make
 the machine accessible for everyone who has keys on the machine you are running
@@ -150,6 +152,7 @@ For full description and examples how to run integration tests, see
 
 
 .. _`virt-builder`: http://libguestfs.org/virt-builder.1.html
+.. _`libguestfs Fedora package page`: https://apps.fedoraproject.org/packages/libguestfs
 .. _`import the new image into libvirt`: https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/sect-Guest_virtual_machine_installation_overview-Creating_guests_with_virt_install.html
 .. _`qe_server.yml`: https://github.com/usmqe/usmqe-setup/blob/master/qe_server.yml
 .. _`usmqe-setup repository`: https://github.com/usmqe/usmqe-setup
