@@ -148,3 +148,16 @@ def workload_memory_utilization_alerts(request):
         fill_memory()
     fill_pct = request.param
     return measure_operation(fill_memory)
+
+
+@pytest.fixture(scope="session")
+def alerts_logger(request):
+    """
+    Install `usmqe_alerts_logger` service on client machine to track alerts
+    from Tendrl API.
+    """
+    with runner(
+            request,
+            ["test_setup.alerts_logger.yml"],
+            []):
+        yield

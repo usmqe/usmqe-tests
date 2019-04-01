@@ -13,9 +13,8 @@ LOGGER = pytest.get_logger('workload_alerting', module=True)
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_cpu_utilization_mail_alert(
-        ansible_playbook,
+        stress_tools, ansible_playbook,
         workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
@@ -64,9 +63,8 @@ def test_cpu_utilization_mail_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_cpu_utilization_snmp_alert(
-        ansible_playbook,
+        stress_tools, ansible_playbook,
         workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
@@ -113,10 +111,8 @@ def test_cpu_utilization_snmp_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_cpu_utilization_api_alert(
-        ansible_playbook,
+        alerts_logger, stress_tools,
         workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
@@ -165,9 +161,8 @@ def test_cpu_utilization_api_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_memory_utilization_mail_alert(
-        ansible_playbook,
+        stress_tools, ansible_playbook,
         workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
@@ -217,9 +212,8 @@ def test_memory_utilization_mail_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_memory_utilization_snmp_alert(
-        ansible_playbook,
+        stress_tools, ansible_playbook,
         workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
@@ -267,10 +261,8 @@ def test_memory_utilization_snmp_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.stress_tools.yml')
 def test_memory_utilization_api_alert(
-        ansible_playbook,
+        alerts_logger, stress_tools,
         workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is

@@ -158,9 +158,8 @@ def test_volume_status_snmp_alert(
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_teardown('test_teardown.gluster_volume_stop.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.gluster_volume_stop.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
 def test_volume_status_api_alert(
-        ansible_playbook,
+        alerts_logger, ansible_playbook,
         workload_stop_volumes, default_entities):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
@@ -311,9 +310,8 @@ def test_host_status_snmp_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.alerts_logger.yml')
 def test_host_status_api_alert(
-        ansible_playbook,
+        alerts_logger,
         workload_stop_hosts, default_entities):
     """
     Check that Tendrl sends correct status alert when host is stopped.

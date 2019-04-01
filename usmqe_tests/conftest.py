@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import pytest
 
 import usmqe.usmssh as usmssh
+from pytest_ansible_playbook import runner
 from usmqe.api.tendrlapi.common import login, logout, TendrlApi
 from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
@@ -605,3 +606,15 @@ def gluster_volume(request):
     else:
         pytest.skip('Test needs a volume and an option `volume_count`'
                     ' set accordingly.')
+
+
+@pytest.fixture(scope="session")
+def stress_tools(request):
+    """
+    Install `stress` and `stress-ng` on gluster machines.
+    """
+    with runner(
+            request,
+            ["test_setup.stress_tools.yml"],
+            []):
+        yield
