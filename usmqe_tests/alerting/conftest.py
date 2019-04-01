@@ -171,7 +171,7 @@ def snmp(request):
     with runner(
             request,
             ["test_setup.snmp.yml"],
-            []):
+            ["test_teardown.snmp.yml"]):
         yield
 
 
@@ -183,5 +183,5 @@ def smtp(request):
     with runner(
             request,
             ["test_setup.smtp.yml"],
-            ["test_teardown.smtp.yml"]):
+            []):
         yield
