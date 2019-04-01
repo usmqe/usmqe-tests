@@ -616,5 +616,5 @@ def stress_tools(request):
     with runner(
             request,
             ["test_setup.stress_tools.yml"],
-            []):
+            ["test_teardown.stress_tools.yml"]):
         yield

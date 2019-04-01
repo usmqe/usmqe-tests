@@ -159,5 +159,5 @@ def alerts_logger(request):
     with runner(
             request,
             ["test_setup.alerts_logger.yml"],
-            []):
+            ["test_teardown.alerts_logger.yml"]):
         yield
