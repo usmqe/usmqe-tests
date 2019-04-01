@@ -11,9 +11,8 @@ LOGGER = pytest.get_logger('status_alerting', module=True)
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
 def test_volume_status_mail_alert(
-        ansible_playbook,
+        smtp,
         workload_stop_volumes, default_entities):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
@@ -83,9 +82,8 @@ def test_volume_status_mail_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 def test_volume_status_snmp_alert(
-        ansible_playbook,
+        snmp,
         workload_stop_volumes, default_entities):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
@@ -153,7 +151,7 @@ def test_volume_status_snmp_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_volume_status_api_alert(
-        alerts_logger, ansible_playbook,
+        alerts_logger,
         workload_stop_volumes, default_entities):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
@@ -223,9 +221,8 @@ def test_volume_status_api_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
 def test_host_status_mail_alert(
-        ansible_playbook,
+        smtp,
         workload_stop_hosts, default_entities):
     """
     Check that Tendrl sends correct status alert when host is stopped.
@@ -264,9 +261,8 @@ def test_host_status_mail_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 def test_host_status_snmp_alert(
-        ansible_playbook,
+        snmp,
         workload_stop_hosts, default_entities):
     """
     Check that Tendrl sends correct status alert when host is stopped.

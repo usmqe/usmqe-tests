@@ -161,3 +161,27 @@ def alerts_logger(request):
             ["test_setup.alerts_logger.yml"],
             ["test_teardown.alerts_logger.yml"]):
         yield
+
+
+@pytest.fixture(scope="session")
+def snmp(request):
+    """
+    Install configure client machine to track alerts to log messages via snmp.
+    """
+    with runner(
+            request,
+            ["test_setup.snmp.yml"],
+            []):
+        yield
+
+
+@pytest.fixture(scope="session")
+def smtp(request):
+    """
+    Install configure client machine to track alerts to log messages via smtp.
+    """
+    with runner(
+            request,
+            ["test_setup.smtp.yml"],
+            ["test_teardown.smtp.yml"]):
+        yield
