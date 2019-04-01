@@ -78,7 +78,7 @@ def workload_stop_hosts(request):
 
 
 @pytest.fixture(params=[85, 30], scope="module")
-def workload_cpu_utilization_alerts(request):
+def workload_cpu_utilization_alerts(request, stress_tools):
     """
     Stress Cpu utilization on `cluster_member` node to value given in
     parameter and measure the time it was utilized. If provided parameter
@@ -115,7 +115,7 @@ def workload_cpu_utilization_alerts(request):
 
 
 @pytest.fixture(params=[89, 30], scope="module")
-def workload_memory_utilization_alerts(request):
+def workload_memory_utilization_alerts(request, stress_tools):
     """
     Stress memory utilization on `cluster_member` node to value given in
     parameter and measure the time it was utilized. If provided parameter
