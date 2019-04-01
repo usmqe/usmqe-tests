@@ -11,8 +11,6 @@ LOGGER = pytest.get_logger('status_alerting', module=True)
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_teardown('test_teardown.gluster_volume_stop.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.gluster_volume_stop.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.smtp.yml')
 def test_volume_status_mail_alert(
         ansible_playbook,
@@ -85,8 +83,6 @@ def test_volume_status_mail_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_teardown('test_teardown.gluster_volume_stop.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.gluster_volume_stop.yml')
 @pytest.mark.ansible_playbook_setup('test_setup.snmp.yml')
 def test_volume_status_snmp_alert(
         ansible_playbook,
@@ -156,8 +152,6 @@ def test_volume_status_snmp_alert(
 
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
-@pytest.mark.ansible_playbook_teardown('test_teardown.gluster_volume_stop.yml')
-@pytest.mark.ansible_playbook_setup('test_setup.gluster_volume_stop.yml')
 def test_volume_status_api_alert(
         alerts_logger, ansible_playbook,
         workload_stop_volumes, default_entities):
