@@ -59,10 +59,10 @@ class TendrlNavigateStep(NavigateStep):
         """
         try:
             super(TendrlNavigateStep, self).go(_tries=_tries, *args, **kwargs)
-        except NavigationTriesExceeded:
+        except NavigationTriesExceeded as ex:
             now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
             self.view.browser.selenium.get_screenshot_as_file("screenshots/pre_nav" + now + ".png")
-            raise NavigationTriesExceeded(self.view)
+            raise ex
         view = self.view if self.VIEW is not None else None
         if view:
             try:
@@ -70,10 +70,10 @@ class TendrlNavigateStep(NavigateStep):
                     self.am_i_here, num_sec=10,
                     message="Waiting for view [{}] to display".format(view.__class__.__name__)
                 )
-            except TimedOutError:
+            except TimedOutError as ex:
                 now = datetime.strftime(datetime.now(), "%y_%m_%d_%H:%M")
                 view.browser.selenium.get_screenshot_as_file("screenshots/step" + now + ".png")
-                raise TimedOutError
+                raise ex
         return view
 
 
