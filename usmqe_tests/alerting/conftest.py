@@ -27,7 +27,7 @@ def default_entities(cluster_reuse):
 
 
 @pytest.fixture(scope="module")
-def workload_stop_volumes(request):
+def workload_stop_volumes(request, alerting_setup):
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
     and markers before this fixture is called:
@@ -53,7 +53,7 @@ def workload_stop_volumes(request):
 
 
 @pytest.fixture(scope="module")
-def workload_stop_hosts(request):
+def workload_stop_hosts(request, alerting_setup):
     """
     Test ran with this fixture have to use fixture `ansible_playbook`
     and markers before this fixture is called:
@@ -78,7 +78,7 @@ def workload_stop_hosts(request):
 
 
 @pytest.fixture(params=[85, 30], scope="module")
-def workload_cpu_utilization_alerts(request, stress_tools):
+def workload_cpu_utilization_alerts(request, stress_tools, alerting_setup):
     """
     Stress Cpu utilization on `cluster_member` node to value given in
     parameter and measure the time it was utilized. If provided parameter
@@ -115,7 +115,7 @@ def workload_cpu_utilization_alerts(request, stress_tools):
 
 
 @pytest.fixture(params=[89, 30], scope="module")
-def workload_memory_utilization_alerts(request, stress_tools):
+def workload_memory_utilization_alerts(request, stress_tools, alerting_setup):
     """
     Stress memory utilization on `cluster_member` node to value given in
     parameter and measure the time it was utilized. If provided parameter
@@ -151,37 +151,21 @@ def workload_memory_utilization_alerts(request, stress_tools):
 
 
 @pytest.fixture(scope="session")
-def alerts_logger(request):
+def alerting_setup(request):
     """
-    Install `usmqe_alerts_logger` service on client machine to track alerts
-    from Tendrl API.
-    """
-    with runner(
-            request,
-            ["test_setup.alerts_logger.yml"],
-            ["test_teardown.alerts_logger.yml"]):
-        yield
-
-
-@pytest.fixture(scope="session")
-def snmp(request):
-    """
-    Install configure client machine to track alerts to log messages via snmp.
+    Install and configure tools for alerting on client machine. Alerts will be
+    logged by:
+        SNMP
+        SMTP
+        Tendrl Api
     """
     with runner(
             request,
-            ["test_setup.snmp.yml"],
-            ["test_teardown.snmp.yml"]):
-        yield
-
-
-@pytest.fixture(scope="session")
-def smtp(request):
-    """
-    Install configure client machine to track alerts to log messages via smtp.
-    """
-    with runner(
-            request,
-            ["test_setup.smtp.yml"],
-            []):
+            [
+                "test_setup.alerts_logger.yml",
+                "test_setup.snmp.yml",
+                "test_setup.smtp.yml"],
+            [
+                "test_teardown.alerts_logger.yml",
+                "test_teardown.snmp.yml"]):
         yield

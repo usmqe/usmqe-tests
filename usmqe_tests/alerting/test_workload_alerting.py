@@ -13,7 +13,6 @@ LOGGER = pytest.get_logger('workload_alerting', module=True)
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization_mail_alert(
-        smtp,
         workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
@@ -62,7 +61,6 @@ def test_cpu_utilization_mail_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization_snmp_alert(
-        snmp,
         workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
@@ -110,7 +108,6 @@ def test_cpu_utilization_snmp_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_cpu_utilization_api_alert(
-        alerts_logger,
         workload_cpu_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no CPU Utilization alerts if utilization is below
@@ -159,7 +156,6 @@ def test_cpu_utilization_api_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization_mail_alert(
-        smtp,
         workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
@@ -209,7 +205,6 @@ def test_memory_utilization_mail_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization_snmp_alert(
-        snmp,
         workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
@@ -258,7 +253,6 @@ def test_memory_utilization_snmp_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_memory_utilization_api_alert(
-        alerts_logger,
         workload_memory_utilization_alerts, default_entities):
     """
     Check that Tendrl sends no memory Utilization alerts if utilization is
