@@ -19,6 +19,7 @@ from usmqe.web.application.entities.volumes import VolumesCollection
 from usmqe.web.application.entities.tasks import TasksCollection
 from usmqe.web.application.entities.events import EventsCollection
 from usmqe.web.application.views.grafana import GrafanaClusterDashboard
+from usmqe.web import tools
 
 
 LOGGER = pytest.get_logger('clusters', module=True)
@@ -70,7 +71,8 @@ class Cluster(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=300,
                  delay=2,
-                 message="ClustersView wasn't displayed in time.")
+                 message="ClustersView wasn't displayed in time.\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         self.version = view.clusters(self.name).cluster_version.text
         self.managed = view.clusters(self.name).managed.text
         self.hosts_number = view.clusters(self.name).hosts.text
@@ -98,12 +100,14 @@ class Cluster(BaseEntity):
         Import the cluster and wait until it is listed as Ready to Use in the clusters list.
         Valid cluster name contains only alphanumeric and underscore characters.
         Possible profiling values are "enable", "disable" or "leaveAsIs".
+        If import fails, save the screenshot of import log to ``screenshots`` directory.
         """
         view = ViaWebUI.navigate_to(self, "Import")
         wait_for(lambda: view.is_displayed,
                  timeout=30,
                  delay=2,
-                 message="ClusterImport view wasn't displayed in time.")
+                 message="ClusterImport view wasn't displayed in time.\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         if cluster_name is not None:
             view.fill({"cluster_name": cluster_name,
                        "profiling": profiling})
@@ -115,16 +119,19 @@ class Cluster(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=30,
                  delay=2,
-                 message="ImportTaskSubmittedView wasn't displayed in time")
+                 message="ImportTaskSubmittedView wasn't displayed in time.\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         if view_progress:
             view.view_progress.click()
             view = self.application.web_ui.create_view(MainTaskEventsView)
             wait_for(lambda: view.is_displayed,
                      timeout=100,
-                     message="MainTaskEventsView wasn't displayed in time")
+                     message="MainTaskEventsView wasn't displayed in time.\n" +
+                     "Visible text: {}".format(view.browser.elements("*")[0].text))
             wait_for(lambda: view.import_status.text in {"Completed", "Failed"},
-                     timeout=200,
-                     message="Cluster import couldn't reach Comleted or Failed state in time")
+                     timeout=700,
+                     message="Cluster import couldn't reach Comleted or Failed state in 700 " +
+                     "seconds. Current status is {}".format(view.import_status.text))
             if view.import_status.text == "Completed":
                 LOGGER.debug("Import task was completed")
                 view.cluster_details.click()
@@ -132,15 +139,18 @@ class Cluster(BaseEntity):
                 wait_for(lambda: view.is_displayed,
                          timeout=30,
                          delay=2,
-                         message="ClusterHostsView wasn't displayed in time.")
+                         message="ClusterHostsView wasn't displayed in time.\n" +
+                         "Visible text: {}".format(view.browser.elements("*")[0].text))
                 view.navbar.clusters.select_by_visible_text("All Clusters")
                 view = self.application.web_ui.create_view(ClustersView)
                 wait_for(lambda: view.is_displayed,
                          timeout=30,
                          delay=2,
-                         message="ClustersView wasn't displayed in time")
+                         message="ClustersView wasn't displayed in time\n" +
+                         "Visible text: {}".format(view.browser.elements("*")[0].text))
             else:
                 LOGGER.debug("Cluster import failed")
+                tools.get_errors_from_log(self, view, "import", go_to_details=False)
                 return False
         else:
             view.close_button.click()
@@ -148,24 +158,29 @@ class Cluster(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=30,
                  delay=2,
-                 message="ClustersView wasn't displayed in time")
+                 message="ClustersView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         wait_for(lambda: view.clusters(self.name).status.is_displayed,
                  timeout=40,
                  delay=2,
-                 message="Cluster's status wasn't displayed in time")
+                 message="Cluster's status wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         LOGGER.debug("Self.name: {}".format(self.name))
         wait_for(lambda: self.update()[3] in {"Ready to Use",
                                               "Import Failed. View Details"},
                  timeout=600,
                  delay=2,
-                 message="Cluster import couldn't reach Comleted or Failed state in time")
+                 message="Cluster import couldn't reach Comleted or Failed state in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         if self.status == "Import Failed. View Details":
             LOGGER.debug("Cluster import failed")
+            tools.get_errors_from_log(self, view, "import", go_to_details=True)
             return False
         wait_for(lambda: self.update()[1] == "Yes",
                  timeout=200,
                  delay=3,
-                 message="Cluster's Managed attribute couldn't reach ``Yes`` in time")
+                 message="Cluster's Managed attribute couldn't reach ``Yes`` in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         LOGGER.debug("Cluster was updated")
         LOGGER.debug("Cluster status: {}".format(self.status))
         pytest.check(self.status == "Ready to Use",
@@ -177,6 +192,7 @@ class Cluster(BaseEntity):
         Unmanage the cluster and wait until it's listed as Ready to Import in the clusters list.
         If the cluster has custom name, its original id is need it to find it in the clusters list
         after the unmanage.
+        If unmanage fails, save the screenshot of unmanage log to ``screenshots`` directory.
         """
         if original_id is not None:
             self.cluster_id = original_id
@@ -184,22 +200,26 @@ class Cluster(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=50,
                  delay=2,
-                 message="ClustersView wasn't displayed in time")
+                 message="ClustersView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         hosts_number = self.hosts_number
         wait_for(lambda: view.clusters(self.name).actions.is_displayed,
                  timeout=5,
                  delay=2,
-                 message="Cluster's Actions kebab wasn't displayed in time")
+                 message="Cluster's Actions kebab wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.clusters(self.name).actions.select("Unmanage")
         view = self.application.web_ui.create_view(UnmanageConfirmationView)
         wait_for(lambda: view.is_displayed,
                  timeout=50,
-                 message="UnmanageConfirmationView wasn't displayed in time")
+                 message="UnmanageConfirmationView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.unmanage.click()
         view = self.application.web_ui.create_view(UnmanageTaskSubmittedView)
         wait_for(lambda: view.is_displayed,
                  timeout=200,
-                 message="UnmanageTaskSubmittedView wasn't displayed in time")
+                 message="UnmanageTaskSubmittedView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         if original_id is not None:
             self.name = original_id
         if view_progress:
@@ -208,19 +228,23 @@ class Cluster(BaseEntity):
             wait_for(lambda: view.is_displayed,
                      timeout=200,
                      delay=2,
-                     message="Task progress view wasn't displayed in time")
+                     message="Task progress view wasn't displayed in time\n" +
+                     "Visible text: {}".format(view.browser.elements("*")[0].text))
             wait_for(lambda: view.import_status.text in {"Completed", "Failed"},
                      timeout=500,
-                     message="Import task couldn't reach Completed or Failed state in time")
+                     message="Import task couldn't reach Completed or Failed state in time\n" +
+                     "Visible text: {}".format(view.browser.elements("*")[0].text))
             if view.import_status.text == "Completed":
                 view.navbar.clusters.select_by_visible_text("All Clusters")
                 view = self.application.web_ui.create_view(ClustersView)
                 wait_for(lambda: view.is_displayed,
                          timeout=100,
                          delay=2,
-                         message="ClustersView wasn't displayed in time")
+                         message="ClustersView wasn't displayed in time\n" +
+                         "Visible text: {}".format(view.browser.elements("*")[0].text))
             else:
                 LOGGER.debug("Cluster unmanage failed")
+                tools.get_errors_from_log(self, view, "unmanage", go_to_details=False)
                 return False
         else:
             view.close()
@@ -229,7 +253,8 @@ class Cluster(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=30,
                  delay=2,
-                 message="ClustersView wasn't displayed in time")
+                 message="ClustersView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         for _ in range(80):
             try:
                 self.update()
@@ -239,6 +264,7 @@ class Cluster(BaseEntity):
                     break
                 elif self.status == "Unmanage Failed. View Details":
                     LOGGER.debug("Cluster unmanage failed")
+                    tools.get_errors_from_log(self, view, "unmanage", go_to_details=True)
                     return False
                 else:
                     time.sleep(5)
@@ -262,12 +288,14 @@ class Cluster(BaseEntity):
         view = self.application.web_ui.create_view(ClustersView)
         wait_for(lambda: view.is_displayed,
                  timeout=30,
-                 message="ClustersView wasn't displayed in time")
+                 message="ClustersView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.clusters(self.name).actions.select("Enable Profiling")
         wait_for(lambda: self.update()[7] == "Enabled",
                  timeout=300,
                  delay=2,
-                 message="Profiling hasn't changed to Enabled in 300 seconds")
+                 message="Profiling hasn't changed to Enabled in 300 seconds\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         # profiling enabling process might not be over by this time
         time.sleep(5)
 
@@ -278,12 +306,14 @@ class Cluster(BaseEntity):
         """
         view = self.application.web_ui.create_view(ClustersView)
         wait_for(lambda: view.is_displayed, timeout=30,
-                 message="ClustersView wasn't displayed in time")
+                 message="ClustersView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.clusters(self.name).actions.select("Disable Profiling")
         wait_for(lambda: self.update()[7] == "Disabled",
                  timeout=300,
                  delay=2,
-                 message="Profiling hasn't changed to Disabled in 300 seconds")
+                 message="Profiling hasn't changed to Disabled in 300 seconds\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         # profiling enabling process might not be over by this time
         time.sleep(5)
 
@@ -296,7 +326,8 @@ class Cluster(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=300,
                  delay=2,
-                 message="Cluster Dashboard wasn't displayed in time")
+                 message="Cluster Dashboard wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "host_count": view.hosts_total.text.split(" ")[-1],
@@ -316,7 +347,8 @@ class Cluster(BaseEntity):
         view = self.application.web_ui.create_view(ExpandConfirmationView)
         wait_for(lambda: view.is_displayed,
                  timeout=3,
-                 message="ExpandConfirmationView wasn't displayed in time")
+                 message="ExpandConfirmationView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.expand.click()
         time.sleep(20)
         for _ in range(40):
@@ -342,7 +374,8 @@ class ClustersCollection(BaseCollection):
         view = ViaWebUI.navigate_to(self, "All")
         wait_for(lambda: view.is_displayed,
                  timeout=30,
-                 message="ClustersView wasn't displayed in time")
+                 message="ClustersView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         clusters_list = []
         for cluster_id in view.all_ids:
             if view.clusters(cluster_id).managed.text == "No":

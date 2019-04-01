@@ -29,14 +29,16 @@ class User(BaseEntity):
         view = ViaWebUI.navigate_to(self.parent, "All")
         wait_for(lambda: view.is_displayed,
                  timeout=5,
-                 message="Users page hasn't been displayed in time")
+                 message="Users page hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[6].widget.select("Delete User", close=False)
                 view = self.application.web_ui.create_view(DeleteConfirmationView)
                 wait_for(lambda: view.is_displayed,
                          timeout=5,
-                         message="DeleteConfirmationView hasn't been displayed in time")
+                         message="DeleteConfirmationView hasn't been displayed in time\n" +
+                         "Visible text: {}".format(view.browser.elements("*")[0].text))
                 view.delete.click()
                 # this is a UI bug
                 view.browser.refresh()
@@ -50,14 +52,16 @@ class User(BaseEntity):
         view = ViaWebUI.navigate_to(self.parent, "All")
         wait_for(lambda: view.is_displayed,
                  timeout=5,
-                 message="Users page hasn't been displayed in time")
+                 message="Users page hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         for row in view.users:
             if row["User ID"].text == self.user_id:
                 row[5].click()
                 view = self.application.web_ui.create_view(EditUserView)
                 wait_for(lambda: view.is_displayed,
                          timeout=5,
-                         message="EditUserView hasn't been displayed in time")
+                         message="EditUserView hasn't been displayed in time\n" +
+                         "Visible text: {}".format(view.browser.elements("*")[0].text))
                 view.fill(new_values_dict)
                 view.save_button.click()
                 break
@@ -83,7 +87,8 @@ class UsersCollection(BaseCollection):
         view = ViaWebUI.navigate_to(self, "Add")
         wait_for(lambda: view.is_displayed,
                  timeout=5,
-                 message="AddUserView hasn't been displayed in time")
+                 message="AddUserView hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.fill({
             "user_id": user_id,
             "name": name,
@@ -100,7 +105,8 @@ class UsersCollection(BaseCollection):
         view = ViaWebUI.navigate_to(self, "MySettings")
         wait_for(lambda: view.is_displayed,
                  timeout=5,
-                 message="MySettingsView hasn't been displayed in time")
+                 message="MySettingsView hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         view.fill(new_values_dict)
         view.save_button.click()
 

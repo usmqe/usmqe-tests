@@ -31,7 +31,8 @@ class AlertsCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=2,
-                 message="AlertsView wasn't displayed in time")
+                 message="AlertsView wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         alert_list = []
         for alert_id in view.alerts.all_alert_ids:
             alert = self.instantiate(

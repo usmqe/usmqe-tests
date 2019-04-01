@@ -96,6 +96,7 @@ class MainTaskEventsView(BaseEventsView):
     """
     import_status = Text(".//label[@class='col-sm-4 col-md-1 status-value ng-binding']")
     cluster_details = Text(".//a[@ng-click='glbTaskDetailCntrl.goToClusterDetail()']")
+    all_clusters = Text(".//a[@ui-sref='clusters']")
 
     @property
     def is_displayed(self):

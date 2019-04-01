@@ -35,7 +35,8 @@ class Brick(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=3,
-                 message="BrickDashboard wasn't dispayed in time")
+                 message="BrickDashboard wasn't dispayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "host_name": view.host_name.text,
@@ -80,7 +81,8 @@ class HostBricksCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=3,
-                 message="Host's Brick Details weren't displayed in time")
+                 message="Host's Brick Details weren't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         brick_list = []
         for row in view.bricks:
             brick = self.instantiate(
@@ -138,7 +140,8 @@ class VolumeBricksCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=3,
-                 message="Volume's Brick Details weren't displayed in time")
+                 message="Volume's Brick Details weren't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         if not self.parent.is_expanded:
             self.parent.expand()
         bricks = view.volume_parts(self.parent.part_id).bricks

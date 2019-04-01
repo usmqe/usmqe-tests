@@ -45,7 +45,8 @@ class TasksCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=2,
-                 message="Tasks page hasn't been displayed in time")
+                 message="Tasks page hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         task_list = []
         for task_id in view.all_task_ids:
             task = self.instantiate(

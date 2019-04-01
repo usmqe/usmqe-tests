@@ -39,7 +39,8 @@ class EventsCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=2,
-                 message="Events page hasn't been displayed in time")
+                 message="Events page hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         event_list = []
         for event_id in view.all_event_ids:
             event = self.instantiate(
@@ -73,7 +74,8 @@ class TaskEventsCollection(BaseCollection):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=2,
-                 message="Events page hasn't been displayed in time")
+                 message="Events page hasn't been displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         event_list = []
         for event_id in view.all_event_ids:
             event = self.instantiate(

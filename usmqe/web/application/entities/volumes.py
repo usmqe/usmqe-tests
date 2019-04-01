@@ -63,7 +63,8 @@ class Volume(BaseEntity):
         wait_for(lambda: self.update()[4] == "Enabled",
                  timeout=300,
                  delay=5,
-                 message="Volume's profiling hasn't changed to Enabled in 300 seconds")
+                 message="Volume's profiling hasn't changed to Enabled in 300 seconds\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Enabled")
 
@@ -76,7 +77,8 @@ class Volume(BaseEntity):
         wait_for(lambda: self.update()[4] == "Disabled",
                  timeout=300,
                  delay=5,
-                 message="Volume's profiling hasn't changed to Enabled in 300 seconds")
+                 message="Volume's profiling hasn't changed to Enabled in 300 seconds\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         LOGGER.debug("Volume {} profiling value: {}".format(self.volname, self.profiling))
         pytest.check(self.profiling == "Disabled")
 
@@ -89,7 +91,8 @@ class Volume(BaseEntity):
         wait_for(lambda: view.is_displayed,
                  timeout=10,
                  delay=3,
-                 message="Volume Dashboard wasn't displayed in time")
+                 message="Volume Dashboard wasn't displayed in time\n" +
+                 "Visible text: {}".format(view.browser.elements("*")[0].text))
         dashboard_values = {
             "cluster_name": view.cluster_name.text,
             "volume_name": view.volume_name.text,
