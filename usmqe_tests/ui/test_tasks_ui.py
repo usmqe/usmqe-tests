@@ -82,8 +82,9 @@ def test_task_log(application, imported_cluster_reuse):
         pytest.check(events != [],
                      "Check that task's Events list isn't empty")
         for event in events:
-            pytest.check(event.event_type in {"info", "error"},
-                         "Event type: {}. Should be 'info' or 'error'".format(event.event_type))
+            pytest.check(event.event_type in {"info", "warning", "error"},
+                         "Event type: {}. ".format(event.event_type) +
+                         "Should be 'info', 'warning' or 'error'")
             pytest.check(len(event.description) > 10,
                          "Description: {}. Should be more than 10 char".format(event.description))
             pytest.check(int(event.date.split(" ")[2]) > 2018,
