@@ -184,9 +184,15 @@ def test_host_dashboard(application, imported_cluster_reuse):
         LOGGER.debug("Hostname in grafana: {}".format(dashboard_values["host_name"]))
         LOGGER.debug("Hostname in main UI "
                      "after dot replacement: '{}'".format(hostname_grafanized))
-        pytest.check(dashboard_values["brick_count"] == host.bricks_count,
-                     "Bricks total in Grafana: {}".format(dashboard_values["brick_count"]) +
-                     "Should be equal to {}".format(host.bricks_count))
+        if dashboard_values["brick_count"] == 0:
+            pytest.check(dashboard_values["brick_count"] == host.bricks_count,
+                         "Bricks total in Grafana: {} ".format(dashboard_values["brick_count"]) +
+                         "Should be equal to {}".format(host.bricks_count),
+                         issue='https://bugzilla.redhat.com/show_bug.cgi?id=1694982')
+        else:
+            pytest.check(dashboard_values["brick_count"] == host.bricks_count,
+                         "Bricks total in Grafana: {} ".format(dashboard_values["brick_count"]) +
+                         "Should be equal to {}".format(host.bricks_count))
         LOGGER.debug("Brick count in grafana: {}".format(dashboard_values["brick_count"]))
         LOGGER.debug("Brick count in main UI: {}".format(host.bricks_count))
         pytest.check(dashboard_values["host_health"] == host.health.lower(),
