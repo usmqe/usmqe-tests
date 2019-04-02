@@ -62,7 +62,7 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_disable_profiling(application, imported_cluster_reuse):
+def test_cluster_disable_profiling(application, imported_cluster_reuse, gluster_volume):
     """
     Disable cluster profiling in Web UI
     """
@@ -96,7 +96,7 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_enable_profiling(application, imported_cluster_reuse):
+def test_cluster_enable_profiling(application, imported_cluster_reuse, gluster_volume):
     """
     Enable cluster profiling in Web UI
     """
