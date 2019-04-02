@@ -93,6 +93,12 @@ Useful `pytest options`_ one can use are:
 * ``-s`` turns off per-test capture logging, all logs are immediately
   reported on console (which is useful when developing new test code and
   immediate feedback is needed)
+* ``--last-failed`` reruns only test cases which failed in a previous run
+* ``--junit-xml=testrun_foo.xml -o junit_suite_name=foo`` istructs pytest to
+  create xml junit log file named ``testrun_foo.xm`` and to set ``foo`` as
+  a value of ``/testsuite/@name`` attribute in this xml file (you can then
+  process the xml file to compare test runs and generate reports using tools
+  such as `junit2html <https://gitlab.com/inorton/junit2html>`_)
 
 .. _`pytest`: http://docs.pytest.org/en/latest/index.html
 .. _`pytest options`: https://docs.pytest.org/en/latest/usage.html
