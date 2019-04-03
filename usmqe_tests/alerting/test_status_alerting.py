@@ -214,8 +214,8 @@ def test_volume_status_api_alert(
             workload_stop_volumes['start'],
             workload_stop_volumes['end'])
         pytest.check(
-            alert_count >= 1,
-            "There should be at least 1 alert:\nBody: '{0}'\n"
+            alert_count == 1,
+            "There should be 1 alert:\nBody: '{0}'\n"
             "There is {1}".format(
                 msg, alert_count))
 
@@ -230,8 +230,8 @@ def test_volume_status_api_alert(
         workload_stop_volumes['start'],
         workload_stop_volumes['end'])
     pytest.check(
-        alert_count >= 1,
-        "There should be at least 1 alert:\nBody: '{0}'\n"
+        alert_count == 1,
+        "There should be 1 alert:\nBody: '{0}'\n"
         "There is {1}".format(
             msg, alert_count))
 
@@ -393,7 +393,7 @@ def test_host_status_api_alert(
     if not bz1600910:
         for record in results:
             pytest.check(
-                record['alerts'] >= 1,
+                record['alerts'] == 1,
                 "There should be 1 alert:\nBody: '{0}'\n"
                 "There is {1}".format(
                     record['msg'], record['alert_count']))
