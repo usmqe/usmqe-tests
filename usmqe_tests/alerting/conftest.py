@@ -12,7 +12,7 @@ pytest.set_logger(LOGGER)
 CONF = UsmConfig()
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="function")
 def default_entities(cluster_reuse):
     """
     Returns basic items that are occuring in alert messages and can be used
@@ -167,5 +167,6 @@ def alerting_setup(request):
                 "test_setup.smtp.yml"],
             [
                 "test_teardown.alerts_logger.yml",
-                "test_teardown.snmp.yml"]):
+                "test_teardown.snmp.yml",
+                "test_teardown.smtp.yml"]):
         yield
