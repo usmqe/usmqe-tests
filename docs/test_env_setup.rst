@@ -14,10 +14,19 @@ machines is not very useful for proper integration testing because it would
 prevent us from testing some important use cases).
 
 For this reason, all post installation and test setup configuration steps
-are automated via ansible playbooks and stored in a separate `usmqe-setup
-repository`_. You need to deploy test machines using playbooks from there.
+are automated via ansible playbooks or gdeploy config files, which are stored
+in a separate `usmqe-setup repository`_:
 
+* `GDeploy Config Directory`_ contains gdeploy configuration for all gluster
+  volumes and configurations we test with.
+* Playbooks with ``ci_`` prefix are used in CI to deploy test machines.
+* Playbooks with ``qe_`` prefix automates qe procedures.
+* Playbooks with ``test_setup`` or ``test_teardown`` prefix automates test
+  setup or teardown. Automated test cases can use it via
+  `pytest-ansible-playbook`_ pytest plugin.
 
 .. _`qe_server.yml`: https://github.com/usmqe/usmqe-setup/blob/master/qe_server.yml
 .. _`usmqe-setup repository`: https://github.com/usmqe/usmqe-setup
 .. _`Tendrl project wide documentation`: https://github.com/Tendrl/documentation/blob/master/deployment.adoc
+.. _`GDeploy Config Directory`: https://github.com/usmqe/usmqe-setup/tree/master/gdeploy_config
+.. _`pytest-ansible-playbook`: https://gitlab.com/mbukatov/pytest-ansible-playbook
