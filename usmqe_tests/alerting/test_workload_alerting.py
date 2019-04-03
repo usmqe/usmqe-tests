@@ -3,64 +3,297 @@ Alerting test suite - workload
 """
 
 import pytest
-import time
-import usmqe.usmmail
+from usmqe.alerting import Alerting
 
 
 LOGGER = pytest.get_logger('workload_alerting', module=True)
 
 
+@pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
-def test_cpu_alerts(workload_cpu_utilization):
+@pytest.mark.author("fbalak@redhat.com")
+def test_cpu_utilization_mail_alert(
+        workload_cpu_utilization_alerts, default_entities):
     """
-    Check that Tendrl sends no CPU Utilization alerts if utilization is below 70,
-    it sends CPU Utilization warnings if CPU Utilization is between 70 and 90
-    and it sends CPU Utilization critical alerts if utilization is above 90.
+    Check that Tendrl sends no CPU Utilization alerts if utilization is below
+    70, it sends CPU Utilization warnings if CPU Utilization is between 70 and
+    90 and it sends CPU Utilization critical alerts if utilization is above 90.
     """
     """
     :step:
-      Get the messages that arrived in the interval provided by cpu utilization fixture
-      or a little later
+      Get the messages that arrived in the interval provided by cpu utilization
+      fixture or a little later
     :result:
       The list of all relevant messages
     """
-    EXTRA_TIME = 30
-    from_timestamp = workload_cpu_utilization["start"].timestamp()
-    until_timestamp = workload_cpu_utilization["end"].timestamp() + EXTRA_TIME
-    LOGGER.debug("Fixture start timestamp: {} ({})".format(from_timestamp,
-                                                           workload_cpu_utilization["start"]))
-    LOGGER.debug("Fixture end timestamp: {} ({})".format(until_timestamp - EXTRA_TIME,
-                                                         workload_cpu_utilization["end"]))
-    LOGGER.debug("Fixture result is: {}".format(workload_cpu_utilization["result"]))
 
-    # Wait until the messages surely arrive
-    time.sleep(EXTRA_TIME)
-    messages = usmqe.usmmail.get_msgs_by_time(start_timestamp=from_timestamp,
-                                              end_timestamp=until_timestamp)
-    LOGGER.debug("Selected messages count: {}".format(len(messages)))
+    alerting = Alerting("root")
+    entities = default_entities
+    target = workload_cpu_utilization_alerts['result']
+    if (workload_cpu_utilization_alerts['result'] >= 75 and
+            workload_cpu_utilization_alerts['result'] < 90):
+        severity = "WARNING"
+        entities["value"] = "at $value and running out of cpu"
+    elif (workload_cpu_utilization_alerts['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of cpu"
+    else:
+        severity = "INFO"
+        entities["value"] = "back to normal"
+        target = None
+    mail_subject, mail_msg = alerting.generate_alert_msg(
+        domain="node",
+        subject="cpu",
+        entities=entities)
+    alert_count = alerting.search_mail(
+        "[{0}] {1}".format(severity, mail_subject),
+        mail_msg,
+        workload_cpu_utilization_alerts['start'],
+        workload_cpu_utilization_alerts['end'],
+        target=target)
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
+        "There is {2}".format(
+            mail_subject, mail_msg, alert_count))
 
+
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
+def test_cpu_utilization_snmp_alert(
+        workload_cpu_utilization_alerts, default_entities):
+    """
+    Check that Tendrl sends no CPU Utilization alerts if utilization is below
+    70, it sends CPU Utilization warnings if CPU Utilization is between 70 and
+    90 and it sends CPU Utilization critical alerts if utilization is above 90.
+    """
     """
     :step:
-      Check that the type of alert corresponds to the workload
+      Get the messages that arrived in the interval provided by cpu utilization
+      fixture or a little later
     :result:
-      If the workload was low, there's no alert. If it's high, the correct alert was received.
+      The list of all relevant messages
     """
-    # Distinguish between warnings and critical alerts
-    cpu_warning = False
-    cpu_critical = False
-    for message in messages:
-        LOGGER.debug("Message date: {}".format(message['Date']))
-        LOGGER.debug("Message subject: {}".format(message['Subject']))
-        LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-        if message['Subject'].count("[WARNING] Cpu Utilization: threshold breached") > 0:
-            cpu_warning = True
-        if message['Subject'].count("[CRITICAL] Cpu Utilization: threshold breached") > 0:
-            cpu_critical = True
 
-    # Check if the number and type of alerts fits CPU Utilization
-    if workload_cpu_utilization["result"] < 70:
-        pytest.check(not cpu_warning and not cpu_critical)
-    elif workload_cpu_utilization["result"] < 90:
-        pytest.check(cpu_warning and not cpu_critical)
+    alerting = Alerting("root")
+    entities = default_entities
+    target = workload_cpu_utilization_alerts['result']
+    if (workload_cpu_utilization_alerts['result'] >= 75 and
+            workload_cpu_utilization_alerts['result'] < 90):
+        severity = "WARNING"
+        entities["value"] = "at $value and running out of cpu"
+    elif (workload_cpu_utilization_alerts['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of cpu"
     else:
-        pytest.check(cpu_critical and not cpu_warning)
+        severity = "INFO"
+        entities["value"] = "back to normal"
+        target = None
+    mail_subject, mail_msg = alerting.generate_alert_msg(
+        domain="node",
+        subject="cpu",
+        entities=entities)
+    alert_count = alerting.search_snmp(
+        "[{0}], {1}-{2}".format(severity, mail_subject, mail_msg),
+        workload_cpu_utilization_alerts['start'],
+        workload_cpu_utilization_alerts['end'],
+        target=target)
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
+        "There is {2}".format(
+            mail_subject, mail_msg, alert_count))
+
+
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
+def test_cpu_utilization_api_alert(
+        workload_cpu_utilization_alerts, default_entities):
+    """
+    Check that Tendrl sends no CPU Utilization alerts if utilization is below
+    70, it sends CPU Utilization warnings if CPU Utilization is between 70 and
+    90 and it sends CPU Utilization critical alerts if utilization is above 90.
+    """
+    """
+    :step:
+      Get the messages that arrived in the interval provided by cpu utilization
+      fixture or a little later
+    :result:
+      The list of all relevant messages
+    """
+
+    alerting = Alerting()
+    entities = default_entities
+    target = workload_cpu_utilization_alerts['result']
+    if (workload_cpu_utilization_alerts['result'] >= 75 and
+            workload_cpu_utilization_alerts['result'] < 90):
+        severity = "WARNING"
+        entities["value"] = "at $value and running out of cpu"
+    elif (workload_cpu_utilization_alerts['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of cpu"
+    else:
+        severity = "INFO"
+        entities["value"] = "back to normal"
+        target = None
+    _, msg = alerting.generate_alert_msg(
+        domain="node",
+        subject="cpu",
+        entities=entities)
+    alert_count = alerting.search_api(
+        severity,
+        msg,
+        workload_cpu_utilization_alerts['start'],
+        workload_cpu_utilization_alerts['end'],
+        target=target)
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\nBody: '{0}'\n"
+        "There is {1}".format(
+            msg, alert_count))
+
+
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
+def test_memory_utilization_mail_alert(
+        workload_memory_utilization_alerts, default_entities):
+    """
+    Check that Tendrl sends no memory Utilization alerts if utilization is
+    below 70, it sends memory Utilization warnings if memory Utilization is
+    between 70 and 90 and it sends memory Utilization critical alerts if
+    utilization is above 90.
+    """
+    """
+    :step:
+      Get the messages that arrived in the interval provided by memory
+      utilization fixture or a little later
+    :result:
+      The list of all relevant messages
+    """
+
+    alerting = Alerting("root")
+    entities = default_entities
+    target = workload_memory_utilization_alerts['result']
+    if (workload_memory_utilization_alerts['result'] >= 75 and
+            workload_memory_utilization_alerts['result'] < 90):
+        severity = "WARNING"
+        entities["value"] = "at $value and running out of memory"
+    elif (workload_memory_utilization_alerts['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of memory"
+    else:
+        severity = "INFO"
+        entities["value"] = "back to normal"
+        target = None
+    mail_subject, mail_msg = alerting.generate_alert_msg(
+        domain="node",
+        subject="memory",
+        entities=entities)
+    alert_count = alerting.search_mail(
+        "[{0}] {1}".format(severity, mail_subject),
+        mail_msg,
+        workload_memory_utilization_alerts['start'],
+        workload_memory_utilization_alerts['end'],
+        target=target)
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
+        "There is {2}".format(
+            mail_subject, mail_msg, alert_count))
+
+
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
+def test_memory_utilization_snmp_alert(
+        workload_memory_utilization_alerts, default_entities):
+    """
+    Check that Tendrl sends no memory Utilization alerts if utilization is
+    below 70, it sends memory Utilization warnings if memory Utilization is
+    between 70 and 90 and it sends memory Utilization critical alerts if
+    utilization is above 90.
+    """
+    """
+    :step:
+      Get the messages that arrived in the interval provided by memory
+      utilization fixture or a little later
+    :result:
+      The list of all relevant messages
+    """
+
+    alerting = Alerting("root")
+    entities = default_entities
+    target = workload_memory_utilization_alerts['result']
+    if (workload_memory_utilization_alerts['result'] >= 75 and
+            workload_memory_utilization_alerts['result'] < 90):
+        severity = "WARNING"
+        entities["value"] = "at $value and running out of memory"
+    elif (workload_memory_utilization_alerts['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of memory"
+    else:
+        severity = "INFO"
+        entities["value"] = "back to normal"
+        target = None
+    mail_subject, mail_msg = alerting.generate_alert_msg(
+        domain="node",
+        subject="memory",
+        entities=entities)
+    alert_count = alerting.search_snmp(
+        "[{0}], {1}-{2}".format(severity, mail_subject, mail_msg),
+        workload_memory_utilization_alerts['start'],
+        workload_memory_utilization_alerts['end'],
+        target=target)
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
+        "There is {2}".format(
+            mail_subject, mail_msg, alert_count))
+
+
+@pytest.mark.testready
+@pytest.mark.author("fbalak@redhat.com")
+def test_memory_utilization_api_alert(
+        workload_memory_utilization_alerts, default_entities):
+    """
+    Check that Tendrl sends no memory Utilization alerts if utilization is
+    below 70, it sends memory Utilization warnings if memory Utilization is
+    between 70 and 90 and it sends memory Utilization critical alerts if
+    utilization is above 90.
+    """
+    """
+    :step:
+      Get the messages that arrived in the interval provided by memory
+      utilization fixture or a little later
+    :result:
+      The list of all relevant messages
+    """
+
+    alerting = Alerting()
+    entities = default_entities
+    target = workload_memory_utilization_alerts['result']
+    if (workload_memory_utilization_alerts['result'] >= 75 and
+            workload_memory_utilization_alerts['result'] < 90):
+        severity = "WARNING"
+        entities["value"] = "at $value and running out of memory"
+    elif (workload_memory_utilization_alerts['result'] >= 90):
+        severity = "CRITICAL"
+        entities["value"] = "at $value and running out of memory"
+    else:
+        severity = "INFO"
+        entities["value"] = "back to normal"
+        target = None
+    _, msg = alerting.generate_alert_msg(
+        domain="node",
+        subject="memory",
+        entities=entities)
+    alert_count = alerting.search_api(
+        severity,
+        msg,
+        workload_memory_utilization_alerts['start'],
+        workload_memory_utilization_alerts['end'],
+        target=target)
+    pytest.check(
+        alert_count == 1,
+        "There should be 1 alert:\nBody: '{0}'\n"
+        "There is {1}".format(
+            msg, alert_count))

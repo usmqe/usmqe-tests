@@ -23,7 +23,6 @@ Usage::
 import pytest
 import usmqe.usmssh
 import mailbox
-import time
 import email.utils
 import os
 import tempfile
@@ -44,8 +43,8 @@ def create_mailbox_file(filename='mbox_file', content=''):
 
 def get_client_mail(host=None, user="root"):
     """
-    Read mail from /var/mail/{user} on the specified machine (by default client machine).
-    Return the contents of the mailbox as a string
+    Read mail from /var/mail/{user} on the specified machine (by default
+    client machine). Return the contents of the mailbox as a string
     """
     SSH = usmqe.usmssh.get_ssh()
     if host is None:
@@ -61,32 +60,32 @@ def get_client_mail(host=None, user="root"):
     return stdout.decode()
 
 
-def get_msgs_by_time(start_timestamp=None, end_timestamp=None, host=None, user="root"):
+def get_msgs_by_time(
+        start_timestamp=None, end_timestamp=None, host=None, user="root"):
     """
-    Get all the messages from /var/mail/{user} on the client machine or the specified machine.
+    Get all the messages from /var/mail/{user} on the client machine or
+    the specified machine.
     Choose the ones that came within the specified time interval.
 
     Return a mailbox object.
     """
     # Pretend we have a Date header; get the date from the Received header
-    client_mail = str(get_client_mail(host=host, user=user)).replace(';', '\nDate:')
+    client_mail = str(get_client_mail(host=host, user=user)).replace(
+        ';', '\nDate:')
 
     mailbox_instance = mailbox.mbox(create_mailbox_file(content=client_mail))
     relevant_messages = mailbox.mbox(create_mailbox_file())
-
     # Choose the messages
     for message in mailbox_instance.values():
-        LOGGER.debug("Message date: {}".format(message['Date']))
-        LOGGER.debug("Message subject: {}".format(message['Subject']))
-        LOGGER.debug("Message body: {}".format(message.get_payload(decode=True)))
-        msg_date_tuple = email.utils.parsedate(message['Date'])
-        # email.utils.parsedate doesn't get the timezone correctly
-        # parse "Wed, 19 Sep 2018 14:41:22 +0200 (CEST)" for the number of hours to adjust
-        msg_timezone_int = int(message['Date'].split(' ')[5][:3])
-        msg_timestamp = time.mktime(msg_date_tuple) - msg_timezone_int * 60 * 60
-        LOGGER.debug("Message timestamp: {}".format(msg_timestamp))
+        msg_date = email.utils.parsedate_tz(message['Date'])
+        msg_timestamp = email.utils.mktime_tz(msg_date)
         if (start_timestamp is None or start_timestamp < msg_timestamp) and \
            (end_timestamp is None or end_timestamp > msg_timestamp):
+            LOGGER.debug("Message date: {}".format(message['Date']))
+            LOGGER.debug("Message subject: {}".format(message['Subject']))
+            LOGGER.debug("Message body: {}".format(
+                message.get_payload(decode=True)))
+            LOGGER.debug("Message timestamp: {}".format(msg_timestamp))
             relevant_messages.add(message)
 
     return relevant_messages

@@ -5,9 +5,10 @@ from urllib.parse import urlparse
 import pytest
 
 import usmqe.usmssh as usmssh
+from pytest_ansible_playbook import runner
+from usmqe.api.tendrlapi.common import login, logout, TendrlApi
 from usmqe.web.application import Application
 from usmqe.usmqeconfig import UsmConfig
-from usmqe.api.tendrlapi.common import TendrlApi
 from usmqe.gluster.gluster import GlusterVolume
 
 
@@ -21,7 +22,6 @@ CONF = UsmConfig()
 #      all import lines must have NOQA flag to be ignored by flake,
 #        because all imports have to be at the begginning of the file
 #      other possibility is to have imports where they are really needed
-from usmqe.api.tendrlapi.common import login, logout  # NOQA flake8
 from usmqe.api.tendrlapi import user as tendrlapi_user  # NOQA flake8
 
 
@@ -397,7 +397,7 @@ def cluster_reuse(valid_session_credentials):
                     " with FQDN == {}.".format(id_hostname))
 
 
-@pytest.fixture(params=[60, 80], scope="session")
+@pytest.fixture(params=[80, 60], scope="session")
 def workload_memory_utilization(request):
     """
     Returns:
@@ -406,7 +406,7 @@ def workload_memory_utilization(request):
     """
     def fill_memory():
         """
-        Use `stress-ng` tool to stress memory for 4 minutes to given percentage
+        Use `stress` tool to stress memory for 4 minutes to given percentage
         """
         # stress memory for for 240 seconds
         run_time = 240
@@ -606,3 +606,15 @@ def gluster_volume(request):
     else:
         pytest.skip('Test needs a volume and an option `volume_count`'
                     ' set accordingly.')
+
+
+@pytest.fixture(scope="session")
+def stress_tools(request):
+    """
+    Install `stress` and `stress-ng` on gluster machines.
+    """
+    with runner(
+            request,
+            ["test_setup.stress_tools.yml"],
+            ["test_teardown.stress_tools.yml"]):
+        yield
