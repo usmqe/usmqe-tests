@@ -288,7 +288,7 @@ def test_host_status_mail_alert(
                 record['alerts'] == 1,
                 "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
                 "There is {2}".format(
-                    record['subject'], record['msg'], record['alert_count']))
+                    record['subject'], record['msg'], record['alerts']))
 
 
 @pytest.mark.testready
@@ -342,7 +342,7 @@ def test_host_status_snmp_alert(
                 record['alerts'] == 1,
                 "There should be 1 alert:\nSubject: '{0}'\nBody: '{1}'\n"
                 "There is {2}".format(
-                    record['subject'], record['msg'], record['alert_count']))
+                    record['subject'], record['msg'], record['alerts']))
 
 
 @pytest.mark.testready
@@ -396,4 +396,4 @@ def test_host_status_api_alert(
                 record['alerts'] == 1,
                 "There should be 1 alert:\nBody: '{0}'\n"
                 "There is {1}".format(
-                    record['msg'], record['alert_count']))
+                    record['msg'], record['alerts']))
