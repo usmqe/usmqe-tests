@@ -32,7 +32,6 @@ class ApiNotifications(TendrlApi):
         self.check_response(request, asserts_in)
         return request.json(encoding='unicode')
 
-
     def get_alerts(self, asserts_in=None):
         """ Get notifications.
 
