@@ -22,7 +22,7 @@ def test_modal(application):
       https://bugzilla.redhat.com/show_bug.cgi?id=1627988
     """
     view = ViaWebUI.navigate_to(application.web_ui, "LoggedIn")
-    modal_info = {"Version": "3.4",
+    modal_info = {"Version": str(CONF.config["usmqe"]["tendrl_version"]),
                   "User": "admin",
                   "User Role": "admin",
                   "Browser": "chrome",
@@ -30,7 +30,7 @@ def test_modal(application):
     for key in modal_info:
         real_value = view.get_detail(key).lower()
         pytest.check(real_value == modal_info[key],
-                     "Modal info: {}. Should be {}".format(modal_info[key], real_value))
+                     "Modal info: {}. Should be {}".format(real_value, modal_info[key]))
 
 
 @pytest.mark.author("ebondare@redhat.com")
@@ -66,7 +66,7 @@ def test_modal_username_role(application, role, valid_session_credentials):
       https://bugzilla.redhat.com/show_bug.cgi?id=1627988
     """
     view = ViaWebUI.navigate_to(temp_app.web_ui, "LoggedIn")
-    modal_info = {"Version": "3.4",
+    modal_info = {"Version": str(CONF.config["usmqe"]["tendrl_version"]),
                   "User": user.name,
                   "User Role": user.role,
                   "Browser": "chrome",
@@ -74,5 +74,5 @@ def test_modal_username_role(application, role, valid_session_credentials):
     for key in modal_info:
         real_value = view.get_detail(key).lower()
         pytest.check(real_value == modal_info[key],
-                     "Modal info: {}. Should be {}".format(modal_info[key], real_value))
+                     "Modal info: {}. Should be {}".format(real_value, modal_info[key]))
     user.delete()
