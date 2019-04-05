@@ -7,3 +7,4 @@ usmqe:
   cluster_member: example-usm1-gl1.usmqe.tendrl.org
   # if not provided then volume related tests will be skipped
   volume_count: 1
+  tendrl_version: 3.4
