@@ -184,7 +184,7 @@ def test_host_dashboard(application, imported_cluster_reuse):
         LOGGER.debug("Hostname in grafana: {}".format(dashboard_values["host_name"]))
         LOGGER.debug("Hostname in main UI "
                      "after dot replacement: '{}'".format(hostname_grafanized))
-        if dashboard_values["brick_count"] == 0:
+        if dashboard_values["brick_count"] == "0":
             pytest.check(dashboard_values["brick_count"] == host.bricks_count,
                          "Bricks total in Grafana: {} ".format(dashboard_values["brick_count"]) +
                          "Should be equal to {}".format(host.bricks_count),
