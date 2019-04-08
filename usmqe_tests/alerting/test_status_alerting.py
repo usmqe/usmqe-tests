@@ -32,7 +32,7 @@ def detect_bz1600910(creds, alert_count):
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_volume_status_mail_alert(
-        workload_stop_volumes, default_entities):
+        workload_stop_volumes, default_entities, gluster_volume):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
     """
@@ -102,7 +102,7 @@ def test_volume_status_mail_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_volume_status_snmp_alert(
-        workload_stop_volumes, default_entities):
+        workload_stop_volumes, default_entities, gluster_volume):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
     """
@@ -169,7 +169,7 @@ def test_volume_status_snmp_alert(
 @pytest.mark.testready
 @pytest.mark.author("fbalak@redhat.com")
 def test_volume_status_api_alert(
-        workload_stop_volumes, default_entities):
+        workload_stop_volumes, default_entities, gluster_volume):
     """
     Check that Tendrl sends correct status alert when volume is stopped.
     """
