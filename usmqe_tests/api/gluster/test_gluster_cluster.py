@@ -160,14 +160,12 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
 @pytest.mark.author("mbukatov@redhat.com")
 @pytest.mark.gluster
 @pytest.mark.negative
-@pytest.mark.ansible_playbook_setup("test_setup.tendrl_nodeagent_stopped_on_one_node.yml")
-@pytest.mark.ansible_playbook_teardown("test_teardown.tendrl_nodeagent_stopped_on_one_node.yml")
 @pytest.mark.testready
 def test_cluster_import_fail_with_one_nodeagent_down(
         valid_session_credentials,
         cluster_reuse,
         valid_trusted_pool_reuse,
-        ansible_playbook):
+        importfail_setup_nodeagent_stopped_on_one_node):
     """
     Negative import gluster cluster when node agent is not running on one
     storage machine. Import should fail in such case.
