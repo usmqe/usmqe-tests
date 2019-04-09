@@ -371,29 +371,51 @@ def valid_session_credentials(request):
     logout(auth=auth)
 
 
+def cluster2node_fqdn_list(cluster):
+    """
+    Returns list of fqdn of nodes which belongs to given cluster.
+    """
+    return [node["fqdn"] for node in cluster["nodes"]]
+
+
 @pytest.fixture
 def cluster_reuse(valid_session_credentials):
     """
-    Returns cluster identified by one of machines
-    from cluster.
+    Returns Gluster *trusted storage pool* (aka cluster) as identified by
+    ``cluster_member`` machine (specified in usmqe config file).
+
     Returned cluster can be used for further testing.
     Function uses Tendrl API(clusters). In case there
     is need to identify cluster directly by storage
     tools this function should be split.
     """
+    LOGGER = pytest.get_logger("cluster_reuse")
     id_hostname = CONF.config["usmqe"]["cluster_member"]
     api = TendrlApi(auth=valid_session_credentials)
-    for _ in range(12):
-        clusters = api.get_cluster_list()
-        clusters = [cluster for cluster in clusters
-                    if id_hostname in
-                    [node["fqdn"] for node in cluster["nodes"]]
-                    ]
-        if len(clusters) == 1:
-            return clusters[0]
-        time.sleep(5)
 
-    raise Exception("There is not one cluster which includes node"
+    retry_num = 12
+    for i in range(retry_num):
+        clusters = []
+        for cluster in api.get_cluster_list():
+            node_fqdn_list = cluster2node_fqdn_list(cluster)
+            if id_hostname in node_fqdn_list:
+                clusters.append(cluster)
+                msg = "cluster member {} found in cluster {}"
+            else:
+                msg = "cluster member {} not found in cluster {}"
+            LOGGER.debug(msg.format(id_hostname, node_fqdn_list))
+        if len(clusters) == 1:
+            cluster = clusters[0]
+            LOGGER.info("using cluster: {}".format(cluster2node_fqdn_list(cluster)))
+            return cluster
+        else:
+            LOGGER.warning("unexpected number (!= 1) of clusters found: {}".format(len(clusters)))
+        # wait a bit before retrying again
+        if i != retry_num - 1:
+            LOGGER.info("retrying search for a cluster")
+            time.sleep(5)
+
+    raise Exception("There is no cluster which includes node"
                     " with FQDN == {}.".format(id_hostname))
 
 
