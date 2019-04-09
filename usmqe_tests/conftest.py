@@ -371,6 +371,13 @@ def valid_session_credentials(request):
     logout(auth=auth)
 
 
+def cluster2node_fqdn_list(cluster):
+    """
+    Returns list of fqdn of nodes which belongs to given cluster.
+    """
+    return [node["fqdn"] for node in cluster["nodes"]]
+
+
 @pytest.fixture
 def cluster_reuse(valid_session_credentials):
     """
@@ -390,16 +397,16 @@ def cluster_reuse(valid_session_credentials):
     for i in range(retry_num):
         clusters = []
         for cluster in api.get_cluster_list():
-            node_fqdn_list = [node["fqdn"] for node in cluster["nodes"]]
+            node_fqdn_list = cluster2node_fqdn_list(cluster)
             if id_hostname in node_fqdn_list:
                 clusters.append(cluster)
-                LOGGER.debug("found cluster for cluster member {}".format(id_hostname))
+                msg = "cluster member {} found in cluster {}"
             else:
                 msg = "cluster member {} not found in cluster {}"
-                LOGGER.debug(msg.format(id_hostname, node_fqdn_list))
+            LOGGER.debug(msg.format(id_hostname, node_fqdn_list))
         if len(clusters) == 1:
             cluster = clusters[0]
-            LOGGER.info("using cluster: {}".format([node["fqdn"] for node in cluster["nodes"]]))
+            LOGGER.info("using cluster: {}".format(cluster2node_fqdn_list(cluster)))
             return cluster
         else:
             LOGGER.warning("unexpected number (!= 1) of clusters found: {}".format(len(clusters)))
