@@ -157,6 +157,84 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
     LOGGER.info("errors reported in response: %s", response.get("errors"))
 
 
+@pytest.mark.author("mbukatov@redhat.com")
+@pytest.mark.gluster
+@pytest.mark.negative
+@pytest.mark.ansible_playbook_setup("test_setup.tendrl_nodeagent_stopped_on_one_node.yml")
+@pytest.mark.ansible_playbook_teardown("test_teardown.tendrl_nodeagent_stopped_on_one_node.yml")
+@pytest.mark.testready
+def test_cluster_import_fail_with_one_nodeagent_down(
+        valid_session_credentials,
+        cluster_reuse,
+        valid_trusted_pool_reuse,
+        ansible_playbook):
+    """
+    Negative import gluster cluster when node agent is not running on one
+    storage machine. Import should fail in such case.
+    """
+    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+
+    # this test can't go on if we don't have proper cluster id at this point
+    assert cluster_reuse["cluster_id"] is not None
+
+    # TODO: this comes from test_cluster_import_valid, move this into cluster reuse fixture?
+    """
+    :step:
+      Check that fqdns of nodes in tendrl correspond with fqdns
+      from ``gluster`` command.
+    :result:
+      Sets of fqdns of nodes in tendrl and from ``gluster`` command
+      should be the same.
+    """
+    retry_num = 12
+    for i in range(retry_num):
+        cluster = api.get_cluster(cluster_reuse["cluster_id"])
+        if len(cluster["nodes"]) == len(valid_trusted_pool_reuse):
+            LOGGER.debug("cluster (via tendrl API) has expected number of nodes")
+            break
+        if i != retry_num - 1:
+            msg = "cluster (via tendrl API) has unexpected number of nodes, retrying API query"
+            LOGGER.info(msg)
+            time.sleep(10)
+    else:
+        assert len(cluster["nodes"]) == len(valid_trusted_pool_reuse)
+    node_fqdn_list = [node["fqdn"] for node in cluster["nodes"] if node["fqdn"]]
+    assert set(valid_trusted_pool_reuse) == set(node_fqdn_list)
+
+    """
+    :step:
+      Start import job for the cluster.
+    :result:
+      The job starts and finishes with failed status after some time.
+    """
+    LOGGER.info("starting import cluster job")
+    import_job = api.import_cluster(cluster_reuse["cluster_id"])
+    LOGGER.info(
+        "import (job id {}) submited, waiting for completion".format(import_job["job_id"]))
+    api.wait_for_job_status(import_job["job_id"], status="failed")
+
+    """
+    :step:
+      Using integration id from the import job, find cluster we tried to import
+      in a cluster list.
+    :result:
+      There is exactly one such cluster, and it's not managed (aka not imported).
+    """
+    integration_id = api.get_job_attribute(
+        job_id=import_job["job_id"],
+        attribute="TendrlContext.integration_id",
+        section="parameters")
+    LOGGER.debug("integration_id: %s" % integration_id)
+    clusters = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
+    pytest.check(
+        len(clusters) == 1,
+        "Job list integration_id '{}' should be "
+        "present in cluster list.".format(integration_id))
+    pytest.check(
+        clusters[0]['is_managed'] == 'no',
+        'cluster we tried to import should be in unmanaged state')
+
+
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
