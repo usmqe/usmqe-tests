@@ -385,7 +385,9 @@ def cluster_reuse(valid_session_credentials):
     LOGGER = pytest.get_logger("cluster_reuse")
     id_hostname = CONF.config["usmqe"]["cluster_member"]
     api = TendrlApi(auth=valid_session_credentials)
-    for _ in range(12):
+
+    retry_num = 12
+    for i in range(retry_num):
         clusters = []
         for cluster in api.get_cluster_list():
             node_fqdn_list = [node["fqdn"] for node in cluster["nodes"]]
@@ -397,14 +399,16 @@ def cluster_reuse(valid_session_credentials):
                 LOGGER.debug(msg.format(id_hostname, node_fqdn_list))
         if len(clusters) == 1:
             cluster = clusters[0]
-            LOGGER.info("using: {}".format([node["fqdn"] for node in cluster["nodes"]]))
+            LOGGER.info("using cluster: {}".format([node["fqdn"] for node in cluster["nodes"]]))
             return cluster
         else:
             LOGGER.warning("unexpected number (!= 1) of clusters found: {}".format(len(clusters)))
-        time.sleep(5)
-        LOGGER.info("retrying search for a cluster")
+        # wait a bit before retrying again
+        if i != retry_num - 1:
+            LOGGER.info("retrying search for a cluster")
+            time.sleep(5)
 
-    raise Exception("There is not one cluster which includes node"
+    raise Exception("There is no cluster which includes node"
                     " with FQDN == {}.".format(id_hostname))
 
 
