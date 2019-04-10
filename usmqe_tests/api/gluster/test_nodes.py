@@ -35,7 +35,7 @@ def test_nodes_list(
     t_nodes = api.get_node_list(managed_cluster['cluster_id'])
     t_node_names = {node["fqdn"] for node in t_nodes["nodes"]}
     # list of nodes from Gluster command output
-    gl= gluster.GlusterCommon()
+    gl = gluster.GlusterCommon()
     g_node_names = set(
         gl.get_hosts_from_trusted_pool(
             CONF.config["usmqe"]["cluster_member"]))

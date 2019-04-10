@@ -434,6 +434,7 @@ def managed_cluster(valid_session_credentials):
     else:
         return cluster_reuse
 
+
 @pytest.fixture
 def unmanaged_cluster(valid_session_credentials):
     """
