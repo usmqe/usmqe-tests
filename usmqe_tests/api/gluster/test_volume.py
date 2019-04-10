@@ -17,8 +17,7 @@ CONF = UsmConfig()
 @pytest.mark.gluster
 def test_volumes_list(
         valid_session_credentials,
-        cluster_reuse,
-        valid_trusted_pool_reuse):
+        managed_cluster):
     """
     List volumes for given cluster via API.
 
@@ -34,7 +33,7 @@ def test_volumes_list(
     glv_cmd = gluster.GlusterVolume()
 
     # list of volumes from Tendrl api
-    t_volumes = api.get_volume_list(cluster_reuse['cluster_id'])
+    t_volumes = api.get_volume_list(managed_cluster['cluster_id'])
     t_volume_names = [volume["name"] for volume in t_volumes["volumes"]]
     t_volume_names.sort()
     # list of volumes from Gluster command output
@@ -61,8 +60,7 @@ def test_volumes_list(
 @pytest.mark.gluster
 def test_volume_brick_list(
         valid_session_credentials,
-        cluster_reuse,
-        valid_trusted_pool_reuse):
+        managed_cluster):
     """
     List bricks for given volume via API.
 
@@ -77,7 +75,7 @@ def test_volume_brick_list(
 
     # get list of volumes from Tendrl
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    t_volumes = api.get_volume_list(cluster_reuse['cluster_id'])
+    t_volumes = api.get_volume_list(managed_cluster['cluster_id'])
 
     # perform brick list test for each volume
     for t_volume in t_volumes["volumes"]:
@@ -85,7 +83,7 @@ def test_volume_brick_list(
         gl_volume = gluster.GlusterVolume(volume_name=t_volume["name"])
         gl_volume.info()
 
-        t_bricks = api.get_brick_list(cluster_reuse['cluster_id'], t_volume["vol_id"])
+        t_bricks = api.get_brick_list(managed_cluster['cluster_id'], t_volume["vol_id"])
         t_brick_list = {brick["brick_path"] for brick in t_bricks["bricks"]}
 
         g_brick_list = set(gl_volume.bricks)

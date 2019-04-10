@@ -143,7 +143,7 @@ def test_mysettings_alerting_switch(application, receive_alerts, valid_session_c
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_ui_alerts(application, imported_cluster_reuse):
+def test_ui_alerts(application, managed_cluster):
     """
     Test UI alert appearance and disapearance.
     """

@@ -1,7 +1,6 @@
 import pytest
 import os.path
 from usmqe.api.tendrlapi import glusterapi
-from usmqe.gluster import gluster
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger('gluster_conftest', module=True)
@@ -26,16 +25,6 @@ def invalid_cluster_id(request):
     Generate invalid cluster id.
     """
     return request.param
-
-
-@pytest.fixture
-def valid_trusted_pool_reuse():
-    """
-    Return list of node hostname from created trusted pool with node specified
-    by usm_cluster_member option in usm.ini.
-    """
-    storage = gluster.GlusterCommon()
-    return storage.get_hosts_from_trusted_pool(CONF.config["usmqe"]["cluster_member"])
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
@@ -103,7 +92,7 @@ def valid_devices(valid_session_credentials, count=1):
 
 # TODO change to use bricks mapping
 @pytest.fixture
-def volume_conf_2rep(cluster_reuse):
+def volume_conf_2rep(managed_cluster):
     """
     Generate valid configuration for volume creation with set:
         "Volume.volname", "Volume.bricks", "Volume.replica_count", "Volume.force"
@@ -113,7 +102,7 @@ def volume_conf_2rep(cluster_reuse):
     *Volume name should be defined for each test!*
     *Configuration is made for replica count == 2.*
     """
-    hosts = cluster_reuse["nodes"]
+    hosts = managed_cluster["nodes"]
     LOGGER.debug("nodes: {}".format(hosts))
 
     avail_bricks = {}
@@ -121,7 +110,7 @@ def volume_conf_2rep(cluster_reuse):
     keys = sorted(list(hosts.keys()))
     for node in keys:
         avail_bricks[node] = sorted(
-                                [brick for brick in cluster_reuse["bricks"]["all"].values()
+                                [brick for brick in managed_cluster["bricks"]["all"].values()
                                     if brick["node_id"] == node],
                                 key=lambda brick1: brick1['brick_path'])
 
@@ -164,7 +153,7 @@ def invalid_volume_name(request):
 
 
 @pytest.fixture
-def valid_bricks_for_crud_volume(valid_session_credentials, cluster_reuse,
+def valid_bricks_for_crud_volume(valid_session_credentials, managed_cluster,
                                  valid_brick_name, valid_devices):
     """
     Creates bricks for CRUD volume tests.
@@ -172,13 +161,13 @@ def valid_bricks_for_crud_volume(valid_session_credentials, cluster_reuse,
 
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
-    nodes = list(cluster_reuse["nodes"].values())
+    nodes = list(managed_cluster["nodes"].values())
 
     LOGGER.debug("nodes: {}".format(nodes))
     LOGGER.debug("devices: {}".format(valid_devices))
 
     job_id = api.create_bricks(
-        cluster_reuse["cluster_id"],
+        managed_cluster["cluster_id"],
         nodes,
         valid_devices,
         valid_brick_name)["job_id"]

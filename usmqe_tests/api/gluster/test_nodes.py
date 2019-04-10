@@ -3,9 +3,12 @@ REST API test suite - gluster nodes
 """
 import pytest
 from usmqe.api.tendrlapi import glusterapi
+from usmqe.gluster import gluster
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('volume_nodes', module=True)
+CONF = UsmConfig()
 
 
 @pytest.mark.author("dahorak@redhat.com")
@@ -14,8 +17,7 @@ LOGGER = pytest.get_logger('volume_nodes', module=True)
 @pytest.mark.gluster
 def test_nodes_list(
         valid_session_credentials,
-        cluster_reuse,
-        valid_trusted_pool_reuse):
+        managed_cluster):
     """
     List nodes for given cluster via API.
 
@@ -30,10 +32,13 @@ def test_nodes_list(
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     # list of nodes from Tendrl api
-    t_nodes = api.get_node_list(cluster_reuse['cluster_id'])
+    t_nodes = api.get_node_list(managed_cluster['cluster_id'])
     t_node_names = {node["fqdn"] for node in t_nodes["nodes"]}
     # list of nodes from Gluster command output
-    g_node_names = set(valid_trusted_pool_reuse)
+    gl = gluster.GlusterCommon()
+    g_node_names = set(
+        gl.get_hosts_from_trusted_pool(
+            CONF.config["usmqe"]["cluster_member"]))
 
     LOGGER.info("list of nodes from Tendrl api: %s", str(t_node_names))
     LOGGER.info("list of nodes from gluster: %s", g_node_names)
