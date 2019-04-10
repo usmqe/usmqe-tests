@@ -439,7 +439,7 @@ def managed_cluster(valid_session_credentials):
 def unmanaged_cluster(valid_session_credentials):
     """
     Return cluster information from Tendrl API and make sure that returned
-    cluster is *managed*.
+    cluster is not *managed*.
     """
     cluster_reuse = get_cluster_reuse(valid_session_credentials)
     if cluster_reuse["is_managed"] != "no":
