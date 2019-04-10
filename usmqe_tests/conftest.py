@@ -378,8 +378,7 @@ def cluster2node_fqdn_list(cluster):
     return [node["fqdn"] for node in cluster["nodes"]]
 
 
-@pytest.fixture
-def cluster_reuse(valid_session_credentials):
+def get_cluster_reuse(session_credentials):
     """
     Returns Gluster *trusted storage pool* (aka cluster) as identified by
     ``cluster_member`` machine (specified in usmqe config file).
@@ -391,7 +390,7 @@ def cluster_reuse(valid_session_credentials):
     """
     LOGGER = pytest.get_logger("cluster_reuse")
     id_hostname = CONF.config["usmqe"]["cluster_member"]
-    api = TendrlApi(auth=valid_session_credentials)
+    api = TendrlApi(auth=session_credentials)
 
     retry_num = 12
     for i in range(retry_num):
@@ -417,6 +416,39 @@ def cluster_reuse(valid_session_credentials):
 
     raise Exception("There is no cluster which includes node"
                     " with FQDN == {}.".format(id_hostname))
+
+
+@pytest.fixture
+def managed_cluster(valid_session_credentials):
+    """
+    Return cluster information from Tendrl API and make sure that returned
+    cluster is *managed*.
+    """
+    cluster_reuse = get_cluster_reuse(valid_session_credentials)
+    if cluster_reuse["is_managed"] != "yes":
+        api = TendrlApi(auth=valid_session_credentials)
+        job_id = api.import_cluster(
+            cluster_reuse["cluster_id"], profiling="enable")["job_id"]
+        api.wait_for_job_status(job_id)
+        return get_cluster_reuse(valid_session_credentials)
+    else:
+        return cluster_reuse
+
+@pytest.fixture
+def unmanaged_cluster(valid_session_credentials):
+    """
+    Return cluster information from Tendrl API and make sure that returned
+    cluster is *managed*.
+    """
+    cluster_reuse = get_cluster_reuse(valid_session_credentials)
+    if cluster_reuse["is_managed"] != "no":
+        api = TendrlApi(auth=valid_session_credentials)
+        job_id = api.unmanage_cluster(
+            cluster_reuse["cluster_id"])["job_id"]
+        api.wait_for_job_status(job_id)
+        return get_cluster_reuse(valid_session_credentials)
+    else:
+        return cluster_reuse
 
 
 @pytest.fixture(params=[80, 60], scope="session")
