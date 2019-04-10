@@ -13,13 +13,13 @@ CONF = UsmConfig()
 
 
 @pytest.fixture(scope="function")
-def default_entities(cluster_reuse):
+def default_entities(managed_cluster):
     """
     Returns basic items that are occuring in alert messages and can be used
     for substitution.
     """
-    cluster_identifier = cluster_reuse[
-        "short_name"] or cluster_reuse["cluster_id"]
+    cluster_identifier = managed_cluster[
+        "short_name"] or managed_cluster["cluster_id"]
     node = CONF.config["usmqe"]["cluster_member"]
     return {
             "cluster": cluster_identifier,
