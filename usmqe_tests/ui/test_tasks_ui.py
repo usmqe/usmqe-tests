@@ -6,7 +6,7 @@ from usmqe.web import tools
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_task_attributes(application, imported_cluster_reuse):
+def test_task_attributes(application, managed_cluster):
     """
     Check that all common task attributes are as expected
     """
@@ -19,8 +19,8 @@ def test_task_attributes(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     tasks = test_cluster.tasks.get_tasks()
     """
@@ -48,7 +48,7 @@ def test_task_attributes(application, imported_cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_task_log(application, imported_cluster_reuse):
+def test_task_log(application, managed_cluster):
     """
     Test that clicking task name opens task log page
     and all events in the log have expected attributes
@@ -65,8 +65,8 @@ def test_task_log(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     tasks = test_cluster.tasks.get_tasks()
     pytest.check(tasks != [],

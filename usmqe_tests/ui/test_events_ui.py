@@ -6,7 +6,7 @@ from usmqe.web import tools
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_event_attributes(application, imported_cluster_reuse):
+def test_event_attributes(application, managed_cluster):
     """
     Check that all common event attributes are as expected
     """
@@ -19,8 +19,8 @@ def test_event_attributes(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     events = test_cluster.events.get_events()
     """

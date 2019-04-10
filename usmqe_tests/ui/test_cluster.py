@@ -62,7 +62,7 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_disable_profiling(application, imported_cluster_reuse, gluster_volume):
+def test_cluster_disable_profiling(application, managed_cluster, gluster_volume):
     """
     Disable cluster profiling in Web UI
     """
@@ -75,8 +75,8 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse, gluster_
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     if test_cluster.profiling != "Enabled":
         test_cluster.enable_profiling()
     gluster_cluster = gluster.GlusterVolume()
@@ -96,7 +96,7 @@ def test_cluster_disable_profiling(application, imported_cluster_reuse, gluster_
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_enable_profiling(application, imported_cluster_reuse, gluster_volume):
+def test_cluster_enable_profiling(application, managed_cluster, gluster_volume):
     """
     Enable cluster profiling in Web UI
     """
@@ -109,8 +109,8 @@ def test_cluster_enable_profiling(application, imported_cluster_reuse, gluster_v
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     if test_cluster.profiling != "Disabled":
         test_cluster.disable_profiling()
     gluster_cluster = gluster.GlusterVolume()
@@ -130,7 +130,7 @@ def test_cluster_enable_profiling(application, imported_cluster_reuse, gluster_v
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_cluster_dashboard(application, imported_cluster_reuse):
+def test_cluster_dashboard(application, managed_cluster):
     """
     Check that dashboard button opens cluster dashboard with correct data on hosts and volumes
     """
@@ -143,8 +143,8 @@ def test_cluster_dashboard(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     dashboard_values = test_cluster.get_values_from_dashboard()
     pytest.check(dashboard_values["cluster_name"] == test_cluster.name,
                  "Check that cluster name in Grafana dashboard is as expected")
@@ -168,7 +168,7 @@ def test_cluster_dashboard(application, imported_cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_unmanage(application, valid_session_credentials, imported_cluster_reuse):
+def test_cluster_unmanage(application, valid_session_credentials, managed_cluster):
     """
     Unmanage cluster in Web UI
     """
@@ -181,8 +181,8 @@ def test_cluster_unmanage(application, valid_session_credentials, imported_clust
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     api_cluster = tendrl_api.get_cluster(test_cluster.cluster_id)
     pytest.check(

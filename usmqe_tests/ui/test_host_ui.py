@@ -8,7 +8,7 @@ LOGGER = pytest.get_logger('hosts', module=True)
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_attributes(application, imported_cluster_reuse):
+def test_host_attributes(application, managed_cluster):
     """
     Test that all hosts are listed on cluster's Hosts page.
     Check all common host attributes
@@ -22,8 +22,8 @@ def test_host_attributes(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
@@ -33,7 +33,7 @@ def test_host_attributes(application, imported_cluster_reuse):
        UI shows the correct set of hostnames.
     """
     ui_hostnames = [host.hostname for host in hosts]
-    api_hostnames = [node["fqdn"] for node in imported_cluster_reuse["nodes"]]
+    api_hostnames = [node["fqdn"] for node in managed_cluster["nodes"]]
     LOGGER.debug("API cluster nodes: {}".format(api_hostnames))
     LOGGER.debug("UI cluster nodes: {}".format(ui_hostnames))
     pytest.check(set(ui_hostnames) == set(api_hostnames),
@@ -57,7 +57,7 @@ def test_host_attributes(application, imported_cluster_reuse):
         pytest.check(host.cluster_name == test_cluster.name,
                      "Host's cluster name: {}".format(host.cluster_name) +
                      ". Should be {}".format(test_cluster.name))
-        for node in imported_cluster_reuse["nodes"]:
+        for node in managed_cluster["nodes"]:
             if node["fqdn"] == host.hostname:
                 pytest.check(node["status"] == host.health,
                              "Host's health in UI: {} ".format(host.health) +
@@ -67,7 +67,7 @@ def test_host_attributes(application, imported_cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_bricks(application, imported_cluster_reuse, gluster_volume):
+def test_host_bricks(application, managed_cluster, gluster_volume):
     """
     Test that all hosts are listed on cluster's Hosts page.
     Check all common brick attributes
@@ -81,8 +81,8 @@ def test_host_bricks(application, imported_cluster_reuse, gluster_volume):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volume_bricks = []
     for volume in test_cluster.volumes.get_volumes():
@@ -145,7 +145,7 @@ def test_host_bricks(application, imported_cluster_reuse, gluster_volume):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_host_dashboard(application, imported_cluster_reuse):
+def test_host_dashboard(application, managed_cluster):
     """
     Test each host's Dashboard button
     """
@@ -158,8 +158,8 @@ def test_host_dashboard(application, imported_cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """
@@ -204,7 +204,7 @@ def test_host_dashboard(application, imported_cluster_reuse):
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_brick_dashboard(application, imported_cluster_reuse, gluster_volume):
+def test_brick_dashboard(application, managed_cluster, gluster_volume):
     """
     Test Dashboard button of each brick of each host
     """
@@ -217,8 +217,8 @@ def test_brick_dashboard(application, imported_cluster_reuse, gluster_volume):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     hosts = test_cluster.hosts.get_hosts()
     """

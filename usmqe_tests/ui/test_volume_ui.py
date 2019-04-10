@@ -12,7 +12,7 @@ LOGGER = pytest.get_logger('volume_test', module=True)
 @pytest.mark.testready
 def test_volume_attributes(application,
                            valid_session_credentials,
-                           imported_cluster_reuse,
+                           managed_cluster,
                            gluster_volume):
     """
     Test that all volumes are listed on cluster's Volumes page.
@@ -27,8 +27,8 @@ def test_volume_attributes(application,
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     """
@@ -63,7 +63,7 @@ def test_volume_attributes(application,
 @pytest.mark.testready
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
-def test_volume_dashboard(application, imported_cluster_reuse, gluster_volume):
+def test_volume_dashboard(application, managed_cluster, gluster_volume):
     """
     Check that dashboard button opens correct volume dashboard with correct data on bricks
     """
@@ -76,8 +76,8 @@ def test_volume_dashboard(application, imported_cluster_reuse, gluster_volume):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     """
@@ -110,7 +110,7 @@ def test_volume_dashboard(application, imported_cluster_reuse, gluster_volume):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_profiling_switch(application, imported_cluster_reuse, gluster_volume):
+def test_volume_profiling_switch(application, managed_cluster, gluster_volume):
     """
     Test disabling and enabling volume profiling in UI
     """
@@ -123,8 +123,8 @@ def test_volume_profiling_switch(application, imported_cluster_reuse, gluster_vo
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     for volume in volumes:
@@ -158,7 +158,7 @@ def test_volume_profiling_switch(application, imported_cluster_reuse, gluster_vo
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_parts(application, imported_cluster_reuse, gluster_volume):
+def test_volume_parts(application, managed_cluster, gluster_volume):
     """
     Test replica set/subvolume names and expanding/collapsing.
     """
@@ -171,8 +171,8 @@ def test_volume_parts(application, imported_cluster_reuse, gluster_volume):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [],
@@ -260,7 +260,7 @@ def test_volume_parts(application, imported_cluster_reuse, gluster_volume):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_bricks(application, imported_cluster_reuse, gluster_volume):
+def test_volume_bricks(application, managed_cluster, gluster_volume):
     """
     Test volume brick attributes and their division into replica sets/subvolumes.
     """
@@ -273,8 +273,8 @@ def test_volume_bricks(application, imported_cluster_reuse, gluster_volume):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     pytest.check(volumes != [],
@@ -347,7 +347,7 @@ def test_volume_bricks(application, imported_cluster_reuse, gluster_volume):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_volume_brick_dashboards(application, imported_cluster_reuse, gluster_volume):
+def test_volume_brick_dashboards(application, managed_cluster, gluster_volume):
     """
     Test Dashboard button of each brick of each volume
     """
@@ -360,8 +360,8 @@ def test_volume_brick_dashboards(application, imported_cluster_reuse, gluster_vo
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        imported_cluster_reuse["cluster_id"],
-                                        imported_cluster_reuse["short_name"])
+                                        managed_cluster["cluster_id"],
+                                        managed_cluster["short_name"])
     assert test_cluster.managed == "Yes"
     volumes = test_cluster.volumes.get_volumes()
     """
