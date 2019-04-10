@@ -169,7 +169,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
     Negative import gluster cluster when node agent is not running on one
     storage machine. Import should fail in such case.
     """
-    api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
+    tendrl = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     # this test can't go on if we don't have proper cluster id at this point
     assert cluster_reuse["cluster_id"] is not None
@@ -185,7 +185,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
     """
     retry_num = 12
     for i in range(retry_num):
-        cluster = api.get_cluster(cluster_reuse["cluster_id"])
+        cluster = tendrl.get_cluster(cluster_reuse["cluster_id"])
         if len(cluster["nodes"]) == len(valid_trusted_pool_reuse):
             LOGGER.debug("cluster (via tendrl API) has expected number of nodes")
             break
@@ -205,10 +205,10 @@ def test_cluster_import_fail_with_one_nodeagent_down(
       The job starts and finishes with failed status after some time.
     """
     LOGGER.info("starting import cluster job")
-    import_job = api.import_cluster(cluster_reuse["cluster_id"])
+    import_job = tendrl.import_cluster(cluster_reuse["cluster_id"])
     LOGGER.info(
         "import (job id {}) submited, waiting for completion".format(import_job["job_id"]))
-    api.wait_for_job_status(import_job["job_id"], status="failed")
+    tendrl.wait_for_job_status(import_job["job_id"], status="failed")
 
     """
     :step:
@@ -217,12 +217,12 @@ def test_cluster_import_fail_with_one_nodeagent_down(
     :result:
       There is exactly one such cluster, and it's not managed (aka not imported).
     """
-    integration_id = api.get_job_attribute(
+    integration_id = tendrl.get_job_attribute(
         job_id=import_job["job_id"],
         attribute="TendrlContext.integration_id",
         section="parameters")
     LOGGER.debug("integration_id: %s" % integration_id)
-    clusters = [x for x in api.get_cluster_list() if x["integration_id"] == integration_id]
+    clusters = [x for x in tendrl.get_cluster_list() if x["integration_id"] == integration_id]
     pytest.check(
         len(clusters) == 1,
         "Job list integration_id '{}' should be "
