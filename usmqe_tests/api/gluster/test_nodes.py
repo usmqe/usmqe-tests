@@ -17,7 +17,7 @@ CONF = UsmConfig()
 @pytest.mark.gluster
 def test_nodes_list(
         valid_session_credentials,
-        cluster_reuse):
+        managed_cluster):
     """
     List nodes for given cluster via API.
 
@@ -32,7 +32,7 @@ def test_nodes_list(
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     # list of nodes from Tendrl api
-    t_nodes = api.get_node_list(cluster_reuse['cluster_id'])
+    t_nodes = api.get_node_list(managed_cluster['cluster_id'])
     t_node_names = {node["fqdn"] for node in t_nodes["nodes"]}
     # list of nodes from Gluster command output
     gl= gluster.GlusterCommon()

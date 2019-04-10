@@ -64,14 +64,14 @@ def test_cluster_dashboard_layout():
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
-def test_hosts_panel_status(ansible_playbook, cluster_reuse):
+def test_hosts_panel_status(ansible_playbook, managed_cluster):
     """
     Check that Grafana panel *Hosts* is showing correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
     gluster = GlusterCommon()
     states = gluster.get_cluster_hosts_connection_states(
         CONF.config["usmqe"]["cluster_member"])
@@ -219,14 +219,14 @@ def test_hosts_panel_status(ansible_playbook, cluster_reuse):
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown("test_teardown.tendrl_services_stopped_on_nodes.yml")
 @pytest.mark.author("fbalak@redhat.com")
-def test_hosts(ansible_playbook, workload_stop_nodes, cluster_reuse):
+def test_hosts(ansible_playbook, workload_stop_nodes, managed_cluster):
     """
     Check that Grafana panel *Hosts* is showing correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()

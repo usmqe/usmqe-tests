@@ -62,15 +62,15 @@ def test_volume_dashboard_layout():
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_capacity_utilization_gauge(
-        ansible_playbook, workload_capacity_utilization, cluster_reuse, gluster_volume):
+        ansible_playbook, workload_capacity_utilization, managed_cluster, gluster_volume):
     """
     Check that Grafana panel *Capacity Utilization* gauge chart is showing
     correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
@@ -117,15 +117,15 @@ def test_capacity_utilization_gauge(
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_capacity_utilization_graph(
-        ansible_playbook, workload_capacity_utilization, cluster_reuse, gluster_volume):
+        ansible_playbook, workload_capacity_utilization, managed_cluster, gluster_volume):
     """
     Check that Grafana panel *Capacity Utilization* graph chart is showing
     correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
@@ -172,15 +172,15 @@ def test_capacity_utilization_graph(
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_capacity_available(
-        ansible_playbook, workload_capacity_utilization, cluster_reuse, gluster_volume):
+        ansible_playbook, workload_capacity_utilization, managed_cluster, gluster_volume):
     """
     Check that Grafana panel *Capacity Available* is showing
     correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()

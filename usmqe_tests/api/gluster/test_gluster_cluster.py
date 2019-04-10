@@ -19,7 +19,7 @@ CONF = UsmConfig()
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.cluster_import_gluster
-def test_cluster_import_valid(valid_session_credentials, cluster_reuse):
+def test_cluster_import_valid(valid_session_credentials, unmanaged_cluster):
     """
     Positive import gluster cluster.
     """
@@ -32,7 +32,7 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse):
       should be the same.
     """
     api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    cluster_id = cluster_reuse["cluster_id"]
+    cluster_id = unmanaged_cluster["cluster_id"]
     pytest.check(
         cluster_id is not None,
         "Cluster id is: {}".format(cluster_id))
@@ -171,7 +171,7 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
 @pytest.mark.negative
 def test_cluster_import_fail_with_one_nodeagent_down(
         valid_session_credentials,
-        cluster_reuse,
+        unmanaged_cluster,
         importfail_setup_nodeagent_stopped_on_one_node):
     """
     Negative import gluster cluster when node agent is not running on one
@@ -180,7 +180,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
     tendrl = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
 
     # this test can't go on if we don't have proper cluster id at this point
-    assert cluster_reuse["cluster_id"] is not None
+    assert unmanaged_cluster["cluster_id"] is not None
 
     # TODO: this comes from test_cluster_import_valid, move this into cluster reuse fixture?
     """
@@ -198,7 +198,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
 
     retry_num = 12
     for i in range(retry_num):
-        cluster = tendrl.get_cluster(cluster_reuse["cluster_id"])
+        cluster = tendrl.get_cluster(unmanaged_cluster["cluster_id"])
         if len(cluster["nodes"]) == len(gl_nodes):
             LOGGER.debug("cluster (via tendrl API) has expected number of nodes")
             break
@@ -218,7 +218,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
       The job starts and finishes with failed status after some time.
     """
     LOGGER.info("starting import cluster job")
-    import_job = tendrl.import_cluster(cluster_reuse["cluster_id"])
+    import_job = tendrl.import_cluster(unmanaged_cluster["cluster_id"])
     LOGGER.info(
         "import (job id {}) submited, waiting for completion".format(import_job["job_id"]))
     tendrl.wait_for_job_status(import_job["job_id"], status="failed")
@@ -254,7 +254,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
 def test_cluster_unmanage_valid(
         ansible_playbook,
         valid_session_credentials,
-        cluster_reuse):
+        managed_cluster):
     """
     Positive unmanage gluster cluster.
     """
@@ -268,19 +268,19 @@ def test_cluster_unmanage_valid(
     tendrl_api = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
     graphite_api = graphiteapi.GraphiteApi()
 
-    cluster_id = cluster_reuse["cluster_id"]
+    cluster_id = managed_cluster["cluster_id"]
     pytest.check(
         cluster_id is not None,
         "Cluster id is: {}".format(cluster_id))
     pytest.check(
-        cluster_reuse["is_managed"] == "yes",
-        "is_managed: {}\nThere should be ``yes``.".format(cluster_reuse["is_managed"]))
+        managed_cluster["is_managed"] == "yes",
+        "is_managed: {}\nThere should be ``yes``.".format(managed_cluster["is_managed"]))
 
     # graphite target uses short name if it is set
-    if cluster_reuse["short_name"]:
-        cluster_target_id = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_target_id = managed_cluster["short_name"]
     else:
-        cluster_target_id = cluster_reuse["cluster_id"]
+        cluster_target_id = managed_cluster["cluster_id"]
     # it takes 15 minutes to refresh data Host status panel
     for i in range(31):
         cluster_health = graphite_api.get_datapoints(

@@ -64,16 +64,16 @@ def test_host_dashboard_layout():
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_cpu_utilization(
-        ansible_playbook, workload_cpu_utilization, cluster_reuse):
+        ansible_playbook, workload_cpu_utilization, managed_cluster):
     """
     Check that Grafana panel *CPU Utilization* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
     # number of samples from graphite target per minute
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
@@ -114,16 +114,16 @@ def test_cpu_utilization(
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_memory_utilization(
-        ansible_playbook, workload_memory_utilization, cluster_reuse):
+        ansible_playbook, workload_memory_utilization, managed_cluster):
     """
     Check that Grafana panel *memory Utilization* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
     # number of samples from graphite target per minute
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
@@ -169,14 +169,14 @@ def test_memory_utilization(
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_swap_free(
-        ansible_playbook, workload_swap_utilization, cluster_reuse):
+        ansible_playbook, workload_swap_utilization, managed_cluster):
     """
     Check that Grafana panel *Swap Free* is showing correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
@@ -218,14 +218,14 @@ def test_swap_free(
 @pytest.mark.ansible_playbook_setup('test_setup.graphite_access.yml')
 @pytest.mark.ansible_playbook_teardown('test_teardown.graphite_access.yml')
 def test_swap_utilization(
-        ansible_playbook, workload_swap_utilization, cluster_reuse):
+        ansible_playbook, workload_swap_utilization, managed_cluster):
     """
     Check that Grafana panel *Swap Utilization* is showing correct values.
     """
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()
@@ -269,16 +269,16 @@ def test_swap_utilization(
 def test_memory_available(
         ansible_playbook,
         workload_memory_utilization,
-        cluster_reuse):
+        managed_cluster):
     """
     Check that Grafana panel *Memory Available* is showing correct values.
     """
     # TODO(fbalak): get this number dynamically
     # number of samples from graphite target per minute
-    if cluster_reuse["short_name"]:
-        cluster_identifier = cluster_reuse["short_name"]
+    if managed_cluster["short_name"]:
+        cluster_identifier = managed_cluster["short_name"]
     else:
-        cluster_identifier = cluster_reuse["integration_id"]
+        cluster_identifier = managed_cluster["integration_id"]
 
     grafana = grafanaapi.GrafanaApi()
     graphite = graphiteapi.GraphiteApi()

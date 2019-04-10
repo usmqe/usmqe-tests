@@ -32,7 +32,7 @@ def invalid_session_credentials(request):
 @pytest.fixture
 def importfail_setup_nodeagent_stopped_on_one_node(
         request,
-        cluster_reuse,
+        managed_cluster,
         valid_session_credentials):
     """
     This fixture stops node agent on one storage machine. During teardown it
@@ -51,5 +51,5 @@ def importfail_setup_nodeagent_stopped_on_one_node(
     # the cluster is not managed after a failed import, which would block any
     # future import attempt.
     tendrl = glusterapi.TendrlApiGluster(auth=valid_session_credentials)
-    job = tendrl.unmanage_cluster(cluster_reuse["cluster_id"])
+    job = tendrl.unmanage_cluster(managed_cluster["cluster_id"])
     tendrl.wait_for_job_status(job["job_id"])
