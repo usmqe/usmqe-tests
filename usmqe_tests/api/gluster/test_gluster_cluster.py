@@ -169,6 +169,7 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
 @pytest.mark.author("mbukatov@redhat.com")
 @pytest.mark.gluster
 @pytest.mark.negative
+@pytest.mark.testready
 def test_cluster_import_fail_with_one_nodeagent_down(
         valid_session_credentials,
         unmanaged_cluster,
