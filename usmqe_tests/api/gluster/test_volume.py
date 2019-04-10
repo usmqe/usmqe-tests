@@ -17,8 +17,7 @@ CONF = UsmConfig()
 @pytest.mark.gluster
 def test_volumes_list(
         valid_session_credentials,
-        cluster_reuse,
-        valid_trusted_pool_reuse):
+        cluster_reuse):
     """
     List volumes for given cluster via API.
 
@@ -61,8 +60,7 @@ def test_volumes_list(
 @pytest.mark.gluster
 def test_volume_brick_list(
         valid_session_credentials,
-        cluster_reuse,
-        valid_trusted_pool_reuse):
+        cluster_reuse):
     """
     List bricks for given volume via API.
 

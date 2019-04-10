@@ -7,16 +7,19 @@ import time
 
 from usmqe.api.graphiteapi import graphiteapi
 from usmqe.api.tendrlapi import glusterapi
+from usmqe.gluster import gluster
+from usmqe.usmqeconfig import UsmConfig
 
 
 LOGGER = pytest.get_logger('cluster_test', module=True)
+CONF = UsmConfig()
 
 
 @pytest.mark.author("fbalak@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
 @pytest.mark.cluster_import_gluster
-def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_trusted_pool_reuse):
+def test_cluster_import_valid(valid_session_credentials, cluster_reuse):
     """
     Positive import gluster cluster.
     """
@@ -33,23 +36,29 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
     pytest.check(
         cluster_id is not None,
         "Cluster id is: {}".format(cluster_id))
+    # get nodes from gluster interface
+    gl = gluster.GlusterCommon()
+    gl_nodes = gl.get_hosts_from_trusted_pool(
+        CONF.config["usmqe"]["cluster_member"])
+
     for _ in range(12):
         cluster = api.get_cluster(cluster_id)
         nodes = [node for node in cluster["nodes"] if node["fqdn"]]
-        if len(nodes) == len(valid_trusted_pool_reuse):
+        if len(nodes) == len(gl_nodes):
             break
         time.sleep(10)
     else:
         pytest.check(
-            len(valid_trusted_pool_reuse) == len(cluster["nodes"]),
+            len(gl_nodes) == len(cluster["nodes"]),
             "Number of nodes from gluster trusted pool ({}) should be "
-            "the same as number of nodes in tendrl ({})".format(len(valid_trusted_pool_reuse),
-                                                                len(cluster["nodes"])))
+            "the same as number of nodes in tendrl ({})".format(
+                len(gl_nodes),
+                len(cluster["nodes"])))
     node_fqdns = [x["fqdn"] for x in nodes]
     pytest.check(
-        set(valid_trusted_pool_reuse) == set(node_fqdns),
+        set(gl_nodes) == set(node_fqdns),
         "fqdns get from gluster trusted pool ({}) should correspond "
-        "with fqdns of nodes in tendrl ({})".format(valid_trusted_pool_reuse,
+        "with fqdns of nodes in tendrl ({})".format(gl_nodes,
                                                     node_fqdns))
 
     """
@@ -86,9 +95,9 @@ def test_cluster_import_valid(valid_session_credentials, cluster_reuse, valid_tr
           "as from `gluster peer status` command ({})"
     LOGGER.debug("debug imported clusters: %s" % imported_clusters)
     pytest.check(
-        [x["fqdn"] in valid_trusted_pool_reuse
+        [x["fqdn"] in gl_nodes
          for x in imported_clusters[0]["nodes"]],
-        msg.format(valid_trusted_pool_reuse))
+        msg.format(gl_nodes))
 
 
 @pytest.mark.author("fbalak@redhat.com")
@@ -163,7 +172,6 @@ def test_cluster_import_invalid_uuid(valid_session_credentials, cluster_id):
 def test_cluster_import_fail_with_one_nodeagent_down(
         valid_session_credentials,
         cluster_reuse,
-        valid_trusted_pool_reuse,
         importfail_setup_nodeagent_stopped_on_one_node):
     """
     Negative import gluster cluster when node agent is not running on one
@@ -183,10 +191,15 @@ def test_cluster_import_fail_with_one_nodeagent_down(
       Sets of fqdns of nodes in tendrl and from ``gluster`` command
       should be the same.
     """
+    # get nodes from gluster interface
+    gl = gluster.GlusterCommon()
+    gl_nodes = gl.get_hosts_from_trusted_pool(
+        CONF.config["usmqe"]["cluster_member"])
+
     retry_num = 12
     for i in range(retry_num):
         cluster = tendrl.get_cluster(cluster_reuse["cluster_id"])
-        if len(cluster["nodes"]) == len(valid_trusted_pool_reuse):
+        if len(cluster["nodes"]) == len(gl_nodes):
             LOGGER.debug("cluster (via tendrl API) has expected number of nodes")
             break
         if i != retry_num - 1:
@@ -194,9 +207,9 @@ def test_cluster_import_fail_with_one_nodeagent_down(
             LOGGER.info(msg)
             time.sleep(10)
     else:
-        assert len(cluster["nodes"]) == len(valid_trusted_pool_reuse)
+        assert len(cluster["nodes"]) == len(gl_nodes)
     node_fqdn_list = [node["fqdn"] for node in cluster["nodes"] if node["fqdn"]]
-    assert set(valid_trusted_pool_reuse) == set(node_fqdn_list)
+    assert set(gl_nodes) == set(node_fqdn_list)
 
     """
     :step:
@@ -241,8 +254,7 @@ def test_cluster_import_fail_with_one_nodeagent_down(
 def test_cluster_unmanage_valid(
         ansible_playbook,
         valid_session_credentials,
-        cluster_reuse,
-        valid_trusted_pool_reuse):
+        cluster_reuse):
     """
     Positive unmanage gluster cluster.
     """

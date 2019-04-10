@@ -1,7 +1,6 @@
 import pytest
 import os.path
 from usmqe.api.tendrlapi import glusterapi
-from usmqe.gluster import gluster
 from usmqe.usmqeconfig import UsmConfig
 
 LOGGER = pytest.get_logger('gluster_conftest', module=True)
@@ -26,16 +25,6 @@ def invalid_cluster_id(request):
     Generate invalid cluster id.
     """
     return request.param
-
-
-@pytest.fixture
-def valid_trusted_pool_reuse():
-    """
-    Return list of node hostname from created trusted pool with node specified
-    by usm_cluster_member option in usm.ini.
-    """
-    storage = gluster.GlusterCommon()
-    return storage.get_hosts_from_trusted_pool(CONF.config["usmqe"]["cluster_member"])
 
 
 @pytest.fixture(params=[None, "0000000000000000"])
