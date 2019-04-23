@@ -442,7 +442,7 @@ def unmanaged_cluster(valid_session_credentials):
     cluster is not *managed*.
     """
     cluster_reuse = get_cluster_reuse(valid_session_credentials)
-    if cluster_reuse["is_managed"] != "no":
+    if cluster_reuse["is_managed"] == "yes":
         api = TendrlApi(auth=valid_session_credentials)
         job_id = api.unmanage_cluster(
             cluster_reuse["cluster_id"])["job_id"]
