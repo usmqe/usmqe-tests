@@ -10,7 +10,7 @@ LOGGER = pytest.get_logger('ui_cluster_testing', module=True)
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import(application, valid_session_credentials, cluster_reuse):
+def test_cluster_import(application, valid_session_credentials, unmanaged_cluster):
     """
     Check that Import button really imports the cluster
     """
@@ -23,8 +23,8 @@ def test_cluster_import(application, valid_session_credentials, cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        cluster_reuse["cluster_id"],
-                                        cluster_reuse["short_name"])
+                                        unmanaged_cluster["cluster_id"],
+                                        unmanaged_cluster["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     pytest.check(test_cluster.managed == "No",
@@ -207,7 +207,7 @@ def test_cluster_unmanage(application, valid_session_credentials, managed_cluste
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_unmanage_naming(application, cluster_reuse):
+def test_cluster_import_unmanage_naming(application, unmanaged_cluster):
     """
     Import cluster and give it a custom name. Then unmanage it.
     """
@@ -220,8 +220,8 @@ def test_cluster_import_unmanage_naming(application, cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        cluster_reuse["cluster_id"],
-                                        cluster_reuse["short_name"])
+                                        unmanaged_cluster["cluster_id"],
+                                        unmanaged_cluster["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     original_id = test_cluster.name
@@ -244,7 +244,7 @@ def test_cluster_import_unmanage_naming(application, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
+def test_cluster_import_unmanage_profiling_disabled(application, unmanaged_cluster):
     """
     Import cluster with profiling disabled. Then unmanage it.
     """
@@ -257,8 +257,8 @@ def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        cluster_reuse["cluster_id"],
-                                        cluster_reuse["short_name"])
+                                        unmanaged_cluster["cluster_id"],
+                                        unmanaged_cluster["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     import_success = test_cluster.cluster_import(profiling="disable")
@@ -287,7 +287,7 @@ def test_cluster_import_unmanage_profiling_disabled(application, cluster_reuse):
 @pytest.mark.author("ebondare@redhat.com")
 @pytest.mark.happypath
 @pytest.mark.testready
-def test_cluster_import_unmanage_view_progress(application, cluster_reuse):
+def test_cluster_import_unmanage_view_progress(application, unmanaged_cluster):
     """
     Import cluster and view import progress. Then unmanage the cluster and view unmanage progress.
     """
@@ -300,8 +300,8 @@ def test_cluster_import_unmanage_view_progress(application, cluster_reuse):
     """
     clusters = application.collections.clusters.get_clusters()
     test_cluster = tools.choose_cluster(clusters,
-                                        cluster_reuse["cluster_id"],
-                                        cluster_reuse["short_name"])
+                                        unmanaged_cluster["cluster_id"],
+                                        unmanaged_cluster["short_name"])
     if test_cluster.managed == "Yes":
         test_cluster.unmanage()
     import_success = test_cluster.cluster_import(view_progress=True)
