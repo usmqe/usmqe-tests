@@ -317,7 +317,7 @@ def os_info():
 
 
 @pytest.fixture(params=[60, 80, 95], scope="session")
-def workload_cpu_utilization(request):
+def workload_cpu_utilization(request, stress_tools):
     """
     Returns:
         dict: contains information about `start` and `stop` time of stress-ng
@@ -453,7 +453,7 @@ def unmanaged_cluster(valid_session_credentials):
 
 
 @pytest.fixture(params=[80, 60], scope="session")
-def workload_memory_utilization(request):
+def workload_memory_utilization(request, stress_tools):
     """
     Returns:
         dict: contains information about `start` and `stop` time of stress-ng
@@ -580,7 +580,7 @@ def workload_capacity_utilization(request, volume_mount_points):
 
 
 @pytest.fixture(params=[70, 95], scope="session")
-def workload_swap_utilization(request):
+def workload_swap_utilization(request, stress_tools):
     """
     Returns:
         dict: contains information about `start` and `stop` time of stress-ng
